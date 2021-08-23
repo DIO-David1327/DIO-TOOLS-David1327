@@ -3,7 +3,7 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.22
+// @version		4.23
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -22,7 +22,7 @@
 // @license     MIT
 // ==/UserScript==
 
-var dio_version = '4.22';
+var dio_version = '4.23';
 
 /*******************************************************************************************************************************
  * Global stuff
@@ -464,6 +464,46 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     $('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
 
     /*******************************************************************************************************************************
+     * Graphic filters
+     *******************************************************************************************************************************/
+    if (uw.location.pathname.indexOf("game") >= 0) {
+        $('<svg width="0%" height="0%">' +
+          // GREYSCALE
+          '<filter id="GrayScale">' +
+          '<feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0">' +
+          '</filter>' +
+          // SEPIA
+          '<filter id="Sepia">' +
+          '<feColorMatrix type="matrix" values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0.000 0.000 0.000 1 0">' +
+          '</filter>' +
+          // SATURATION
+          '<filter id="Saturation"><feColorMatrix type="saturate" values="0.2"></filter>' +
+          '<filter id="Saturation1"><feColorMatrix type="saturate" values="1"></filter>' +
+          '<filter id="Saturation2"><feColorMatrix type="saturate" values="2"></filter>' +
+          // HUE
+          '<filter id="Hue1"><feColorMatrix type="hueRotate" values= "65"></filter>' +
+          '<filter id="Hue2"><feColorMatrix type="hueRotate" values="150"></filter>' +
+          '<filter id="Hue3"><feColorMatrix type="hueRotate" values="-65"></filter>' +
+          // BRIGHTNESS
+          '<filter id="Brightness15">' +
+          '<feComponentTransfer><feFuncR type="linear" slope="1.5"/><feFuncG type="linear" slope="1.5"/><feFuncB type="linear" slope="1.5"/></feComponentTransfer>' +
+          '</filter>' +
+          '<filter id="Brightness12">' +
+          '<feComponentTransfer><feFuncR type="linear" slope="1.2"/><feFuncG type="linear" slope="1.2"/><feFuncB type="linear" slope="1.2"/></feComponentTransfer>' +
+          '</filter>' +
+          '<filter id="Brightness11">' +
+          '<feComponentTransfer><feFuncR type="linear" slope="1.1"/><feFuncG type="linear" slope="1.1"/><feFuncB type="linear" slope="1.1"/></feComponentTransfer>' +
+          '</filter>' +
+          '<filter id="Brightness10">' +
+          '<feComponentTransfer><feFuncR type="linear" slope="1.0"/><feFuncG type="linear" slope="1.0"/><feFuncB type="linear" slope="1.0"/></feComponentTransfer>' +
+          '</filter>' +
+          '<filter id="Brightness07">' +
+          '<feComponentTransfer><feFuncR type="linear" slope="0.7"/><feFuncG type="linear" slope="0.7"/><feFuncB type="linear" slope="0.7"/></feComponentTransfer>' +
+          '</filter>' +
+          '</svg>').appendTo('#ui_box');
+    }
+
+    /*******************************************************************************************************************************
      * Language versions: German, Italian, English, French, Russian, Polish, Spanish, Romanian
      *******************************************************************************************************************************/
     let daaaa="";
@@ -781,7 +821,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 C: 'The "Keyboard shortcuts for Windows" and "City view" options are active in the settings',
             },
             link: {
-                //donate
+                //update
+                update: "https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327.html",
+                update_direct: "https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html",
+                //donate:
                 Donate: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url",
                 //autre
                 Update: "https://www.tuto-de-david1327.com/en/annonces/dio-tools-david1327/update-to-version-"+ updateversion +".html",
@@ -3625,7 +3668,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
         },
         //////////////////////////////////////////////
-        //   Néerlandais Translation by Firebloem   //
+        //      GREEK Translation by AbstractGR     //
         //////////////////////////////////////////////
         gr: {
             settings : {
@@ -3769,14 +3812,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Happy : 'Χαρούμενο το νέο έτος!',
                 Merry : 'Χο χο χο, Καλά Χριστούγεννα!',
                 tow : 'Κωδικός BB πόλης',
-                ingame_name : 'Μη διστάσετε να επικοινωνήσετε μαζί μου αν προτιμάτε να καλείστε με το όνομα του παιχνιδιού που έχετε,Καθώς είναι μεγάλο το έργο και μπορεί να είναι αρκετά χρονοβόρο προσπαθώ πάντα να είμαι ευγνώμων με κάθε είδους υποστήριξη. Για αυτό θα ήθελα να ευχαριστήσω όλους που με έχουν υποστηρίξει σε αυτό το έργο- είτε από δωρεές, γνώση, δημιουργηκότητα, αναφορές προβλημάτων ή με λίγα ενθαρρυντικά λόγια.',
+                ingame_name : ['Μη διστάσετε να επικοινωνήσετε μαζί μου αν προτιμάτε να καλείστε με το όνομα του παιχνιδιού που έχετε', 'Καθώς είναι μεγάλο το έργο και μπορεί να είναι αρκετά χρονοβόρο προσπαθώ πάντα να είμαι ευγνώμων με κάθε είδους υποστήριξη. Για αυτό θα ήθελα να ευχαριστήσω όλους που με έχουν υποστηρίξει σε αυτό το έργο- είτε από δωρεές, γνώση, δημιουργηκότητα, αναφορές προβλημάτων ή με λίγα ενθαρρυντικά λόγια.'],
             },
 
             tutoriel : {
                 tuto : 'Χρήσιμες πληροφορίες',
                 reme : 'Ευχαριστώ όλους εκείνους που συνείσφεραν στην ανάπτυξη του DIO tools,',
-                Trou : 'Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - φροντιστήριο του david1327,Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων',
-                util : 'Χρήσιμες ιστοσελίδες για το grepolis - φροντιστήριο του david1327,Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.',
+                Trou : ['Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - φροντιστήριο του david1327', 'Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων'],
+                util : ['Χρήσιμες ιστοσελίδες για το grepolis - φροντιστήριο του david1327', 'Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.'],
             },
 
             Quack : {
@@ -3964,7 +4007,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_per: true, // Percentual Trade
         dio_rec: true, // Recruiting Trade
         dio_way: true, // Troop speed
-        //dio_cnt: true, // Attack/support counter
+        dio_cnt: true, // Attack/support counter
         dio_sim: true, // Simulator
         dio_act: true, // Activity boxes
         dio_tsk: true, // Task bar
@@ -3980,21 +4023,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_tis: true, // Town Popup support
         dio_tih: true, // Town Popup Hero
         dio_tir: true, // Town Popup Resource
-        //dio_wwc: true, // World wonder counter
-        //dio_wwr: false, // World wonder ranking
-        //dio_wwi: false, // World wonder icons
+        dio_wwc: true, // World wonder counter
+        dio_wwr: false, // World wonder ranking
+        dio_wwi: false, // World wonder icons
         dio_con: true, // Context menu
         dio_sen: true, // Sent units
         dio_tov: false,// Town overview
         dio_scr: true, // Mausrad,
         dio_Scr: true, // Scrollbar Style
         dio_Tow: true, // town bb
-        //dio_Rew: true, // minimize Daily Reward
+        dio_Rew: true, // minimize Daily Reward
         dio_Fdm: true, // ForumDeleteMultiple
         dio_Sel: true, // selectunitshelper
         dio_Cul: true, // cultureOverview
         dio_Cup: true, // cultureProgress
-        dio_Hot: true, // hotkeys
+        dio_Hot: (system() ? (false) : (true)), // hotkeys
         dio_Isl: true, // islandFarmingVillages
         dio_Ish: true, // farmingvillageshelper
         dio_Hio: true, // hidesOverview
@@ -4020,23 +4063,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_eee: false
     };
 
-    /*if (!uw.Game.features.end_game_type == "end_game_type_world_wonder") {
+    if (!uw.Game.features.end_game_type == "end_game_type_world_wonder") {
         delete Options_def.dio_wwc;
         delete Options_def.dio_wwr;
         delete Options_def.dio_wwi;
-    }*/
+    }
 
-    if (typeof(uw.MoleHoleOnBoard) == "undefined") {
+    if (!typeof(uw.MoleHoleOnBoard) == "undefined") {
+        uw.HumanMessage.success(getTexts("messages", "copybb"))
         delete Options_def.dio_Ciw;
     }
 
-    if (typeof(uw.FLASK_GAME) == "undefined") {
+    if (!typeof(uw.FLASK_GAME) == "undefined") {
         delete Options_def.dio_til;
         delete Options_def.dio_Sel;
-    }
-
-    if (system()) {
-        delete Options_def.dio_Hot;
     }
 
     if (uw.location.pathname.indexOf("game") >= 0) {
@@ -4069,14 +4109,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         var v_info = $('#dio_version_info');
         if (version_text === '') {
             if (dio_version < dio_latest_version) {
-                version_text = "<a href='https://greasyfork.org/scripts/388235-dio-tools-david1327' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts('settings', 'version_old') + "</div><div class='version_icon red'></div></a>" +
-                    "<a class='version_text' href='https://greasyfork.org/scripts/388235-dio-tools-david1327/code/DIO-TOOLS-David1327.user.js' target='_blank'>--> " + getTexts('settings', 'version_update') + "</a>";
+                version_text = "<a href='"+ getTexts("link", "updates") +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts('settings', 'version_old') + "</div><div class='version_icon red'></div></a>" +
+                    "<a class='version_text' href='"+ getTexts("link", "updates_direct") +"' target='_blank'>--> " + getTexts('settings', 'version_update') + "</a>";
                 version_color = 'crimson';
                 Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts('settings', 'version_old'));
             } else if (dio_version == dio_latest_version) {
-                version_text = "<a href='https://greasyfork.org/scripts/388235-dio-tools-david1327' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts('settings', 'version_new') + "</div><div class='version_icon green'></div></a>";
+                version_text = "<a href='"+ getTexts("link", "updates") +"' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts('settings', 'version_new') + "</div><div class='version_icon green'></div></a>";
             } else {
-                version_text = "<a href='https://greasyfork.org/scripts/388235-dio-tools-david1327' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts('settings', 'version_dev') + "</div><div class='version_icon blue'></div></a>";
+                version_text = "<a href='"+ getTexts("link", "updates") +"' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts('settings', 'version_dev') + "</div><div class='version_icon blue'></div></a>";
                 version_color = 'darkblue';
                 Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts('settings', 'version_dev'));
             }
@@ -4190,7 +4230,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var Browser = getBrowser().replace(/(1|2|3|4|5|6|7|8|9|\ )/gm, "");
                 $('.settings-container').append(
                     '<div id="dio_settings" class="player_settings section"><div id="dio_bg_medusa"></div><div id="dio_bg_david1327"></div>' +
-                    '<div class="game_header bold"><a href="https://greasyfork.org/scripts/388235-dio-tools-david1327" target="_blank" style="color:white">DIO-TOOLS-David1327 (v' + dio_version + ')</a>' +
+                    '<div class="game_header bold"><a href="'+ getTexts("link", "updates") +'" target="_blank" style="color:white">DIO-TOOLS-David1327 (v' + dio_version + ')</a>' +
                     '<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com/TutoDeDavid1327/;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21" scrolling="no" frameborder="0" style="border:none; height:21px; position: absolute; right:-216px;" allowTransparency="true"></iframe></div>' +
 
                     // Check latest version
@@ -4374,11 +4414,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<td><div id="dio_way" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "way")[0] + '</div></div>' +
                     '<p>' + getTexts("options", "way")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    /*'<td><img src="https://www.tuto-de-david1327.com/medias/images/conquered-counter.png" style="border: 1px solid rgb(158, 133, 78);" alt="conquer_counter" /></td>' +
+                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/conquered-counter.png" style="border: 1px solid rgb(158, 133, 78);" alt="conquer_counter" /></td>' +
                     '<td><div id="dio_cnt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "cnt")[0] + '</div></div>' +
                     '<p>' + getTexts("options", "cnt")[1] + '</p>' +
                     '<img src="https://www.tuto-de-david1327.com/medias/images/conquests-2.png" style="max-height:none; max-width:300px !important;" /><br></td>' +
-                    '</tr><tr>' +*/
+                    '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/sans-surcharge.png" alt="" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
 
                     '<td>'+(typeof(uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Sel")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("options", "FLASK") + '</p>' ) : (
@@ -4395,24 +4435,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/bbcode-button.png" alt="" /></td>' +
                     '<td><div id="dio_BBt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "BBt")[0] + '</div></div>' +
                     '<p>' + getTexts("options", "BBt")[1] + '</p><br></td>' +
-                    '</tr>' +
-                    /*'<tr>' +
+                    '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-kciuki.gif" alt="" /></td>' +
                     '<td><div id="dio_Rew" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "rew")[0] + '</div></div>' +
                     '<p>' + uw.DM.getl10n("grepolis_score").categories.daily_awards + '</p><br></td>' +
-                    '</tr>' +*/
-                    //'<tr>' +
+                    '</tr><tr>' +
                     /*'<td><img src="" alt="" /></td>' +
                     '<td><div id="dio_err" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "err")[0] + '</div></div>' +
                     '<p>' + getTexts("options", "err")[1] + '</p></td>' +*/
                     //((Game.features.is_domination_active = false) ? (
-                    /*((uw.Game.features.end_game_type == "end_game_type_world_wonder") ? (
+                    ((uw.Game.features.end_game_type == "end_game_type_world_wonder") ? (
                         '<td><img src="https://www.tuto-de-david1327.com/medias/images/temple-d-artemiss.gif" alt="share" /></td>' +
                         '<td><div id="dio_wwc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("settings", "cat_wonders") + getTexts("options", "wwc")[0] + '</div></div>' +
                         '<p>' + getTexts("options", "wwc")[1] + '</p><br/>' +
                         '<img src="https://www.tuto-de-david1327.com/medias/images/merveille-du-monde.png" alt="share_calculator" style="max-width:600px !important; border: 2px solid rgb(158, 133, 78);" /></td>' +
                         '</tr><tr>' ) : "") +
-                    '</tr>*/'</table>' +
+                    '</tr></table>' +
 
                     // Premium
                     '<table id="dio_Premium_table" class="content_category"><tr>' +
@@ -4445,8 +4483,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a href=' + getTexts("link", "MessageExport") + ' target="_blank">' + getTexts("settings", "Learn_more") + '</a></p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/hotkeys.png" alt="" /></td>' +
-                    '<td>'+(system() ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Hot")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("options", "Mac") + '</p>' ) : (
-                        '<div id="dio_Hot" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Hot")[0] + '</div></div>')) +
+                    '<td><div id="dio_Hot" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Hot")[0] + '</div></div>' +
                     '<p>' + getTexts("options", "Hot")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
@@ -4738,15 +4775,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             case "dio_act":
                 FEATURE = ActivityBoxes;
                 break;
-            /*case "dio_wwc":
+            case "dio_wwc":
                 FEATURE = WorldWonderCalculator;
-                break;*/
+                break;
                 /*case "dio_wwr":
                 FEATURE = WorldWonderRanking;
-                break;
+                break;*/
             case "dio_wwi":
                 FEATURE = WorldWonderIcons;
-                break;*/
+                break;
             case "dio_rec":
                 FEATURE = RecruitingTrade;
                 break;
@@ -4759,9 +4796,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             case "dio_Tow":
                 FEATURE = Townbb;
                 break;
-            /*case "dio_Rew":
+            case "dio_Rew":
                 FEATURE = Reward;
-                break;*/
+                break;
             case "dio_Fdm":
                 FEATURE = ForumDeleteMultiple;
                 break;
@@ -4776,8 +4813,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FEATURE = cultureProgress;
                 break;
             case "dio_Hot":
-                if (!system()) {
-                    FEATURE = hotkeys;}
+                FEATURE = hotkeys;
                 break;
             case "dio_Isl":
                 FEATURE = islandFarmingVillages;
@@ -5137,13 +5173,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             SentUnits.activate();
                         }, 0);
                     }
-                    /*if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
+                    if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
                         if (DATA.options.dio_wwc) {
                             setTimeout(function () {
                                 WorldWonderCalculator.activate();
                             }, 0);
                         }
-                    }*/
+                    }
                     if(DATA.options.dio_rec) {
                         setTimeout(function () {
                             RecruitingTrade.activate();
@@ -5165,7 +5201,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             Townbb.activate();
                         }, 100);
                     }
-                    if (DATA.options.dio_Hot & !system()) {
+                    if (DATA.options.dio_Hot) {
                         setTimeout(function () {
                             hotkeys.activate();
                         }, 3000);
@@ -5175,11 +5211,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             islandFarmingVillages.activate();
                         }, 500);
                     }
-                    /*if (DATA.options.dio_Rew) {
+                    if (DATA.options.dio_Rew) {
                         setTimeout(function () {
                             Reward.activate();
                         }, 100);
-                    }*/
+                    }
                     if (DATA.options.dio_Cib) {
                         setTimeout(function () {
                             city_view_btn.activate();
@@ -5272,6 +5308,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }, 600);
                     };
 
+                    /*setTimeout(function () {
+                        counter(uw.Timestamp.server());
+                        setInterval(function () {
+                            counter(uw.Timestamp.server());
+                        }, 21600000);
+                    }, 60000);*/
+
                     // Notifications
                     setTimeout(function () {
                         Notification.init();
@@ -5280,6 +5323,32 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     setTimeout(function(){ HolidaySpecial.activate(); }, 0);
 
                     setTimeout(function(){ dio.style(); }, 0);
+
+                    // Execute once to get the world wonder types and coordinates
+                    /*setTimeout(function () {
+                        if (!wonderTypes.great_pyramid_of_giza) {
+                            getWorldWonderTypes();
+                        }
+                        if (wonderTypes.great_pyramid_of_giza) {
+                            setTimeout(function () {
+                                if (!wonder.map.mausoleum_of_halicarnassus) {
+                                    getWorldWonders();
+                                } else {
+                                    if (DATA.options.dio_wwi) {
+                                        WorldWonderIcons.activate();
+                                    }
+                                }
+                            }, 2000);
+                        }
+                    }, 3000);*/
+
+                    // Execute once to get alliance ratio
+                    if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
+                        if (wonder.ratio[AID] == -1 || !$.isNumeric(wonder.ratio[AID])) {
+                            setTimeout(function () {
+                                getPointRatioFromAllianceProfile();
+                            }, 5000);
+                        }}
                 }
                 time_b = uw.Timestamp.client();
                 //console.log("Gebrauchte Zeit:" + (time_b - time_a));
@@ -5323,10 +5392,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
 
             switch (action) {
-                case "/frontend_bridge/fetch":
-                    /*if (DATA.options.dio_Rew) { // Daily Reward
+                case "/frontend_bridge/fetch": // Daily Reward
+                    if (DATA.options.dio_Rew) {
                         Reward.activate();
-                    }*/
+                    }
                     if (DATA.options.dio_Rtt) {
                         dio.removeTooltipps("place");
                         dio.removeTooltipps("sidebar");
@@ -5467,7 +5536,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         ForumDeleteMultiple.activate();
                     }
                     break;
-                /*case "/wonders/index":
+                case "/wonders/index":
                     if (DATA.options.dio_per & (uw.Game.features.end_game_type == "end_game_type_world_wonder")) {
                         WWTradeHandler();
                     }
@@ -5500,7 +5569,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
                         getPointRatioFromAllianceMembers();
                     }
-                    break;*/
+                    break;
                 case "/town_info/trading":
                     addTradeMarks(15, 18, 15, "red");
                     TownTabHandler(action.split("/")[2]);
@@ -5518,18 +5587,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_Ish && typeof activeFarm != 'undefined') {
                         farmingvillageshelper.setloot();
                     }
+                    changeResColor();
                     break;
                 case "/command_info/conquest_info":
                     if (DATA.options.dio_str) {
                         UnitStrength.Conquest.add();
                     }
                     break;
-                /*case "/command_info/conquest_movements":
+                case "/command_info/conquest_movements":
                 case "/conquest_info/getinfo":
                     if (DATA.options.dio_cnt) {
                         countMovements();
                     }
-                    break;*/
+                    break;
                 case "/town_info/attack":
                 case "/town_info/support":
                     //console.debug(JSON.parse(xhr.responseText));
@@ -5560,6 +5630,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 case "/message/index":
                     break;
                 case "/town_info/go_to_town":
+                    /*
+                     //console.log(uw.Layout.wnd);
+                     var windo = uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_TOWNINDEX).getID();
+                     //console.log(uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_TOWNINDEX));
+                     uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_TOWNINDEX).setPosition([100,400]);
+                     //console.log(windo);
+                     //console.log(uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_TOWNINDEX).getPosition());
+                     */
                     break;
                 case "/town_overviews/store_iron":
                     if (DATA.options.dio_Hio) {
@@ -5578,10 +5656,42 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         });
     }
 
+
+    function test() {
+        //https://gpde.innogamescdn.com/images/game/temp/island.png
+
+        //console.log(uw.WMap);
+        //console.log(uw.WMap.getSea(uw.WMap.getXCoord(), uw.WMap.getYCoord()));
+
+        //console.log(uw.GameControllers.LayoutToolbarActivitiesController().prototype.getActivityTypes());
+        //console.log(uw.GameViews);
+        //console.log(uw.GameViews.BarracksUnitDetails());
+
+        //console.log(uw.ITowns.getTown(uw.Game.townId).unitsOuter().sword);
+        //console.log(uw.ITowns.getCurrentTown().unitsOuter().sword);
+
+        //console.log(uw.ITowns.getTown(uw.Game.townId).researches().attributes);
+        //console.log(uw.ITowns.getTown(uw.Game.townId).hasConqueror());
+        //console.log(uw.ITowns.getTown(uw.Game.townId).allUnits());
+        //console.log(uw.ITowns.all_units.fragments[uw.Game.townId]._byId);
+        //console.log("Zeus: " + uw.ITowns.player_gods.zeus_favor_delta_property.lastTriggeredVirtualPropertyValue);
+        //console.log(uw.ITowns.player_gods.attributes);
+
+        //console.log(uw.ITowns.getTown('5813').createTownLink());
+        //console.log(uw.ITowns.getTown(5813).unitsOuterTown);
+
+        //console.log(uw.ITowns.getTown(uw.Game.townId).getLinkFragment());
+
+        //console.log(uw.ITowns.getTown(uw.Game.townId).allGodsFavors());
+
+        console.debug("STADTGRUPPEN", uw.Game.constants.ui.town_group);
+    }
+
     /*******************************************************************************************************************************
      * Helping functions
      * ----------------------------------------------------------------------------------------------------------------------------
      * | ● fixUnitValues: Get unit values and overwrite some wrong values
+     * | ● getMaxZIndex: Get the highest z-index of "ui-dialog"-class elements
      * ----------------------------------------------------------------------------------------------------------------------------
      *******************************************************************************************************************************/
     var dio = {
@@ -5656,7 +5766,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     // Fix buggy grepolis values
     function fixUnitValues() {
+        //uw.GameData.units.small_transporter.attack = uw.GameData.units.big_transporter.attack = uw.GameData.units.demolition_ship.attack = uw.GameData.units.militia.attack = 0;
+        //uw.GameData.units.small_transporter.defense = uw.GameData.units.big_transporter.defense = uw.GameData.units.demolition_ship.defense = uw.GameData.units.colonize_ship.defense = 0;
         uw.GameData.units.militia.resources = {wood: 0, stone: 0, iron: 0};
+    }
+
+    function getMaxZIndex() {
+        var maxZ = Math.max.apply(null, $.map($("div[class^='ui-dialog']"), function (e, n) {
+            if ($(e).css('position') == 'absolute') {
+                return parseInt($(e).css('z-index'), 10) || 1000;
+            }
+        }));
+        return (maxZ !== -Infinity) ? maxZ + 1 : 1000;
     }
 
     function getBrowser() {
@@ -5698,6 +5819,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             if (!DATA.error[dio_version]) {
                 DATA.error[dio_version] = {};
             }
+
+            /*if (DATA.options.dio_err && !DATA.error[dio_version][fn]) {
+                $.ajax({
+                    type: "POST",
+                    url: "https://diotools.de/game/error.php",
+                    data: {error: e.stack.replace(/'/g, '"'), "function": fn, browser: getBrowser(), version: dio_version},
+                    success: function (text) {
+                        DATA.error[version][fn] = true;
+                        saveValue("error", JSON.stringify(DATA.error));
+                    }
+                });
+            }*/
         }
     }
     var dio_bug = true;
@@ -5713,13 +5846,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
         Function.prototype.inherits.call(WndHandler, WndHandlerDefault);
         WndHandler.prototype.getDefaultWindowOptions = function () {
+            if (MID == 'zz' || dio_bug) {
                 return {
                     //position: "10px",
+                    hidden: !1,
+                    left: 297,
+                    top: 101,
                     width: width,
                     height: height,
                     minimizable: minimizable,
                     title: title,
                 };
+            } else {
+                return {
+                    position: position,
+                    width: width,
+                    height: height,
+                    minimizable: minimizable,
+                    title: "<img class='dio_title_img' src='"+ dio_img +"' /><div class='dio_title'>" + title + "</div>"
+                };
+            }
         };
         uw.GPWindowMgr.addWndType(name, "75623", WndHandler, 1);
     }
@@ -5781,7 +5927,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             uw.NotificationType.DIO_TOOLS = "diotools";
 
             var notif = DATA.notification;
-            if (notif <= 22 || david1327) {
+            if (notif <= 21 || david1327) {
                 Notification.create(21, getTexts("settings", "Feature")); //getTexts("settings", "Feature") + ' (' + getTexts("options", "")[0] + ')');
 
                 // Click Event
@@ -5790,7 +5936,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $(this).parent().find(".close").click();
                 });
 
-                saveValue('notif', '23');}
+                saveValue('notif', '22');}
 
 
         },
@@ -5846,19 +5992,27 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
 '<p>&nbsp;</p>' +
 
-'<div style="height: 43px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-balance.png) no-repeat;font-weight: bold;">Informations</div>' +
+                    '<div style="height: 43px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-tip.png) no-repeat;font-weight: bold;">News and changes</div>' +
 
-'<p>DIO-TOOLS-David1327 has been reported as an unauthorized copy of DIO-TOOLS.</p>' +
+'<p><span style="font-size:18px;"></span><span style="font-size:18px;">- Transport capacity :&nbsp;</span><em><span style="font-size:14px;"></span><span style="font-size:14px;">A big thank you to</span><span style="font-size:14px;"> Telokis </span><span style="font-size:14px;">for improvement</span><span style="font-size:14px;"></span></em><span style="font-size:18px;"></span><br />' +
+'- Displays in green if the capacity is sufficient and red otherwise<br />' +
+'- Changed the right icon if defensive units have been taken into account.<br />' +
+'- Added a tooltip that says how many ships there are to transport the entire population if there are any shortages.<br />' +
+'- Added a tooltip that says how much population can still be transported.<br />' +
+'&nbsp;<img alt="Capacite de transport" src="https://www.tuto-de-david1327.com/medias/images/capacite-de-transport.png" /></p>' +
 
-'<p>It was deleted from my host<br />' +
-'DIO-TOOLS does not specify a license, which means that distribution of copies is not permitted unless explicit permission is given.</p>' +
+'<p>&nbsp;</p>' +
 
-'<p>I had to delete:<br />' +
-'- Functions for the wonders of the world (Resource counter and sending calculation + previous and next button on finished wonders)<br />' +
-'- Daily rewards (Reduce daily reward at startup)<br />' +
-'- Conquest counter (Counts the number of attacks and support in the conquest window)</p>' +
+'<p><span style="font-size:18px;">- List of cities in BB-Code :</span><br />' +
+'&nbsp;-&gt; You will be able to quickly export a group of cities in BB-code.<br />' +
+'&nbsp;<img alt="Liste des villes en BB-Code" src="https://www.tuto-de-david1327.com/medias/images/cities-bb-code.png" /></p>' +
 
-'<p>Hoping that is enough</p>' +
+'<p>&nbsp;</p>' +
+
+'<p><span style="font-size:18px;">- <span style="font-size:18px;"><span style="font-size:18px;">Compatibility FLASK-TOOLS :</span></span></span><br />' +
+'&nbsp;-&gt; This version allows compatibility with FLASK-TOOLS&nbsp;<br />' +
+'<strong>&nbsp;<span style="color:#c0392b;"><span style="font-size:16px;">-&gt; </span></span></strong><b><span style="font-size:12.0pt"><span style="line-height:107%"><span style="font-family:&quot;Times New Roman&quot;,serif"><span style="color:#c0392b"></span></span>' +
+'</span></span><span style="font-size:12.0pt"><span style="line-height:107%"><span style="font-family:&quot;Times New Roman&quot;,serif"><span style="color:#c0392b">Attention informed user the use of the two scripts is not recommended. Slowdowns could occur.</span></span></span></span></b></p>' +
 
 '<div style="height: 43px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
 
@@ -5866,6 +6020,42 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
 '<p><span style="font-size:18px;">- Mac-type computers do not work</span><br />' +
 '-&gt; Correction applied.<span style="font-size:18px;"></span></p>' +
+
+'<p><span style="font-size:18px;">- Keyboard shortcut :</span><br />' +
+'-&gt; The function does not update every 8h -&gt; Problem solved.</p>' +
+
+'<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
+
+'<p><span style="font-size:18px;">- City Icons &amp; City List :</span><br />' +
+'-&gt; Refresh change (which produces less slowdown).<span style="font-size:18px;"></span></p>' +
+
+'<p><span style="font-size:18px;">- Caves :</span><br />' +
+'-&gt; By pressing the arrows on the keyboard the function did not start -&gt; Problem solved.<br />' +
+'-&gt; Other activation issues have been fixed after the 08/18/2021 update of grepolis</p>' +
+
+'<p><span style="font-size:18px;"></span></p>' +
+
+'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"></span><span style="font-size:18px;"> Transport capacity :</span><br />' +
+'-&gt; Fixed for the Sparta unit taking only one slot in ships when it costs 10 to produce.</p>' +
+
+'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"> BB-Code messages :</span><br />' +
+'&nbsp;-&gt; An error occurs during its shutdown -&gt; Problem solved.</p>' +
+
+'<p><span style="font-size:18px;">- <span style="font-size:18px;"><span style="font-size:18px;">Mole Hole Compatibility [City View]</span></span><span style="font-size:18px;"></span>.&nbsp;</span><br />' +
+'&nbsp;-&gt; The function is automatically deactivated upon detection of Mole Hole.&nbsp;</p>' +
+
+'<p><span style="font-size:18px;">-&nbsp;<span style="font-size:18px;">FLASK-TOOLS compatibility [City list &amp; Add (No overload / Delete)]</span>.&nbsp;</span><br />' +
+'&nbsp;-&gt; The functions are automatically deactivated upon detection of FLASK-TOOLS. (not compatible)</p>' +
+
+'<p><span style="font-size:18px;">- Window<span style="font-size:18px;"></span>.&nbsp;</span><br />' +
+'&nbsp;-&gt; The title is not displayed correctly after the update of 08/18/2021 of grepolis<br />' +
+'&nbsp;<img alt="Capture d ecran 2021 08 05 125143" class="img-left" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-08-05-125143.png" /></p>' +
+
+'<p>&nbsp;</p>' +
+
+'<p><span style="font-size:18px;">- Other optimization.&nbsp;</span><br />' +
+'&nbsp;-&gt; Wonder world detection optimization.<br />' +
+'&nbsp;-&gt; A cleanup of the script.</p>' +
 
 
 
@@ -6336,7 +6526,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 //console.debug("cursor_pos", e.pageX, e.pageY);
 
-                if (scroll !== 3) {
+                if (scroll !== 4) {
                     if (delta < 0) {
                         scroll += 1;
                     } else {
@@ -6424,6 +6614,73 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     function imageSelectionProtection() {
         $('<style id="dio_image_selection" type="text/css"> img { -moz-user-select: -moz-none; -khtml-user-select: none; -webkit-user-select: none;} </style>').appendTo('head');
     }
+
+    var worldWonderIcon = {
+        colossus_of_rhodes: "url(https://gpall.innogamescdn.com/images/game/map/wonder_colossus_of_rhodes.png) 38px -1px;",
+        great_pyramid_of_giza: "url(https://gpall.innogamescdn.com/images/game/map/wonder_great_pyramid_of_giza.png) 34px -6px;",
+        hanging_gardens_of_babylon: "url(https://gpall.innogamescdn.com/images/game/map/wonder_hanging_gardens_of_babylon.png) 34px -5px;",
+        lighthouse_of_alexandria: "url(https://gpall.innogamescdn.com/images/game/map/wonder_lighthouse_of_alexandria.png) 37px -1px;",
+        mausoleum_of_halicarnassus: "url(https://gpall.innogamescdn.com/images/game/map/wonder_mausoleum_of_halicarnassus.png) 37px -4px;",
+        statue_of_zeus_at_olympia: "url(https://gpall.innogamescdn.com/images/game/map/wonder_statue_of_zeus_at_olympia.png) 36px -3px;",
+        temple_of_artemis_at_ephesus: "url(https://gpall.innogamescdn.com/images/game/map/wonder_temple_of_artemis_at_ephesus.png) 34px -5px;"
+    };
+
+    var WorldWonderIcons = {
+        activate: function () {
+            try {
+                if (!$('#dio_wondericons').get(0)) {
+                    var color = "orange";
+
+                    // style for world wonder icons
+                    var style_str = "<style id='dio_wondericons' type='text/css'>";
+                    for (var ww_type in wonder.map) {
+                        if (wonder.map.hasOwnProperty(ww_type)) {
+                            for (var ww in wonder.map[ww_type]) {
+                                if (wonder.map[ww_type].hasOwnProperty(ww)) {
+                                    /*
+                                     if(wonder.map[ww_type][ww] !== AID){
+                                     color = "rgb(192, 109, 54)";
+                                     } else {
+                                     color = "orange";
+                                     }
+                                     */
+                                    style_str += "#mini_i" + ww + ":before {" +
+                                        "content: '';" +
+                                        "background:" + color + " " + worldWonderIcon[ww_type] +
+                                        "background-size: auto 97%;" +
+                                        "padding: 8px 16px;" +
+                                        "top: 50px;" +
+                                        "position: relative;" +
+                                        "border-radius: 40px;" +
+                                        "z-index: 200;" +
+                                        "cursor: pointer;" +
+                                        "box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);" +
+                                        "border: 2px solid green; } " +
+                                        "#mini_i" + ww + ":hover:before { z-index: 201; " +
+                                        "filter: url(#Brightness12);" +
+                                        "-webkit-filter: brightness(1.2); } ";
+                                }
+                            }
+                        }
+                    }
+                    $(style_str + "</style>").appendTo('head');
+
+                    // Context menu on mouseclick
+                    $('#minimap_islands_layer').on('click', '.m_island', function (e) {
+                        var ww_coords = this.id.split("i")[3].split("_");
+                        uw.Layout.contextMenu(e, 'wonder', {ix: ww_coords[0], iy: ww_coords[1]});
+                    });
+
+
+                }
+            } catch (error) {
+                errorHandling(error, "setWonderIconsOnMap");
+            }
+        },
+        deactivate: function () {
+            $('#dio_wondericons').remove();
+        }
+    };
 
     var TownIcons = {
         timeout: null,
@@ -6600,6 +6857,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
 
                 style_str += ".own_town .flagpole, #main_area .m_town.player_"+ PID +" { z-index: 100 !important; width:19px!important; height:19px!important; border-radius: 11px; border: 2px solid rgb(16, 133, 0); margin: -4px !important; font-size: 0em !important; box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5); } ";
+
+                /*$('#minimap_islands_layer').off('click', '.m_town');
+                    $('#minimap_islands_layer').on('click', '.m_town', function (z) {
+                        var id = parseInt(this.id.substring(6), 10);
+
+                        // Town names of foreign towns are unknown
+                        if(typeof(uw.ITowns.getTown(id)) !== "undefined") {
+                            Layout.contextMenu(z, 'determine', {"id": id, "name": uw.ITowns.getTown(id).name});
+                        }
+                        else {
+                            // No town name in the title of the window
+                            Layout.contextMenu(z, 'determine', {"id": id });
+                        }
+
+                        // Prevent parent world wonder event
+                        z.stopPropagation();
+                    });*/
 
                 $('#minimap_islands_layer').off("mousedown");
                 $('#minimap_islands_layer').on("mousedown", function(){
@@ -6955,6 +7229,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 popup += "</td>";
 
                 popup += "</tr></table></div>";
+
 
 
                 popup += "</td><td class='popup_middle_right'>&nbsp;</td></tr>";
@@ -8275,6 +8550,55 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      * | ● Storage of the selected filter (only in German Grepolis yet)
      * ----------------------------------------------------------------------------------------------------------------------------
      *******************************************************************************************************************************/
+
+    /*var filter = "all";
+
+    function saveFilter() {
+        $('#dd_filter_type_list .item-list div').each(function () {
+            $(this).click(function () {
+                filter = $(this).attr("name");
+            });
+        });
+        /*
+         var i = 0;
+         $("#report_list a").each(function () {
+         //console.log((i++) +" = " + $(this).attr('data-reportid'));
+         });
+         */
+    /*}
+
+    function loadFilter() {
+        if ($('#dd_filter_type_list .selected').attr("name") !== filter) {
+            $('#dd_filter_type .caption').click();
+            $('#dd_filter_type_list .item-list div[name=' + filter + ']').click();
+        }
+    }
+
+    function removeReports() {
+        $("#report_list li:contains('spioniert')").each(function () {
+            //$(this).remove();
+        });
+    }
+
+    var zut = 0;
+    var messageArray = {};
+
+    function filterPlayer() {
+        if (!$('#message_filter_list').get(0)) {
+            $('<div id="message_filter_list" style="height:300px;overflow-y:scroll; width: 790px;"></div>').appendTo('#folder_container');
+            $("#message_list").get(0).style.display = "none";
+        }
+        if (zut < parseInt($('.es_last_page').get(0).value, 10) - 1) {
+            $('.es_page_input').get(0).value = zut++;
+            $('.jump_button').click();
+            $("#message_list li:contains('')").each(function () {
+                $(this).appendTo('#message_filter_list');
+            });
+        } else {
+            zut = 1;
+        }
+    }*/
+
     var reports = {
         activate: function () {
 
@@ -8393,12 +8717,495 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('dio_menu_berichte_icon_wrapper').remove();
         },
     };
+
+    /*******************************************************************************************************************************
+     * World Wonder Ranking - Change
+     *******************************************************************************************************************************/
+
+    /*function getWorldWonderTypes() {
+        $.ajax({
+            type: "GET",
+            url: "/game/alliance?town_id=" + uw.Game.town_id + "&action=world_wonders&h=" + uw.Game.csrfToken + "&json=%7B%22town_id%22%3A" + uw.Game.town_id + "%2C%22nlreq_id%22%3A" + uw.Game.notification_last_requested_id +
+            "%7D&_=" + uw.Game.server_time,
+            success: function (text) {
+                try {
+                    //console.log(JSON.parse(text));
+                    temp = JSON.parse(text).json.data.world_wonders;
+                    for (var t in temp) {
+                        if (temp.hasOwnProperty(t)) {
+                            wonderTypes[temp[t].wonder_type] = temp[t].full_name;
+                        }
+                    }
+                    temp = JSON.parse(text).json.data.buildable_wonders;
+                    for (var x in temp) {
+                        if (temp.hasOwnProperty(x)) {
+                            wonderTypes[x] = temp[x].name;
+                        }
+                    }
+                    saveValue(MID + "_wonderTypes", JSON.stringify(wonderTypes));
+                } catch (error) {
+                    errorHandling(error, "getWorldWonderTypes");
+                }
+            }
+        });
+    }
+
+    function getWorldWonders() {
+        $.ajax({
+            type: "GET",
+            url: "/game/ranking?town_id=" + uw.Game.town_id + "&action=wonder_alliance&h=" + uw.Game.csrfToken + "&json=%7B%22type%22%3A%22all%22%2C%22town_id%22%3A" + uw.Game.town_id + "%2C%22nlreq_id%22%3A3" + uw.Game.notification_last_requested_id +
+            "%7D&_=" + uw.Game.server_time
+        });
+    }
+
+    var WorldWonderRanking = {
+        activate: function () {
+            if ($('#dio_wonder_ranking').get(0)) {
+                $('#dio_wonder_ranking').remove();
+            }
+            $('<style id="dio_wonder_ranking" type="text/css"> .wonder_ranking { display: none; } </style>').appendTo('head');
+        },
+        deactivate: function () {
+            if ($('#dio_wonder_ranking').get(0)) {
+                $('#dio_wonder_ranking').remove();
+            }
+            $('<style id="dio_wonder_ranking" type="text/css"> .wonder_ranking { display: block; } </style>').appendTo('head');
+        },
+        change: function (html) {
+            if ($('#ranking_inner tr', html)[0].children.length !== 1) { // world wonders exist?
+                try {
+                    var ranking = {}, temp_ally, temp_ally_id, temp_ally_link;
+
+                    // Save world wonder ranking into array
+                    $('#ranking_inner tr', html).each(function () {
+                        try {
+                            if (this.children[0].innerHTML) {
+                                temp_ally = this.children[1].children[0].innerHTML; // das hier
+
+                                temp_ally_id = this.children[1].children[0].onclick.toString();
+                                temp_ally_id = temp_ally_id.substring(temp_ally_id.indexOf(",") + 1);
+                                temp_ally_id = temp_ally_id.substring(0, temp_ally_id.indexOf(")"));
+
+                                temp_ally_link = this.children[1].innerHTML;
+
+                            } else {
+                                //World wonder name
+                                var wonder_name = this.children[3].children[0].innerHTML;
+
+                                for (var w in wonderTypes) {
+                                    if (wonderTypes.hasOwnProperty(w)) {
+                                        if (wonder_name == wonderTypes[w]) {
+                                            var level = this.children[4].innerHTML, // world wonder level
+                                                ww_data = JSON.parse(atob(this.children[3].children[0].href.split("#")[1])), wonder_link;
+                                            //console.log(ww_data);
+
+                                            if (!ranking.hasOwnProperty(level)) {
+                                                // add wonder types
+                                                ranking[level] = {
+                                                    colossus_of_rhodes: {},
+                                                    great_pyramid_of_giza: {},
+                                                    hanging_gardens_of_babylon: {},
+                                                    lighthouse_of_alexandria: {},
+                                                    mausoleum_of_halicarnassus: {},
+                                                    statue_of_zeus_at_olympia: {},
+                                                    temple_of_artemis_at_ephesus: {}
+                                                };
+                                            }
+
+                                            if (!ranking[level][w].hasOwnProperty(temp_ally_id)) {
+                                                ranking[level][w][temp_ally_id] = {}; // add alliance array
+                                            }
+                                            // island coordinates of the world wonder:
+                                            ranking[level][w][temp_ally_id].ix = ww_data.ix;
+                                            ranking[level][w][temp_ally_id].iy = ww_data.iy;
+                                            ranking[level][w][temp_ally_id].sea = this.children[5].innerHTML; // world wonder sea
+
+                                            wonder_link = this.children[3].innerHTML;
+                                            if (temp_ally.length > 15) {
+                                                temp_ally = temp_ally.substring(0, 15) + '.';
+                                            }
+                                            wonder_link = wonder_link.substr(0, wonder_link.indexOf(">") + 1) + temp_ally + '</a>';
+
+                                            ranking[level][w][temp_ally_id].ww_link = wonder_link;
+
+                                            // other data of the world wonder
+                                            ranking[level][w][temp_ally_id].ally_link = temp_ally_link;
+                                            ranking[level][w][temp_ally_id].ally_name = temp_ally; // alliance name
+                                            ranking[level][w][temp_ally_id].name = wonder_name; // world wonder name
+
+                                            // Save wonder coordinates for wonder icons on map
+                                            if (!wonder.map[w]) {
+                                                wonder.map[w] = {};
+                                            }
+                                            wonder.map[w][ww_data.ix + "_" + ww_data.iy] = level;
+                                            saveValue(WID + "_wonder", JSON.stringify(wonder));
+
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            errorHandling(error, "WorldWonderRanking.change(function)");
+                        }
+                    });
+
+                    if ($('#ranking_table_wrapper').get(0)) {
+                        $('#ranking_fixed_table_header').get(0).innerHTML = '<tr>' +
+                            '<td style="width:10px">#</td>' +
+                            '<td>Colossus</td>' +
+                            '<td>Pyramid</td>' +
+                            '<td>Garden</td>' +
+                            '<td>Lighthouse</td>' +
+                            '<td>Mausoleum</td>' +
+                            '<td>Statue</td>' +
+                            '<td>Temple</td>' +
+                            '</tr>';
+
+                        $('#ranking_fixed_table_header').css({
+                            tableLayout: 'fixed',
+                            width: '100%',
+                            //paddingLeft: '0px',
+                            paddingRight: '15px'
+                        });
+
+                        var ranking_substr = '', z = 0;
+                        for (var level = 10; level >= 1; level--) {
+                            if (ranking.hasOwnProperty(level)) {
+                                var complete = "";
+                                if (level == 10) {
+                                    complete = "background: rgba(255, 236, 108, 0.36);";
+                                }
+
+                                // Alternate table background color
+                                if (z === 0) {
+                                    ranking_substr += '<tr class="game_table_odd" style="' + complete + '"><td style="border-right: 1px solid #d0be97;">' + level + '</td>';
+                                    z = 1;
+                                } else {
+                                    ranking_substr += '<tr class="game_table_even" style="' + complete + '"><td style="border-right: 1px solid #d0be97;">' + level + '</td>';
+                                    z = 0;
+                                }
+                                for (var w in ranking[level]) {
+                                    if (ranking[level].hasOwnProperty(w)) {
+                                        ranking_substr += '<td>';
+
+                                        for (var a in ranking[level][w]) {
+                                            if (ranking[level][w].hasOwnProperty(a)) {
+                                                ranking_substr += '<nobr>' + ranking[level][w][a].ww_link + '</nobr><br />'; // ww link
+                                            }
+                                        }
+                                        ranking_substr += '</td>';
+                                    }
+                                }
+                                ranking_substr += '</tr>';
+                            }
+                        }
+
+                        var ranking_str = '<table id="ranking_endless_scroll" class="game_table" cellspacing="0"><tr>' +
+                            '<td style="width:10px;border-right: 1px solid #d0be97;"></td>' +
+                            '<td><div class="dio_wonder" style="background:' + worldWonderIcon.colossus_of_rhodes + ';margin-left:26px"></div></td>' +	// Colossus
+                            '<td><div class="dio_wonder" style="background:' + worldWonderIcon.great_pyramid_of_giza + ';margin-left:19px"></div></td>' +	// Pyramid
+                            '<td><div class="dio_wonder" style="background:' + worldWonderIcon.hanging_gardens_of_babylon + ';margin-left:19px"></div></td>' +	// Garden
+                            '<td><div class="dio_wonder" style="background:' + worldWonderIcon.lighthouse_of_alexandria + ';margin-left:24px"></div></td>' +	// Lighthouse
+                            '<td><div class="dio_wonder" style="background:' + worldWonderIcon.mausoleum_of_halicarnassus + ';margin-left:25px"></div></td>' +	// Mausoleum
+                            '<td><div class="dio_wonder" style="background:' + worldWonderIcon.statue_of_zeus_at_olympia + ';margin-left:25px"></div></td>' +	// Statue
+                            '<td><div class="dio_wonder" style="background:' + worldWonderIcon.temple_of_artemis_at_ephesus + ';margin-left:22px"></div></td>' +	// Temple
+                            '</tr>' + ranking_substr + '</table>';
+
+                        $('#ranking_table_wrapper').get(0).innerHTML = ranking_str;
+
+                        $('#ranking_endless_scroll .dio_wonder').css({
+                            width: "65px", height: "60px",
+                            backgroundSize: "auto 100%",
+                            backgroundPosition: "64px 0px"
+                        });
+
+                        $('#ranking_endless_scroll').css({
+                            tableLayout: 'fixed',
+                            width: '100%',
+                            overflowY: 'auto',
+                            overflowX: 'hidden',
+                            fontSize: '0.7em',
+                            lineHeight: '2'
+                        });
+                        $('#ranking_endless_scroll tbody').css({
+                            verticalAlign: 'text-top'
+                        });
+
+                        $('#ranking_table_wrapper img').css({
+                            width: "60px"
+                        });
+                        $('#ranking_table_wrapper').css({
+                            overflowY: 'scroll'
+                        });
+                    }
+                } catch (error) {
+                    errorHandling(error, "WorldWonderRanking.change");
+                }
+            }
+            if ($('.wonder_ranking').get(0)) {
+                $('.wonder_ranking').get(0).style.display = "block";
+            }
+        }
+
+    };*/
+    /*******************************************************************************************************************************
+     * World Wonder
+     * ----------------------------------------------------------------------------------------------------------------------------
+     * | ● click adjustment
+     * | ● Share calculation (= ratio of player points to alliance points)
+     * | ● Resources calculation & counter (stores amount)
+     * | ● Adds missing previous & next buttons on finished world wonders (better browsing through world wonders)
+     * ----------------------------------------------------------------------------------------------------------------------------
+     *******************************************************************************************************************************/
+    if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
+        // getPointRatio: Default
+        function getPointRatioFromAllianceProfile() {
+            if (AID) {
+                $.ajax({
+                    type: "GET",
+                    url: '/game/alliance?town_id=' + uw.Game.townId + '&action=profile&h=' + uw.Game.csrfToken + '&json=%7B%22alliance_id%22%3A' + AID + '%2C%22town_id%22%3A' + uw.Game.townId +
+                    '%2C%22nlreq_id%22%3A' + uw.Game.notification_last_requested_id + '%7D&_=' + uw.Game.server_time,
+                    success: function (text) {
+                        try {
+                            text = text.substr(text.indexOf("/li") + 14).substr(0, text.indexOf("\ "));
+                            var AP = parseInt(text, 10);
+                            wonder.ratio[AID] = 100 / AP * uw.Game.player_points;
+                            saveValue(WID + "_wonder", JSON.stringify(wonder));
+                        } catch (error) {
+                            errorHandling(error, "getPointRatioFromAllianceProfile");
+                        }
+                    }
+                });
+            } else {
+                wonder.ratio[AID] = -1;
+                saveValue(WID + "_wonder", JSON.stringify(wonder));
+            }
+        }
+
+        function getPointRatioFromAllianceRanking() {
+            try {
+                if (AID && $('.current_player .r_points').get(0)) {
+                    wonder.ratio[AID] = 100 / parseInt($('.current_player .r_points').get(0).innerHTML, 10) * uw.Game.player_points;
+                    saveValue(WID + "_wonder", JSON.stringify(wonder));
+                }
+            } catch (error) {
+                errorHandling(error, "getPointRatioFromAllianceRaking");
+            }
+        }
+
+        function getPointRatioFromAllianceMembers() {
+            try {
+                var ally_points = 0;
+                $('#ally_members_body tr').each(function () {
+                    ally_points += parseInt($(this).children().eq(2).text(), 10) || 0;
+                });
+                wonder.ratio[AID] = 100 / ally_points * uw.Game.player_points;
+                saveValue(WID + "_wonder", JSON.stringify(wonder));
+            } catch (error) {
+                errorHandling(error, "getPointRatioFromAllianceMembers");
+            }
+        }
+
+        var WorldWonderCalculator = {
+            activate: function () {
+                // Style
+                $('<style id="dio_wonder_calculator"> ' +
+                  '.wonder_controls { height:380px; } ' +
+                  '.wonder_controls .wonder_progress { margin: 0px auto 5px; } ' +
+                  '.wonder_controls .wonder_header { text-align:left; margin:10px -8px 12px 3px; }' +
+                  '.wonder_controls .build_wonder_icon { top:25px !important; }' +
+                  '.wonder_controls .wonder_progress_bar { top:54px; }' +
+                  '.wonder_controls .trade fieldset { float:right; } ' +
+                  '.wonder_controls .wonder_res_container { right:29px; } ' +
+                  '.wonder_controls .ww_ratio {position:relative; height:auto; } ' +
+                  '.wonder_controls fieldset.next_level_res {  height:auto; } ' +
+                  '.wonder_controls .town-capacity-indicator { margin-top:0px; } ' +
+
+                  '.wonder_controls .ww_ratio .progress { line-height:1; color:white; font-size:0.8em; } ' +
+                  '.wonder_controls .ww_perc { position:absolute; width:242px; text-align:center; } ' +
+                  '.wonder_controls .indicator3 { z-index:0; } ' +
+                  '.wonder_controls .indicator3.red { background-position:right -203px; height:10px; width:242px; } ' +
+                  '.wonder_controls .indicator3.green { background-position:right -355px; height:10px; width:242px; } ' +
+                  '.wonder_controls .all_res { background:url(https://gpall.innogamescdn.com/images/game/layout/resources_2.32.png) no-repeat 0 -90px; width:30px; height:30px; margin:0 auto; margin-left:5px; } ' +
+                  '.wonder_controls .town-capacity-indicator { margin-top:0px; } ' +
+                  '</style>').appendTo('head');
+            },
+            deactivate: function () {
+                $('#dio_wonder_calculator').remove();
+            },
+        };
+
+        // TODO: Split function...
+        function getResWW() {
+            try {
+                var wndArray = uw.GPWindowMgr.getOpen(uw.Layout.wnd.TYPE_WONDERS);
+
+                for (var e in wndArray) {
+                    if (wndArray.hasOwnProperty(e)) {
+                        var wndID = "#gpwnd_" + wndArray[e].getID() + " ";
+
+                        if ($(wndID + '.wonder_progress').get(0)) {
+                            var res = 0,
+                                ww_share = {total: {share: 0, sum: 0}, stage: {share: 0, sum: 0}},
+                                ww_type = $(wndID + '.finished_image_small').attr('src').split("/")[6].split("_")[0], // Which world wonder?
+                                res_stages = [2, 4, 6, 10, 16, 28, 48, 82, 140, 238], // Rohstoffmenge pro Rohstofftyp in 100.000 Einheiten
+                                stage = parseInt($(wndID + '.wonder_expansion_stage span').get(0).innerHTML.split("/")[0], 10) + 1, // Derzeitige Füllstufe
+                                speed = uw.Game.game_speed;
+
+                            wonder.storage[AID] = wonder.storage[AID] || {};
+
+                            wonder.storage[AID][ww_type] = wonder.storage[AID][ww_type] || {};
+
+                            wonder.storage[AID][ww_type][stage] = wonder.storage[AID][ww_type][stage] || 0;
+
+                            if (!$(wndID + '.ww_ratio').get(0)) {
+                                $('<fieldset class="ww_ratio"></fieldset>').appendTo(wndID + '.wonder_res_container .trade');
+                                $(wndID + '.wonder_header').prependTo(wndID + '.wonder_progress');
+                                $(wndID + '.wonder_res_container .send_res').insertBefore(wndID + '.wonder_res_container .next_level_res');
+                            }
+
+                            for (var d in res_stages) {
+                                if (res_stages.hasOwnProperty(d)) {
+                                    ww_share.total.sum += res_stages[d];
+                                }
+                            }
+
+                            ww_share.total.sum *= speed * 300000;
+
+                            ww_share.total.share = parseInt(wonder.ratio[AID] * (ww_share.total.sum / 100), 10);
+
+                            ww_share.stage.sum = speed * res_stages[stage - 1] * 300000;
+
+                            ww_share.stage.share = parseInt(wonder.ratio[AID] * (ww_share.stage.sum / 100), 10); // ( 3000 = 3 Rohstofftypen * 100000 Rohstoffe / 100 Prozent)
+                            setResWW(stage, ww_type, ww_share, wndID);
+
+
+                            $(wndID + '.wonder_res_container .send_resources_btn').click(function (e) {
+                                try {
+                                    wonder.storage[AID][ww_type][stage] += parseInt($(wndID + '#ww_trade_type_wood input:text').get(0).value, 10);
+                                    wonder.storage[AID][ww_type][stage] += parseInt($(wndID + '#ww_trade_type_stone input:text').get(0).value, 10);
+                                    wonder.storage[AID][ww_type][stage] += parseInt($(wndID + '#ww_trade_type_iron input:text').get(0).value, 10);
+
+                                    setResWW(stage, ww_type, ww_share, wndID);
+                                    saveValue(WID + "_wonder", JSON.stringify(wonder));
+                                } catch (error) {
+                                    errorHandling(error, "getResWW_Click");
+                                }
+                            });
+
+                        } else {
+                            $('<div class="prev_ww pos_Y"></div><div class="next_ww pos_Y"></div>').appendTo(wndID + '.wonder_controls');
+
+                            $(wndID + '.wonder_finished').css({width: '100%'});
+
+                            $(wndID + '.pos_Y').css({
+                                top: '-266px'
+                            });
+                        }
+                    }
+                }
+            } catch (error) {
+                errorHandling(error, "getResWW");
+            }
+        }
+
+        function setResWW(stage, ww_type, ww_share, wndID) {
+            try {
+                var stage_width, total_width, res_total = 0, stage_color = "red", total_color = "red";
+
+                for (var z in wonder.storage[AID][ww_type]) {
+                    if (wonder.storage[AID][ww_type].hasOwnProperty(z)) {
+                        res_total += wonder.storage[AID][ww_type][z];
+                    }
+                }
+
+                // Progressbar
+                if (ww_share.stage.share > wonder.storage[AID][ww_type][stage]) {
+                    stage_width = (242 / ww_share.stage.share) * wonder.storage[AID][ww_type][stage];
+                    stage_color = "red";
+                } else {
+                    stage_width = 242;
+                    stage_color = "green"
+                }
+                if (ww_share.total.share > res_total) {
+                    total_color = "red";
+                    total_width = (242 / ww_share.total.share) * res_total;
+                } else {
+                    total_width = 242;
+                    total_color = "green"
+                }
+
+                $(wndID + '.ww_ratio').get(0).innerHTML = "";
+                $(wndID + '.ww_ratio').append(
+                    '<legend>' + getTexts("labels", "leg") + ' (<span style="color:#090">' + (Math.round(wonder.ratio[AID] * 100) / 100) + '%</span>):</legend>' +
+                    '<div class="town-capacity-indicator">' +
+                    '<div class="icon all_res"></div>' +
+                    '<div id="ww_town_capacity_stadium" class="tripple-progress-progressbar">' +
+                    '<div class="border_l"></div><div class="border_r"></div><div class="body"></div>' +
+                    '<div class="progress overloaded">' +
+                    '<div class="indicator3 ' + stage_color + '" style="width:' + stage_width + 'px"></div>' +
+                    '<span class="ww_perc">' + Math.round(wonder.storage[AID][ww_type][stage] / ww_share.stage.share * 100) + '%</span>' +
+                    '</div>' +
+                    '<div class="amounts">' + getTexts("labels", "stg") + ': <span class="curr">' + pointNumber(wonder.storage[AID][ww_type][stage]) + '</span> / ' +
+                    '<span class="max">' + pointNumber(Math.round(ww_share.stage.share / 1000) * 1000) + '</span></div>' +
+                    '</div></div>' +
+                    '<div class="town-capacity-indicator">' +
+                    '<div class="icon all_res"></div>' +
+                    '<div id="ww_town_capacity_total" class="tripple-progress-progressbar">' +
+                    '<div class="border_l"></div><div class="border_r"></div><div class="body"></div>' +
+                    '<div class="progress overloaded">' +
+                    '<div class="indicator3 ' + total_color + '" style="width:' + total_width + 'px;"></div>' +
+                    '<span class="ww_perc">' + Math.round(res_total / ww_share.total.share * 100) + '%</span>' +
+                    '</div>' +
+                    '<div class="amounts">' + getTexts("labels", "tot") + ': <span class="curr">' + pointNumber(res_total) + '</span> / ' +
+                    '<span class="max">' + pointNumber((Math.round(ww_share.total.share / 1000) * 1000)) + '</span></div>' +
+                    '</div></div>');
+
+                $(wndID + '.ww_ratio').tooltip(
+                    "<table style='border-spacing:0px; text-align:right' cellpadding='5px'><tr>" +
+                    "<td align='right' style='border-right: 1px solid;border-bottom: 1px solid'></td>" +
+                    "<td style='border-right: 1px solid; border-bottom: 1px solid'><span class='bbcodes_player bold'>(" + (Math.round((wonder.ratio[AID]) * 100) / 100) + "%)</span></td>" +
+                    "<td style='border-bottom: 1px solid'><span class='bbcodes_ally bold'>(100%)</span></td></tr>" +
+                    "<tr><td class='bold' style='border-right:1px solid;text-align:center'>" + getTexts("labels", "stg") + "&nbsp;" + stage + "</td>" +
+                    "<td style='border-right: 1px solid'>" + pointNumber(Math.round(ww_share.stage.share / 1000) * 1000) + "</td>" +
+                    "<td>" + pointNumber(Math.round(ww_share.stage.sum / 1000) * 1000) + "</td></tr>" +
+                    "<tr><td class='bold' style='border-right:1px solid;text-align:center'>" + getTexts("labels", "tot") + "</td>" +
+                    "<td style='border-right: 1px solid'>" + pointNumber(Math.round(ww_share.total.share / 1000) * 1000) + "</td>" +
+                    "<td>" + pointNumber(Math.round(ww_share.total.sum / 1000) * 1000) + "</td>" +
+                    "</tr></table>");
+
+            } catch (error) {
+                errorHandling(error, "setResWW");
+            }
+        }
+
+    }
     /*******************************************************************************************************************************
      * Farming Village Overview
      * ----------------------------------------------------------------------------------------------------------------------------
+     * | ● Color change on possibility of city festivals
      * | ● farmingvillageshelper : Automatically hide the city. Quack function
      * ----------------------------------------------------------------------------------------------------------------------------
      * *****************************************************************************************************************************/
+
+    function changeResColor() {
+        var res, res_min, i = 0;
+        $('#fto_town_list .fto_resource_count :last-child').reverseList().each(function () {
+            if ($(this).parent().hasClass("stone")) {
+                res_min = 18000;
+            } else {
+                res_min = 15000;
+            }
+            res = parseInt(this.innerHTML, 10);
+            if ((res >= res_min) && !($(this).hasClass("town_storage_full"))) {
+                this.style.color = '#0A0';
+            }
+            if (res < res_min) {
+                this.style.color = '#000';
+            }
+        });
+    }
+
 
     /*******************************************************************************************************************************
      * ● farming villages helper
@@ -8469,6 +9276,73 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $("#dio_toggleAutohide").addClass('dio_autoHideCitiesOff');
         },
     };
+
+    /********************************************************************************************************************************
+     * Conquest Info
+     * -----------------------------------------------------------------------------------------------------------------------------
+     * | ● Amount of supports und attacks in the conquest window
+     * | ● Layout adjustment (for reasons of clarity)
+     * | - TODO: conquest window of own cities
+     * -----------------------------------------------------------------------------------------------------------------------------
+     * ******************************************************************************************************************************/
+
+    function countMovements() {
+        var sup = 0, att = 0;
+        $('.tab_content #unit_movements .support').each(function () {
+            sup++;
+        });
+        $('.tab_content #unit_movements .attack_land, .tab_content #unit_movements .attack_sea, .tab_content #unit_movements .attack_takeover').each(function () {
+            att++;
+        });
+
+        var str = "<div id='move_counter' style=''><div style='float:left;margin-right:5px;'></div>" +
+            "<div class='movement def'></div>" +
+            "<div class='movement' style='color:green;'> " + sup + "</div>" +
+            "<div class='movement off'> </div>" +
+            "<div style='color:red;'> " + att + "</div></div>" +
+            "<hr class='move_hr'>";
+
+        if ($('.gpwindow_content .tab_content .bold').get(0)) {
+            $('.gpwindow_content .tab_content .bold').append(str);
+        } else {
+            $('.gpwindow_content h4:eq(1)').append(str);
+
+            // TODO: set player link ?
+            /*
+             $('#unit_movements li div').each(function(){
+
+             //console.log(this.innerHTML);
+             });
+             */
+        }
+
+        $('<style id="dio_conquest"> ' +
+          '.move_hr { margin:7px 0px 0px 0px; background-color:#5F5242; height:2px; border:0px solid; } ' +
+          // Smaller movements
+          '#unit_movements { font-size: 0.80em; } ' +
+          '#unit_movements .incoming { width:150px; height:45px; float:left; } ' +
+          // Counter
+          '#move_counter { position:relative; width:100px; margin-top:-16px; left: 40%; } ' +
+          '#move_counter .movement { float:left; margin:0px 5px 0px 0px; height:23px; width:23px; position:relative; } ' +
+          '#move_counter .def { background:url(https://gpzz.innogamescdn.com/images/game/autogenerated/olympus/sprite_images/olympus_temple_info_16afe3f.png) no-repeat -327px -289px; margin-top: -2px; } ' +
+          '#move_counter .off { background:url(https://gpzz.innogamescdn.com/images/game/autogenerated/olympus/sprite_images/olympus_temple_info_16afe3f.png) no-repeat -303px -289px; margin-top: -2px; }' +
+          '</style>').appendTo("head");
+
+        /*
+         $('#unit_movements div').each(function(){
+         if($(this).attr('class') === "unit_movements_arrow"){
+         // delete placeholder for arrow of outgoing movements (there are no outgoing movements)
+         if(!this.style.background) { this.remove(); }
+         } else {
+         // realign texts
+         $(this).css({
+         margin: '3px',
+         paddingLeft: '3px'
+         });
+         }
+         });
+         */
+    }
 
     /*******************************************************************************************************************************
      * Town window
@@ -8678,6 +9552,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     /*******************************************************************************************************************************
      * ● Short duration
      *******************************************************************************************************************************/
+
+    // TODO: Calculator implementieren
+    var DurationCalculator = {
+        activate: function () {
+            var speedBoosterSprite = "https://www.tuto-de-david1327.com/medias/images/erreur-2.gif";/*speed_booster*/
+
+            $('<style id="dio_duration_calculator_style">' +
+              '.dio_speed_booster { border:1px solid #724B08; border-spacing: 0px;} ' +
+              '.dio_speed_booster td { border:0; padding:2px; } ' +
+              '.dio_speed_booster .checkbox_new { margin: 4px 0px 1px 3px; } ' +
+              '.dio_speed_booster .odd { background: url("https://gpall.innogamescdn.com/images/game/border/brown.png") repeat scroll 0% 0% transparent; } ' +
+              '.dio_speed_booster .even { background: url("https://gpall.innogamescdn.com/images/game/border/odd.png") repeat scroll 0% 0% transparent; } ' +
+              '.booster_icon { width:20px; height:20px; background-image:url(' + speedBoosterSprite + ');} ' +
+              '.booster_icon.improved_speed { background-position:0 0; } ' +
+              '.booster_icon.cartography { background-position:-20px 0; } ' +
+              '.booster_icon.meteorology { background-position:-40px 0; } ' +
+              '.booster_icon.lighthouse { background-position:-60px 0; } ' +
+              '.booster_icon.set_sail { background-position:-80px 0; } ' +
+              '.booster_icon.atalanta { background-position:-100px 0; } ' +
+              '</style>').appendTo('head');
+
+            $('<table class="dio_speed_booster"><tr>' +
+              '<td class="odd"><div class="booster_icon improved_speed"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+              '<td class="even"><div class="booster_icon cartography"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+              '<td class="odd"><div class="booster_icon meteorology"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+              '<td class="even"><div class="booster_icon lighthouse"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+              '<td class="odd"><div class="booster_icon set_sail"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+              '<td class="even"><div class="booster_icon atalanta"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+              '</tr></table>').appendTo(wndID + ".duration_container");
+        },
+        deactivate: function () {
+            $('#dio_duration_calculator_style').remove();
+        },
+        add: function (wndID, data) {
+
+        }
+    };
 
     var ShortDuration = {
         activate: function () {
@@ -10318,9 +11229,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         $('#place_sim_ground_units .place_insert_field, #place_sim_naval_units .place_insert_field').each(function () {
             name = $(this).attr("name").replace(/\]/g, "").split("[");
 
-            let str = this;
+            const str = this;
 
-            let unit_type = $(str).closest('.place_simulator_table').attr("id").split("_")[2];
+            const unit_type = $(str).closest('.place_simulator_table').attr("id").split("_")[2];
 
             let val = parseInt($(str).val(), 10);
 
@@ -11093,9 +12004,50 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     /*******************************************************************************************************************************
      * GUI Optimization
      * ----------------------------------------------------------------------------------------------------------------------------
+     * | ● Minimize daily reward-window on startup
      * | ● Larger taskbar
+     * | ● Improved display of troops and trade activity boxes (movable with position memory on startup)
      * ----------------------------------------------------------------------------------------------------------------------------
      *******************************************************************************************************************************/
+
+    // Minimize Daily reward window on startup
+    var Reward = {
+        activate: function () {
+
+
+            //$('.daily_login').find(".minimize").click();
+            /* if ($('.daily_login').get(0)) { //  && !uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_SHOW_ON_LOGIN).isMinimized()
+                            $('.daily_login').find(".minimize").click();
+                            //uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_SHOW_ON_LOGIN).minimize();
+                        }*/
+
+
+
+
+            /*$.Observer(uw.GameEvents.window.open).subscribe('DIO_WINDOW', function(u,dato){});
+         $.Observer(uw.GameEvents.window.reload).subscribe('DIO_WINDOW2', function(f){});*/
+
+            if (MutationObserver) {
+                var startup = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                        if (mutation.addedNodes[0]) {
+                            if ($('.daily_login').get(0)) { //  && !uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_SHOW_ON_LOGIN).isMinimized()
+                                $('.daily_login').find(".minimize").click();
+                                //uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_SHOW_ON_LOGIN).minimize();
+                            }
+                        }
+                    });
+                });
+                startup.observe($('body').get(0), {attributes: false, childList: true, characterData: false});
+
+                setTimeout(function () {
+                    startup.disconnect();
+                }, 3000);
+            }
+        },
+        deactivate: function () {
+        },
+    };
 
     // Larger taskbar
     var Taskbar = {
@@ -11109,6 +12061,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         }
     };
 
+    // Hide fade out buttons
+    /*function hideNavElements() {
+        if (Game.premium_features.curator <= Timestamp.now()) {
+            $('.nav').each(function () {
+                this.style.display = "none";
+            });
+        }
+    }*/
 
     /*******************************************************************************************************************************
      * Activity boxes
