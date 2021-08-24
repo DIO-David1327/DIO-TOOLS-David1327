@@ -4109,14 +4109,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         var v_info = $('#dio_version_info');
         if (version_text === '') {
             if (dio_version < dio_latest_version) {
-                version_text = "<a href='"+ getTexts("link", "updates") +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts('settings', 'version_old') + "</div><div class='version_icon red'></div></a>" +
-                    "<a class='version_text' href='"+ getTexts("link", "updates_direct") +"' target='_blank'>--> " + getTexts('settings', 'version_update') + "</a>";
+                version_text = "<a href='"+ getTexts("link", "update") +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts('settings', 'version_old') + "</div><div class='version_icon red'></div></a>" +
+                    "<a class='version_text' href='"+ getTexts("link", "update_direct") +"' target='_blank'>--> " + getTexts('settings', 'version_update') + "</a>";
                 version_color = 'crimson';
                 Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts('settings', 'version_old'));
             } else if (dio_version == dio_latest_version) {
-                version_text = "<a href='"+ getTexts("link", "updates") +"' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts('settings', 'version_new') + "</div><div class='version_icon green'></div></a>";
+                version_text = "<a href='"+ getTexts("link", "update") +"' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts('settings', 'version_new') + "</div><div class='version_icon green'></div></a>";
             } else {
-                version_text = "<a href='"+ getTexts("link", "updates") +"' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts('settings', 'version_dev') + "</div><div class='version_icon blue'></div></a>";
+                version_text = "<a href='"+ getTexts("link", "update") +"' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts('settings', 'version_dev') + "</div><div class='version_icon blue'></div></a>";
                 version_color = 'darkblue';
                 Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts('settings', 'version_dev'));
             }
@@ -4230,7 +4230,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var Browser = getBrowser().replace(/(1|2|3|4|5|6|7|8|9|\ )/gm, "");
                 $('.settings-container').append(
                     '<div id="dio_settings" class="player_settings section"><div id="dio_bg_medusa"></div><div id="dio_bg_david1327"></div>' +
-                    '<div class="game_header bold"><a href="'+ getTexts("link", "updates") +'" target="_blank" style="color:white">DIO-TOOLS-David1327 (v' + dio_version + ')</a>' +
+                    '<div class="game_header bold"><a href="'+ getTexts("link", "update") +'" target="_blank" style="color:white">DIO-TOOLS-David1327 (v' + dio_version + ')</a>' +
                     '<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com/TutoDeDavid1327/;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21" scrolling="no" frameborder="0" style="border:none; height:21px; position: absolute; right:-216px;" allowTransparency="true"></iframe></div>' +
 
                     // Check latest version
