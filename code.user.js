@@ -4090,7 +4090,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
     var Messageversion = '';
     var version_text = '', version_color = 'black';
-    $('<script src="https://raw.githubusercontent.com/DIO-David1327/DIO-TOOLS-David1327/main/Version.js"></script>').appendTo("head");
+    $('<script src="https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-versions-info.html"></script>').appendTo("head");
     /*if (dio_version == latest_version) {
         uw.HumanMessage.error(getTexts('settings', 'version_new'));
     } else {
