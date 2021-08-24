@@ -19,7 +19,7 @@
 // @grant		GM_getValue
 // @grant		GM_deleteValue
 // @grant		GM_xmlhttpRequest
-// @license     MIT
+// @license     	GPL-3.0
 // ==/UserScript==
 
 var dio_version = '4.23';
