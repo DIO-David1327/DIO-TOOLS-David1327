@@ -1,1 +1,1 @@
-4.23
+function (testt) {4.23}
