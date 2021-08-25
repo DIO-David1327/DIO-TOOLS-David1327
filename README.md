@@ -8,7 +8,6 @@
 [![GitHub all releases](https://img.shields.io/github/downloads/DIO-David1327/DIO-TOOLS-David1327/total)](https://github.com/DIO-David1327/DIO-TOOLS-David1327/raw/main/code.user.js)
 [![GitHub release (by tag)](https://img.shields.io/github/downloads/DIO-David1327/DIO-TOOLS-David1327/latest/total)](https://github.com/DIO-David1327/DIO-TOOLS-David1327/raw/main/code.user.js)
 
-
 <center>https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/<a href="https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/" target="_blank">​<img alt="Lien" height="10" src="https://www.tuto-de-david1327.com/medias/images/lien.png" width="10" /></a></center>
 
 <p></p>
