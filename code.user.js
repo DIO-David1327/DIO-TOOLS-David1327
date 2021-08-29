@@ -6526,7 +6526,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 //console.debug("cursor_pos", e.pageX, e.pageY);
 
-                if (scroll !== 3) {
+                if (scroll !== 4) {
                     if (delta < 0) {
                         scroll += 1;
                     } else {
