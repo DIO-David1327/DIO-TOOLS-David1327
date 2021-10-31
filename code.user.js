@@ -3,13 +3,16 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.23
+// @version		4.24
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
 // @include		https://*.grepolis.com/game/*
 // @include		https://*.forum.grepolis.com/*
 // @include		https://*tuto-de-david1327.com/*
+// @updateURL   https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html
+// @downloadURL	https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html
+// @resource    Version_dio https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-versions-js.html
 // @require		https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js
 // @icon		https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-bussi2.gif
 // @icon64		https://www.tuto-de-david1327.com/medias/images/dio-tools-david1327.jpg
@@ -19,10 +22,11 @@
 // @grant		GM_getValue
 // @grant		GM_deleteValue
 // @grant		GM_xmlhttpRequest
+// @grant       GM_getResourceText
 // @license     GPL-3.0
 // ==/UserScript==
 
-var dio_version = '4.23';
+var dio_version = '4.24';
 
 /*******************************************************************************************************************************
  * Global stuff
@@ -163,6 +167,11 @@ function appendScript(){
         time_a = uw.Timestamp.client();
         dioscript.textContent = DIO_GAME.toString().replace(/uw\./g, "") + "\n DIO_GAME('"+ dio_version +"', "+ GM +", '" + JSON.stringify(DATA).replace(/'/g, "##") + "', "+ time_a +");";
         document.body.appendChild(dioscript);
+
+        var DIO_Version = document.createElement('script');
+		DIO_Version.type = 'text/javascript';
+		DIO_Version.innerHTML = GM_getResourceText('Version_dio');
+		document.getElementsByTagName('head')[0].appendChild(DIO_Version);
     } else {
         setTimeout(function(){
             appendScript();
@@ -202,7 +211,6 @@ function DIO_FORUM(){
             "dinosaurier07", "flu-super-gau", "ben-cat", "schwein", "hundeleine01", "blume", "ben-sharky", "ben-cow", "charly-bissig", "gehirnschnecke-confused", "mttao-fische", "mttao-angler",
             "insel", "fliegeschnappen", "plapperhase", "ben-dumbo", "twitter", "elefant", "schildkroete", "elektroschocker", "spiderschwein", "oma-sessel-katze", "fred-elefant",
             "palmoel", "stevieh-teddy", "fips-aufsmaul", "marienkaefer", "mrkaktus", "kleeblatt2", "fred-blumenstauss", "hurra-fruehling1-lila", "fred-rasenmaeher", "fred-blumenbeet"
-
         ],
         grepolis : [
             "grepolis", "mttao-wassermann", "i-lovo-grepolis", "silvester-cuinlove", "mttao-schuetze", "kleeblatt2", "wallbash", /* "glaskugel4", */ "musketiere-fechtend", "palka", /* "krone-hoch",*/
@@ -396,14 +404,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         // Easter-Smileys -> 23 days
         easter_start = daystamp * 88, // 30. march (88)
         easter_end = daystamp * 110, // 21. april (110)
+        // Halloween -> 15 days
+        halloween_start = daystamp * 295, // 23. Oktober
+        halloween_end = daystamp * 321, // 8. November
+
 
         dio_img_Xmas = (today >= xmas_start) ? (today <= xmas_end) : false,
         dio_img_Easter = (today >= easter_start) ? (today <= easter_end) : false;
+        dio_img_Halloween = (today >= halloween_start) ? (today <= halloween_end) : false;
 
     if (dio_img_Xmas) {
         dio_img = "https://www.tuto-de-david1327.com/medias/images/icon-xmas.gif";}
     if (dio_img_Easter) {
         dio_img = "https://www.tuto-de-david1327.com/medias/images/icon-paques.png";}
+    /*if (dio_img_Halloween) {
+        dio_img = "https://www.tuto-de-david1327.com/medias/images/icon-paques.png";}*/
     var dio_icon = '<img src="'+ dio_img +'" style="width: 20px;float:left;margin: 1px 4px 0px -3px">';
 
     if (uw.location.pathname.indexOf("game") >= 0) {
@@ -448,7 +463,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     function saveValue(name, val) {
         if (gm) {
-            saveValueGM(name, val);
+            uw.saveValueGM(name, val);
         } else {
             localStorage.setItem(name, val);
         }
@@ -456,7 +471,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     function deleteValue(name) {
         if (gm) {
-            deleteValueGM(name);
+            uw.deleteValueGM(name);
         } else {
             localStorage.removeItem(name);
         }
@@ -523,7 +538,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             link: {
                 forum: "https://de.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.36671/",
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools bietet unter anderem einige Anzeigen, eine Smileyauswahlbox,<br>Handelsoptionen und einige Veränderungen des Layouts.",
                 act: "Funktionen der Toolsammlung aktivieren/deaktivieren:",
                 prv: "Vorschau einzelner Funktionen:",
@@ -549,7 +564,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_layout: "Layout",
                 cat_other: "Sonstiges"
             },
-            options: {
+            Options: {
                 //bir: ["Biremenzähler", "Zählt die jeweiligen Biremen einer Stadt und summiert diese.<br><br>Anzeige im Minimap-Bullauge oben links"],
                 ava: ["Einheitenübersicht", "Zeigt die Einheiten aller Städte an"],
                 ava2: ["Nummer des Meeres", "Erweiterungseinheit"],
@@ -599,10 +614,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Entfernen der Tooltips des Geräts", ""],
                 Cup: ["Advancement of Culture (Administrator)", "Die Darstellung des Fortschrittsbalkens wurde geändert und ein Fortschrittsbalken für Ernten hinzugefügt. Funktion von Akiway"],
                 Rct: ["Handel -> Ressourcenzähler (Administrator)", "Eine Zählung aller Ressourcen in deiner Stadt"],
+                FLASK : ["Nicht kompatibel zur Aktivierung in den Parametern von FLASK-TOOLS",""],
+                Mole : ["Nicht kompatibel zur Aktivierung in den Parametern von Mole Hole",""],
 
                 err: ["Automatische Fehlerberichte senden", "Wenn du diese Option aktivierst, kannst du dabei helfen Fehler zu identifizieren."],
                 her: ["Thrakische Eroberung", "Verkleinerung der Karte der Thrakischen Eroberung."],
-                // Town icons
+            },
+            Town_icons: {
                 LandOff: "off irdisch",
                 LandDef: "def irdisch",
                 NavyOff: "off marine",
@@ -611,15 +629,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FlyDef: "Mythischen Einheiten def",
                 Out: "Draußen",
                 Emp: "Leer",
-
+            },
+            Color: {
                 Blue : 'Blau',
                 Red : 'rot',
                 Green : 'Grün',
                 Pink : 'Rosa',
                 White : "Weiß",
-                FLASK : "Nicht kompatibel zur Aktivierung in den Parametern von FLASK-TOOLS",
-                Mole : "Nicht kompatibel zur Aktivierung in den Parametern von Mole Hole",
-
             },
             labels: {
                 uni: "Einheitenübersicht",
@@ -838,7 +854,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 MessageExport: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/bb-code-messages.html",
                 Translations: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/translations.html",
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.",
                 act: "Activate/deactivate features of the toolset:",
                 prv: "Preview of several features:",
@@ -866,7 +882,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_Premium: "Premium",
                 cat_Quack: "Quack",
             },
-            options: {
+            Options: {
                 //bir: ["Bireme counter", "Counts the biremes of a city and sums these"],
                 ava: ["Units overview", "Counts the units of all cities"],
                 ava2: ["Ocean number", "Extension unit"],
@@ -915,11 +931,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Removal of the unit tooltips", ""],
                 Cup: ["Advancement of Culture (Administrator)", "Changed the presentation of the progress bar and added a progress bar for crops. Function of Akiway"],
                 Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
+                FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS",""],
+                Mole: ["Not compatible to activate in the parameters of Mole Hole",""],
 
 
                 err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."],
                 //her: ["Thracian Conquest", "Downsizing of the map of the Thracian conquest."],
-                // Town icons
+            },
+            Town_icons: {
                 LandOff: "Land Offensive",
                 LandDef: "Land Defensive",
                 NavyOff: "Navy Offensive",
@@ -928,14 +947,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FlyDef: "Fly Defensive",
                 Out: "Outside",
                 Emp: "Empty",
-
+            },
+            Color: {
                 Blue : 'Blue',
                 Red : 'Red',
                 Green : 'Green',
                 Pink : 'Pink',
                 White : "White",
-                FLASK: "Not compatible to activate in the parameters of FLASK-TOOLS",
-                Mole: "Not compatible to activate in the parameters of Mole Hole",
             },
             labels: {
                 uni: "Units overview",
@@ -1143,7 +1161,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             link: {
                 forum: "https://it.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.22111/",
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.",
                 act: "Activate/deactivate features of the toolset:",
                 prv: "Preview of several features:",
@@ -1169,7 +1187,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_layout: "Disposizione",
                 cat_other: "Altro"
             },
-            options: {
+            Options: {
                 bir: ["Conta biremi", "Conta le biremi di una città e le somma"],
                 ava: ["Panoramica delle unità", "Conta le unità di tutte le città"],
                 ava2: ["Numero del mare", ""],
@@ -1215,9 +1233,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Rimozione dei tooltip dell'unità", ""],
                 Cup: ["Advancement of Culture (Administrator)", "Cambiata la presentazione della barra di avanzamento e aggiunta una barra di avanzamento per le colture. Funzione di Akiway"],
                 Rct: ["Commercio -> Contatore risorse (amministratore)", "Un conteggio di tutte le risorse nella tua città"],
+                FLASK : ["Non compatibile per attivare nei parametri di FLASK-TOOLS",""],
+                Mole : ["Non compatibile per attivare nei parametri di Mole Hole",""],
 
                 err: ["Invia automaticamente il report dei bug", "Se attivi questa opzione, puoi aiutare a identificare i bug."],
                 her: ["Conquista della Tracia", "Ridimensiona la mappa della conquista della Tracia"],
+            },
+            Town_icons: {
                 // Town icons
                 //LandOff: "",
                 //LandDef: "",
@@ -1227,15 +1249,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //FlyDef: "",
                 //Out: "",
                 //Emp: "",
-
+            },
+            Color: {
                 Blue : 'Blu',
                 Red : 'Rosso',
                 Green : 'verde',
                 Pink : 'Rosa',
                 White : "bianca",
-
-                FLASK : "Non compatibile per attivare nei parametri di FLASK-TOOLS",
-                Mole : "Non compatibile per attivare nei parametri di Mole Hole",
             },
             labels: {
                 uni: "Panoramica unità",
@@ -1431,7 +1451,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 MessageExport: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/bb-code-messages.html",
                 Translations: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/traductions.html",
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools offres certains écrans, une boîte de smiley, les options <br>commerciales, des changements à la mise en page et d'autres choses.",
                 act: "Activation/Désactivation des fonctions:",
                 prv: "Aperçu des fonctions séparées:",
@@ -1460,7 +1480,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_Premium: "Premium",
                 cat_Quack: "Quack",
             },
-            options: {
+            Options: {
                 bir: ["Compteur de birèmes ", "Totalise l'ensemble des birèmes présentent en villes et les résume. (Remplace la mini carte dans le cadran)"],
                 ava: ["L'aperçu des unites", "Indique les unités de toutes les villes."],
                 ava2: ["Numéro de Mer", "Extension unité"],
@@ -1509,10 +1529,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt: ["Bouton BBcode Infos joueur", "Ajout d'un bouton BBcode (joueur et alliance)"],
                 Rtt: ["Suppression des info-bulles de l'unité", ""],
                 Cup: ["Avancement de la culture (Administrateur)", "Modification de la présentation de la barre de progression et ajout d'une barre de progression pour les cultures. Fonction d'Akiway"],
-                Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un comteur de toutes les ressources de votre ville"],
+                Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"],
+                FLASK : ["Non compatible à activer dans les paramètres de FLASK-TOOLS",""],
+                Mole : ["Non compatible à activer dans les paramètres de Mole Hole",""],
 
                 err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
-                // Town icons
+            },
+            Town_icons: {
                 LandOff: "Off terrestre",
                 LandDef: "Déf terrestre",
                 NavyOff: "Off naval",
@@ -1521,16 +1544,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FlyDef: "Unités Mythiques Def",
                 Out: "À l'extérieur",
                 Emp: "Vide",
-
+            },
+            Color: {
                 Blue : 'Bleu',
                 Red : 'Rouge',
                 Green : 'Vert',
                 Pink : 'Rose',
                 White : "Blanc",
-
-                FLASK : "Non compatible à activer dans les paramètres de FLASK-TOOLS",
-                Mole : "Non compatible à activer dans les paramètres de Mole Hole",
-                Mac : "Non compatible avec Mac"
             },
             labels: {
                 uni: "Présentation des unités",
@@ -1730,7 +1750,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //      Russian Translation by MrBobr       //
         //////////////////////////////////////////////
         ru: {
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools изменяет некоторые окна, добавляет новые смайлы, отчёты,<br>улучшеные варианты торговли и другие функции.",
                 act: "Включение/выключение функций:",
                 prv: "Примеры внесённых изменений:",
@@ -1755,7 +1775,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //cat_layout: "",
                 //cat_other: ""
             },
-            options: {
+            Options: {
                 //bir: ["Счётчик бирем", "Показывает число бирем во всех городах"],
                 ava: ["Обзор единиц", "Указывает единицы всех городов"], // ?
                 sml: ["Смайлы", "Добавляет кнопку для вставки смайлов в сообщения"],
@@ -1803,8 +1823,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Удаление всплывающих подсказок для юнита", ""],
                 //Cup: ["Advancement of Culture (Administrator)", "Changed the presentation of the progress bar and added a progress bar for crops. Function of Akiway"],
                 //Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
+                //FLASK : ["",""],
+                //Mole : ["",""],
 
                 err: ["Отправить сообщения об ошибках автоматически", "Если вы включите эту опцию, вы можете помочь идентифицировать ошибки"],
+            },
+            Town_icons: {
                 // Town icons
                 //LandOff: "",
                 //LandDef: "",
@@ -1814,15 +1838,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //FlyDef: "",
                 //Out: "",
                 //Emp: "",
-
+            },
+            Color: {
                 Blue : 'Синий',
                 Red : 'Красный',
                 Green : 'Зеленый',
                 Pink : 'Розовый',
                 White : "Белый",
-
-                //FLASK : "",
-                //Mole : "",
             },
 
             labels: {
@@ -2010,7 +2032,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             link: {
                 forum: "https://pl.forum.grepolis.com/index.php?threads/dio-tools-david1327.30016/"
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools oferuje (między innymi) poprawione widoki, nowe uśmieszki,<br>opcje handlu i zmiany w wyglądzie.",
                 act: "Włącz/wyłącz funkcje skryptu:",
                 prv: "podgląd poszczególnych opcji:",
@@ -2035,7 +2057,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //cat_layout: "",
                 //cat_other: ""
             },
-            options: {
+            Options: {
                 //bir: ["Licznik birem", "Zlicza i sumuje biremy z miast"],
                 ava: ["Przegląd jednostek", "Wskazuje jednostki wszystkich miast"], // ?
                 sml: ["Emotki", "Dodaje dodatkowe (zielone) emotikonki"],
@@ -2083,9 +2105,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Usunięcie podpowiedzi jednostki", ""],
                 Cup: ["Postęp Kultury (Administrator)", "Zmieniono prezentację paska postępu i dodano pasek postępu dla upraw. Funkcja Akiway"],
                 Rct: ["Handel -> Licznik zasobów (Administrator)", "Licznik wszystkich zasobów w Twoim mieście"],
+                //FLASK : ["",""],
+                //Mole : ["",""],
 
                 err: ["Automatycznie wysyłać raporty o błędach", "Jeśli włączysz tę opcję, możesz pomóc zidentyfikować błędy"],
-                // Town icons
+            },
+            Town_icons: {
                 //LandOff: "",
                 //LandDef: "",
                 //NavyOff: "",
@@ -2094,13 +2119,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //FlyDef: "",
                 //Out: "",
                 //Emp: "",
-
+            },
+            Color: {
                 Blue : 'niebieski',
                 Red : 'Czerwony',
                 Green : 'Zielony',
                 Pink : 'Różowy',
                 White : "Biały",
-
             },
             labels: {
                 uni: "Przegląd jednostek",
@@ -2287,7 +2312,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             link: {
                 forum: "https://es.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.45017/"
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools ofrece, entre otras cosas, varias pantallas, ventana de <br>emoticones, opciones de comercio y algunos cambios en el diseño.",
                 act: "Activar/desactivar características de las herramientas:",
                 prv: "Vista previa de varias características:",
@@ -2312,7 +2337,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //cat_layout: "",
                 //cat_other: ""
             },
-            options: {
+            Options: {
                 //bir: ["Contador de birremes", "Cuenta los birremes de una ciudad y los suma"],
                 ava: ["Información general unidades", "Indica las unidades de todas las ciudades"], // ?
                 sml: ["Emoticones", "Código BB para emoticones"],
@@ -2360,10 +2385,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Eliminación de la información sobre herramientas de la unidad", ""],
                 Cup: ["Avance de la cultura (Administrador) "," Se modificó la presentación de la barra de progreso y se agregó una barra de progreso para los cultivos. Función de Akiway"],
                 Rct: ["Comercio -> Contador de recursos (Administrador) "," Un recuento de todos los recursos de tu ciudad"],
-
+                //FLASK : ["",""],
+                //Mole : ["",""],
 
                 err: ["Enviar informes de errores automáticamente", "Si se activa esta opción, puede ayudar a identificar errores."],
-                // Town icons
+            },
+            Town_icons: {
                 //LandOff: "",
                 //LandDef: "",
                 //NavyOff: "",
@@ -2372,7 +2399,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //FlyDef: "",
                 //Out: "",
                 //Emp: "",
-
+            },
+            Color: {
                 Blue : 'Azul',
                 Red : 'rojo',
                 Green : 'Verde',
@@ -2566,7 +2594,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             link: {
                 forum: "https://br.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.23781/",
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools oferece, entre outras coisas, algumas telas, uma caixa de smiley, opções de comércio <br> e algumas alterações no layout.",
                 act: "Ativar/desativar recursos do conjunto de ferramentas:",
                 prv: "Pré-visualização de vários recursos:",
@@ -2591,7 +2619,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_layout: "Layout",
                 cat_other: "Outros"
             },
-            options: {
+            Options: {
                 // bir: ["Contador de Birremes", "Conta as biremes da cidade na cidade"],
                 ava: ["Visão Geral da unidade", "Indica as unidades de todas as cidades"], // ?
                 sml: ["Smilies", "Estende o bbcode com uma caixa de smiley"],
@@ -2639,10 +2667,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Remoção das dicas da unidade", ""],
                 Cup: ["Avanço da Cultura (Administrador)","Alterada a apresentação da barra de progresso e adicionada uma barra de progresso para as colheitas. Função de Akiway"],
                 Rct: ["Comércio -> Contador de recursos (Administrador) "," Uma contagem de todos os recursos em sua cidade"],
+                //FLASK : ["",""],
+                //Mole : ["",""],
 
                 err: ["Enviar automaticamente relatórios de erros", "Se você ativar essa opção, você pode ajudar a identificar erros."],
                 her: ["Conquista Thracian", "Redução de tamanho do mapa da conquista Thracian."],
-                // Town icons
+            },
+            Town_icons: {
                 //LandOff: "",
                 //LandDef: "",
                 //NavyOff: "",
@@ -2651,7 +2682,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //FlyDef: "",
                 //Out: "",
                 //Emp: "",
-
+            },
+            Color: {
                 Blue : 'Azul',
                 Red : 'Vermelho',
                 Green : 'Verde',
@@ -2845,7 +2877,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             link: {
                 forum: "https://cz.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.8478/",
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools nabízí,mimo jiné,některá nová zobrazení,okénko smajlíků,<br>obchodní možnosti a některé změny v rozložení panelů.",
                 act: "Aktivovat/Deaktivovat funkce  sady nástrojů:",
                 prv: "Ukázka několika funkcí:",
@@ -2870,7 +2902,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_layout: "Okna",
                 cat_other: "Ostatní"
             },
-            options: {
+            Options: {
                 // bir: ["Počítadlo birém", "Spočítá každé birémy ve městech a sečte je."],
                 ava: ["Jednotky Přehled", "Označuje jednotky všemi městy"], // ?
                 sml: ["Smajlíci", "Rozšiřuje panel BBkodů okénkem smajlíků"],
@@ -2918,10 +2950,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Odstranění popisů jednotky", ""],
                 Cup: ["Advancement of Culture (Administrator)","Změnilo se zobrazení pruhu postupu a přidal se ukazatel průběhu pro plodiny. Funkce Akiway"],
                 Rct: ["Obchod -> Počítadlo zdrojů (správce)","Počet všech zdrojů ve vašem městě"],
+                //FLASK : ["",""],
+                //Mole : ["",""],
 
                 err: ["Hlásit chyby automaticky", "Pokud aktivuješ tuto možnost,pomůžeš nám identifikovat chyby."],
                 her: ["Thrácké dobývání", "Redukuje mapy Thráckého dobývání."],
-                // Town icons
+            },
+            Town_icons: {
                 //LandOff: "",
                 //LandDef: "",
                 //NavyOff: "",
@@ -2930,7 +2965,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //FlyDef: "",
                 //Out: "",
                 //Emp: "",
-
+            },
+            Color: {
                 Blue : 'Modrý',
                 Red : 'Červené',
                 Green : 'Zelený',
@@ -3120,7 +3156,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             link: {
                 forum: "https://ro.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.12961/",
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools oferă, printre altele, câteva afișaje, emoticoane, opțiuni de tranzacționare și unele modificări ale aspectului.",
                 act: "Activați / dezactivați caracteristicile instrumentelor:",
                 prv: "Previzualizarea mai multor funcții:",
@@ -3145,7 +3181,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_layout: "Schemă",
                 cat_other: "Diverse"
             },
-            options: {
+            Options: {
                 bir: ["Contor de bireme", "Numără câte bireme sunt în orașe și face suma lor"],
                 ava: ["Vedere de ansamblu a unităților", "Numără unitățile din fiecare oraș și face suma lor"],
                 ava2: ["Numărul mării", "Unitate de extensie"],
@@ -3194,10 +3230,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Îndepărtarea sfaturilor de instrumente ale unității", ""],
                 Cup: ["Advancement of Culture (Administrator)","A modificat prezentarea barei de progres și a adăugat o bară de progres pentru culturi. Funcția Akiway"],
                 Rct: ["Comerț -> Contor de resurse (Administrator)","Un număr al tuturor resurselor din orașul dvs."],
+                //FLASK : ["",""],
+                //Mole : ["",""],
 
                 err: ["Trimite rapoarte de eroare automatic", "Dacă activezi această opțiune, poți ajuta în identificarea erorilor."],
                 her: ["Cucerirea Tracică", "Reducerea hărții cuceririi tracice."],
-                // Town icons
+            },
+            Town_icons: {
                 LandOff: "Atac Terestru",
                 LandDef: "Apărare Terestră",
                 NavyOff: "Atac Naval",
@@ -3206,7 +3245,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FlyDef: "Zburătoare defensive",
                 Out: "Afară",
                 Emp: "Gol",
-
+            },
+            Color: {
                 Blue : 'Albastru',
                 Red : 'Roșu',
                 Green : 'Verde',
@@ -3397,7 +3437,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             link: {
                 forum: "https://nl.forum.grepolis.com/index.php?threads/dio-tools-david1327.39609/",
             },
-            settings: {
+            Settings: {
                 dsc: "DIO-Tools biedt onder andere, enkele displays, een smileybox,<br> handelsopties en enkele wijzigingen in de lay-out.",
                 act: "Functies van de toolset activeren/deactiveren:",
                 prv: "Voorbeeld van verschillende functies:",
@@ -3422,7 +3462,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_layout: "Lay-out",
                 cat_other: "Diversen"
             },
-            options: {
+            Options: {
                 //bir: ["Biremen teller", "Telt de biremen van een stad en somt deze op"],
                 ava: ["Eenheden overzicht", "Telt de eenheden van alle steden"],
                 ava2: ["Oceaan nummer", "Uitbreidingseenheid"],
@@ -3471,10 +3511,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rtt: ["Verwijderen van de tooltips van de unit", ""],
                 Cup: ["Advancement of Culture (Administrator)", "De presentatie van de voortgangsbalk gewijzigd en een voortgangsbalk voor gewassen toegevoegd. Functie van Akiway"],
                 Rct: ["Handel -> Grondstoffenteller (Beheerder)", "Een telling van alle grondstoffen in je stad"],
+                //FLASK : ["",""],
+                //Mole : ["",""],
 
                 err: ["Stuur automatisch bugrapporten", "Als u deze optie activeert, kunt u helpen bij het identificeren van bugs."],
                 her: ["Thracische verovering", "Verkleinen van de kaart van de verovering van Thracië."],
-                // Stadspictogrammen
+            },
+            Town_icons: {
                 LandOff: "Landoffensief",
                 LandDef: "Landverdediging",
                 NavyOff: "Zee-offensief",
@@ -3483,7 +3526,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FlyDef: "Vliegend Verdediging",
                 Out: "Buiten",
                 Emp: "Leeg",
-
+            },
+            Color: {
                 Blue : 'Blauw',
                 Red : 'Rood',
                 Green : 'Groen',
@@ -3671,22 +3715,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //      GREEK Translation by AbstractGR     //
         //////////////////////////////////////////////
         gr: {
-            settings : {
-                dsc : 'Το DIO-Tools προσφέρει, ανάμεσα σε άλλα πράγματα, κάποιες απεικονίσεις, μενού με smiley, επιλογές εμπορίου και κάποιες αλλαγές στο σχέδιο του παιχνιδιού.',
+            Settings : {
+                dsc : 'Το DIO-Tools προσφέρει, ανάμεσα σε άλλα πράγματα, κάποιες νέες απεικονίσεις, μενού με smiley, επιλογές εμπορίου και κάποιες αλλαγές στο σχέδιο του παιχνιδιού.',
                 act : 'Ενεργοποίησε/απενεργοποίησε τα χαρακτηριστικά του συνόλου των εργαλείων:',
                 prv : 'Προεπισκόπηση μερικών χαρακτηριστικών:',
                 version_old : 'Η έκδοση δεν είναι ενημερωμένη',
                 version_new : 'Η έκδοση είναι ενημερωμένη',
                 version_dev : 'Έκδοση προγραμματιστή',
                 version_update : 'Αναβάθμιση',
-                Donate : 'Δωρεά.',
-                forum : 'Το φροντιστήριο του david1327',
+                Donate : 'Δωρεά',
+                forum : 'Tuto de david1327',
                 Update : 'Έκδοση' + dio_version,
                 Feature : 'Νέο χαρακτηριστικό',
                 Feature2 : 'Νέα έκδοση',
                 Learn_more : 'Μάθε περισσότερα',
                 cat_units : 'Μονάδες',
-                cat_icons : 'Εικόνες πόλεων',
+                cat_icons : 'Εικονίδια πόλεων',
                 cat_forum : 'Φόρουμ',
                 cat_trade : 'Εμπόριο',
                 cat_wonders : 'Θαύμα του κόσμου',
@@ -3694,11 +3738,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_other : 'Διάφορα',
             },
 
-            options : {
+            Options : {
                 ava : ['Επισκόπηση μονάδων', 'Μετράει όλες τις μονάδες από όλες τις πόλεις'],
                 ava2 : ['Αριθμός ωκεανού', 'Μονάδα επέκτασης'],
-                sml : ['Smilies', 'Επεκτείνει τη μπάρα κωδικών bb ανά μενού από smilies'],
-                str : ['Δύναμη μονάδας', 'Προσθέτει τους πίνακες με τις δυνάμεις των μονάδων σε πολλές περιοχές'],
+                sml : ['Smilies', 'Επεκτείνει τη μπάρα bbcode ανά μενού με smilies'],
+                str : ['Δύναμη μονάδας', 'Προσθέτει τους πίνακες με τις δυνάμεις των μονάδων σε πολλά σημε'],
                 tra : ['Χωρητικότητα μεταφορικών', 'Δείχνει τα χρησιμοποιούμενη και διαθέσιμη χωρητικότητα των μεταφορικών στο μενού με τις μονάδες'],
                 per : ['Ποσοστιαίο εμπόριο', 'Επεκτείνει το παράθυρο του εμπορίου με μια επιλογή ποσοστιαίου εμπορίου'],
                 rec : ['Κόστος στρατολόγησης', 'Επεκτείνει το παράθυρο εμπορίου με μια επιλογή για το κόστος στρατολόγησης'],
@@ -3723,11 +3767,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 tov : ['Επισκόπηση πόλης', 'Αντικαθιστά την νέα επισκόπηση πόλης με το παλιό στύλ παραθύρου'],
                 scr : ['Ροδέλα ποντικιού', 'Μπορείς να αλλάξεις τις όψεις της πόλης με τη ροδέλα του ποντικιού'],
                 Scr : ['Scrollbar', 'Άλλαξε το στυλ του scrollbar (Δεν είναι διαθέσιμο στο firefox)'],
-                tow : ['Κωδικός bb πόλης', 'Προσθέτει τον κωδικό bb της πόλης στο παράθυρο επιλογής πόλης '],
+                tow : ['bbcode πόλης', 'Προσθέτει τον bbcode της πόλης στο παράθυρο επιλογής πόλης'],
                 Fdm : ['Διάλεξε και σβήσε πολλά μηνύματα', 'Μπορείς να σβήσεις περισσότερα από ένα μηνύματα. Λειτουργία Quack'],
                 Sel : ['Πρόσθεσε (Όχι υπερχείλιση/Σβήσιμο)', ' Βελτίωση των νέων εργαλείων στο παράθυρο επίθεσης και άμυνας. Λειτουργία Quack'],
                 Cul : ['Επισκόπηση πολιτιστικού επιπέδου (Διαχειριστής)', 'Προσθέτει μετρητή για την ομάδα στην επισκόπηση πολιτιστικού επιπέδου. Λειτουργία Quack'],
-                Hot : ['Κουμπία για συντομία ενεργειών για τα Windows', 'Αλλάζει τη ζωή σου'],
+                Hot : ['Κουμπιά για συντομία ενεργειών για τα Windows', 'Αλλάζει τη ζωή σου'],
                 Isl : ['Απεικόνιση του νησιού', 'Αυξάνει το ύψος της λίστας των πόλεων και των χωριών του νησιού'],
                 Ish : ['Επισκόπηση αγροτικών χωριών (Καπετάνιος)', 'Αυτόματα κρύβει τη πόλη. Λειτουργία Quack'],
                 Hio : ['Επισκόπηση σπηλιών (Διαχειριστής)', 'Επιτρέπει στην ταξινόμηση των πόλεων. Λειτουργία Quack'],
@@ -3736,13 +3780,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Cib : ['Κουμπί επισκόπησης πόλης', 'Προσθέτει ένα κουμπί για το άνοιγμα της επισκόπησης της πόλης στο πλάγιο μενού του Grepolis. Λειτουργία Quack'],
                 Ciw : ['Επισκόπηση πόλης', 'Παρουσίαση της επισκόπησης της πόλης σε παράθυρο. Λειτουργία Quack'],
                 Tti : ['Εμπόριο πόρων για γιορτές', 'Κλίκαρε πάνω του και θα ανταλλάξει πόρους ώστε να φτάσουν για γιορτή πόλης. Λειτουργία Quack'],
-                Mse : ['Μηνύματα σε κωδικούς BB', 'Μετατροπή μηνυμάτων σε κωδικούς BB. Λειτουργία Quack'],
+                Mse : ['Μηνύματα σε bbcode', 'Μετατροπή μηνυμάτων σε bbcode. Λειτουργία Quack'],
                 Rep : ['Αναφορές', 'Πρόσθεση φίλτρου χρώματος. Λειτουργία Quack'],
-                BBt : ['Κουμπί κωδικού BB για πληροφορίες παίχτη', 'Προσθήκη κουμπιού με κωδικούς BB (παίχτη και συμμαχίας)'],
-                Rtt : ['Αφαίρεση του παραθύρου επεξήγησης(tooltip) των μονάδων', ''],
+                BBt : ['Κουμπί bbcode για πληροφορίες παίχτη', 'Προσθήκη κουμπιού με bbcode (παίχτη και συμμαχίας)'],
+                Rtt : ['Αφαίρεση του μηνύματος επεξήγησης των μονάδων', ''],
                 Cup : ['Προβιβασμός επιπέδου Πολιτισμού (Διαχειριστής)', 'Άλλαξε την παρουσίαση της μπάρας προόδου και πρόσθεσε μια μπάρα προόδου για τους πόρους. Λειτουργία του Akiway'],
                 Rct : ['Εμπόριο -> Μετρητής πόρων (Διαχειριστής)', 'Μια μέτρηση όλων των πόρων στην πόλη σου'],
-                err : ['Στείλε αναφορές για bug αυτόματα', 'Αν ενεργοποιήσεις αυτή την επιλογή, μπορείς να βοηθήσεις στην εύρεση προβλημάτων του παιχνιδιού(bugs).'],
+                err : ['Στείλε αναφορές για bug αυτόματα', 'Αν ενεργοποιήσεις αυτή την επιλογή, μπορείς να βοηθήσεις στην εύρεση προβλημάτων του παιχνιδιού.'],
+                //FLASK : ["",""],
+                //Mole : ["",""],
+            },
+
+            Town_icons: {
                 LandOff : 'Επιθετικά ξηράς',
                 LandDef : 'Αμυντικά ξηράς',
                 NavyOff : 'Επιθετικός στόλος',
@@ -3751,6 +3800,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FlyDef : 'Ιπτάμενα αμυντικά',
                 Out : 'Εξωτερικά',
                 Emp : 'Άδειο',
+            },
+
+            Color: {
                 Blue : 'Μπλε',
                 Red : 'Κόκκινο',
                 Green : 'Πράσινο',
@@ -3818,8 +3870,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel : {
                 tuto : 'Χρήσιμες πληροφορίες',
                 reme : 'Ευχαριστώ όλους εκείνους που συνείσφεραν στην ανάπτυξη του DIO tools,',
-                Trou : ['Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - φροντιστήριο του david1327', 'Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων'],
-                util : ['Χρήσιμες ιστοσελίδες για το grepolis - φροντιστήριο του david1327', 'Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.'],
+                Trou : ['Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - tuto de david1327', 'Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων'],
+                util : ['Χρήσιμες ιστοσελίδες για το grepolis - tuto de david1327', 'Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.'],
             },
 
             Quack : {
@@ -3935,10 +3987,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 trans_infotext2 : 'Για να τροποποιήσεις ή δημιουργήσεις μια νέα γλώσσα,διάλεξε τη γλώσσα στο αναπτυσσόμενο μενού',
                 trans_infotext3 : 'Όταν ένα κείμενο περιέχει ετικέτες HTML (δηλαδή όλα τα κείμενα που περιέχουν πριν και μετά <> αγκύλες) σου ζητώ να τις αφήσεις όπως τις βρήκες ',
                 trans_infotext4 : 'Όταν έχεις τελειώσει με τη μετάφραση πάτα',
-                trans_infotext5 : 'Για να είναι δυνατόν να προστεθείς στη λίστα επαίνων,το ψευδώνυμο σου θα παραχθεί',
+                trans_infotext5 : 'Για να είναι δυνατόν να προστεθείς στη λίστα συντελεστών,το ψευδώνυμο σου θα παραχθεί',
                 trans_infotext6 : 'Αντέγραψε το παραγμένο μήνυμα, και επικόλλησε το σε ένα σχόλιο',
-                please_note : 'Παρακαλώ σημείωσε',
-                credits : 'Λίστα επαίνων',
+                please_note : 'Παρακαλώ λάβε υπόψιν',
+                credits : 'Λίστα συντελεστών',
                 no_translation : 'Δεν βρέθηκε μετάφραση',
                 choose_lang : 'Διάλεξε γλώσσα',
                 add_lang : 'Πρόσθεσε νέα γλώσσα',
@@ -3998,61 +4050,61 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     // (De)activation of the features
     var Options_def = {
-        dio_bir: true, // Biremes counter
-        dio_ava: true, // Available units
-        dio_ava2: true, // Available units
-        dio_sml: true, // Smileys
-        dio_str: true, // Unit strength
-        dio_tra: true, // Transport capacity
-        dio_per: true, // Percentual Trade
-        dio_rec: true, // Recruiting Trade
-        dio_way: true, // Troop speed
-        dio_cnt: true, // Attack/support counter
-        dio_sim: true, // Simulator
-        dio_act: true, // Activity boxes
-        dio_tsk: true, // Task bar
-        dio_pop: true, // Favor popup
-        dio_bbc: true, // BBCode bar
-        dio_com: true, // Unit comparison
-        dio_TEST: false, // Unit comparison
-        dio_tic: true, // Town icons
-        dio_til: true, // Town icons: Town list
-        dio_tim: true, // Town icons: Map
-        dio_tiw: true, // Town Popup
-        dio_tpt: true, // Town Popup troop
-        dio_tis: true, // Town Popup support
-        dio_tih: true, // Town Popup Hero
-        dio_tir: true, // Town Popup Resource
-        dio_wwc: true, // World wonder counter
-        dio_wwr: false, // World wonder ranking
-        dio_wwi: false, // World wonder icons
-        dio_con: true, // Context menu
-        dio_sen: true, // Sent units
-        dio_tov: false,// Town overview
-        dio_scr: true, // Mausrad,
-        dio_Scr: true, // Scrollbar Style
-        dio_Tow: true, // town bb
-        dio_Rew: true, // minimize Daily Reward
-        dio_Fdm: true, // ForumDeleteMultiple
-        dio_Sel: true, // selectunitshelper
-        dio_Cul: true, // cultureOverview
-        dio_Cup: true, // cultureProgress
+        dio_bir: true,	// Biremes counter
+        dio_ava: true,	// Available units
+        dio_ava2: true,	// Available units
+        dio_sml: true,	// Smileys
+        dio_str: true,	// Unit strength
+        dio_tra: true,	// Transport capacity
+        dio_per: true,	// Percentual Trade
+        dio_rec: true,	// Recruiting Trade
+        dio_way: true,	// Troop speed
+        dio_cnt: true,	// Attack/support counter
+        dio_sim: true,	// Simulator
+        dio_act: true,	// Activity boxes
+        dio_tsk: true,	// Task bar
+        dio_pop: true,	// Favor popup
+        dio_bbc: true,	// BBCode bar
+        dio_com: true,	// Unit comparison
+        dio_TEST: false,// Unit comparison
+        dio_tic: true,	// Town icons
+        dio_til: true,	// Town icons: Town list
+        dio_tim: true,	// Town icons: Map
+        dio_tiw: true,	// Town Popup
+        dio_tpt: true,	// Town Popup troop
+        dio_tis: true,	// Town Popup support
+        dio_tih: true,	// Town Popup Hero
+        dio_tir: true,	// Town Popup Resource
+        dio_wwc: true,	// World wonder counter
+        dio_wwr: false,	// World wonder ranking
+        dio_wwi: false,	// World wonder icons
+        dio_con: true,	// Context menu
+        dio_sen: true,	// Sent units
+        dio_tov: false,	// Town overview
+        dio_scr: true,	// Mausrad,
+        dio_Scr: true,	// Scrollbar Style
+        dio_Tow: true,	// town bb
+        dio_Rew: true,	// minimize Daily Reward
+        dio_Fdm: true,	// ForumDeleteMultiple
+        dio_Sel: true,	// selectunitshelper
+        dio_Cul: true,	// cultureOverview
+        dio_Cup: true,	// cultureProgress
         dio_Hot: (system() ? (false) : (true)), // hotkeys
-        dio_Isl: true, // islandFarmingVillages
-        dio_Ish: true, // farmingvillageshelper
-        dio_Hio: true, // hidesOverview
-        dio_Hid: true, // hidesIndexIron
-        dio_Tol: true, // townslist
-        dio_Cib: true, // city_view_btn
-        dio_Ciw: true, // city_view_window
-        dio_Tti: true, // townTradeImprovement
-        dio_Mse: true, // MessageExport
-        dio_Rep: true, // reports
-        dio_Rct: true, // resCounter
-        dio_BBt: true, // BBtowninfo
-        dio_Rtt: false, // removeTooltipps
+        dio_Isl: true,	// islandFarmingVillages
+        dio_Ish: true,	// farmingvillageshelper
+        dio_Hio: true,	// hidesOverview
+        dio_Hid: true,	// hidesIndexIron
+        dio_Tol: true,	// townslist
+        dio_Cib: true,	// city_view_btn
+        dio_Ciw: false,	// city_view_window
+        dio_Tti: true,	// townTradeImprovement
+        dio_Mse: true,	// MessageExport
+        dio_Rep: true,	// reports
+        dio_Rct: true,	// resCounter
+        dio_BBt: true,	// BBtowninfo
+        dio_Rtt: false,	// removeTooltipps
 
-        dio_err: false,// Error Reports
+        dio_err: false,	// Error Reports
         dio_her: true,	// Thrakische Eroberung
 
         //color
@@ -4089,40 +4141,52 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
     var Messageversion = '';
     var version_text = '', version_color = 'black';
-    $('<script src="https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-versions-info.html"></script>').appendTo("head");
-
-    /*if (dio_version == latest_version) {
-        uw.HumanMessage.error(getTexts('settings', 'version_new'));
-    } else {
-        uw.HumanMessage.error(getTexts('settings', 'version_dev'));
+    /*try {var test = dio_latest_version
+    } catch (error) {
+        var dio_latest_version = 1;
     }*/
+    //if (typeof(dio_latest_version) == "undefined") {var dio_latest_version = 1}
+    //else {}
     function getLatestVersion() {
         $('<style id="dio_version">' +
-          '#dio_version_info .version_icon { background: url(' + dio_sprite + ') -50px -50px no-repeat; width:25px; height:25px; float:left; z-index: 5; } ' +// http://666kb.com/i/ct1etaz0uyohw402i.png
+          '#dio_version_info .version_icon { background: url(' + dio_sprite + ') -50px -50px no-repeat; width:25px; height:25px; float:left; z-index: 5; } ' +
           '#dio_version_info .version_icon.red { filter:hue-rotate(-100deg); -webkit-filter: hue-rotate(-100deg); } ' +
           '#dio_version_info .version_icon.green { filter:hue-rotate(0deg); -webkit-filter: hue-rotate(0deg); } ' +
           '#dio_version_info .version_icon.blue { filter:hue-rotate(120deg); -webkit-filter: hue-rotate(120deg); } ' +
           '#dio_version_info .version_text { line-height: 2; margin: 0px 6px 0px 6px; float: left;} ' +
           '</style>').appendTo("head");
-
-          var v_info = $('#dio_version_info');
-        if (version_text === '') {
-            if (dio_version < dio_latest_version) {
-                version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts('settings', 'version_old') + "</div><div class='version_icon red'></div></a>" +
-                    "<a class='version_text' href='"+ getTexts('link', 'update_direct') +"' target='_blank'>--> " + getTexts('settings', 'version_update') + "</a>";
-                version_color = 'crimson';
-                Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts('settings', 'version_old'));
-            } else if (dio_version == dio_latest_version) {
-                version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts('settings', 'version_new') + "</div><div class='version_icon green'></div></a>";
-            } else {
-                version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts('settings', 'version_dev') + "</div><div class='version_icon blue'></div></a>";
-                version_color = 'darkblue';
-                Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts('settings', 'version_dev'));
+        var v_info = $('#dio_version_info');
+        try {
+            if (version_text === '') {
+                if (dio_version > uw.dio_latest_version) {
+                    version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts("Settings", 'version_dev') + "</div><div class='version_icon blue'></div></a>";
+                    version_color = 'darkblue';
+                    Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts("Settings", 'version_dev'));
+                } else if (dio_version == uw.dio_latest_version) {
+                    version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts("Settings", 'version_new') + "</div><div class='version_icon green'></div></a>";
+                } else {
+                    version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts("Settings", 'version_old') + "</div><div class='version_icon red'></div></a>" +
+                        "<a class='version_text' href='"+ getTexts('link', 'update_direct') +"' target='_blank'>--> " + getTexts("Settings", 'version_update') + "</a>";
+                    version_color = 'crimson';
+                    Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts("Settings", 'version_old'));
+                }
+                v_info.html(version_text).css({color: version_color});
             }
-            v_info.html(version_text).css({color: version_color});
-        }
-        else {
-            v_info.html(version_text).css({color: version_color});
+            else {
+                v_info.html(version_text).css({color: version_color});
+            }
+
+        } catch (error) {
+            errorHandling(error, "getLatestVersion");
+            if (version_text === '') {
+                version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts("Settings", 'version_old') + "</div><div class='version_icon red'></div></a>" +
+                    "<a class='version_text' href='"+ getTexts('link', 'update_direct') +"' target='_blank'>--> " + getTexts("Settings", 'version_update') + "</a>";
+                version_color = 'crimson';
+                v_info.html(version_text).css({color: version_color});
+            }
+            else {
+                v_info.html(version_text).css({color: version_color});
+            }
         }
     }
 
@@ -4236,23 +4300,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div id="dio_version_info"><img src="https://www.tuto-de-david1327.com/medias/images/restricted.gif" /></div>' +
 
                     // Donate button
-                    '<div id="dio_donate_btn" style="position:absolute; right: 0;top: 32px;">' + dio.createBtnDonate(getTexts("settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
+                    '<div id="dio_donate_btn" style="position:absolute; right: 0;top: 32px;">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     /*<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url" target="_blank">' +
                     '<div id="dio_donate_btn" class="' + LID + '" alt="Donate"></div></a></div>' +*/
 
                     // Settings navigation
                     '<ul class="menu_inner dio_settings_tabs">' +
                     '<li><a class="submenu_link active" id="dio_units"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("context_menu").titles.units_info + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_icons"><span class="left"><span class="right"><span class="middle">' + getTexts("settings", "cat_icons") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_icons"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_icons") + '</span></span></span></a></li>' +
                     '<li><a class="submenu_link" id="dio_forum"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("layout").main_menu.items.forum + '</span></span></span></a></li>' +
                     '<li><a class="submenu_link" id="dio_trade"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("layout").premium_button.premium_menu.trade_overview + '</span></span></span></a></li>' +
                     //((!$('.temple_commands').is(':visible')) ? (
-                    //    '<li><a class="submenu_link" id="dio_wonder"><span class="left"><span class="right"><span class="middle">' + getTexts("settings", "cat_wonders") + '</span></span></span></a></li>' ) : "") +
-                    '<li><a class="submenu_link" id="dio_layout"><span class="left"><span class="right"><span class="middle">' + getTexts("settings", "cat_layout") + '</span></span></span></a></li>' +
+                    //    '<li><a class="submenu_link" id="dio_wonder"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_wonders") + '</span></span></span></a></li>' ) : "") +
+                    '<li><a class="submenu_link" id="dio_layout"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_layout") + '</span></span></span></a></li>' +
                     '<li><a class="submenu_link" id="dio_reports"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("context_menu").titles.attack + '</span></span></span></a></li>' +
                     '<li><a class="submenu_link" id="dio_other"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("report").inbox.filter_types.misc + '</span></span></span></a></li>' +
                     '<li><a class="submenu_link" id="dio_Premium"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("premium").common.window_title + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_Quack"><span class="left"><span class="right"><span class="middle">' + getTexts("settings", "cat_Quack") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_Quack"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_Quack") + '</span></span></span></a></li>' +
                     '</ul>' +
 
                     // Settings content
@@ -4260,48 +4324,48 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     // Units tab
                     '<table id="dio_units_table" class="content_category visible"><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/available-units.png" alt="available_units" /></td>' +
-                    '<td><div id="dio_ava" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "ava")[0] + '</div></div><br>' +
+                    '<td><div id="dio_ava" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "ava")[0] + '</div></div><br>' +
                     '<div id="dio_ava2" style="display:none; margin-top: 5px;" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + uw.DM.getl10n("COMMON").ocean_number_tooltip + '</div></div>' +
-                    '<p>' + getTexts("options", "ava")[1] + '</p>' +
+                    '<p>' + getTexts("Options", "ava")[1] + '</p>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/unites-envoyees.png" alt="sent_units" /></td>' +
-                    '<td><div id="dio_sen" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "sen")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "sen")[1] + '</p></td>' +
+                    '<td><div id="dio_sen" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sen")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "sen")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/force-unitaire.png" alt="unit_strength" /></td>' +
-                    '<td><div id="dio_str" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "str")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "str")[1] + '</p></td>' +
+                    '<td><div id="dio_str" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "str")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "str")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/transport-capacity.png" alt="transport_capacity" /></td>' +
                     '<td><div id="dio_tra" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + uw.DM.getl10n("barracks").tooltips.ship_transport.title + '</div></div>' +
-                    '<p>' + getTexts("options", "tra")[1] + '</p></td>' +
+                    '<p>' + getTexts("Options", "tra")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/comparaison-des-unites.png" alt="unit_comparison" /></td>' +
-                    '<td><div id="dio_com" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "com")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "com")[1] + '  ' +
-                    '<a href=' + getTexts("link", "UnitComparison") + ' target="_blank">' + getTexts("settings", "Learn_more") + '</a></p></td>' +
+                    '<td><div id="dio_com" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "com")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "com")[1] + '  ' +
+                    '<a href=' + getTexts("link", "UnitComparison") + ' target="_blank">' + getTexts("Settings", "Learn_more") + '</a></p></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
-                    '<td><div id="dio_Rtt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Rtt")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Rtt")[1] + '</p></td>' +
+                    '<td><div id="dio_Rtt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Rtt")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Rtt")[1] + '</p></td>' +
                     '</tr></table>'+
 
                     // Icons tab
                     '<table id="dio_icons_table" class="content_category"><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/icones-des-villes.gif" alt="townicons" style="transform: scale(1.25); margin-top: 10px;" /></td>' +
-                    '<td><div id="dio_tic" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "tic")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "tic")[1] + '</p>' +
+                    '<td><div id="dio_tic" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tic")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "tic")[1] + '</p>' +
                     '<table class="icon_types_table">' +
-                    '<tr><td style="width:115px"><div class="dio_icon_small townicon_lo"></div>' + getTexts("options", "LandOff") + '</td>' +
-                    '<td><div class="dio_icon_small townicon_fo"></div>' + getTexts("options", "FlyOff") + '</td>' +
-                    '<td><div class="dio_icon_small townicon_so"></div>' + getTexts("options", "NavyOff") + '</td>' +
-                    '<td><div class="dio_icon_small townicon_no"></div>' + getTexts("options", "Out") + '</td></tr>' +
-                    '<tr><td><div class="dio_icon_small townicon_ld"></div>' + getTexts("options", "LandDef") + '</td>' +
-                    '<td><div class="dio_icon_small townicon_fd"></div>' + getTexts("options", "FlyDef") +
-                    '<td><div class="dio_icon_small townicon_sd"></div>' + getTexts("options", "NavyDef") + '</td>' +
-                    '<td><div class="dio_icon_small townicon_po"></div>' + getTexts("options", "Emp") + '</td></tr>' +
+                    '<tr><td style="width:115px"><div class="dio_icon_small townicon_lo"></div>' + getTexts("Town_icons", "LandOff") + '</td>' +
+                    '<td><div class="dio_icon_small townicon_fo"></div>' + getTexts("Town_icons", "FlyOff") + '</td>' +
+                    '<td><div class="dio_icon_small townicon_so"></div>' + getTexts("Town_icons", "NavyOff") + '</td>' +
+                    '<td><div class="dio_icon_small townicon_no"></div>' + getTexts("Town_icons", "Out") + '</td></tr>' +
+                    '<tr><td><div class="dio_icon_small townicon_ld"></div>' + getTexts("Town_icons", "LandDef") + '</td>' +
+                    '<td><div class="dio_icon_small townicon_fd"></div>' + getTexts("Town_icons", "FlyDef") +
+                    '<td><div class="dio_icon_small townicon_sd"></div>' + getTexts("Town_icons", "NavyDef") + '</td>' +
+                    '<td><div class="dio_icon_small townicon_po"></div>' + getTexts("Town_icons", "Emp") + '</td></tr>' +
                     '</table>' +
-                    '<p>' + getTexts("options", "tic")[2] + ':</p>' +
+                    '<p>' + getTexts("Options", "tic")[2] + ':</p>' +
                     '<div class="dio_icon_small townicon_sh"></div><div class="dio_icon_small townicon_di"></div><div class="dio_icon_small townicon_un"></div><div class="dio_icon_small townicon_ko"></div>' +
                     '<div class="dio_icon_small townicon_ti"></div><div class="dio_icon_small townicon_gr"></div><div class="dio_icon_small townicon_dp"></div><div class="dio_icon_small townicon_re"></div>' +
                     '<div class="dio_icon_small townicon_wd"></div><div class="dio_icon_small townicon_st"></div><div class="dio_icon_small townicon_si"></div><div class="dio_icon_small townicon_bu"></div>' +
@@ -4310,36 +4374,36 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/liste-de-ville-1.png" alt="townlist" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
-                    '<td>'+(typeof(uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "til")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("options", "FLASK") + '</p>' ) : (
-                        '<div id="dio_til" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "til")[0] + '</div></div>')) +
-                    '<p>' + getTexts("options", "til")[1] + '</p></td>' +
+                    '<td>'+(typeof(uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "til")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "FLASK")[0] + '</p>' ) : (
+                        '<div id="dio_til" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "til")[0] + '</div></div>')) +
+                    '<p>' + getTexts("Options", "til")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/map-1.png" alt="map" /></td>' +
-                    '<td><div id="dio_tim" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "tim")[0] + '</div></div><div id="dio_tiw" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "tiw")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "tim")[1] + '</p>' +
+                    '<td><div id="dio_tim" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tim")[0] + '</div></div><div id="dio_tiw" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tiw")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "tim")[1] + '</p>' +
                     '<table id="Town_Popup" width="60%" style="display:none;"><tr>'+
                     '<td width="20%"><div id="dio_tpt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">'+ uw.DM.getl10n("context_menu").titles.units_info +'</div></div></td>'+
                     '<td width="20%"><div id="dio_tis" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">'+ uw.DM.getl10n("context_menu").titles.support +'</div></div></td>'+
                     '<td width="20%"><div id="dio_tih" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">'+ uw.DM.getl10n("heroes").collection.heroes +'</div></div></td>'+
                     '<td width="20%"><div id="dio_tir" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">'+ getTexts("labels", "rec") +'</div></div></td>'+
-                    //'<td width="20%"><div id="tiz" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Pink") + '</div></div></td>'+
-                    //'<td width="20%"><div id="tiz" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "White") + '</div></div></td>'+
+                    //'<td width="20%"><div id="tiz" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Pink") + '</div></div></td>'+
+                    //'<td width="20%"><div id="tiz" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "White") + '</div></div></td>'+
                     '</tr></table></td>'+
                     '</td></tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/bbcode-ville.jpg" alt="map" style="transform: scale(1.25); margin: 10px 12px 16px 2px;" /></td>' +
-                    '<td><div id="dio_Tow" class="checkbox_new"><div class="cbx_icon" style="top: -1px;"></div><div class="cbx_caption">' + getTexts("options", "tow")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "tow")[1] + '</p></td>' +
+                    '<td><div id="dio_Tow" class="checkbox_new"><div class="cbx_icon" style="top: -1px;"></div><div class="cbx_caption">' + getTexts("Options", "tow")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "tow")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
-                    '<td><div id="dio_Tol" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Tol")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Tol")[1] + '</p><br></br></td>' +
+                    '<td><div id="dio_Tol" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Tol")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Tol")[1] + '</p><br></br></td>' +
                     '</tr></table>' +
 
                     // Forum tab
                     '<table id="dio_forum_table" class="content_category"><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/smiley-box.1.png" alt="dio_smiley_box" style="max-width:120px !important;"/></td>' +
-                    '<td><div id="dio_sml" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "sml")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "sml")[1] + '</p>' +
+                    '<td><div id="dio_sml" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sml")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "sml")[1] + '</p>' +
                     '<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-mttao-wassermann.gif" /> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigrqlp2odi2kqo24.gif" /> ' +
                     '<img src="'+ dio_img +'" alt="" /> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigmv8wnffb3v0ifg.gif" /> ' +
                     '<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj2byjendffymp88t.gif" alt="" /> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj1l9gndtu3nduyvi.gif" /> ' +
@@ -4347,106 +4411,106 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<br><br><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/formulaire-de-defense.png" alt="def_formular" style="max-height:none; max-width:120px !important; "/></td>' +
-                    '<td><div id="dio_bbc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "bbc")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "bbc")[1] + '</p><br><img src="https://www.tuto-de-david1327.com/medias/images/formulaire-de-defense-1.png" alt="" style="max-width:none !important;" /></td>' +
+                    '<td><div id="dio_bbc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "bbc")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "bbc")[1] + '</p><br><img src="https://www.tuto-de-david1327.com/medias/images/formulaire-de-defense-1.png" alt="" style="max-width:none !important;" /></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/deletemultiple.png" alt="def_formular" style="max-height:none; max-width:120px !important; "/></td>' +
-                    '<td><div id="dio_Fdm" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Fdm")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Fdm")[1] + '</p><br></td>' +
+                    '<td><div id="dio_Fdm" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Fdm")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Fdm")[1] + '</p><br></td>' +
                     '</tr></table>' +
 
                     // Trade tab
                     '<table id="dio_trade_table" class="content_category"><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/recruiting-trade.png" alt="recruiting_trade" /></td>' +
-                    '<td><div id="dio_rec" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "rec")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "rec")[1] + '</p><br><img src="https://www.tuto-de-david1327.com/medias/images/commerce-de-pourcentage.png" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:250px !important;" /></td>' +
+                    '<td><div id="dio_rec" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "rec")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "rec")[1] + '</p><br><img src="https://www.tuto-de-david1327.com/medias/images/commerce-de-pourcentage.png" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:250px !important;" /></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/percentage-trade.png" alt="percentage_trade" /></td>' +
-                    '<td><div id="dio_per" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "per")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "per")[1] + '</p><br></td>' +
+                    '<td><div id="dio_per" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "per")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "per")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/towntradeimprovement.jpg" alt="" style="border: 2px solid rgb(158, 133, 78);"/></td>' +
-                    '<td><div id="dio_Tti" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Tti")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Tti")[1] + '</p><br></br></td>' +
+                    '<td><div id="dio_Tti" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Tti")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Tti")[1] + '</p><br></br></td>' +
                     '</tr><tr>' +
                     '</tr></table>' +
 
                     // Layout tab
                     '<table id="dio_layout_table" class="content_category"><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/simulateur.png" alt="simulator" style="max-width:100px !important;"/></td>' +
-                    '<td><div id="dio_sim" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "sim")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "sim")[1] + '</p></td>' +
+                    '<td><div id="dio_sim" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sim")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "sim")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/barre-de-taches.png" alt="taskbar" style="max-width:100px !important;"/></td>' +
-                    '<td><div id="dio_tsk" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "tsk")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "tsk")[1] + '</p></td>' +
+                    '<td><div id="dio_tsk" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tsk")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "tsk")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/popup-de-faveur-1.png" alt="favor_popup" style="max-width:100px !important;"/></td>' +
-                    '<td><div id="dio_pop" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "pop")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "pop")[1] + '</p></td>' +
+                    '<td><div id="dio_pop" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "pop")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "pop")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/contextmenu.png" alt="contextmenu" /></td>' +
-                    '<td><div id="dio_con" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "con")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "con")[1] + '</p></td>' +
+                    '<td><div id="dio_con" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "con")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "con")[1] + '</p></td>' +
                     '</tr>' +
                     ((Browser !== 'Firefox') ? ('<tr>' +
                                                 '<td><img src="https://www.tuto-de-david1327.com/medias/images/scrollbar-2.png" alt="scrollbar" style="border: 1px solid rgb(158, 133, 78);"/></td>' +
-                                                '<td><div id="dio_Scr" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Scr")[0] + '</div></div>' +
-                                                '<p>' + getTexts("options", "Scr")[1] + '</p>' +
+                                                '<td><div id="dio_Scr" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Scr")[0] + '</div></div>' +
+                                                '<p>' + getTexts("Options", "Scr")[1] + '</p>' +
                                                 '<table id="scrollbar" width="90%" class="radiobutton horizontal rbtn_visibility" style="display:none;"><tr>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_aaa"><div class="pointer"></div>'+ getTexts("options", "Blue") +'</div></td>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_bbb"><div class="pointer"></div>'+ getTexts("options", "Red") +'</div></td>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_ccc"><div class="pointer"></div>'+ getTexts("options", "Green") +'</div></td>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_ddd"><div class="pointer"></div>' + getTexts("options", "Pink") + '</div></td>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_eee"><div class="pointer"></div>' + getTexts("options", "White") + '</div></td>'+
+                                                '<td width="20%"><div class="option js-option" id="dio_aaa"><div class="pointer"></div>'+ getTexts("Color", "Blue") +'</div></td>'+
+                                                '<td width="20%"><div class="option js-option" id="dio_bbb"><div class="pointer"></div>'+ getTexts("Color", "Red") +'</div></td>'+
+                                                '<td width="20%"><div class="option js-option" id="dio_ccc"><div class="pointer"></div>'+ getTexts("Color", "Green") +'</div></td>'+
+                                                '<td width="20%"><div class="option js-option" id="dio_ddd"><div class="pointer"></div>' + getTexts("Color", "Pink") + '</div></td>'+
+                                                '<td width="20%"><div class="option js-option" id="dio_eee"><div class="pointer"></div>' + getTexts("Color", "White") + '</div></td>'+
                                                 '</tr></table></td>'+
                                                 '</tr>' ) : "") +
                     '<tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/boites-d-activites.png" alt="activity_boxes" style="max-width:100px !important;"/></td>' +
-                    '<td><div id="dio_act" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "act")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "act")[1] + '</p></td>' +
+                    '<td><div id="dio_act" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "act")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "act")[1] + '</p></td>' +
                     '</tr></table>' +
 
                     //reports
                     '<table id="dio_reports_table" class="content_category"><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/troop-speed.png" style="border: 1px solid rgb(158, 133, 78);" alt="troop_speed" /></td>' +
-                    '<td><div id="dio_way" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "way")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "way")[1] + '</p><br></td>' +
+                    '<td><div id="dio_way" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "way")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "way")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/conquered-counter.png" style="border: 1px solid rgb(158, 133, 78);" alt="conquer_counter" /></td>' +
-                    '<td><div id="dio_cnt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "cnt")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "cnt")[1] + '</p>' +
+                    '<td><div id="dio_cnt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "cnt")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "cnt")[1] + '</p>' +
                     '<img src="https://www.tuto-de-david1327.com/medias/images/conquests-2.png" style="max-height:none; max-width:300px !important;" /><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/sans-surcharge.png" alt="" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
 
-                    '<td>'+(typeof(uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Sel")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("options", "FLASK") + '</p>' ) : (
-                        '<div id="dio_Sel" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Sel")[0] + '</div></div>')) +
-                    '<p>' + getTexts("options", "Sel")[1] + '</p><br></td>' +
+                    '<td>'+(typeof(uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Sel")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "FLASK")[0] + '</p>' ) : (
+                        '<div id="dio_Sel" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Sel")[0] + '</div></div>')) +
+                    '<p>' + getTexts("Options", "Sel")[1] + '</p><br></td>' +
                     '</tr></table>' +
 
                     // Other Stuff tab
                     '<table id="dio_other_table" class="content_category"><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/mousewheel-zoom.png" alt="" /></td>' +
-                    '<td><div id="dio_scr" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "scr")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "scr")[1] + '</p><br></td>' +
+                    '<td><div id="dio_scr" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "scr")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "scr")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/bbcode-button.png" alt="" /></td>' +
-                    '<td><div id="dio_BBt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "BBt")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "BBt")[1] + '</p><br></td>' +
+                    '<td><div id="dio_BBt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "BBt")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "BBt")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-kciuki.gif" alt="" /></td>' +
-                    '<td><div id="dio_Rew" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "rew")[0] + '</div></div>' +
+                    '<td><div id="dio_Rew" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "rew")[0] + '</div></div>' +
                     '<p>' + uw.DM.getl10n("grepolis_score").categories.daily_awards + '</p><br></td>' +
                     '</tr><tr>' +
                     /*'<td><img src="" alt="" /></td>' +
-                    '<td><div id="dio_err" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "err")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "err")[1] + '</p></td>' +*/
+                    '<td><div id="dio_err" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "err")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "err")[1] + '</p></td>' +*/
                     //((Game.features.is_domination_active = false) ? (
                     ((uw.Game.features.end_game_type == "end_game_type_world_wonder") ? (
                         '<td><img src="https://www.tuto-de-david1327.com/medias/images/temple-d-artemiss.gif" alt="share" /></td>' +
-                        '<td><div id="dio_wwc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("settings", "cat_wonders") + getTexts("options", "wwc")[0] + '</div></div>' +
-                        '<p>' + getTexts("options", "wwc")[1] + '</p><br/>' +
+                        '<td><div id="dio_wwc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Settings", "cat_wonders") + getTexts("Options", "wwc")[0] + '</div></div>' +
+                        '<p>' + getTexts("Options", "wwc")[1] + '</p><br/>' +
                         '<img src="https://www.tuto-de-david1327.com/medias/images/merveille-du-monde.png" alt="share_calculator" style="max-width:600px !important; border: 2px solid rgb(158, 133, 78);" /></td>' +
                         '</tr><tr>' ) : "") +
                     '</tr></table>' +
@@ -4454,58 +4518,58 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     // Premium
                     '<table id="dio_Premium_table" class="content_category"><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/culture.png" alt="" style="max-height:none; max-width:100px !important;" /></td>' +
-                    '<td><div id="dio_Cul" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Cul")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Cul")[1] + '</p><br></td>' +
+                    '<td><div id="dio_Cul" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cul")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Cul")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/advancement-of-culture.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
-                    '<td><div id="dio_Cup" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Cup")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Cup")[1] + '</p><br></td>' +
+                    '<td><div id="dio_Cup" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cup")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Cup")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/caves.jpg" alt="" /></td>' +
-                    '<td><div id="dio_Hio" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Hio")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Hio")[1] + '</p><br></td>' +
+                    '<td><div id="dio_Hio" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hio")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Hio")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/resource-counter-1.png" alt="resource counter" /></td>' +
-                    '<td><div id="dio_Rct" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Rct")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Rct")[1] + '</p><br></td>' +
+                    '<td><div id="dio_Rct" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Rct")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Rct")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/overview-of-peasant-villages.jpg" alt="" /></td>' +
-                    '<td><div id="dio_Ish" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Ish")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Ish")[1] + '</p><br></br></td>' +
+                    '<td><div id="dio_Ish" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ish")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Ish")[1] + '</p><br></br></td>' +
                     '</tr></table>' +
 
                     // Quack
                     '<table id="dio_Quack_table" class="content_category"><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/bb-code-messages.png" alt="" style="" /></td>' +
-                    '<td><div id="dio_Mse" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Mse")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Mse")[1] + '  ' +
-                    '<a href=' + getTexts("link", "MessageExport") + ' target="_blank">' + getTexts("settings", "Learn_more") + '</a></p><br></td>' +
+                    '<td><div id="dio_Mse" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Mse")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Mse")[1] + '  ' +
+                    '<a href=' + getTexts("link", "MessageExport") + ' target="_blank">' + getTexts("Settings", "Learn_more") + '</a></p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/hotkeys.png" alt="" /></td>' +
-                    '<td><div id="dio_Hot" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Hot")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Hot")[1] + '</p><br></td>' +
+                    '<td><div id="dio_Hot" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hot")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Hot")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
-                    '<td><div id="dio_Isl" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Isl")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Isl")[1] + '</p><br></td>' +
+                    '<td><div id="dio_Isl" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Isl")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Isl")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
                     '<td><div id="dio_Hid" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + uw.DM.getl10n("layout").premium_button.premium_menu.hides_overview + '</div></div>' +
-                    '<p>' + getTexts("options", "Hid")[1] + '</p><br></td>' +
+                    '<p>' + getTexts("Options", "Hid")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/city-view-button-1.png" alt="" /></td>' +
-                    '<td><div id="dio_Cib" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Cib")[0] + '</div></div>' +
-                    '<p>' + getTexts("options", "Cib")[1] + '</p></td>' +
+                    '<td><div id="dio_Cib" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cib")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Cib")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
-                    '<td>'+(typeof(uw.MoleHoleOnBoard) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Ciw")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("options", "Mole") + '</p>' ) : (
-                        '<div id="dio_Ciw" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("options", "Ciw")[0] + '</div></div>')) +
-                    '<p>' + getTexts("options", "Ciw")[1] + '</p></td>' +
+                    '<td>'+(typeof(uw.MoleHoleOnBoard) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ciw")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "Mole")[0] + '</p>' ) : (
+                        '<div id="dio_Ciw" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ciw")[0] + '</div></div>')) +
+                    '<p>' + getTexts("Options", "Ciw")[1] + '</p></td>' +
                     '</tr><tr>' +
                     ((MID == 'fr' || MID == 'de' || MID == 'en' || MID == 'zz') ? (
                         '<td><img src="" alt="" /></td>' +
                         '<td><div id="dio_Rep" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + uw.DM.getl10n("bbcodes").report.name + '</div></div>' +
-                        '<p>' + getTexts("options", "Rep")[1] + '</p><br></td>') : "") +
+                        '<p>' + getTexts("Options", "Rep")[1] + '</p><br></td>') : "") +
                     '</tr></table>'+
 
                     // =Tuto Troupes Grepolis= tab
@@ -4622,11 +4686,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="tuto" style="font-weight:bold; float:left">' +
                     '<img src="/images/game/ally/founder.png" alt="" style="float:left;height:19px;margin:0px 5px -3px;"><span>' + getTexts("tutoriel", "tuto") + '</span></a>'+
 
-                    '<span class="" style="font-weight:bold; float:right; margin-left:20px;">' + getTexts("settings", "cat_forum") + ': ' +
+                    '<span class="" style="font-weight:bold; float:right; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:right">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("settings", "forum") + '</span></a>' +
+                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '</div>' +
 
@@ -5438,9 +5502,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     break;
                 case "/building_hide/index":
-                    /*if (DATA.options.dio_Hid) {
-                        hidesIndexIron.add();
-                    }*/
                     break;
                 case "/building_barracks/index":
                 case "/building_barracks/build":
@@ -5647,9 +5708,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_Hio) {
                         hidesOverview.init();
                     }
-                    /*if (DATA.options.dio_Hid) {
-                        hidesIndexIron.add();
-                    }*/
+                    if (DATA.options.dio_Hid) {
+                        setTimeout(function () {
+                            hidesIndexIron.add();
+                        }, 100);
+                    }
                     break;
             }
         });
@@ -5705,7 +5768,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         createButton: function(t, e, n, i) { //dio.createButton(getTexts("messages", "copy"), "dio-copy-message-quote", null, 'data-clipboard-target="#expTextarea"')
             return "<a " + (i = void 0 === i ? "" : i) + ' class="button ' + (n = null == n || void 0 === n ? "" : n) + '"  ' + (e = null == e ? "" : 'id="' + e + '"') + '><span class="left"><span class="right"><span style="color: #fc6;" class="middle">' + dio_icon + '' + t + '</span></span></span><span style="clear:both;"></span></a>'
         },
-        createBtnDonate: function(t, e, n, i, h) { //dio.createBtnDonate(getTexts("settings", "Donate"), null, null, 0, getTexts("link", "Donate"))
+        createBtnDonate: function(t, e, n, i, h) { //dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate"))
             return "<a " + (i = void 0 === i ? "" : i) + ' class="dio-button button ' + (n = null == n || void 0 === n ? "" : n) + '" ' + (h = null == h ? "" : 'href="' + h + '"target="_blank"') + (e = null == e ? "" : 'id="' + e + '"') + '><span class="don dio-left"><span class="don dio-right"><span class="don dio-middle">' + t + '</span></span></span><span style="clear:both;"></span></a>'
         },
         grepo_btn : function (ID, Text) {
@@ -5818,6 +5881,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             if (!DATA.error[dio_version]) {
                 DATA.error[dio_version] = {};
             }
+            console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.stack);
 
             /*if (DATA.options.dio_err && !DATA.error[dio_version][fn]) {
                 $.ajax({
@@ -5927,7 +5991,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             var notif = DATA.notification;
             if (notif <= 23 || david1327) {
-                Notification.create(23, getTexts("settings", "Feature")); //getTexts("settings", "Feature") + ' (' + getTexts("options", "")[0] + ')');
+                Notification.create(23, getTexts("Settings", "Feature")); //getTexts("Settings", "Feature") + ' (' + getTexts("Options", "")[0] + ')');
 
                 // Click Event
                 $('.diotools .icon').click(function () {
@@ -5960,108 +6024,75 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</div>' +
                     '<div style="bottom: 1px;position: absolute; font-weight: bold;">' +
 
-                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("settings", "cat_forum") + ': ' +
+                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("settings", "forum") + '</span></a>' +
+                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("settings", "Update") + '</span></a>' +
+                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
 
                     '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 33px;">' +
                     '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Update") + ' target="_blank"></a>' +
-                    '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 484px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
+                    '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 484px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
-                HTML_tab1 += grepoGameBorder + getTexts("settings", "Update") + '</div>';
+                HTML_tab1 += grepoGameBorder + getTexts("Settings", "Update") + '</div>';
 
                 //
+                var version = dio_version[2] += dio_version[3]
+                var beforeversion = dio_version.replace(version, version-1);
                 HTML_tab1 += '<div id="NotifText">' +
                     //'<p>- '+ getTexts("Notification", "A") +'.</p>' +
 
-'<center style="text-align: left;"><span style="color:#006400;"><strong><span style="font-size:20px;"></span><span style="font-size:20px;">Join me on discord</span><span style="font-size:20px;"></span> -&gt;&nbsp;</strong><span><br />' +
-'- To report bugs<br />' +
-'-&nbsp;Subscribe to the beta version<br />' +
-'- Suggest ideas<br />' +
-'- And much more<br />' +
-'<span style="text-decoration: underline;"><span style="color: #008000;"><strong><a href="https://discord.gg/Q7WXtmRNRW">https://discord.gg/Q7WXtmRNRW</a></strong></span></span></span></span></center>' +
+'<iframe src="https://discord.com/widget?id=838203647028232213&theme=dark" width="350" height="300" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>' +
 
-'<p>&nbsp;</p>' +
+                    '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-tip.png) no-repeat;font-weight: bold;">News and changes</div>' +
 
-                    '<div style="height: 43px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-tip.png) no-repeat;font-weight: bold;">News and changes</div>' +
-
-'<p><span style="font-size:18px;"></span><span style="font-size:18px;">- Transport capacity :&nbsp;</span><em><span style="font-size:14px;"></span><span style="font-size:14px;">A big thank you to</span><span style="font-size:14px;"> Telokis </span><span style="font-size:14px;">for improvement</span><span style="font-size:14px;"></span></em><span style="font-size:18px;"></span><br />' +
-'- Displays in green if the capacity is sufficient and red otherwise<br />' +
-'- Changed the right icon if defensive units have been taken into account.<br />' +
-'- Added a tooltip that says how many ships there are to transport the entire population if there are any shortages.<br />' +
-'- Added a tooltip that says how much population can still be transported.<br />' +
-'&nbsp;<img alt="Capacite de transport" src="https://www.tuto-de-david1327.com/medias/images/capacite-de-transport.png" /></p>' +
+'<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- Message version :</span></span><br />' +
+'-&gt; Update checking has been improved<br />' +
+'<img alt="Capture d ecran 2021 10 31 165135" height="66" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-10-31-165135.png" width="404" /></p>' +
 
 '<p>&nbsp;</p>' +
 
 '<p><span style="font-size:18px;">- List of cities in BB-Code :</span><br />' +
-'&nbsp;-&gt; You will be able to quickly export a group of cities in BB-code.<br />' +
-'&nbsp;<img alt="Liste des villes en BB-Code" src="https://www.tuto-de-david1327.com/medias/images/cities-bb-code.png" /></p>' +
+'&nbsp;-&gt; It is now possible to generate up to 300 cities.<br />' +
+'&nbsp;<img alt="Capture d ecran 2021 09 02 091200" height="371" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-09-02-091200.png" width="500" /></p>' +
 
 '<p>&nbsp;</p>' +
 
-'<p><span style="font-size:18px;">- <span style="font-size:18px;"><span style="font-size:18px;">Compatibility FLASK-TOOLS :</span></span></span><br />' +
-'&nbsp;-&gt; This version allows compatibility with FLASK-TOOLS&nbsp;<br />' +
-'<strong>&nbsp;<span style="color:#c0392b;"><span style="font-size:16px;">-&gt; </span></span></strong><b><span style="font-size:12.0pt"><span style="line-height:107%"><span style="font-family:&quot;Times New Roman&quot;,serif"><span style="color:#c0392b"></span></span>' +
-'</span></span><span style="font-size:12.0pt"><span style="line-height:107%"><span style="font-family:&quot;Times New Roman&quot;,serif"><span style="color:#c0392b">Attention informed user the use of the two scripts is not recommended. Slowdowns could occur.</span></span></span></span></b></p>' +
+'<p><span style="font-size:18px;">- <span style="font-size:18px;"><span style="font-size:18px;"> Translations :</span></span></span><br />' +
+'-&gt; Optimization of the function for translation<br />' +
+'-&gt; Thanks to AbstractGR for adding the GREEK language<br />' +
+'-&gt;&nbsp;Do you know that you can help me translate the script anytime ?<br />' +
+'<img alt="Traductions" height="545" src="https://www.tuto-de-david1327.com/medias/images/traductions.png" width="1021" /></p>' +
 
-'<div style="height: 43px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
-
-'<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
-
-'<p><span style="font-size:18px;">- Mac-type computers do not work</span><br />' +
-'-&gt; Correction applied.<span style="font-size:18px;"></span></p>' +
-
-'<p><span style="font-size:18px;">- Keyboard shortcut :</span><br />' +
-'-&gt; The function does not update every 8h -&gt; Problem solved.</p>' +
+'<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
 
 '<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
 
-'<p><span style="font-size:18px;">- City Icons &amp; City List :</span><br />' +
-'-&gt; Refresh change (which produces less slowdown).<span style="font-size:18px;"></span></p>' +
-
-'<p><span style="font-size:18px;">- Caves :</span><br />' +
-'-&gt; By pressing the arrows on the keyboard the function did not start -&gt; Problem solved.<br />' +
-'-&gt; Other activation issues have been fixed after the 08/18/2021 update of grepolis</p>' +
+'<p><span style="font-size:18px;">- Caves </span><span style="font-size:18px;"> :</span><br />' +
+'-&gt; The function does not activate is not always -&gt; Problem solved.</p>' +
 
 '<p><span style="font-size:18px;"></span></p>' +
 
-'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"></span><span style="font-size:18px;"> Transport capacity :</span><br />' +
-'-&gt; Fixed for the Sparta unit taking only one slot in ships when it costs 10 to produce.</p>' +
+'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"></span><span style="font-size:18px;"> City view :</span><br />' +
+'-&gt; The function is now disabled by default</p>' +
 
-'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"> BB-Code messages :</span><br />' +
-'&nbsp;-&gt; An error occurs during its shutdown -&gt; Problem solved.</p>' +
-
-'<p><span style="font-size:18px;">- <span style="font-size:18px;"><span style="font-size:18px;">Mole Hole Compatibility [City View]</span></span><span style="font-size:18px;"></span>.&nbsp;</span><br />' +
-'&nbsp;-&gt; The function is automatically deactivated upon detection of Mole Hole.&nbsp;</p>' +
-
-'<p><span style="font-size:18px;">-&nbsp;<span style="font-size:18px;">FLASK-TOOLS compatibility [City list &amp; Add (No overload / Delete)]</span>.&nbsp;</span><br />' +
-'&nbsp;-&gt; The functions are automatically deactivated upon detection of FLASK-TOOLS. (not compatible)</p>' +
-
-'<p><span style="font-size:18px;">- Window<span style="font-size:18px;"></span>.&nbsp;</span><br />' +
-'&nbsp;-&gt; The title is not displayed correctly after the update of 08/18/2021 of grepolis<br />' +
-'&nbsp;<img alt="Capture d ecran 2021 08 05 125143" class="img-left" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-08-05-125143.png" /></p>' +
-
-'<p>&nbsp;</p>' +
-
-'<p><span style="font-size:18px;">- Other optimization.&nbsp;</span><br />' +
-'&nbsp;-&gt; Wonder world detection optimization.<br />' +
-'&nbsp;-&gt; A cleanup of the script.</p>' +
-
-
+'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"> Recruitment trade :</span><br />' +
+'&nbsp;-&gt; The ratio was not good -&gt; the ratio is now calculated by itself thanks to a function.<br />' +
+'<img alt="Capture d ecran 2021 10 31 164630" height="265" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-10-31-164630.png" width="154" /></p>' +
 
                     '<div style="height: 30px;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
 
                     '<p>Please feel free to report any bugs and <a href="'+ getTexts("link", "Update") +'" target="_blank">comment</a> on this update!</p>' +
 
+                    '<p><br />' +
+                    '<p>To see all the modifications I invite you to go to this link<br />' +
+                    '<a href="https://github.com/DIO-David1327/DIO-TOOLS-David1327/compare/' + beforeversion + '...' + dio_version + '">https://github.com/DIO-David1327/DIO-TOOLS-David1327/compare/' + beforeversion + '...' + dio_version + '</a></p>' +
                     '<p><br />' +
                     'Good evening and good game.<br />' +
                     'Regards,</p>';
@@ -6076,20 +6107,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</div>' +
                     '<div style="bottom: 1px;position: absolute; font-weight: bold;">' +
 
-                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("settings", "cat_forum") + ': ' +
+                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("settings", "forum") + '</span></a>' +
+                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("settings", "Update") + '</span></a>' +
+                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
 
                     '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 33px;">' +
                     '<a style="display: none;" class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Update") + ' target="_blank"></a>' +
-                    '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 504px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
+                    '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 504px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
                 HTML_tab2 += grepoGameBorder + getTexts("labels", "donat") + '</div>';
@@ -6102,36 +6133,42 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<tr><th colspan="3">' + getTexts("labels", "donat") + '</th></tr>'+
                     (function(){
                     var donations = [
-                        ["Christiane G", 60],
-                        ["Nepomuk P", 50],
-                        ["Kanokwan S", 20],
-                        ["Ines L", 20],
-                        ["Artur Z", 20],
-                        ["etienne1306", 10],
-                        ["Doris H", 10],
-                        ["Andreas A", 10],
-                        ["Andreas S", 10],
-                        ["Eric A", 10],
+                        [1, 5, 60, 56.51, 'Christiane G'],
+                        [2, 1, 50, 47.2, 'Nepomuk P'],
+                        [3, 3, 30, 27.48, 'Eli M'],
+                        [4, 1, 20, 19.07, 'Elwira G'],
+                        [4, 1, 20, 19.07, 'Sven K'],
+                        [4, 1, 20, 19.07, 'Artur Z'],
+                        [4, 2, 20, 18.32, 'Ines L'],
+                        [4, 1, 20, 19.07, 'kanokwan s'],
+                        [5, 1, 10, 9.36, 'Uwe J'],
+                        [5, 1, 10, 9.36, 'Doris H'],
+                        [5, 1, 10, 9.36, 'Andreas S'],
                     ];
                     var donations2 = [
-                        ["Ulla R", 10],
-                        ["Christian P", 10],
-                        ["Jean-Paul B", 10],
-                        ["Eli M", 10],
-                        ["Rabello", 5.55],
-                        ["Susi K", 5.55],
-                        ["Kornelia M", 5],
-                        ["Max P", 5],
-                        ["Antonio AB", 5],
+                        [5, 1, 10, 9.36, 'Ulla R'],
+                        [5, 1, 10, 9.36, 'Cordula H'],
+                        [5, 1, 10, 9.36, 'Jean P'],
+                        [5, 1, 10, 9.36, 'Christian P'],
+                        [5, 1, 10, 9.16, 'Eric A'],
+                        [5, 1, 10, 9.36, 'Andreas A'],
+                        [6, 1, 5.55, 5.04, 'Susi K'],
+                        [6, 1, 5.55, 5.04, 'Annette H'],
+                        [7, 1, 5, 4.5, 'Thomas C'],
+                        [7, 1, 5, 4.5, 'Petr M'],
+                        [7, 1, 5, 5.5, 'Max P'],
                     ];
                     var donations3 = [
-                        ["Swen A", 5],
-                        ["Raul GC", 5],
-                        ["Mateusz O", 5],
-                        ["Kallerberg", 5],
-                        ["Therese S", 5],
-                        ["Martin G", 2.5],
-                        ["Marie-laure D", 2],
+                        [7, 1, 5, 4.5, 'Kornelia M'],
+                        [7, 1, 5, 4.5, 'Antonio A'],
+                        [7, 1, 5, 4.5, 'Denai'],
+                        [7, 1, 5, 4.5, 'Mateusz O'],
+                        [7, 1, 5, 4.5, 'Raul G'],
+                        [7, 1, 5, 4.5, 'Roland D'],
+                        [7, 1, 5, 4.5, 'Swen A'],
+                        [7, 1, 5, 4.4, 'Therese S'],
+                        [8, 1, 2.5, 2.08, 'Martin G'],
+                        [9, 1, 2, 1.59, 'Marie-Laure D'],
                     ];
                     var donation_table = "";
                     var donation_table2 = "";
@@ -6142,24 +6179,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         var donation_class = "";
 
-                        switch(donations[d][1]){
-                            case 60: donation_class = "gold"; break;
-                            case 50: donation_class = "silver"; break;
-                            case 20: donation_class = "bronze"; break;
+                        switch(donations[d][0]){
+                            case 1: donation_class = "gold"; break;
+                            case 2: donation_class = "silver"; break;
+                            case 3: donation_class = "bronze"; break;
                             default: donation_class = "green2"; break;
                         }
 
-                        donation_table += '<tr class="donation"><td class="laurel '+ donation_class +'"></td><td>' + donations[d][0] + '</td><td class="value">' + donations[d][1] + '€</td></tr>';
+                        donation_table += '<tr class="donation"><td class="laurel '+ donation_class +'"></td><td>' + donations[d][4] + '</td><td class="value">' + donations[d][2] + '€</td><td class="value">(' + donations[d][3] + '€)</td></tr>';
                     }
                     for(d = 0; d < donations2.length; d++){
 
                         var donation_class2 = "";
-                        donation_table2 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations2[d][0] + '</td><td class="value">' + donations2[d][1] + '€</td></tr>';
+                        donation_table2 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations2[d][4] + '</td><td class="value">' + donations2[d][2] + '€</td><td class="value">(' + donations2[d][3] + '€)</td></tr>';
                     }
                     for(d = 0; d < donations3.length; d++){
 
                         var donation_class3 = "";
-                        donation_table3 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations3[d][0] + '</td><td class="value">' + donations3[d][1] + '€</td></tr>';
+                        donation_table3 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations3[d][4] + '</td><td class="value">' + donations3[d][2] + '€</td><td class="value">(' + donations3[d][3] + '€)</td></tr>';
                     }
 
                     return donation_table + '</table><table style="float:left;margin-right: 18px; margin-top: 30px;">' + donation_table2 + '</table><table style="float:left;margin-right: 18px; margin-top: 30px;">' + donation_table3;
@@ -6183,17 +6220,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     '<div id="diomenu_einstellungen_sendmail" style=" float: left; margin: -5px 0 -5px 10px;">' + dio.createButton(getTexts("translations", "send")) + '</div>' +
 
-                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("settings", "cat_forum") + ': ' +
+                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("settings", "forum") + '</span></a>' +
+                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 33px;">' +
                     '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Translations") + ' target="_blank"></a>' +
-                    '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 484px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
+                    '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 484px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
                 HTML_tab3 += grepoGameBorder + getTexts("labels", "Tran") + '<div style="float: right; margin-top: -2px; margin-right: -5px">' + dio.grepo_dropdown_flag("langdiv", supported_lang)[0].outerHTML + '</div></div>';
@@ -6219,10 +6256,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<li>' + getTexts("translations", "trans_infotext6") + '</li>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "forum") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("settings", "cat_forum") + '</span></a>' +
+                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "cat_forum") + '</span></a>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "Translations") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("settings", "forum") + '</span></a>' +
+                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
                     '</ul><div style="margin-top:30px"><b>' + getTexts("translations", "credits") + ':</b><ul style="list-style:square outside;">';
 
                 HTML_tab3 += '<table>'+
@@ -6250,7 +6287,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 })() +
                     '</table></div>';
                 HTML_tab3 += '</div>';
-                //HTML_tab3 += dio.grepo_btn("diomenu_einstellungen_sendmail", getTexts("settings", "send"))[0].outerHTML;
+                //HTML_tab3 += dio.grepo_btn("diomenu_einstellungen_sendmail", getTexts("Settings", "send"))[0].outerHTML;
                 return HTML_tab3;
             }
             //???
@@ -6260,17 +6297,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</div>' +
                     '<div style="bottom: 1px;position: absolute; font-weight: bold;">' +
 
-                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("settings", "cat_forum") + ': ' +
+                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("settings", "forum") + '</span></a>' +
+                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 33px;">' +
                     '<a style="display: none;" class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Update") + ' target="_blank"></a>' +
-                    '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 504px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
+                    '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 504px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
                 HTML_tab4 += grepoGameBorder + getTexts("translations", "info") + '</div>';
@@ -6292,7 +6329,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if ($("#trans_lang").length && !$.trim($("#trans_lang").val())) {
                         uw.HumanMessage.error(getTexts("translations", "enter_lang_name"));
                         return;
-                    } else if ($("#langdiv").val() === getTexts("settings", "info")) {
+                    } else if ($("#langdiv").val() === getTexts("Settings", "info")) {
                         uw.HumanMessage.error(getTexts("translations", "choose_lang"));
                         return;
                     } else if ($("#trans_content .toSend").length === 0) {
@@ -6301,25 +6338,44 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     uw.hOpenWindow.showConfirmDialog('', getTexts("translations", "trans_sure"), function () {
                         //$("#ajax_loader").css({"visibility":"visible"});
-                        var trans_HTML_send = pName + "<br/>" + PID + "<br/>" + WID + "<p/>";
-                        $("#trans_content > DIV").each(function (i) {
-                            if ($(".toSend", this).length != 0) {
-                                trans_HTML_send += "<b>" + $("SPAN", this).text() + " : {</b><br/>";
-                                $(".toSend", this).each(function (index) {
-                                    trans_HTML_send += $(this).data("name") + " : '" + $("td:last textarea", this).val() + "',<br/>";
+                        var trans_HTML_send = pName + '<br/>' + PID + '<br/>' + WID + '<p/>';
+                        $('#trans_content > DIV').each(function (i) {
+                            if ($('.toSend', this).length != 0) {
+                                trans_HTML_send += '<b>' + $('SPAN', this).text() + ' : {</b><br/>';
+                                $('.toSend', this).each(function (index) {
+                                    trans_HTML_send += $(this).data('name') + ' : "' + $('td:last textarea', this).val() + '",<br/>';
                                 });
-                                trans_HTML_send += "},<br/>";
+                                trans_HTML_send += '},<br/>';
                             }
                         });
-                        var trans_BBcode_send = pName + "\n";
-                        trans_BBcode_send += "\n" + $("#diolang").text().toLowerCase() + " : {\n";
-                        $("#trans_content > DIV").each(function (i) {
-                            if ($(".toSend", this).length != 0) {
-                                trans_BBcode_send += "\n" + $("SPAN", this).text() + " : {\n";
-                                $(".toSend", this).each(function (index) {
-                                    trans_BBcode_send += $(this).data("name") + " : '" + $("td:last textarea", this).val() + "',\n";
+                        /*var trans_BBcode_send = pName + '\n';
+                        trans_BBcode_send += '\n' + $("#diolang").text().toLowerCase() + ' : {\n';
+                        $('#trans_content > DIV').each(function (i) {
+                            if ($('.toSend', this).length != 0) {
+                                trans_BBcode_send += '\n' + $('SPAN', this).text() + ' : {\n';
+                                $('.toSend', this).each(function (index) {
+                                    trans_BBcode_send += $(this).data('name') + ' : "' + $("td:last textarea", this).val() + '",\n';
                                 });
-                                trans_BBcode_send += "},\n";
+                                trans_BBcode_send += '},\n';
+                            }
+                        });
+                        trans_BBcode_send += "\n},\n";*/
+
+                        var trans_BBcode_send = pName + '\n';
+                        trans_BBcode_send += '\n' + $("#diolang").text().toLowerCase() + ' : {\n';
+                        $('#trans_content > DIV').each(function (i) {
+                            if ($('.toSend', this).length != 0) {
+                                trans_BBcode_send += '\n' + $('SPAN', this).text() + ' : {\n';
+                                if ($('SPAN', this).text() != "Options") {
+                                    $('.toSend', this).each(function (index) {
+                                        trans_BBcode_send += $(this).data('name') + ' : "' + $("td:last textarea", this).val() + '",\n';
+                                    });
+                                } else {
+                                    $('.toSend', this).each(function (index) {
+                                        trans_BBcode_send += $(this).data('name') + ' : ["' + $("#diobb1 textarea", this).val() + '","' + $("#diobb2 textarea", this).val() + '"],\n';
+                                    });
+                                }
+                                trans_BBcode_send += '},\n';
                             }
                         });
                         trans_BBcode_send += "\n},\n";
@@ -6344,16 +6400,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 /*$("#diomenu_einstellungen_sendmail").click(function () {
 					if ($("#trans_lang").length && !$.trim($("#trans_lang").val())) {
-						uw.HumanMessage.error(getTexts("settings", "enter_lang_name"));
+						uw.HumanMessage.error(getTexts("Settings", "enter_lang_name"));
 						return;
-					} else if ($("#langdiv").val() === getTexts("settings", "info")) {
-						uw.HumanMessage.error(getTexts("settings", "choose_lang"));
+					} else if ($("#langdiv").val() === getTexts("Settings", "info")) {
+						uw.HumanMessage.error(getTexts("Settings", "choose_lang"));
 						return;
 					} else if ($("#trans_content .toSend").length === 0) {
-						uw.HumanMessage.error(getTexts("settings", "no_translation"));
+						uw.HumanMessage.error(getTexts("Settings", "no_translation"));
 						return;
 					}
-					hOpenWindow.showConfirmDialog('', getTexts("settings", "trans_sure"), function () {
+					hOpenWindow.showConfirmDialog('', getTexts("Settings", "trans_sure"), function () {
 						$("#ajax_loader").css({"visibility":"visible"});
 						var trans_HTML_send = pName + "<br/>" + PID + "<br/>" + WID + "<p/>";
 						$("#trans_content > DIV").each(function (i) {
@@ -6384,14 +6440,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         });
                         xhr.done(function (data) {
                             $("#ajax_loader").css({"visibility":"hidden"});
-                            uw.HumanMessage.success(getTexts("settings", "trans_success"));
+                            uw.HumanMessage.success(getTexts("Settings", "trans_success"));
 
                         });
                         xhr.fail(function (jqXHR, textStatus, errorThrown) {
                             $("#dioajaxloader").css({
 								"display" : "none"
 							});
-							uw.HumanMessage.error(getTexts("settings", "trans_fail"));
+							uw.HumanMessage.error(getTexts("Settings", "trans_fail"));
 						});
 					});
 				});*/
@@ -6413,7 +6469,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         return;
                     } else if ($(this).val() === getTexts("translations", "add_lang")) {
                         langHTML_tab3 += '<div style="margin-top: 5px; padding: 5px; border: 1px solid #B48F45"><span><b>' + getTexts("translations", "language") + '</b></span><br /><table width="100%" cellspacing="1" border="0"><tbody>';
-                        langHTML_tab3 += '<tr><td style="width:50%"><div style="max-height:150px; overflow:auto">' + getTexts("translations", "name") + '</div></td>';
+                        langHTML_tab3 += '<tr><td style="width:50%"><div style="max-height:100px; overflow:auto">' + getTexts("translations", "name") + '</div></td>';
                         langHTML_tab3 += '<td style="width:50%"><textarea id="trans_lang"></textarea></td>';
                         langHTML_tab3 += '</tr></tbody></table></div>';
                     }
@@ -6422,19 +6478,29 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                             langHTML_tab3 += '<div style="margin-top: 5px; padding: 5px; border: 1px solid #B48F45"><span><b>' + a + '</b></span><br /><table width="100%" cellspacing="1" border="0"><tbody>';
                             $.each(b, function (c, d) {
-                                var text = (LANG[lang_tab3] != undefined && LANG[lang_tab3][a] != undefined && LANG[lang_tab3][a][c] != undefined) ? (LANG[lang_tab3][a][c] === "" ? "salmon" : "#fff0cf") :  "salmon";
+                                var text = (LANG[lang_tab3] != undefined && LANG[lang_tab3][a] != undefined && LANG[lang_tab3][a][c] != undefined) ? (LANG[lang_tab3][a][c] === "" ? "salmon" : "#fff0cf") : "salmon";
                                 langHTML_tab3 += '<tr data-name="' + c + '">';
-                                langHTML_tab3 += '<td style="width:50%"><div style="max-height:150px; overflow:auto">' + d + '</div></td>';
-                                langHTML_tab3 += (LANG[lang_tab3] != undefined && LANG[lang_tab3][a] != undefined && LANG[lang_tab3][a][c] != undefined) ?
-                                    '<td style="width:50%"><textarea style="background-color: ' + text + ';">' + LANG[lang_tab3][a][c] + '</textarea></td>' : '<td style="width:50%"><textarea style="background-color: ' + text + ';">' + LANG.en[a][c] + '</textarea></td>';
-                                langHTML_tab3 += '</tr>';
+                                if (a != "Options") {
+                                    langHTML_tab3 += '<td style="width:40%"><div style="max-height:100px; overflow:auto">' + d + '</div></td>';
+                                    langHTML_tab3 += (LANG[lang_tab3] != undefined && LANG[lang_tab3][a] != undefined && LANG[lang_tab3][a][c] != undefined) ?
+                                        '<td style="width:60%"><textarea style="background-color: ' + text + ';">' + LANG[lang_tab3][a][c] + '</textarea></td>' : '<td style="width:60%"><textarea style="background-color: ' + text + ';">' + LANG.en[a][c] + '</textarea></td>';
+                                    langHTML_tab3 += '</tr>';
+                                }
+                                else {
+                                    langHTML_tab3 += '<td style="width:40%"><div style="max-height:100px; overflow:auto">' + d[0] + '\n</div><div style="max-height:100px; overflow:auto">' + d[1] + '</div></td>';
+                                    langHTML_tab3 += (LANG[lang_tab3] != undefined && LANG[lang_tab3][a] != undefined && LANG[lang_tab3][a][c] != undefined) ?
+                                        '<td id="diobb1" style="width:30%"><textarea style="background-color: ' + text + ';">' + LANG[lang_tab3][a][c][0] + '</textarea></td>' : '<td id="diobb1" style="width:30%"><textarea style="background-color: ' + text + ';">' + LANG.en[a][c][0] + '</textarea></td>';
+                                    langHTML_tab3 += (LANG[lang_tab3] != undefined && LANG[lang_tab3][a] != undefined && LANG[lang_tab3][a][c] != undefined) ?
+                                        '<td id="diobb2" style="width:30%"><textarea style="background-color: ' + text + ';">' + LANG[lang_tab3][a][c][1] + '</textarea></td>' : '<td id="diobb2" style="width:30%"><textarea style="background-color: ' + text + ';">' + LANG.en[a][c][1] + '</textarea></td>';
+                                    langHTML_tab3 += '</tr>';
+                                }
                             });
                             langHTML_tab3 += '</tbody></table></div>';
                         }
                     });
                     $("#trans_content").html(langHTML_tab3);
                     $("#trans_content td").css({
-                        "width" : "50%",
+                        //"width" : "50%",
                         "border-top" : "1px solid grey",
                         //"border" : "1px solid transparent",
                     });
@@ -6465,7 +6531,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                             dio.grepo_submenu("dioset_tab4", (uw.DM.getl10n("context_menu").titles.info))[0].outerHTML +
                                             dio.grepo_submenu("dioset_tab3", getTexts("translations", "translations"))[0].outerHTML +
                                             dio.grepo_submenu("dioset_tab2", getTexts("labels", "donat"))[0].outerHTML +
-                                            dio.grepo_submenu("dioset_tab1", getTexts("settings", "Update"))[0].outerHTML + '</ul></div>');
+                                            dio.grepo_submenu("dioset_tab1", getTexts("Settings", "Update"))[0].outerHTML + '</ul></div>');
             }
             $("#diomenu_settings_tabs li a").removeClass("active");
             $("#dioset_tab1").addClass("active");
@@ -6481,7 +6547,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         create: function (nid, feature) {
             var Notification = new NotificationHandler();
             Notification.notify($('#notification_area>.notification').length + 1, uw.NotificationType.DIO_TOOLS,
-                                "<span style='color:rgb(8, 207, 0)'><b><u>" + getTexts("settings", "Feature2" /*"Feature"*/) + "!</u></b></span>" + feature + "<span class='small notification_date'>DIO-Tools-david1327: v" + dio_version + "</span>");
+                                "<span style='color:rgb(8, 207, 0)'><b><u>" + getTexts("Settings", "Feature2" /*"Feature"*/) + "!</u></b></span>" + feature + "<span class='small notification_date'>DIO-Tools-david1327: v" + dio_version + "</span>");
         },
         addCopyListener: function() {
             new uw.ClipboardJS("#dio-copy-Traductions-quote").on("success", function() {
@@ -6699,8 +6765,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // Manual Icons
             fa: 20, /* Favor */
             re: 15, /* Resources */
-            di: 2, /* Distance */
-            sh: 1, /* Pierce */
+            di: 2, 	/* Distance */
+            sh: 1, 	/* Pierce */
             lu: 13, /* ?? */
             dp: 11, /* Diplomacy */
             ha: 15, /* ? */
@@ -6715,8 +6781,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             gr: 21, /* Lorbeer */
             st: 17, /* Stone */
             is: 26, /* ?? */
-            he: 4, /* Helmet */
-            ko: 8 /* Kolo */
+            he: 4, 	/* Helmet */
+            ko: 8 	/* Kolo */
 
         },
         deactivate: function () {
@@ -7938,9 +8004,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
               '</style>').appendTo('head');
             if (uw.Game.gods_active.aphrodite || uw.Game.gods_active.ares) {
-                createWindowType("DIO_UNITS", (LANG.hasOwnProperty(LID) ? getTexts("options", "ava")[0] : default_title), 430, 315, true, [240, 70]);
+                createWindowType("DIO_UNITS", (LANG.hasOwnProperty(LID) ? getTexts("Options", "ava")[0] : default_title), 430, 315, true, [240, 70]);
             }else {
-                createWindowType("DIO_UNITS", (LANG.hasOwnProperty(LID) ? getTexts("options", "ava")[0] : default_title), 378, 315, true, [240, 70]);
+                createWindowType("DIO_UNITS", (LANG.hasOwnProperty(LID) ? getTexts("Options", "ava")[0] : default_title), 378, 315, true, [240, 70]);
             }
 
             // Set Sea-ID beside the bull eye
@@ -7951,7 +8017,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             UnitCounter.count();
             AvailableUnits.updateBullseye();
 
-            $('.dio_picomap_overlayer').tooltip(dio_icon + getTexts("options", "ava")[0]);
+            $('.dio_picomap_overlayer').tooltip(dio_icon + getTexts("Options", "ava")[0]);
         },
 
         autre: function () {
@@ -8238,7 +8304,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             //tooltip
 
-            $('#dio_help_available_units').tooltip('Wiki (' + getTexts("options", "ava")[0] + ')');
+            $('#dio_help_available_units').tooltip('Wiki (' + getTexts("Options", "ava")[0] + ')');
             for (unit in unitArray) {
                 if (unitArray.hasOwnProperty(unit)) {
                     $('#dio' + unit).tooltip(uw.GameData.units[unit].name);
@@ -8524,7 +8590,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         UnitComparison.tooltips[UnitComparison.t] = uw.GameData.units[e].name;
                         UnitComparison.t++;
-                        $('#dio_help_UnitComparison').tooltip('Wiki (' + getTexts("options", "com")[0] + ')');
+                        $('#dio_help_UnitComparison').tooltip('Wiki (' + getTexts("Options", "com")[0] + ')');
                     }
                 }
             }
@@ -9861,39 +9927,47 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // Select boxes for unit and ratio
             $('<div id="dio_Select_boxes" class="select_rec_unit dropdown-list default active">' +
               '<div class="item-list">' +
-              '<div id="dioattack_ship" class="option_s unit index_unit unit_icon40x40 attack_ship" name="FS"></div>' +
-              '<div id="diobireme" class="option_s unit index_unit unit_icon40x40 bireme" name="BI"></div>' +
-              '<div id="diotrireme" class="option_s unit index_unit unit_icon40x40 trireme" name="TR"></div>' +
-              '<div id="diotransporter" class="option_s unit index_unit unit_icon40x40 big_transporter" name="BT"></div>' +
-              '<div id="diosmall_trans" class="option_s unit index_unit unit_icon40x40 small_transporter" name="BE"></div>' +
-              '<div id="diosmall_colonize" class="option_s unit index_unit unit_icon40x40 colonize_ship" name="CE"></div>' +
-              '<div id="diosword" class="option_s unit index_unit unit_icon40x40 sword" name="SK"></div>' +
-              '<div id="dioslinger" class="option_s unit index_unit unit_icon40x40 slinger" name="SL"></div>' +
-              '<div id="dioarcher" class="option_s unit index_unit unit_icon40x40 archer" name="BS"></div>' +
-              '<div id="diohoplite" class="option_s unit index_unit unit_icon40x40 hoplite" name="HO"></div>' +
-              '<div id="diorider" class="option_s unit index_unit unit_icon40x40 rider" name="RE"></div>' +
-              '<div id="diochariot" class="option_s unit index_unit unit_icon40x40 chariot" name="SW"></div>' +
-              '<div id="diocentaur" class="option_s unit index_unit unit_icon40x40 centaur" name="CT"></div>' +
-              '<div id="diocerberus" class="option_s unit index_unit unit_icon40x40 cerberus" name="CB"></div>' +
-              '<div id="diozyklop" class="option_s unit index_unit unit_icon40x40 zyklop" name="CL"></div>' +
-              '<div id="diofury" class="option_s unit index_unit unit_icon40x40 fury" name="EY"></div>' +
-              '<div id="diomedusa" class="option_s unit index_unit unit_icon40x40 medusa" name="MD"></div>' +
-              '<div id="diominotaur" class="option_s unit index_unit unit_icon40x40 minotaur" name="MT"></div>' +
-              '<div id="diosea_monster" class="option_s unit index_unit unit_icon40x40 sea_monster" name="HD"></div>' +
-              '<div id="dioharpy" class="option_s unit index_unit unit_icon40x40 harpy" name="HP"></div>' +
-              '<div id="diomanticore" class="option_s unit index_unit unit_icon40x40 manticore" name="MN"></div>' +
-              '<div id="diopegasus" class="option_s unit index_unit unit_icon40x40 pegasus" name="PG"></div>' +
-              '<div id="diogriffin" class="option_s unit index_unit unit_icon40x40 griffin" name="GF"></div>' +
+              //Ship
+              '<div id="dioattack_ship" class="option_s unit index_unit unit_icon40x40 attack_ship" 		name="FS"></div>' +			// Light ship
+              '<div id="diobireme"		class="option_s unit index_unit unit_icon40x40 bireme" 				name="BI"></div>' +			// Bireme
+              '<div id="diotrireme" 	class="option_s unit index_unit unit_icon40x40 trireme" 			name="TR"></div>' +			// Trireme
+              '<div id="diotransporter" class="option_s unit index_unit unit_icon40x40 big_transporter" 	name="BT"></div>' +			// Transport boat
+              '<div id="diosmall_trans" class="option_s unit index_unit unit_icon40x40 small_transporter" 	name="BE"></div>' +			// Fast transport ship
+              '<div id="diocolonize" 	class="option_s unit index_unit unit_icon40x40 colonize_ship" 		name="CE"></div>' +			// Colony ship
+              '<div id="diodemolition" 	class="option_s unit index_unit unit_icon40x40 demolition_ship" 	name="DS"></div>' +			// Fire ship
+              //Troop
+              '<div id="diosword" 		class="option_s unit index_unit unit_icon40x40 sword" 				name="SK"></div>' +			// Swordsman
+              '<div id="dioslinger" 	class="option_s unit index_unit unit_icon40x40 slinger" 			name="SL"></div>' +			// Slinger
+              '<div id="dioarcher" 		class="option_s unit index_unit unit_icon40x40 archer" 				name="BS"></div>' +			// Archer
+              '<div id="diohoplite" 	class="option_s unit index_unit unit_icon40x40 hoplite" 			name="HO"></div>' +			// Hoplite
+              '<div id="diorider" 		class="option_s unit index_unit unit_icon40x40 rider" 				name="RE"></div>' +			// Horseman
+              '<div id="diochariot" 	class="option_s unit index_unit unit_icon40x40 chariot" 			name="SW"></div>' +			// Chariot
+              '<div id="diocatapult" 	class="option_s unit index_unit unit_icon40x40 catapult" 			name="CA"></div>' +			// catapult
+              //Fly
+              '<div id="diocentaur" 	class="option_s unit index_unit unit_icon40x40 centaur" 			name="CT"></div>' +			// Centaur
+              '<div id="diocerberus" 	class="option_s unit index_unit unit_icon40x40 cerberus" 			name="CB"></div>' +			// Cerberus
+              '<div id="diozyklop" 		class="option_s unit index_unit unit_icon40x40 zyklop" 				name="CL"></div>' +			// Cyclop
+              '<div id="diofury" 		class="option_s unit index_unit unit_icon40x40 fury" 				name="EY"></div>' +			// Erinys
+              '<div id="diomedusa" 		class="option_s unit index_unit unit_icon40x40 medusa" 				name="MD"></div>' +			// Medusa
+              '<div id="diominotaur" 	class="option_s unit index_unit unit_icon40x40 minotaur" 			name="MT"></div>' +			// Minotaur
+              '<div id="diosea_monster" class="option_s unit index_unit unit_icon40x40 sea_monster" 		name="HD"></div>' +			// Hydra
+              '<div id="dioharpy" 		class="option_s unit index_unit unit_icon40x40 harpy" 				name="HP"></div>' +			// Harpy
+              '<div id="diomanticore" 	class="option_s unit index_unit unit_icon40x40 manticore" 			name="MN"></div>' +			// Manticore
+              '<div id="diopegasus" 	class="option_s unit index_unit unit_icon40x40 pegasus" 			name="PG"></div>' +			// Pegasus
+              '<div id="diogriffin" 	class="option_s unit index_unit unit_icon40x40 griffin" 			name="GF"></div>' +			// Griffin
+              '<div id="diocalydonian" 	class="option_s unit index_unit unit_icon40x40 calydonian_boar" 	name="CY"></div>' +			// Calydonian boar
               ((uw.Game.gods_active.aphrodite) ? (
-                '<div id="diosiren" class="option_s unit index_unit unit_icon40x40 siren" name="SE"></div>' +
-                '<div id="diosatyr" class="option_s unit index_unit unit_icon40x40 satyr" name="ST"></div>' ) : "") +
+                '<div id="diosiren" 	class="option_s unit index_unit unit_icon40x40 siren" 				name="SE"></div>' +			// Siren
+                '<div id="diosatyr" 	class="option_s unit index_unit unit_icon40x40 satyr" 				name="ST"></div>' ) : "") +	// Satyr
               ((uw.Game.gods_active.ares) ? (
-                '<div id="dioladon" class="option_s unit index_unit unit_icon40x40 ladon" name="LD"></div>' +
-                '<div id="diospartoi" class="option_s unit index_unit unit_icon40x40 spartoi" name="SR"></div>' ) : "") +
-
-              '<div id="diowall" class="option_s unit index_unit place_image wall_level" name="WA"></div>' +
-              '<div id="diofestivals" class="option_s unit index_unit place_image morale" name="FE"></div>' +
+                '<div id="dioladon" 	class="option_s unit index_unit unit_icon40x40 ladon" 				name="LD"></div>' +			// Ladon
+                '<div id="diospartoi" 	class="option_s unit index_unit unit_icon40x40 spartoi" 			name="SR"></div>' ) : "") +	// Spartoi
+              //Other
+              '<div id="diowall" 		class="option_s unit index_unit place_image wall_level" 			name="WA"></div>' +			// City wall Lv 5
+              '<div id="diowall2" 		class="option_s unit index_unit place_image wall_level" 			name="WA2"></div>' +		// City wall Lv 15
+              '<div id="diofestivals" 	class="option_s unit index_unit place_image morale" 				name="FE"></div>' +			// City festival
               '</div></div>').appendTo(wndID + ".dio_rec_trade");
+
             $('<div class="select_rec_perc dropdown-list default inactive">' +
               '<div class="item-list">' +
               '<div class="option sel" name="0.0">&nbsp;&nbsp;0%</div>' +
@@ -9903,13 +9977,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
               '<div class="option" name="0.05">&nbsp;&nbsp;5%</div>' +
               '<div class="option" name="0.06">&nbsp;&nbsp;6%</div>' +
               '<div class="option" name="0.08">&nbsp;&nbsp;8%</div>' +
-              '<div class="option" name="0.1">10%</div>' +
+              '<div class="option" name="0.10">10%</div>' +
               '<div class="option" name="0.14">14%</div>' +
-              '<div class="option" name="0.16666">17%</div>' +
-              '<div class="option" name="0.2">20%</div>' +
+              '<div class="option" name="0.17">17%</div>' +
+              '<div class="option" name="0.20">20%</div>' +
               '<div class="option" name="0.25">25%</div>' +
               '<div class="option" name="0.33">33%</div>' +
-              '<div class="option" name="0.5">50%</div>' +
+              '<div class="option" name="0.50">50%</div>' +
               '</div></div>').appendTo(wndID + ".dio_rec_trade");
 
             $(wndID + ".dio_rec_trade [name='" + unit + "']").toggleClass("sel");
@@ -9984,37 +10058,82 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $(wndID + '.dio_drop_rec_unit').tooltip(dio_icon + getTexts("labels", "rat"));
             $(wndID + '.dio_drop_rec_perc').tooltip(dio_icon + getTexts("labels", "shr"));
 
+            /*var ratio = {
+                MO: {w: 0, s: 0, i: 0},
+                FS: {w: 1, s: 0.2308, i: 0.6154},	// Light ship
+                BI: {w: 1, s: 0.875, i: 0.225},		// Bireme
+                SL: {w: 0.55, s: 1, i: 0.4},		// Slinger
+                RE: {w: 0.6667, s: 0.3333, i: 1},	// Horseman
+                CE: {w: 1, s: 1, i: 1},				// Colony ship
+                SK: {w: 1, s: 0, i: 0.8947},		// Swordsman
+                HO: {w: 0, s: 0.5, i: 1},			// Hoplite
+                BS: {w: 1, s: 0, i: 0.625},			// Archer
+                SW: {w: 0.4545, s: 1, i: 0.7273},	// Chariot
+                TR: {w: 1, s: 0.65, i: 0.65},		// Trireme
+                BT: {w: 1, s: 1, i: 0.8},			// Transport boat
+                BE: {w: 1, s: 0, i: 0.5},			// Fast transport ship
+                WA: {w: 0.0879, s: 1, i: 0.7385},	// City wall
+                FE: {w: 0.8333, s: 1, i: 0.8333},	// City festival
+                CT: {w: 1, s: 0.1739, i: 0.3913},	// Centaur
+                CB: {w: 0.4149, s: 0.5, i: 1},		// Cerberus
+                CL: {w: 0.6, s: 1, i: 0.8},			// Cyclop
+                EY: {w: 0.5, s: 1, i: 1},			// Erinys
+                MD: {w: 0.4074, s: 1, i: 0.5926},	// Medusa
+                MT: {w: 0.4587, s: 0.1927, i: 1},	// Minotaur
+                HD: {w: 1, s: 0.5185, i: 0.7037},	// Hydra
+                HP: {w: 1, s: 0.25, i: 0.85},		// Harpy
+                MN: {w: 1, s: 0.6818, i: 0.7727},	// Manticore
+                PG: {w: 1, s: 0.325, i: 0.175},		// Pegasus
+                GF: {w: 0.7885, s: 0.4038, i: 1},	// Griffin
+                SR: {w: 0.9756, s: 0.9512, i: 1},	// Spartoi
+                ST: {w: 0.5577, s: 0.2885, i: 1},	// Satyr
+                LD: {w: 0.9767, s: 1, i: 0.9535},	// Ladon
+                SE: {w: 0.7727, s: 0.5909, i: 1},	// Siren
+                CA: {w: 1, s: 1, i: 1},				// Catapult
+                CY: {w: 1, s: 0.5172, i: 0.5517},	// Calydonian boar
+                DS: {w: 0.6667, s: 1, i: 0.2},		// Fire ship
+            };*/
+
+            var res = RecruitingTrade.resources;
             var ratio = {
-                NO: {w: 0, s: 0, i: 0},
-                FS: {w: 1, s: 0.2308, i: 0.6154},
-                BI: {w: 1, s: 0.8750, i: 0.2250},
-                SL: {w: 0.55, s: 1, i: 0.4},
-                RE: {w: 0.6666, s: 0.3333, i: 1},
-                CE: {w: 1, s: 1, i: 1,},
-                SK: {w: 1, s: 0, i: 0.8947},
-                HO: {w: 0, s: 0.5, i: 1},
-                BS: {w: 1, s: 0, i: 0.6250},
-                SW: {w: 0.4545, s: 1, i: 0.7273},
-                TR: {w: 1, s: 0.65, i: 0.65},
-                BT: {w: 1, s: 1, i: 0.8},
-                BE: {w: 1, s: 0, i: 0.5},
-                WA: {w: 0.10, s: 1, i: 0.726},
-                FE: {w: 0.8334, s: 1, i: 0.8334},
-                CT: {w: 1, s: 0.1739, i: 0.3913},
-                CB: {w: 0.4149, s: 0.5, i: 1},
-                CL: {w: 0.6, s: 1, i: 0.8},
-                EY: {w: 0.5, s: 1, i: 1},
-                MD: {w: 0.4074, s: 1, i: 0.5926},
-                MT: {w: 0.4587, s: 0.1926, i: 1},
-                HD: {w: 1, s: 0.5185, i: 0.7037},
-                HP: {w: 1, s: 0.25, i: 0.85},
-                MN: {w: 1, s: 0.6818, i: 0.7727},
-                PG: {w: 1, s: 0.325, i: 0.175},
-                GF: {w: 0.7884, s: 0.4038, i: 1},
-                SR: {w: 0.9756, s: 0.9512, i: 1},
-                ST: {w: 0.5577, s: 0.2884, i: 1},
-                LD: {w: 0.9767, s: 1, i: 0.9534},
-                SE: {w: 0.7727, s: 0.5909, i: 1}
+                //MO: RecruitingTrade.addd(""),
+                //Ship
+                FS: res("attack_ship"),		// Light ship
+                BI: res("bireme"),			// Bireme
+                TR: res("trireme"),			// Trireme
+                BT: res("big_transporter"),	// Transport boat
+                BE: res("small_transporter"),// Fast transport ship
+                CE: res("colonize_ship"),	// Colony ship
+                DS: res("demolition_ship"),	// Fire ship
+                //Troop
+                SK: res("sword"),			// Swordsman
+                SL: res("slinger"),			// Slinger
+                BS: res("archer"),			// Archer
+                HO: res("hoplite"),			// Hoplite
+                RE: res("rider"),			// Horseman
+                SW: res("chariot"),			// Chariot
+                CA: res("catapult"),		// Catapult
+                //Fly
+                CT: res("centaur"),			// Centaur
+                CB: res("cerberus"),		// Cerberus
+                CL: res("zyklop"),			// Cyclop
+                EY: res("fury"),			// Erinys
+                MD: res("medusa"),			// Medusa
+                MT: res("minotaur"),		// Minotaur
+                HD: res("sea_monster"),		// Hydra
+                HP: res("harpy"),			// Harpy
+                MN: res("manticore"),		// Manticore
+                PG: res("pegasus"),			// Pegasus
+                GF: res("griffin"),			// Griffin
+                SE: res("siren"),			// Siren
+                ST: res("satyr"),			// Satyr
+                LD: res("ladon"),			// Ladon
+                SR: res("spartoi"),			// Spartoi
+                CY: res("calydonian_boar"),	// Calydonian boar
+                //Other
+                WA: {w: 0.2286, s: 1, i: 0.6714},	// City wall Lv 5
+                WA2: {w: 0.0762, s: 1, i: 0.7491}, 	// City wall Lv 15
+                FE: {w: 0.8333, s: 1, i: 0.8333},	// City festival
             };
 
 
@@ -10071,23 +10190,25 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $(wndID + '.dio_drop_rec_perc .caption').change();
 
 
-            // Tooltip
+            // Tooltip \\
             var units = uw.GameData.units;
-
+            //Ship
             $('#dioattack_ship').tooltip(units.attack_ship.name);
             $('#diobireme').tooltip(units.bireme.name);
             $('#diotrireme').tooltip(units.trireme.name);
             $('#diotransporter').tooltip(units.big_transporter.name);
             $('#diosmall_trans').tooltip(units.small_transporter.name);
-            $('#diosmall_colonize').tooltip(units.colonize_ship.name);
+            $('#diocolonize').tooltip(units.colonize_ship.name);
+            $('#diodemolition').tooltip(units.demolition_ship.name);
             $('#diosword').tooltip(units.sword.name);
+            //Troop
             $('#dioslinger').tooltip(units.slinger.name);
             $('#dioarcher').tooltip(units.archer.name);
             $('#diohoplite').tooltip(units.hoplite.name);
             $('#diorider').tooltip(units.rider.name);
             $('#diochariot').tooltip(units.chariot.name);
-            $('#diowall').tooltip(uw.GameData.buildings.wall.name);
-            $('#diofestivals').tooltip(getTexts("Quack", "cityfestivals"));
+            $('#diocatapult').tooltip(units.catapult.name);
+            //Fly
             $('#diocentaur').tooltip(units.centaur.name);
             $('#diocerberus').tooltip(units.cerberus.name);
             $('#diozyklop').tooltip(units.zyklop.name);
@@ -10099,11 +10220,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('#diomanticore').tooltip(units.manticore.name);
             $('#diopegasus').tooltip(units.pegasus.name);
             $('#diogriffin').tooltip(units.griffin.name);
+            $('#diocalydonian').tooltip(units.calydonian_boar.name);
             $('#diospartoi').tooltip(units.spartoi.name);
             $('#diosatyr').tooltip(units.satyr.name);
             $('#dioladon').tooltip(units.ladon.name);
             $('#diosiren').tooltip(units.siren.name);
-        }
+            //Other
+            $('#diowall').tooltip(uw.GameData.buildings.wall.name + " Lv 5");
+            $('#diowall2').tooltip(uw.GameData.buildings.wall.name + " Lv 15");
+            $('#diofestivals').tooltip(getTexts("Quack", "cityfestivals"));
+        },
+        resources: function (res) {
+            let w,s,i,a;
+            a = uw.GameData.units[res].resources;
+            w = a.wood; s = a.stone; i = a.iron;
+            a = Math.max(w, s, i);
+            w = w/a; s = s/a; i = i/a;
+            return ({w: w, s: s, i: i});
+        },
     };
 
     /*******************************************************************************************************************************
@@ -10355,12 +10489,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 dio.wnd.find("#trade_tab").append(
                     '<div id="dio_Improvement_trade">' +
-                    '<a id="dio_wood_'+dio.wndId+'_max" class="dio_trade dio_max" style="top:200px"></a>' +
-                    '<a id="dio_stone_'+dio.wndId+'_max" class="dio_trade dio_max" style="top:234px"></a>' +
-                    '<a id="dio_iron_'+dio.wndId+'_max" class="dio_trade dio_max" style="top:268px"></a>' +
-                    '<a id="dio_wood_'+dio.wndId+'_cult" class="dio_trade dio_send_cult" style="top:200px"></a>' +
-                    '<a id="dio_stone_'+dio.wndId+'_cult" class="dio_trade dio_send_cult" style="top:234px"></a>' +
-                    '<a id="dio_iron_'+dio.wndId+'_cult" class="dio_trade dio_send_cult" style="top:268px"></a>' +
+                    '<a id="dio_wood_'+dio.wndId+'_max" 	class="dio_trade dio_max" 		style="top:200px"></a>' +
+                    '<a id="dio_stone_'+dio.wndId+'_max" 	class="dio_trade dio_max" 		style="top:234px"></a>' +
+                    '<a id="dio_iron_'+dio.wndId+'_max" 	class="dio_trade dio_max" 		style="top:268px"></a>' +
+                    '<a id="dio_wood_'+dio.wndId+'_cult" 	class="dio_trade dio_send_cult" style="top:200px"></a>' +
+                    '<a id="dio_stone_'+dio.wndId+'_cult" 	class="dio_trade dio_send_cult" style="top:234px"></a>' +
+                    '<a id="dio_iron_'+dio.wndId+'_cult" 	class="dio_trade dio_send_cult" style="top:268px"></a>' +
                     /*'<a id="dio_wood_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:200px"></a>' +
 				'<a id="dio_stone_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:234px"></a>' +
 				'<a id="dio_iron_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:268px"></a>'*/'</div>'
@@ -10457,7 +10591,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 if (units.hasOwnProperty(e)) {
                     blunt += units[e] * (uw.GameData.units[e].def_hack || 0);
                     sharp += units[e] * (uw.GameData.units[e].def_pierce || 0);
-                    dist += units[e] * (uw.GameData.units[e].def_distance || 0);
+                    dist += units[e] * 	(uw.GameData.units[e].def_distance || 0);
                 }
             }
         },
@@ -10500,7 +10634,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<img id="dio_def_button" class="active img" src="https://gpall.innogamescdn.com/images/game/unit_overview/support.png">' +
                     '<img id="dio_off_button" class="img" src="https://gpall.innogamescdn.com/images/game/unit_overview/attack.png">' +
                     '</div></div>' +
-                    '<div id= "dio_tr_btn" class="">' + getTexts("options", "str")[0] + '</div>').appendTo('.units_land .content');
+                    '<div id= "dio_tr_btn" class="">' + getTexts("Options", "str")[0] + '</div>').appendTo('.units_land .content');
 
                 $(".units_land .nav .border_top").click(function () {uw.BarracksWindowFactory.openBarracksWindow();});
 
@@ -10545,29 +10679,29 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                   '#dio_strength.def #off_button, #dio_strength.off #def_button { filter:url(#Sepia); -webkit-filter:sepia(1); }' +
                   '#dio_strength.off #off_button, #dio_strength.def #def_button { filter:none; -webkit-filter:none; } ' +
 
-                  '#dio_strength.off .img_hack { background-position:0% 36%;} ' +
-                  '#dio_strength.def .img_hack { background-position:0%  0%;} ' +
-                  '#dio_strength.off .img_pierce { background-position:0% 27%;} ' +
-                  '#dio_strength.def .img_pierce { background-position:0%  9%;} ' +
-                  '#dio_strength.off .img_dist { background-position:0% 45%;} ' +
-                  '#dio_strength.def .img_dist { background-position:0% 18%;} ' +
+                  '#dio_strength.off .img_hack 		{ background-position:0% 36%;} ' +
+                  '#dio_strength.def .img_hack 		{ background-position:0%  0%;} ' +
+                  '#dio_strength.off .img_pierce 	{ background-position:0% 27%;} ' +
+                  '#dio_strength.def .img_pierce 	{ background-position:0%  9%;} ' +
+                  '#dio_strength.off .img_dist 		{ background-position:0% 45%;} ' +
+                  '#dio_strength.def .img_dist 		{ background-position:0% 18%;} ' +
 
-                  '#dio_strength .strength_font { font-size: 0.8em; } ' +
+                  '#dio_strength .strength_font 	{ font-size: 0.8em; } ' +
                   '#dio_strength.off .strength_font { color:#edb;} ' +
                   '#dio_strength.def .strength_font { color:#fc6;} ' +
 
-                  '#dio_strength .ico { height:20px; width:20px; } ' +
+                  '#dio_strength .ico 				{ height:20px; width:20px; } ' +
                   '#dio_strength .units_info_sprite { background:url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png); background-size:100%; } ' +
 
                   '#dio_strength .img_pierce { background-position:0px -20px; } ' +
-                  '#dio_strength .img_dist { background-position:0px -40px; } ' +
-                  '#dio_strength hr { margin:0px; background-color:#5F5242; height:2px; border:0px solid; } ' +
-                  '#dio_strength .cont_left { width:65%;  display:table-cell; } ' +
+                  '#dio_strength .img_dist 	 { background-position:0px -40px; } ' +
+                  '#dio_strength hr 		 { margin:0px; background-color:#5F5242; height:2px; border:0px solid; } ' +
+                  '#dio_strength .cont_left  { width:65%;  display:table-cell; } ' +
 
                   '#dio_strength.cont { background:url(https://gpall.innogamescdn.com/images/game/layout/layout_units_nav_border.png); } ' +
 
                   '#dio_strength .cont_right { width:30%; display:table-cell; vertical-align:middle; } ' +
-                  '#dio_strength .img { float:right; background:none; margin:2px 8px 2px 0px; } ' +
+                  '#dio_strength .img 		 { float:right; background:none; margin:2px 8px 2px 0px; } ' +
 
                   '</style>').appendTo("head");
 
@@ -11286,7 +11420,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 break;
         }
 
-        $('<a title="' + getTexts("options", "bbc")[0] + '" href="#" class="dio_bbcode_option dio_def_form" name="dio_def_form"></a>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+        $('<a title="' + getTexts("Options", "bbc")[0] + '" href="#" class="dio_bbcode_option dio_def_form" name="dio_def_form"></a>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
 
         $('.dio_def_form_button').css({
             cursor: 'pointer',
@@ -11306,73 +11440,73 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             backgroundPosition: '-89px 0px'
         });
         var imgArray = {
-            wall: 'https://www.tuto-de-david1327.com/medias/images/40px-remparts.png', // 'https://gpall.innogamescdn.com/images/game/main/wall.png',
-            tower: 'https://www.tuto-de-david1327.com/medias/images/40px-tour.png', // 'https://gpall.innogamescdn.com/images/game/main/tower.png',
-            hide: 'https://www.tuto-de-david1327.com/medias/images/40px-grotte.png', // 'https://gpall.innogamescdn.com/images/game/main/hide.png'
+            wall: 	'https://www.tuto-de-david1327.com/medias/images/40px-remparts.png', 	// 'https://gpall.innogamescdn.com/images/game/main/wall.png',
+            tower: 	'https://www.tuto-de-david1327.com/medias/images/40px-tour.png', 		// 'https://gpall.innogamescdn.com/images/game/main/tower.png',
+            hide: 	'https://www.tuto-de-david1327.com/medias/images/40px-grotte.png', 		// 'https://gpall.innogamescdn.com/images/game/main/hide.png'
 
-            spy: 'https://www.tuto-de-david1327.com/medias/images/40px-spy.png',
-            pop: 'https://www.tuto-de-david1327.com/medias/images/40px-pop.png',
+            spy: 	'https://www.tuto-de-david1327.com/medias/images/40px-spy.png',
+            pop: 	'https://www.tuto-de-david1327.com/medias/images/40px-pop.png',
 
-            rev1: 'https://www.tuto-de-david1327.com/medias/images/40px-rev1.png',
-            rev0: 'https://www.tuto-de-david1327.com/medias/images/40px-rev0.png',
-            eo1: 'https://www.tuto-de-david1327.com/medias/images/40px-eo1.png',
-            eo0: 'https://www.tuto-de-david1327.com/medias/images/40px-eo0.png',
-            att: 'https://www.tuto-de-david1327.com/medias/images/40px-att.png',
-            sup: 'https://www.tuto-de-david1327.com/medias/images/40px-sup.png',
+            rev1: 	'https://www.tuto-de-david1327.com/medias/images/40px-rev1.png',
+            rev0: 	'https://www.tuto-de-david1327.com/medias/images/40px-rev0.png',
+            eo1: 	'https://www.tuto-de-david1327.com/medias/images/40px-eo1.png',
+            eo0: 	'https://www.tuto-de-david1327.com/medias/images/40px-eo0.png',
+            att: 	'https://www.tuto-de-david1327.com/medias/images/40px-att.png',
+            sup: 	'https://www.tuto-de-david1327.com/medias/images/40px-sup.png',
 
-            zeus: 'https://www.tuto-de-david1327.com/medias/images/40px-zeus.png',
-            hera: 'https://www.tuto-de-david1327.com/medias/images/40px-hera.png',
-            athena: 'https://www.tuto-de-david1327.com/medias/images/40px-athena.png',
-            poseidon: 'https://www.tuto-de-david1327.com/medias/images/40px-poseidon.png',
-            hades: 'https://www.tuto-de-david1327.com/medias/images/40px-hades.png',
-            artemis: 'https://www.tuto-de-david1327.com/medias/images/40px-artemis.png',
-            nogod: 'https://www.tuto-de-david1327.com/medias/images/40px-nogod.png',
-            aphrodite: 'https://www.tuto-de-david1327.com/medias/images/40px-aphrodite.png',
-            ares: 'https://www.tuto-de-david1327.com/medias/images/40px-ares.png',
+            zeus: 		'https://www.tuto-de-david1327.com/medias/images/40px-zeus.png',
+            hera: 		'https://www.tuto-de-david1327.com/medias/images/40px-hera.png',
+            athena: 	'https://www.tuto-de-david1327.com/medias/images/40px-athena.png',
+            poseidon: 	'https://www.tuto-de-david1327.com/medias/images/40px-poseidon.png',
+            hades: 		'https://www.tuto-de-david1327.com/medias/images/40px-hades.png',
+            artemis: 	'https://www.tuto-de-david1327.com/medias/images/40px-artemis.png',
+            nogod: 		'https://www.tuto-de-david1327.com/medias/images/40px-nogod.png',
+            aphrodite: 	'https://www.tuto-de-david1327.com/medias/images/40px-aphrodite.png',
+            ares: 		'https://www.tuto-de-david1327.com/medias/images/40px-ares.png',
 
-            captain: 'https://www.tuto-de-david1327.com/medias/images/40px-captain.png',
+            captain: 	'https://www.tuto-de-david1327.com/medias/images/40px-captain.png',
             commander: 'https://www.tuto-de-david1327.com/medias/images/40px-commander.png',
-            priest: 'https://www.tuto-de-david1327.com/medias/images/40px-priest.png',
+            priest: 	'https://www.tuto-de-david1327.com/medias/images/40px-priest.png',
 
-            phalanx: 'https://www.tuto-de-david1327.com/medias/images/40px-phalange.png',
-            ram: 'https://www.tuto-de-david1327.com/medias/images/40px-belier.png',
+            phalanx: 	'https://www.tuto-de-david1327.com/medias/images/40px-phalange.png',
+            ram: 		'https://www.tuto-de-david1327.com/medias/images/40px-belier.png',
 
-            militia: 'https://www.tuto-de-david1327.com/medias/images/40px-milice.png', // 'https://wiki.en.grepolis.com/images/9/9b/Militia_40x40.png',
-            sword: 'https://www.tuto-de-david1327.com/medias/images/combattant-a-l-epee-1.png', // 'https://wiki.en.grepolis.com/images/9/9c/Sword_40x40.png',
-            slinger: 'https://www.tuto-de-david1327.com/medias/images/frondeur-1.png', // 'https://wiki.en.grepolis.com/images/d/dc/Slinger_40x40.png',
-            archer: 'https://www.tuto-de-david1327.com/medias/images/archer-1.png', // 'https://wiki.en.grepolis.com/images/1/1a/Archer_40x40.png',
-            hoplite: 'https://www.tuto-de-david1327.com/medias/images/hoplite-1.png', // 'https://wiki.en.grepolis.com/images/b/bd/Hoplite_40x40.png',
-            rider: 'https://www.tuto-de-david1327.com/medias/images/cavalier-1.png', // 'https://wiki.en.grepolis.com/images/e/e9/Rider_40x40.png',
-            chariot: 'https://www.tuto-de-david1327.com/medias/images/char-1.png', // 'https://wiki.en.grepolis.com/images/b/b8/Chariot_40x40.png',
-            catapult: 'https://www.tuto-de-david1327.com/medias/images/catapulte-1.png', // 'https://wiki.en.grepolis.com/images/f/f0/Catapult_40x40.png',
-            godsent: 'https://www.tuto-de-david1327.com/medias/images/40px-ed.png', // 'https://wiki.de.grepolis.com/images/6/6e/Grepolis_Wiki_225.png',
+            militia: 	'https://www.tuto-de-david1327.com/medias/images/40px-milice.png', 				// 'https://wiki.en.grepolis.com/images/9/9b/Militia_40x40.png',
+            sword: 		'https://www.tuto-de-david1327.com/medias/images/combattant-a-l-epee-1.png', 	// 'https://wiki.en.grepolis.com/images/9/9c/Sword_40x40.png',
+            slinger: 	'https://www.tuto-de-david1327.com/medias/images/frondeur-1.png', 				// 'https://wiki.en.grepolis.com/images/d/dc/Slinger_40x40.png',
+            archer: 	'https://www.tuto-de-david1327.com/medias/images/archer-1.png', 				// 'https://wiki.en.grepolis.com/images/1/1a/Archer_40x40.png',
+            hoplite: 	'https://www.tuto-de-david1327.com/medias/images/hoplite-1.png', 				// 'https://wiki.en.grepolis.com/images/b/bd/Hoplite_40x40.png',
+            rider: 		'https://www.tuto-de-david1327.com/medias/images/cavalier-1.png', 				// 'https://wiki.en.grepolis.com/images/e/e9/Rider_40x40.png',
+            chariot: 	'https://www.tuto-de-david1327.com/medias/images/char-1.png', 					// 'https://wiki.en.grepolis.com/images/b/b8/Chariot_40x40.png',
+            catapult: 	'https://www.tuto-de-david1327.com/medias/images/catapulte-1.png', 				// 'https://wiki.en.grepolis.com/images/f/f0/Catapult_40x40.png',
+            godsent: 	'https://www.tuto-de-david1327.com/medias/images/40px-ed.png', 					// 'https://wiki.de.grepolis.com/images/6/6e/Grepolis_Wiki_225.png',
 
-            def_sum: 'https://www.tuto-de-david1327.com/medias/images/40px-def-sum.png',
+            def_sum: 	'https://www.tuto-de-david1327.com/medias/images/40px-def-sum.png',
 
-            minotaur: 'https://www.tuto-de-david1327.com/medias/images/40px-minotaure.jpg', // 'https://wiki.de.grepolis.com/images/7/70/Minotaur_40x40.png',
-            manticore: 'https://www.tuto-de-david1327.com/medias/images/40px-manticore.jpg', // 'https://wiki.de.grepolis.com/images/5/5e/Manticore_40x40.png',
-            zyclop: 'https://www.tuto-de-david1327.com/medias/images/40px-cyclope.jpg', // 'https://wiki.de.grepolis.com/images/6/66/Zyklop_40x40.png',
-            sea_monster: 'https://www.tuto-de-david1327.com/medias/images/40px-hydre.jpg', // 'https://wiki.de.grepolis.com/images/7/70/Sea_monster_40x40.png',
-            harpy: 'https://www.tuto-de-david1327.com/medias/images/40px-harpie.jpg', // 'https://wiki.de.grepolis.com/images/8/80/Harpy_40x40.png',
-            medusa: 'https://www.tuto-de-david1327.com/medias/images/40px-meduse.jpg', // 'https://wiki.de.grepolis.com/images/d/db/Medusa_40x40.png',
-            centaur: 'https://www.tuto-de-david1327.com/medias/images/40px-centaure.jpg', // 'https://wiki.de.grepolis.com/images/5/53/Centaur_40x40.png',
-            pegasus: 'https://www.tuto-de-david1327.com/medias/images/40px-pegase.jpg', // 'https://wiki.de.grepolis.com/images/5/54/Pegasus_40x40.png',
-            cerberus: 'https://www.tuto-de-david1327.com/medias/images/40px-cerbere.jpg', // 'https://wiki.de.grepolis.com/images/6/67/Zerberus_40x40.png',
-            fury: 'https://www.tuto-de-david1327.com/medias/images/40px-erinye.jpg', // 'https://wiki.de.grepolis.com/images/6/67/Erinys_40x40.png',
-            griffin: 'https://www.tuto-de-david1327.com/medias/images/40px-griffon.jpg', // 'https://wiki.de.grepolis.com/images/d/d1/Unit_greif.png',
-            calydonian_boar: 'https://www.tuto-de-david1327.com/medias/images/40px-sc.jpg', // 'https://wiki.de.grepolis.com/images/9/93/Unit_eber.png',
-            spartoi: 'https://www.tuto-de-david1327.com/medias/images/40px-spartoi.png',
-            siren: 'https://www.tuto-de-david1327.com/medias/images/40px-siren-1.png',
-            satyr: 'https://www.tuto-de-david1327.com/medias/images/40px-satyr.png',
-            ladon: 'https://www.tuto-de-david1327.com/medias/images/40px-ladon.png',
+            minotaur: 	'https://www.tuto-de-david1327.com/medias/images/40px-minotaure.jpg', 	// 'https://wiki.de.grepolis.com/images/7/70/Minotaur_40x40.png',
+            manticore: 	'https://www.tuto-de-david1327.com/medias/images/40px-manticore.jpg', 	// 'https://wiki.de.grepolis.com/images/5/5e/Manticore_40x40.png',
+            zyclop: 	'https://www.tuto-de-david1327.com/medias/images/40px-cyclope.jpg', 	// 'https://wiki.de.grepolis.com/images/6/66/Zyklop_40x40.png',
+            sea_monster: 'https://www.tuto-de-david1327.com/medias/images/40px-hydre.jpg', 		// 'https://wiki.de.grepolis.com/images/7/70/Sea_monster_40x40.png',
+            harpy: 		'https://www.tuto-de-david1327.com/medias/images/40px-harpie.jpg', 		// 'https://wiki.de.grepolis.com/images/8/80/Harpy_40x40.png',
+            medusa: 	'https://www.tuto-de-david1327.com/medias/images/40px-meduse.jpg', 		// 'https://wiki.de.grepolis.com/images/d/db/Medusa_40x40.png',
+            centaur: 	'https://www.tuto-de-david1327.com/medias/images/40px-centaure.jpg', 	// 'https://wiki.de.grepolis.com/images/5/53/Centaur_40x40.png',
+            pegasus: 	'https://www.tuto-de-david1327.com/medias/images/40px-pegase.jpg', 		// 'https://wiki.de.grepolis.com/images/5/54/Pegasus_40x40.png',
+            cerberus: 	'https://www.tuto-de-david1327.com/medias/images/40px-cerbere.jpg', 	// 'https://wiki.de.grepolis.com/images/6/67/Zerberus_40x40.png',
+            fury: 		'https://www.tuto-de-david1327.com/medias/images/40px-erinye.jpg', 		// 'https://wiki.de.grepolis.com/images/6/67/Erinys_40x40.png',
+            griffin: 	'https://www.tuto-de-david1327.com/medias/images/40px-griffon.jpg', 	// 'https://wiki.de.grepolis.com/images/d/d1/Unit_greif.png',
+            calydonian_boar: 'https://www.tuto-de-david1327.com/medias/images/40px-sc.jpg', 	// 'https://wiki.de.grepolis.com/images/9/93/Unit_eber.png',
+            spartoi: 	'https://www.tuto-de-david1327.com/medias/images/40px-spartoi.png',
+            siren: 		'https://www.tuto-de-david1327.com/medias/images/40px-siren-1.png',
+            satyr: 		'https://www.tuto-de-david1327.com/medias/images/40px-satyr.png',
+            ladon: 		'https://www.tuto-de-david1327.com/medias/images/40px-ladon.png',
 
-            big_transporter: 'https://www.tuto-de-david1327.com/medias/images/40px-bt.png', // 'https://wiki.en.grepolis.com/images/0/04/Big_transporter_40x40.png',
-            bireme: 'https://www.tuto-de-david1327.com/medias/images/40px-bireme.png', // 'https://wiki.en.grepolis.com/images/4/44/Bireme_40x40.png',
-            attack_ship: 'https://www.tuto-de-david1327.com/medias/images/40px-bf.png', // 'https://wiki.en.grepolis.com/images/e/e6/Attack_ship_40x40.png',
-            demolition_ship: 'https://www.tuto-de-david1327.com/medias/images/40px-brulot.png', // 'https://wiki.en.grepolis.com/images/e/ec/Demolition_ship_40x40.png',
-            small_transporter: 'https://www.tuto-de-david1327.com/medias/images/40px-btr.png', // 'https://wiki.en.grepolis.com/images/8/85/Small_transporter_40x40.png',
-            trireme: 'https://www.tuto-de-david1327.com/medias/images/40px-triere.png', // 'https://wiki.en.grepolis.com/images/a/ad/Trireme_40x40.png',
-            colonize_ship: 'https://www.tuto-de-david1327.com/medias/images/40px-bc.png', // 'https://wiki.en.grepolis.com/images/d/d1/Colonize_ship_40x40.png',
+            big_transporter: 	'https://www.tuto-de-david1327.com/medias/images/40px-bt.png', 		// 'https://wiki.en.grepolis.com/images/0/04/Big_transporter_40x40.png',
+            bireme: 			'https://www.tuto-de-david1327.com/medias/images/40px-bireme.png', 	// 'https://wiki.en.grepolis.com/images/4/44/Bireme_40x40.png',
+            attack_ship: 		'https://www.tuto-de-david1327.com/medias/images/40px-bf.png', 		// 'https://wiki.en.grepolis.com/images/e/e6/Attack_ship_40x40.png',
+            demolition_ship: 	'https://www.tuto-de-david1327.com/medias/images/40px-brulot.png', 	// 'https://wiki.en.grepolis.com/images/e/ec/Demolition_ship_40x40.png',
+            small_transporter: 	'https://www.tuto-de-david1327.com/medias/images/40px-btr.png', 	// 'https://wiki.en.grepolis.com/images/8/85/Small_transporter_40x40.png',
+            trireme: 			'https://www.tuto-de-david1327.com/medias/images/40px-triere.png', 	// 'https://wiki.en.grepolis.com/images/a/ad/Trireme_40x40.png',
+            colonize_ship: 		'https://www.tuto-de-david1327.com/medias/images/40px-bc.png', 		// 'https://wiki.en.grepolis.com/images/d/d1/Colonize_ship_40x40.png',
 
             move_icon: 'https://gpall.innogamescdn.com/images/game/unit_overview/', // '?',
 
@@ -11829,7 +11963,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             if (($(bbcodeBarId + ' #emots_popup_7').get(0) || $(bbcodeBarId + ' #emots_popup_15').get(0)) && (PID == 1538932 || PID === 100144)) {
                 $(bbcodeBarId + " .bb_button_wrapper").get(0).lastChild.remove();
             }
-            $('<img title="' + getTexts("options", "sml")[0] + ' DIO-TOOLS-David1327" class="dio_smiley_button" src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif">').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+            $('<img title="' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327" class="dio_smiley_button" src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif">').appendTo(bbcodeBarId + ' .bb_button_wrapper');
 
             $('<div class="dio_smiley_box game">' +
               '<div class="bbcode_box middle_center"><div class="bbcode_box middle_right"></div><div class="bbcode_box middle_left"></div>' +
@@ -11847,7 +11981,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
               '<hr>' +
               '<div class="dio_box_content"></div>' +
               '<hr>' +
-              '<div class="box_footer">' + getTexts("options", "sml")[0] + ' DIO-TOOLS-David1327</div>' +
+              '<div class="box_footer">' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327</div>' +
               /*'<div class="box_footer"><a href="http://www.greensmilies.com/smilie-album/" target="_blank">WWW.GREENSMILIES.COM</a></div>' +*/
               '</div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
 
@@ -12284,6 +12418,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 new uw.ClipboardJS("#dio_townbb-clipboard").on("success", function() {
                     setTimeout(function() {
                         uw.HumanMessage.success(getTexts("messages", "copybb"))
+                    $("#dio_townbb").click();
                     }, 50)
                 })
             }, 50000)
@@ -12368,11 +12503,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         new uw.ClipboardJS("#dio_"+wndid+"clipboard-player").on("success", function() {
                             setTimeout(function() {
                                 uw.HumanMessage.success(getTexts("messages", "copybb"))
+                                $("#dio_"+wndid+"BBplayer").click();
                             }, 50)
                         })
                         new uw.ClipboardJS("#dio_"+wndid+"clipboard-alliance").on("success", function() {
                             setTimeout(function() {
                                 uw.HumanMessage.success(getTexts("messages", "copybb"))
+                                $("#dio_"+wndid+"BBalliance").click();
                             }, 50)
                         })
                     }
@@ -12675,7 +12812,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             hidesIndexIron.timeout = setInterval(() => {
                 if ($('#hide_espionage').length || $('#hides_overview_wrapper').length) {
                     if ($('#hide_espionage').length & !$('#dio_hidesIndexIron').get(0)) {
-                        hidesIndexIron.add();
+                        hidesIndexIron.add2();
                     }
                     if ($('#hides_overview_wrapper').length & !$('#dio_hidesIndexIron2').get(0)) {
                         hidesIndexIron.add();
@@ -12686,9 +12823,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         add: function () {
             try {
-                if (!$("#dio_hidesIndexIron").is(":visible") & ('#hide_espionage').length) {
-                $('<div id="dio_hidesIndexIron" style="width: 100px; height: 33px; position: absolute; left: 22px; top: 170px;"></div>').appendTo('#hide_espionage');
-                }
                 if (!$("#dio_hidesIndexIron2").is(":visible") & $('#hides_overview_wrapper').length) {
                     $('<div id="dio_hidesIndexIron2" style="width: 100px; height: 33px; position: absolute; left: 22px; top: 170px;"></div>').appendTo('#hides_overview_wrapper');
                 }
@@ -12715,8 +12849,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         i.setValue(g - 15e3)
                     }
                 }
-                if ($('#hide_espionage').length == 0)
-                    return;
+            } catch (error) {
+                errorHandling(error, "hidesIndexIron");
+            }
+        },
+        add2: function () {
+            try {
+                if (!$("#dio_hidesIndexIron").is(":visible") & ('#hide_espionage').length) {
+                $('<div id="dio_hidesIndexIron" style="width: 100px; height: 33px; position: absolute; left: 22px; top: 170px;"></div>').appendTo('#hide_espionage');
+                }
                 var b = uw.ITowns.getTown(parseInt(uw.Game.townId)).getCurrentResources().iron;
                 if (b > 15e3) {
                     $("#hide_espionage :input").val(b - 15e3);
@@ -12729,10 +12870,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         $("#hide_espionage :input").select().blur();
                     }, 10);
                 }
-                $("#dio_sortinit").click(function () {
+                /*$("#dio_sortinit").click(function () {
                     var sort = ($("#dio_sort_towns").val());
                     $(this).toggleClass('active')
-                });
+                });*/
             } catch (error) {
                 errorHandling(error, "hidesIndexIron");
             }
@@ -12792,8 +12933,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     ["iron", uw.DM.getl10n("mass_recruit").sort_by.iron]
                 ];
 
-                dio.wnd.append('<div id="dio_hides_sort_control" class="overview_search_bar"><div id="dio_button_table_resize"></div>'+hidesOverview.grepo_dropdown("dio_sort_towns", sort_options)+hidesOverview.grepo_input("margin-top:0px","dio_sortfilterbox","")[0].outerHTML+
-                               '<div id="dio_sortinit" class="button_order_by active"></div><div id="dio_hides_silver_total"><span class="resource_iron_icon iron"><span class="silver_amount">'+silver_total+'</span></span></div><div class="border"></div></div>');
+                $("#wrapper.game_inner_box").after('<div id="dio_hides_sort_control" class="overview_search_bar"><div id="dio_button_table_resize"></div>' + hidesOverview.grepo_dropdown("dio_sort_towns", sort_options) + hidesOverview.grepo_input("margin-top:0px","dio_sortfilterbox","")[0].outerHTML +
+                               '<div id="dio_sortinit" class="button_order_by active"></div><div id="dio_hides_silver_total"><span class="resource_iron_icon iron"><span class="silver_amount">' + silver_total + '</span></span></div><div class="border"></div></div>');
 
                 function table_resize_handler1() {
                     $(this).addClass("active");
@@ -12841,7 +12982,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                     $(e).hide();
                                 }
                             }
-
                             if (numericfilter > selectedSort) {
                                 $(e).hide();
                             }
@@ -13677,7 +13817,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 [(MID == 'fr') ? "C" : "O", uw.DM.getl10n("layout").units.barracks],
                 ["T", uw.DM.getl10n("place").tabs[0] + " (Agora)"],
                 ["Y", Text_premium.outer_units + " (Agora)"],
-                ["U", getTexts("options", "sim")[0] + " (Agora)"],
+                ["U", getTexts("Options", "sim")[0] + " (Agora)"],
                 ["I", Text_premium.culture_overview + " (Agora)"]
             ];
             mousePopupArray[uw.DM.getl10n("advisor").curator] = [
@@ -14005,7 +14145,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
             }, 100); //0.1s
             this.addCopyListener()
-            createWindowType("DIO_BBCODE", getTexts("labels", "tow"), 460, 305, true, [240, 70]); //[240, 70]
+            createWindowType("DIO_BBCODE", getTexts("labels", "tow"), 470, 375, true, [240, 70]); //[240, 70]
             $('<style id="dio_town_list_bb_style"> ' +
               '#dio_town_list_bb { background: url("https://www.tuto-de-david1327.com/medias/images/subforum-old.png") no-repeat; height: 15px; width: 15px; position: absolute; right: 6px; top: 2px;} ' +
               '.dio_town_bb { position: absolute; top: 2px; right: 20px; width: 30px; height: 20px; } ' +
@@ -14027,8 +14167,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     else {
                         var cities_towngroup = uw.ITowns.town_group_towns.getTowns(towngrp_id);
-                        var bb_content = "[quote][size=9][player]" + pName + "[/player][/size] ";
-                        var bb_premium = "";
+                        var bb_contentP1 = "[quote][size=9][player]" + pName + "[/player][/size] ";
+                        var bb_contentP2 = bb_contentP1, bb_contentP3 = bb_contentP1, bb_contentP4 = bb_contentP1, bb_contentP5 = bb_contentP1;
+                        var bb_premium = 0, bb_premiumb = "", bb_premiumc = false;
                         if (townslist.groups != towngrp_id & $('#dio_townslist').length) {
                             if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
                                 uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
@@ -14038,52 +14179,97 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         if (uw.Game.premium_features.curator >= uw.Timestamp.now()) {
                             bb_premium = uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + ": " + uw.MM.getCollections().TownGroup[0]._byId[towngrp_id].attributes.name +" ";
-                            bb_content += bb_premium;
+                            bb_contentP1 += bb_premium; bb_contentP2 += bb_premium; bb_contentP3 += bb_premium; bb_contentP4 += bb_premium; bb_contentP5 += bb_premium;
+                            bb_premiumb = "(" + bb_premium + ")";
+                            bb_premiumc = true;
                         }
-                        var bb_count = 0, bb_nombre_ville = 0;
+                        var bb_count = 150, bb_nombre_ville = 150, bb_nonbre = 1, bb_ville = uw.DM.getl10n("market").city;
 
                         $.each(cities_towngroup, function (key, town) {
                             bb_nombre_ville++;
                         });
-                        if (bb_nombre_ville > 60) {
-                            bb_content += "(" + uw.DM.getl10n("market").city + " 60/" + bb_nombre_ville + ")";
+
+                        if (bb_nombre_ville < 61) {
+                            bb_nonbre = 1;
+                        } else if (bb_nombre_ville < 121) {
+                            bb_nonbre = 2;
+                        } else if (bb_nombre_ville < 181) {
+                            bb_nonbre = 3;
+                        } else if (bb_nombre_ville < 241) {
+                            bb_nonbre = 4;
                         } else {
-                            bb_content += "(" + uw.DM.getl10n("market").city + " " + bb_nombre_ville + "/" + bb_nombre_ville + ")";
+                            bb_nonbre = 5;
                         }
-                        bb_content += "\n[table]\n";
+
+                        if (bb_nombre_ville < 301) {
+                            bb_contentP1 += "(" + bb_nombre_ville + " " + bb_ville + ") (1/" + bb_nonbre + ")";
+                            bb_contentP2 += "(" + bb_nombre_ville + " " + bb_ville + ") (2/" + bb_nonbre + ")";
+                            bb_contentP3 += "(" + bb_nombre_ville + " " + bb_ville + ") (3/" + bb_nonbre + ")";
+                            bb_contentP4 += "(" + bb_nombre_ville + " " + bb_ville + ") (4/" + bb_nonbre + ")";
+                            bb_contentP5 += "(" + bb_nombre_ville + " " + bb_ville + ") (5/" + bb_nonbre + ")";
+                        } else {
+                            bb_contentP1 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (1/5)";
+                            bb_contentP2 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (2/5)";
+                            bb_contentP3 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (3/5)";
+                            bb_contentP4 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (4/5)";
+                            bb_contentP5 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (5/5)";
+                            bb_nonbre = 5;}
+
+                        bb_contentP1 += "\n[table]\n"; bb_contentP2 += "\n[table]\n"; bb_contentP3 += "\n[table]\n"; bb_contentP4 += "\n[table]\n"; bb_contentP5 += "\n[table]\n";
                         $.each(cities_towngroup, function (key, town) {
+
                             bb_count++;
-                            if (bb_count < 61) {
-                                bb_content += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                            }
+
+                            if (bb_count < 61) { bb_contentP1 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                               }else if (bb_count < 121) {
+                                                   bb_contentP2 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                               }else if (bb_count < 181) {
+                                                   bb_contentP3 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                               }else if (bb_count < 241) {
+                                                   bb_contentP4 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                               }else if (bb_count < 301) {
+                                                   bb_contentP5 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                               }else {}
                         });
                         var wnd = uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_DIO_BBCODE) || uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                        if (MID == 'zz' || dio_bug) {
-                            bb_content += "[/table]";
-                            bb_content += "[url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v."+ dio_version + "[/quote]";
-                            var expRahmen_a = "<button id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></button><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
-                                "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
-                                "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
-                                "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
-                            var expRahmen_b = "</div><textarea id='expTextarea' style=\"height: 180px; width: 445px;\">";
-                            var expRahmen_c = "</textarea></div><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy"), "dio-copy-townslist", null, 'data-clipboard-target="#expTextarea"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
-                            var expRahmen_d = "<div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
-                            var expTitel = getTexts("messages", "Tol");
-                            wnd.setTitle(getTexts("labels", "tow") + " [" + bb_premium + "(" + bb_nombre_ville + " " + uw.DM.getl10n("market").city + ")]");
+                        var dio_version_PUB = "[url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v."+ dio_version + "[/quote]";
+                        bb_contentP1 += "[/table]" + dio_version_PUB; bb_contentP2 += "[/table]" + dio_version_PUB; bb_contentP3 += "[/table]" + dio_version_PUB; bb_contentP4 += "[/table]" + dio_version_PUB; bb_contentP5 += "[/table]" + dio_version_PUB;
+                        var expRahmen_a = "<button id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></button><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
+                            "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
+                            "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
+                            "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
+                        var expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 120px; width: 99%;'>";
+                        var expRahmen_bP2 = "<textarea id='expTextareaP2' style='height: 120px; width: 98%;'>";
+                        var expRahmen_bP3 = "<textarea id='expTextareaP3' style='height: 120px; width: 98%;'>";
+                        var expRahmen_bP4 = "<textarea id='expTextareaP4' style='height: 120px; width: 98%;'>";
+                        var expRahmen_bP5 = "<textarea id='expTextareaP5' style='height: 120px; width: 98%;'>";
+                        var expRahmen_cP1 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (1/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP1"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
+                        var expRahmen_cP2 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (2/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP2"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
+                        var expRahmen_cP3 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (3/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP3"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
+                        var expRahmen_cP4 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (4/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP4"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
+                        var expRahmen_cP5 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (5/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP5"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
+
+                        var expRahmen_d = "</div><div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
+                        var expRahmen_e = "<div style='font-weight: bold; margin-left: 5px;'>" + DM.getl10n("layout").town_name_area.no_towns_in_group + " " + bb_premiumb + "</div>";
+
+                        //var expTitel = getTexts("messages", "Tol") + "</div>";
+                        var expTitel = "";
+
+                        if (bb_nombre_ville > 300) {
+                            expTitel = (bb_premiumc ? bb_premium + "(" + bb_ville + " 300/" + bb_nombre_ville + ")" : bb_ville + " 300/" + bb_nombre_ville) + "</div>";
+                            //wnd.setTitle(getTexts("labels", "tow") + (bb_premiumc ? " [" + bb_premiumc + "(" + bb_ville + " 300/" + bb_nombre_ville + ")]" : " (" + bb_ville + " 300/" + bb_nombre_ville + ")"));
                         } else {
-                            bb_content += "[/table]";
-                            bb_content += "[url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v."+ dio_version + "[/quote]";
-                            var expRahmen_a = "<a id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></a><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
-                                "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
-                                "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
-                                "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
-                            var expRahmen_b = "</div><textarea id='expTextarea' style=\"height: 180px; width: 445px;\">";
-                            var expRahmen_c = "</textarea></div><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy"), "dio-copy-townslist", null, 'data-clipboard-target="#expTextarea"') + "<a id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></a></div>";
-                            var expRahmen_d = "<div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
-                            var expTitel = getTexts("messages", "Tol");
-                            wnd.setTitle("<img class='dio_title_img' src='"+ dio_img +"'><span class='dio_title_bb'>" + getTexts("labels", "tow") + "</span><span>" + bb_premium + "(" + bb_nombre_ville + " " + uw.DM.getl10n("market").city + ")</span>");
+                            expTitel = (bb_premiumc ? bb_premium + "(" + bb_nombre_ville + " " + bb_ville + ")" : bb_nombre_ville + " " + bb_ville) + "</div>";
+                            //wnd.setTitle(getTexts("labels", "tow") + (bb_premiumc ? " [" + bb_premiumc + "(" + bb_nombre_ville + " " + bb_ville + ")]" : " (" + bb_nombre_ville + " " + bb_ville + ")"));
                         }
-                        wnd.setContent(expRahmen_a + expTitel + expRahmen_b + bb_content + expRahmen_c + expRahmen_d);
+
+                        wnd.setContent(expRahmen_a + expTitel +
+                                       (bb_nombre_ville > 0 ? (expRahmen_bP1 + bb_contentP1 + expRahmen_cP1) : expRahmen_e) +
+                                       (bb_nombre_ville > 60 ? (expRahmen_bP2 + bb_contentP2 + expRahmen_cP2) : "") +
+                                       (bb_nombre_ville > 120 ? (expRahmen_bP3 + bb_contentP3 + expRahmen_cP3) : "") +
+                                       (bb_nombre_ville > 180 ? (expRahmen_bP4 + bb_contentP4 + expRahmen_cP4) : "") +
+                                       (bb_nombre_ville > 240 ? (expRahmen_bP5 + bb_contentP5 + expRahmen_cP5) : "") +
+                                       expRahmen_d);
 
                         $('.close_a').click(function () {
                             uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
@@ -14100,7 +14286,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 setTimeout(function() {
                     uw.HumanMessage.success(getTexts("messages", "copybb"))
                 }, 50)
-                uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
                 if ($('#town_groups_list').length) {
                     $('.button.js-button-caption').click();
                 }
@@ -14346,7 +14531,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         const BBwnd = uw.GPWindowMgr.Create(uw.GPWindowMgr.TYPE_DIO_BBCODEE) || uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
 
                         BBwnd.setContent(expRahmen_a + expTitel + expRahmen_b + bb_content + expRahmen_c + expRahmen_d + expRahmen_e);
-                        $('#dio_help_MessageExport').tooltip('Wiki (' + getTexts("options", "Mse")[0] + ')');
+                        $('#dio_help_MessageExport').tooltip('Wiki (' + getTexts("Options", "Mse")[0] + ')');
                         $("#expTextarea").focus(function () {
                             const that = this;
                             setTimeout(function () {
