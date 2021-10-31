@@ -14183,7 +14183,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             bb_premiumb = "(" + bb_premium + ")";
                             bb_premiumc = true;
                         }
-                        var bb_count = 150, bb_nombre_ville = 150, bb_nonbre = 1, bb_ville = uw.DM.getl10n("market").city;
+                        var bb_count = 0, bb_nombre_ville = 0, bb_nonbre = 1, bb_ville = uw.DM.getl10n("market").city;
 
                         $.each(cities_towngroup, function (key, town) {
                             bb_nombre_ville++;
