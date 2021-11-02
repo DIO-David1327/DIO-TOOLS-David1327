@@ -5990,8 +5990,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             uw.NotificationType.DIO_TOOLS = "diotools";
 
             var notif = DATA.notification;
-            if (notif <= 23 || david1327) {
-                Notification.create(23, getTexts("Settings", "Feature")); //getTexts("Settings", "Feature") + ' (' + getTexts("Options", "")[0] + ')');
+            if (notif <= 24 || david1327) {
+                Notification.create(24, getTexts("Settings", "Feature")); //getTexts("Settings", "Feature") + ' (' + getTexts("Options", "")[0] + ')');
 
                 // Click Event
                 $('.diotools .icon').click(function () {
@@ -5999,7 +5999,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $(this).parent().find(".close").click();
                 });
 
-                saveValue('notif', '22');}
+                saveValue('notif', '25');}
 
 
         },
