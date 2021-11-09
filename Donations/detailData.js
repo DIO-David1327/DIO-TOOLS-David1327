@@ -10,7 +10,7 @@ var data_month = ([
     ['2021/08', 15, 13.66],
     ['2021/09', 15, 0],
     ['2021/10', 15, 9],
-    ['2021/11', 15, 19.09],
+    ['2021/11', 15, 52.37],
 ]);
 
 var detailData = {
@@ -79,6 +79,8 @@ var detailData = {
     ], '2021/11': [
         { 'dat': '2021-11-02', 'inc': 4.5, 'who': 'Societatea d', 'pays': ['RO', 'Roumanie', 'Romania'] },
         { 'dat': '2021-11-03', 'inc': 14.21, 'who': 'Attila', 'pays': ['DE', 'Allemagne', 'Germany'] },
-        { 'dat': '2021-11-05', 'inc': 0.38, 'who': 'Francesco L', 'pays': ['', ' ', ''] },
+        { 'dat': '2021-11-05', 'inc': 0.38, 'who': 'Francesco L', 'pays': ['IT', 'Italie', 'Italy'] },
+        { 'dat': '2021-11-05', 'inc': 28.78, 'who': 'glaglatoulle', 'pays': ['FR', 'France', 'France'] },
+        { 'dat': '2021-11-05', 'inc': 4.5, 'who': 'Comte M', 'pays': ['FR', 'France', 'France'] },
     ],
 };
