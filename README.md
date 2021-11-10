@@ -9,8 +9,8 @@
 <center>https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/<a href="https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/" target="_blank">​<img alt="Lien" height="10" src="https://www.tuto-de-david1327.com/medias/images/lien.png" width="10" /></a></center>
 
 <p></p>
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url" rel="nofollow"><img alt="Donate" src="https://www.paypalobjects.com/en_US/FR/i/btn/btn_donateCC_LG.gif"></a>
-<h3 style="text-align: center;">Currently available in version david1327</h3>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url" rel="nofollow"><img alt="Donate" src="https://www.paypalobjects.com/en_US/FR/i/btn/btn_donateCC_LG.gif"></a><br><br>
+Currently available in version david1327
 
 <span style="color: #808080;"><a href="https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html" onclick="window.open(this.href, '', 'resizable=no,status=no,location=no,toolbar=no,menubar=no,fullscreen=no,scrollbars=no,dependent=no'); return false;" rel="nofollow"><span style="color: #808080;">DIO-Tools-David1327&nbsp;(Download)</span></a></span>
 
@@ -43,7 +43,7 @@ DIO-Tools is currently prohibited on (None).</p>
 <h1>Detailed description of functions</h1>
 <p><b>DIO-Tools is a small extension for the browser game Grepolis. It offers, among other things, some displays (biremes counter, unit strength,...), a smiley selection box for text input fields, trade options and some changes to the layout.</b></p>
 
-<h4><b>Almost each feature can be deactivated in the settings</b></h4>
+<b>Almost each feature can be deactivated in the settings</b>
 
 <h2><b>►&nbsp;Smiley selection box</b></h2>
 
