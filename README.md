@@ -12,15 +12,16 @@
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url" rel="nofollow"><img alt="Donate" src="https://www.paypalobjects.com/en_US/FR/i/btn/btn_donateCC_LG.gif"></a>
 <h3 style="text-align: center;">Currently available in version david1327</h3>
 
-<h4><strong><span style="color: #808080;"><a href="https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html" onclick="window.open(this.href, '', 'resizable=no,status=no,location=no,toolbar=no,menubar=no,fullscreen=no,scrollbars=no,dependent=no'); return false;" rel="nofollow"><span style="color: #808080;">DIO-Tools-David1327&nbsp;(Download)</span></a></span></strong></h4>
+<span style="color: #808080;"><a href="https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html" onclick="window.open(this.href, '', 'resizable=no,status=no,location=no,toolbar=no,menubar=no,fullscreen=no,scrollbars=no,dependent=no'); return false;" rel="nofollow"><span style="color: #808080;">DIO-Tools-David1327&nbsp;(Download)</span></a></span>
 
-<p><span style="color: #339966;"><strong>DIO-Tools is officially approved by Grepolis</strong><span style="color: #339966;"><strong> on</strong></span><strong> (EN), (IT), (PL), (DE), (BR), (CZ), (ES), (AR).</strong>
-<strong>DIO-Tools is authorized on&nbsp;(FR), (US), (SK),  (HU), (RO), (NL), (GR).</strong><span style="color: #339966;"><strong></strong></span>
-<strong>DIO-Tools is currently prohibited</strong><span style="color: #339966;"><strong> on</strong></span><strong> (None).</strong></span>
+
+<p>DIO-Tools is officially approved by Grepolis on (EN), (IT), (PL), (DE), (BR), (CZ), (ES), (AR).<br>
+DIO-Tools is authorized on&nbsp;(FR), (US), (SK),  (HU), (RO), (NL), (GR).<br>
+DIO-Tools is currently prohibited on (None).</p>
 
 <span style="text-decoration: underline;"><span style="color: #008000;"><strong>The functions of the script:</strong></span></span></p>
 
-<p><span style="font-size: small;"><span style="color: #008000;">Almost every function can be disabled in the options.</span></span></p>
+<p><span style="font-size: small;"><span style="color: #008000;">Almost every function can be disabled in the options.</span></span>
 
 
 - smileys
