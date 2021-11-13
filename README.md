@@ -4,9 +4,12 @@
 </p>
 
 [![GitHub version](https://img.shields.io/github/v/release/DIO-David1327/DIO-TOOLS-David1327?color=1&label=Version)](https://github.com/DIO-David1327/DIO-TOOLS-David1327/releases/latest)
-[![license](https://img.shields.io/github/license/DIO-David1327/DIO-TOOLS-David1327)](https://github.com/DIO-David1327/DIO-TOOLS-David1327/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/DIO-David1327/DIO-TOOLS-David1327)](https://github.com/DIO-David1327/DIO-TOOLS-David1327/blob/master/LICENSE)
+[![Discord](https://img.shields.io/discord/838203647028232213?color=25237289DA&label=DIO%20TOOLS%20David1327&labelColor=%237289DA&logo=discord&logoColor=white)](https://discord.com/channels/838203647028232213)
+[![Facebook](https://img.shields.io/badge/Facebook-%231877F2.svg?style=&logo=Facebook&logoColor=white)](https://fb.com/TutoDeDavid1327)
 
-<center>https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/<a href="https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/" target="_blank">​<img alt="Lien" height="10" src="https://www.tuto-de-david1327.com/medias/images/lien.png" width="10" /></a></center>
+
+<center>https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/<a href="https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/" target="_blank"><img alt="Lien" height="10" src="https://www.tuto-de-david1327.com/medias/images/lien.png" width="10" /></a></center>
 
 <p></p>
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url" rel="nofollow"><img alt="Donate" src="https://www.paypalobjects.com/en_US/FR/i/btn/btn_donateCC_LG.gif"></a><br><br>
