@@ -5,7 +5,7 @@
 
 [![GitHub version](https://img.shields.io/github/v/release/DIO-David1327/DIO-TOOLS-David1327?color=1&label=Version)](https://github.com/DIO-David1327/DIO-TOOLS-David1327/releases/latest)
 [![License](https://img.shields.io/github/license/DIO-David1327/DIO-TOOLS-David1327)](https://github.com/DIO-David1327/DIO-TOOLS-David1327/blob/master/LICENSE)
-[![Discord](https://img.shields.io/discord/838203647028232213?color=25237289DA&label=DIO%20TOOLS%20David1327&labelColor=%237289DA&logo=discord&logoColor=white)](https://discord.com/channels/838203647028232213)
+[![Discord](https://img.shields.io/discord/838203647028232213?color=25237289DA&label=DIO%20TOOLS%20David1327&labelColor=%237289DA&logo=discord&logoColor=white)](https://discord.gg/Q7WXtmRNRW)
 [![Facebook](https://img.shields.io/badge/Facebook-%231877F2.svg?style=&logo=Facebook&logoColor=white)](https://fb.com/TutoDeDavid1327)
 
 
