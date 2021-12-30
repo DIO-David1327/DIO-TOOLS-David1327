@@ -1,5 +1,4 @@
 var data_month = ([
-    ['2020/12', 15, 37.97],
     ['2021/01', 15, 9.36],
     ['2021/02', 15, 19.07],
     ['2021/03', 15, 51.15],
@@ -7,10 +6,11 @@ var data_month = ([
     ['2021/05', 15, 19.07],
     ['2021/06', 15, 4.5],
     ['2021/07', 15, 0],
-    ['2021/08', 15, 13.66],
+    ['2021/08', 15, 23.02],
     ['2021/09', 15, 0],
     ['2021/10', 15, 9],
-    ['2021/11', 15, 52.37],
+    ['2021/11', 15, 66.85],
+    ['2021/12', 15, 9.36],
 ]);
 
 var detailData = {
@@ -71,6 +71,7 @@ var detailData = {
     ], '2021/07': [
     ], '2021/08': [
         { 'dat': '2021-08-19', 'inc': 4.5, 'who': 'Denai', 'pays': ['AT', 'Autriche', 'Austria'] },
+        { 'dat': '2021-08-20', 'inc': 9.36, 'who': 'Herbert L', 'pays': ['DE', 'Allemagne', 'Germany'] },
         { 'dat': '2021-08-20', 'inc': 9.16, 'who': 'elifoxo', 'pays': ['AU', 'Australie', 'Australia'] },
     ], '2021/09': [
     ], '2021/10': [
@@ -82,5 +83,10 @@ var detailData = {
         { 'dat': '2021-11-05', 'inc': 0.38, 'who': 'Francesco L', 'pays': ['IT', 'Italie', 'Italy'] },
         { 'dat': '2021-11-05', 'inc': 28.78, 'who': 'glaglatoulle', 'pays': ['FR', 'France', 'France'] },
         { 'dat': '2021-11-05', 'inc': 4.5, 'who': 'Comte M', 'pays': ['FR', 'France', 'France'] },
+        { 'dat': '2021-11-13', 'inc': 4.5, 'who': 'Sven O', 'pays': ['DE', 'Allemagne', 'Germany'] },
+        { 'dat': '2021-11-27', 'inc': 9.36, 'who': 'Ocaso', 'pays': ['DE', 'Allemagne', 'Germany'] },
+        { 'dat': '2021-11-30', 'inc': 0.62, 'who': 'Gyorgy C', 'pays': ['', ' ', ''] },
+    ], '2021/12': [
+        { 'dat': '2021-12-29', 'inc': 9.36, 'who': 'SABINE B', 'pays': ['', ' ', ''] },
     ],
-};
+};    
