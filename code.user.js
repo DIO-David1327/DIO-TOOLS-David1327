@@ -3,7 +3,7 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.24
+// @version		4.25
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -26,7 +26,7 @@
 // @license     GPL-3.0
 // ==/UserScript==
 
-var dio_version = '4.24';
+var dio_version = '4.25';
 
 /*******************************************************************************************************************************
  * Global stuff
@@ -169,9 +169,9 @@ function appendScript(){
         document.body.appendChild(dioscript);
 
         var DIO_Version = document.createElement('script');
-		DIO_Version.type = 'text/javascript';
-		DIO_Version.innerHTML = GM_getResourceText('Version_dio');
-		document.getElementsByTagName('head')[0].appendChild(DIO_Version);
+        DIO_Version.type = 'text/javascript';
+        DIO_Version.innerHTML = GM_getResourceText('Version_dio');
+        document.getElementsByTagName('head')[0].appendChild(DIO_Version);
     } else {
         setTimeout(function(){
             appendScript();
@@ -182,6 +182,7 @@ function appendScript(){
 if(location.host === "www.tuto-de-david1327.com"){
     // PAGE
     DIO_PAGE();
+
 }
 else if((uw.location.pathname.indexOf("game") >= 0) && GM){
     // GAME
@@ -410,7 +411,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
 
         dio_img_Xmas = (today >= xmas_start) ? (today <= xmas_end) : false,
-        dio_img_Easter = (today >= easter_start) ? (today <= easter_end) : false;
+        dio_img_Easter = (today >= easter_start) ? (today <= easter_end) : false,
         dio_img_Halloween = (today >= halloween_start) ? (today <= halloween_end) : false;
 
     if (dio_img_Xmas) {
@@ -419,7 +420,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_img = "https://www.tuto-de-david1327.com/medias/images/icon-paques.png";}
     /*if (dio_img_Halloween) {
         dio_img = "https://www.tuto-de-david1327.com/medias/images/icon-paques.png";}*/
-    var dio_icon = '<img src="'+ dio_img +'" style="width: 20px;float:left;margin: 1px 4px 0px -3px">';
+    $('<style id="dio_BBplayer_style"> ' +
+      '.dio_icon { background:url(' + dio_img + ') no-repeat 0px 0px; background-size: 100%;} ' +
+      '.dio_icon.b { width: 26px; height: 22px; float: left; margin: -2px 5px 0 0;} ' +
+      '</style>').appendTo("head");
+
+    var dio_icon = '<div class="dio_icon b"></div>';
 
     if (uw.location.pathname.indexOf("game") >= 0) {
         DATA = JSON.parse(DATA.replace(/##/g, "'"));
@@ -571,7 +577,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 sml: ["Smileys", "Erweitert die BBCode-Leiste um eine Smileybox"],
                 str: ["Einheitenstärke", "Fügt mehrere Einheitenstärketabellen in verschiedenen Bereichen hinzu"],
                 tra: ["Transportkapazität", "Zeigt die belegte und verfügbare Transportkapazität im Einheitenmenu an"],
-                per: ["Prozentualer Handel", "Erweitert das Handelsfenster um einen Prozentualer Handel"],
+                per: ["Prozentualer Handel", "Erweitert das Handelsfenster um einen Prozentualen Handel"],
                 rec: ["Rekrutierungshandel", "Erweitert das Handelsfenster um einen Rekrutierungshandel"],
                 cnt: ["EO-Zähler", "Zählt die ATT/UT-Anzahl im EO-Fenster"],
                 way: ["Laufzeit", "Zeigt im ATT/UT-Fenster die Laufzeit bei Verbesserter Truppenbewegung an"],
@@ -621,12 +627,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 her: ["Thrakische Eroberung", "Verkleinerung der Karte der Thrakischen Eroberung."],
             },
             Town_icons: {
-                LandOff: "off irdisch",
-                LandDef: "def irdisch",
-                NavyOff: "off marine",
-                NavyDef: "def marine",
-                FlyOff: "Mythischen Einheiten off",
-                FlyDef: "Mythischen Einheiten def",
+                LandOff : "Landeinheit Angriff",
+                LandDef : "Landeinheit Verteidigung",
+                NavyOff : "Seeeinheit Angriff",
+                NavyDef : "Seeeinheit Verteidigung",
+                FlyOff : "Mythischen Angriffseinheiten",
+                FlyDef : "Mythischen Verteidigungseinheiten",
                 Out: "Draußen",
                 Emp: "Leer",
             },
@@ -642,13 +648,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 total: "Gesamt",
                 available: "Verfügbar",
                 outer: "Außerhalb",
-                con: "Selektieren",
+                con : "Selektierte Stadt",
                 // Smileys
                 std: "Standard",
                 gre: "Grepo",
                 nat: "Natur",
                 ppl: "Leute",
                 oth: "Sonstige",
+                xma: "Weihnachten",
                 eas: "Ostern",
                 lov: "Liebe",
                 // Defense form
@@ -778,8 +785,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             transport_calc : {
                 recruits : 'Truppen in der Bauschleife',
-                slowtrans : "Langsamtransportschiffe zählen",
-                fasttrans : "Schnelltransportschiffe zählen",
+                slowtrans : "Langsame Transportschiffe zählen",
+                fasttrans : "Schnelle Transportschiffe zählen",
                 Lack: "Mangel",
                 Still: "Immer",
                 pop: "verfügbare Bevölkerung. Für die",
@@ -796,7 +803,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 supporting : 'unterstützt',
                 attacking : 'greift',
                 farming_village : 'Bauerndorf',
-                gold : '',
+                gold : "Du hast erhalten",
                 Quests : '',
                 Reservations : 'Reservierungen',
             },
@@ -1115,7 +1122,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 spying : 'spying',
                 spy : 'Spy',
                 support : 'support',
-                supporting : 'supporting',
+                support2 : 'ne peut pas soutenir',
+                supporting : 'stationed',
                 attacking : 'attacking',
                 farming_village : 'farming village',
                 gold : 'You have received',
@@ -1707,11 +1715,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             reports : {
                 choose_folder : 'Choisissez un dossier',
-                enacted : 'Vous avez lancé',
+                enacted : 'lancé',
                 conquered : 'conquis',
                 spying : 'espionne',
                 spy : 'Espion',
                 support : 'soutien',
+                support2 : 'ne peut pas soutenir',
                 supporting : 'stationnées',
                 attacking : 'attaque', //uw.DM.getl10n("context_menu", "titles").attack
                 farming_village : 'village agricole',
@@ -4141,12 +4150,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
     var Messageversion = '';
     var version_text = '', version_color = 'black';
-    /*try {var test = dio_latest_version
-    } catch (error) {
-        var dio_latest_version = 1;
-    }*/
-    //if (typeof(dio_latest_version) == "undefined") {var dio_latest_version = 1}
-    //else {}
+
     function getLatestVersion() {
         $('<style id="dio_version">' +
           '#dio_version_info .version_icon { background: url(' + dio_sprite + ') -50px -50px no-repeat; width:25px; height:25px; float:left; z-index: 5; } ' +
@@ -4161,14 +4165,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 if (dio_version > uw.dio_latest_version) {
                     version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts("Settings", 'version_dev') + "</div><div class='version_icon blue'></div></a>";
                     version_color = 'darkblue';
-                    Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts("Settings", 'version_dev'));
+                    Messageversion = uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_dev'));
                 } else if (dio_version == uw.dio_latest_version) {
                     version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts("Settings", 'version_new') + "</div><div class='version_icon green'></div></a>";
                 } else {
                     version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts("Settings", 'version_old') + "</div><div class='version_icon red'></div></a>" +
                         "<a class='version_text' href='"+ getTexts('link', 'update_direct') +"' target='_blank'>--> " + getTexts("Settings", 'version_update') + "</a>";
                     version_color = 'crimson';
-                    Messageversion = uw.HumanMessage.error("DIO-TOOLS " + getTexts("Settings", 'version_old'));
+                    Messageversion = uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_old'));
                 }
                 v_info.html(version_text).css({color: version_color});
             }
@@ -4405,7 +4409,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<td><div id="dio_sml" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sml")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "sml")[1] + '</p>' +
                     '<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-mttao-wassermann.gif" /> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigrqlp2odi2kqo24.gif" /> ' +
-                    '<img src="'+ dio_img +'" alt="" /> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigmv8wnffb3v0ifg.gif" /> ' +
+                    '<div class="dio_icon"></div> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigmv8wnffb3v0ifg.gif" /> ' +
                     '<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj2byjendffymp88t.gif" alt="" /> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj1l9gndtu3nduyvi.gif" /> ' +
                     '<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigrmpfofys5xtiks.gif" alt="" />' + //'<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-i-lovo-grepolis.gif" />'+
                     '<br><br><br></td>' +
@@ -4940,7 +4944,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         // Style
         $('<style id="dio_settings_button" type="text/css">' +
           '#ui_box .btn_settings.dio_settings { top:86px!important; right:106px!important; z-index:11; } ' +
-          '#ui_box .dio_settings .dio_icon { margin:7px 0px 0px 4px; width:24px; height:24px; background:url('+ dio_img +') no-repeat 0px 0px; background-size:100% } ' +
+          '#ui_box .dio_settings .dio_icon { margin:7px 0px 0px 4px; width:24px; height:24px; } ' +
           '#ui_box .dio_settings .dio_icon.click { margin-top:8px; }' +
           '</style>').appendTo('head');
 
@@ -5314,11 +5318,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             townslist.activate();
                         }, 100);
                     }
+                    if (DATA.options.dio_BBt) {
+                        setTimeout(function () {
+                            BBtowninfo.activate();
+                        }, 100);
+                    }
+                    if (DATA.options.dio_Cul) {
+                        setTimeout(function () {
+                            cultureOverview.activate();
+                        }, 100);
+                    }
 
                     // Comptabilité flask-tools ?
                     if (typeof(uw.FLASK_GAME) !== "undefined") {
                         setTimeout(function () {
-                            uw.HumanMessage.error("flask");
+                            uw.HumanMessage.error(dio_icon + "flask");
                             //Units overview
                             $('#available_units_bullseye').remove();
                             $('#available_units_bullseye_addition').remove();
@@ -5467,11 +5481,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         hidesIndexIron.add();
                     }*/
                     break;
-                case "/town_info/info":
-                    if (DATA.options.dio_BBt) {
-                        BBtowninfo.activate();
-                    }
-                    break;
                 case "/player/index":
                     settings();
                     if (diosettings) {
@@ -5554,7 +5563,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 case "/town_overviews/start_celebration":
                 case "/town_overviews/start_all_celebrations":
                     if (DATA.options.dio_Cul) {
-                        cultureOverview.activate();
+                        cultureOverview.add();
                     }
                 case "/building_place/culture":
                     if (DATA.options.dio_Cup) {
@@ -5577,7 +5586,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         islandFarmingVillages.activate();
                     }
                     break;
-
                 case "/message/new":
                 case "/message/forward":
                 case "/message/view":
@@ -5630,13 +5638,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         getPointRatioFromAllianceMembers();
                     }
                     break;
-                case "/town_info/trading":
-                    addTradeMarks(15, 18, 15, "red");
-                    TownTabHandler(action.split("/")[2]);
-                    if (DATA.options.dio_Tti) {
-                        townTradeImprovement.add();
-                    }
-                    break;
                 case "/town_overviews/trade_overview":
                     if (DATA.options.dio_Rct) {
                         resCounter.init();
@@ -5660,6 +5661,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         countMovements();
                     }
                     break;
+                case "/player/get_profile_html":
+                    if (DATA.options.dio_BBt) {
+                        BBtowninfo.profile();
+                    }
+                    break;
+                case "/town_info/trading":
+                    addTradeMarks(15, 18, 15, "red");
+                    TownTabHandler(action.split("/")[2]);
+                    if (DATA.options.dio_Tti) {
+                        townTradeImprovement.add();
+                    }
+                    break;
+                case "/town_info/info":
                 case "/town_info/attack":
                 case "/town_info/support":
                     //console.debug(JSON.parse(xhr.responseText));
@@ -5765,11 +5779,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
               '.don.dio-middle { color: #33268a;padding: 0 4px;margin: 0 12px;background-position: 0 -27px;background-repeat: repeat-x;line-height: 25px;min-width: 10px;cursor: pointer;font-style: italic;font-size: 14px; } ' +
               '</style>').appendTo('head');
         },
-        createButton: function(t, e, n, i) { //dio.createButton(getTexts("messages", "copy"), "dio-copy-message-quote", null, 'data-clipboard-target="#expTextarea"')
-            return "<a " + (i = void 0 === i ? "" : i) + ' class="button ' + (n = null == n || void 0 === n ? "" : n) + '"  ' + (e = null == e ? "" : 'id="' + e + '"') + '><span class="left"><span class="right"><span style="color: #fc6;" class="middle">' + dio_icon + '' + t + '</span></span></span><span style="clear:both;"></span></a>'
+        createButton: function(Text, ID, Class, i) { //dio.createButton(getTexts("messages", "copy"), "dio-copy-message-quote", null, 'data-clipboard-target="#expTextarea"')
+            return "<a " + (i = void 0 === i ? "" : i) + ' class="button ' + (Class = null == Class || void 0 === Class ? "" : Class) + '"  ' + (ID = null == ID ? "" : 'id="' + ID + '"') + '><span class="left"><span class="right"><span style="color: #fc6;" class="middle">' + dio_icon + '' + Text + '</span></span></span><span style="clear:both;"></span></a>'
         },
-        createBtnDonate: function(t, e, n, i, h) { //dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate"))
-            return "<a " + (i = void 0 === i ? "" : i) + ' class="dio-button button ' + (n = null == n || void 0 === n ? "" : n) + '" ' + (h = null == h ? "" : 'href="' + h + '"target="_blank"') + (e = null == e ? "" : 'id="' + e + '"') + '><span class="don dio-left"><span class="don dio-right"><span class="don dio-middle">' + t + '</span></span></span><span style="clear:both;"></span></a>'
+        createBtnDonate: function(Text, ID, Class, i, h) { //dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate"))
+            return "<a " + (i = void 0 === i ? "" : i) + ' class="dio-button button ' + (Class = null == Class || void 0 === Class ? "" : Class) + '" ' + (h = null == h ? "" : 'href="' + h + '"target="_blank"') + (ID = null == ID ? "" : 'id="' + ID + '"') + '><span class="don dio-left"><span class="don dio-right"><span class="don dio-middle">' + Text + '</span></span></span><span style="clear:both;"></span></a>'
         },
         grepo_btn : function (ID, Text) {
             return $('<a id="' + ID + '" href="#" class="button"><span class="left"><span class="right"><span class="middle"><small>' + Text + '</small></span></span></span></a>');
@@ -5875,7 +5889,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     // Error Handling / Remote diagnosis / Automatic bug reports
     function errorHandling(e, fn) {
         if (PID === 1538932 || PID === 100144) {
-            uw.HumanMessage.error("DIO-TOOLS(" + dio_version + ")-ERROR: " + e.message);
+            uw.HumanMessage.error(dio_icon + "DIO-TOOLS(" + dio_version + ")-ERROR: " + e.message);
             console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.stack);
         } else {
             if (!DATA.error[dio_version]) {
@@ -5989,9 +6003,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // NotificationType
             uw.NotificationType.DIO_TOOLS = "diotools";
 
+            var notifN = 26;
+            var titreN =
+                	0; // nouvelles fonctionnalités
+                //	1; // nouvelles fonctionnalités + titre
+                //	2; // ""
+
+            var titre = [getTexts("Settings", "Feature"),
+                         getTexts("Settings", "Feature") + ' (' + getTexts("Options", "")[0] + ')',
+                         "",
+                        ];
+
             var notif = DATA.notification;
-            if (notif <= 24 || david1327) {
-                Notification.create(24, getTexts("Settings", "Feature")); //getTexts("Settings", "Feature") + ' (' + getTexts("Options", "")[0] + ')');
+            if (notif <= notifN || david1327) {
+                Notification.create(notifN, titre[titreN]); //;
 
                 // Click Event
                 $('.diotools .icon').click(function () {
@@ -5999,7 +6024,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $(this).parent().find(".close").click();
                 });
 
-                saveValue('notif', '25');}
+                saveValue('notif', notifN+1);}
 
 
         },
@@ -6048,43 +6073,48 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 HTML_tab1 += '<div id="NotifText">' +
                     //'<p>- '+ getTexts("Notification", "A") +'.</p>' +
 
-'<iframe src="https://discord.com/widget?id=838203647028232213&theme=dark" width="350" height="300" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>' +
-
                     '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-tip.png) no-repeat;font-weight: bold;">News and changes</div>' +
 
-'<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- Message version :</span></span><br />' +
-'-&gt; Update checking has been improved<br />' +
-'<img alt="Capture d ecran 2021 10 31 165135" height="66" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-10-31-165135.png" width="404" /></p>' +
+'<p>To see in detail the changes on the code it&#39;s here -&gt;</p>' +
+
+'<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- Popup Icons :</span></span><br />' +
+'-&gt; Adding the name of the City group.<br />' +
+'<img alt="Capture d ecran 2021 12 06 192632" height="209" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-192632.png" width="339" /><img alt="Capture d ecran 2021 12 06 192346" height="184" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-192346.png" width="286" /></p>' +
+
+'<p>&nbsp;</p>' +
+
+'<p><span style="font-size:18px;">- BBcode Player Info button :</span><br />' +
+'&nbsp;-&gt; Extension of the option in player profiles. (compatible with other scripts)<br />' +
+'&nbsp;<img alt="Capture d ecran 2021 12 06 193506" height="167" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-193506.png" width="361" /></p>' +
 
 '<p>&nbsp;</p>' +
 
 '<p><span style="font-size:18px;">- List of cities in BB-Code :</span><br />' +
-'&nbsp;-&gt; It is now possible to generate up to 300 cities.<br />' +
-'&nbsp;<img alt="Capture d ecran 2021 09 02 091200" height="371" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-09-02-091200.png" width="500" /></p>' +
+'&nbsp;-&gt; Optimization.</p>' +
 
-'<p>&nbsp;</p>' +
+'<p><span style="font-size:18px;">- <span style="font-size:18px;"><span style="font-size:18px;">Translations :</span></span></span><br />' +
+'-&gt; Thanks to &quot;Krieger des Lichts&quot; for improving the German language</p>' +
 
-'<p><span style="font-size:18px;">- <span style="font-size:18px;"><span style="font-size:18px;"> Translations :</span></span></span><br />' +
-'-&gt; Optimization of the function for translation<br />' +
-'-&gt; Thanks to AbstractGR for adding the GREEK language<br />' +
-'-&gt;&nbsp;Do you know that you can help me translate the script anytime ?<br />' +
-'<img alt="Traductions" height="545" src="https://www.tuto-de-david1327.com/medias/images/traductions.png" width="1021" /></p>' +
-
-'<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
+                    '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
 
 '<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
 
-'<p><span style="font-size:18px;">- Caves </span><span style="font-size:18px;"> :</span><br />' +
-'-&gt; The function does not activate is not always -&gt; Problem solved.</p>' +
+'<p><span style="font-size:18px;">- </span><span style="font-size:18px;"> BB-Code messages :</span><br />' +
+'-&gt; Error correction and optimization.<br />' +
+'&nbsp;<img alt="Capture d ecran 2021 12 06 195523" height="25" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-195523.png" width="188" /></p>' +
 
 '<p><span style="font-size:18px;"></span></p>' +
 
-'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"></span><span style="font-size:18px;"> City view :</span><br />' +
-'-&gt; The function is now disabled by default</p>' +
+'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"></span><span style="font-size:18px;"> Popup Icon&nbsp;:</span><br />' +
+'-&gt; Image cause slowdowns (Thanks to Neriss for creating a ticket on Discord)<br />' +
+'&nbsp;<img alt="Capture d ecran 2021 12 06 194038" height="38" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-194038.png" width="38" /></p>' +
 
-'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"> Recruitment trade :</span><br />' +
-'&nbsp;-&gt; The ratio was not good -&gt; the ratio is now calculated by itself thanks to a function.<br />' +
-'<img alt="Capture d ecran 2021 10 31 164630" height="265" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-10-31-164630.png" width="154" /></p>' +
+'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"> Report :</span><br />' +
+'&nbsp;-&gt;&nbsp;Bug fixes and optimization.<br />' +
+'&nbsp;<img alt="Capture d ecran 2021 12 06 195111" height="35" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-195111.png" width="247" /></p>' +
+
+'<p><span style="font-size:18px;">-&nbsp;</span><span style="font-size:18px;">Culture Insight (Administrator) :</span><br />' +
+'&nbsp;-&gt;&nbsp;Bug fixes and optimization.</p>' +
 
                     '<div style="height: 30px;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
 
@@ -6135,40 +6165,51 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     var donations = [
                         [1, 5, 60, 56.51, 'Christiane G'],
                         [2, 1, 50, 47.2, 'Nepomuk P'],
+                        [3, 1, 30, 28.78, 'glaglatoulle'],
                         [3, 3, 30, 27.48, 'Eli M'],
-                        [4, 1, 20, 19.07, 'Elwira G'],
-                        [4, 1, 20, 19.07, 'Sven K'],
-                        [4, 1, 20, 19.07, 'Artur Z'],
                         [4, 2, 20, 18.32, 'Ines L'],
                         [4, 1, 20, 19.07, 'kanokwan s'],
-                        [5, 1, 10, 9.36, 'Uwe J'],
-                        [5, 1, 10, 9.36, 'Doris H'],
-                        [5, 1, 10, 9.36, 'Andreas S'],
+                        [4, 1, 20, 19.07, 'Artur Z'],
+                        [4, 1, 20, 19.07, 'Sven K'],
+                        [4, 1, 20, 19.07, 'Elwira G'],
+                        [5, 1, 15, 14.21, 'Attila'],
+                        [6, 1, 10, 9.36, 'Andreas S'],
+                        [6, 1, 10, 9.16, 'Eric A'],
+                        [6, 1, 10, 9.36, 'Uwe J'],
+                        [6, 1, 10, 9.36, 'Ulla R'],
+                        [6, 1, 10, 9.36, 'Christian P'],
                     ];
                     var donations2 = [
-                        [5, 1, 10, 9.36, 'Ulla R'],
-                        [5, 1, 10, 9.36, 'Cordula H'],
-                        [5, 1, 10, 9.36, 'Jean P'],
-                        [5, 1, 10, 9.36, 'Christian P'],
-                        [5, 1, 10, 9.16, 'Eric A'],
-                        [5, 1, 10, 9.36, 'Andreas A'],
-                        [6, 1, 5.55, 5.04, 'Susi K'],
-                        [6, 1, 5.55, 5.04, 'Annette H'],
-                        [7, 1, 5, 4.5, 'Thomas C'],
-                        [7, 1, 5, 4.5, 'Petr M'],
-                        [7, 1, 5, 5.5, 'Max P'],
+                        [6, 1, 10, 9.36, 'Jean P'],
+                        [6, 1, 10, 9.36, 'Herbert L'],
+                        [6, 1, 10, 9.36, 'Andreas A'],
+                        [6, 1, 10, 9.36, 'Ocaso'],
+                        [6, 1, 10, 9.36, 'etienne1306'],
+                        [6, 1, 10, 9.36, 'Doris H'],
+                        [6, 1, 10, 9.36, 'SABINE B'],
+                        [7, 1, 5.55, 5.04, 'Susi K'],
+                        [7, 1, 5.55, 5.04, 'Annette H'],
+                        [8, 1, 5, 4.5, 'Societatea d'],
+                        [8, 1, 5, 4.5, 'Kallerberg'],
+                        [8, 1, 5, 4.5, 'Raul G'],
+                        [8, 1, 5, 4.5, 'Antonio A'],
+                        [8, 1, 5, 4.5, 'Detlef Z'],
+                        [8, 1, 5, 4.5, 'Kornelia M'],
                     ];
                     var donations3 = [
-                        [7, 1, 5, 4.5, 'Kornelia M'],
-                        [7, 1, 5, 4.5, 'Antonio A'],
-                        [7, 1, 5, 4.5, 'Denai'],
-                        [7, 1, 5, 4.5, 'Mateusz O'],
-                        [7, 1, 5, 4.5, 'Raul G'],
-                        [7, 1, 5, 4.5, 'Roland D'],
-                        [7, 1, 5, 4.5, 'Swen A'],
-                        [7, 1, 5, 4.4, 'Therese S'],
-                        [8, 1, 2.5, 2.08, 'Martin G'],
-                        [9, 1, 2, 1.59, 'Marie-Laure D'],
+                        [8, 1, 5, 4.5, 'Swen A'],
+                        [8, 1, 5, 4.5, 'Thomas C'],
+                        [8, 1, 5, 4.5, 'Comte M'],
+                        [8, 1, 5, 5.5, 'Max P'],
+                        [8, 1, 5, 4.5, 'Sven O'],
+                        [8, 1, 5, 4.5, 'Mateusz O'],
+                        [8, 1, 5, 4.5, 'Petr M'],
+                        [8, 1, 5, 4.4, 'Therese S'],
+                        [8, 1, 5, 4.5, 'Denai'],
+                        [9, 1, 2.5, 2.08, 'Martin G'],
+                        [10, 1, 2, 1.59, 'Marie-Laure D'],
+                        [11, 1, 1, 0.62, 'Gyorgy C'],
+                        [11, 1, 1, 0.38, 'Francesco L'],
                     ];
                     var donation_table = "";
                     var donation_table2 = "";
@@ -6212,8 +6253,25 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $.each(LANG, function (a, b) {
                     supported_lang.push(a);
                 });
+                /*var flag = 'https://www.tuto-de-david1327.com/medias/images/flag.16.' + translations[d][0] +'.png'
+                $('<style id="dio_BBplayer_style"> ' +
+                  '.flag.16 { background:url(https://www.tuto-de-david1327.com/medias/images/flags.16.png); width: 16px; height: 11px; background-position: 0px -290px;} ' +
+                  '.flag.16.de { background-position: 0px -290px;} ' +
+                  '.flag.16.en { } ' +
+                  '.flag.16.it { background-position: 0px -290px;} ' +
+                  '.flag.16.fr { background-position: 224px -44px;} ' +
+                  '.flag.16.ru { background-position: 0px -290px;} ' +
+                  '.flag.16.pl { background-position: 0px -290px;} ' +
+                  '.flag.16.es { background-position: 0px -290px;} ' +
+                  '.flag.16.ar { background-position: 0px -290px;} ' +
+                  '.flag.16.br { background-position: 0px -290px;} ' +
+                  '.flag.16.pt { background-position: 0px -290px;} ' +
+                  '.flag.16.cz { background-position: 0px -290px;} ' +
+                  '.flag.16.ro { background-position: 0px -290px;} ' +
+                  '.flag.16.nl { background-position: 0px -290px;} ' +
+                  '.flag.16.gr { background-position: 0px -290px;} ' +
+                  '</style>').appendTo("head");*/
 
-                //HTML_tab3 += '<div id="diomenu_einstellungen_sendmail" style="bottom: -5px; position: absolute; margin-left: 1px;">' + dio.createButton(getTexts("translations", "send")) + '</div>';
                 HTML_tab3 += '<div style="overflow-x: hidden; padding-left: 5px; position: relative;"></div>' +
                     '</div>' +
                     '<div style="bottom: -1px;position: absolute; font-weight: bold;">' +
@@ -6265,7 +6323,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 HTML_tab3 += '<table>'+
                     (function(){
                     var translations = [
-                        ["DE", "Diony"],
+                        ["DE", "Diony / Krieger des Lichts"],
                         ["EN", "Diony"],
                         ["IT", "amliam / Pyrux"],
                         ["FR", "eclat49 / David1327"],
@@ -6327,13 +6385,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 $("#diomenu_einstellungen_sendmail").click(function () {
                     if ($("#trans_lang").length && !$.trim($("#trans_lang").val())) {
-                        uw.HumanMessage.error(getTexts("translations", "enter_lang_name"));
+                        uw.HumanMessage.error(dio_icon + getTexts("translations", "enter_lang_name"));
                         return;
                     } else if ($("#langdiv").val() === getTexts("Settings", "info")) {
-                        uw.HumanMessage.error(getTexts("translations", "choose_lang"));
+                        uw.HumanMessage.error(dio_icon + getTexts("translations", "choose_lang"));
                         return;
                     } else if ($("#trans_content .toSend").length === 0) {
-                        uw.HumanMessage.error(getTexts("translations", "no_translation"));
+                        uw.HumanMessage.error(dio_icon + getTexts("translations", "no_translation"));
                         return;
                     }
                     uw.hOpenWindow.showConfirmDialog('', getTexts("translations", "trans_sure"), function () {
@@ -6400,13 +6458,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 /*$("#diomenu_einstellungen_sendmail").click(function () {
 					if ($("#trans_lang").length && !$.trim($("#trans_lang").val())) {
-						uw.HumanMessage.error(getTexts("Settings", "enter_lang_name"));
+						uw.HumanMessage.error(dio_icon + getTexts("Settings", "enter_lang_name"));
 						return;
 					} else if ($("#langdiv").val() === getTexts("Settings", "info")) {
-						uw.HumanMessage.error(getTexts("Settings", "choose_lang"));
+						uw.HumanMessage.error(dio_icon + getTexts("Settings", "choose_lang"));
 						return;
 					} else if ($("#trans_content .toSend").length === 0) {
-						uw.HumanMessage.error(getTexts("Settings", "no_translation"));
+						uw.HumanMessage.error(dio_icon + getTexts("Settings", "no_translation"));
 						return;
 					}
 					hOpenWindow.showConfirmDialog('', getTexts("Settings", "trans_sure"), function () {
@@ -6440,14 +6498,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         });
                         xhr.done(function (data) {
                             $("#ajax_loader").css({"visibility":"hidden"});
-                            uw.HumanMessage.success(getTexts("Settings", "trans_success"));
+                            uw.HumanMessage.success(dio_icon + getTexts("Settings", "trans_success"));
 
                         });
                         xhr.fail(function (jqXHR, textStatus, errorThrown) {
                             $("#dioajaxloader").css({
 								"display" : "none"
 							});
-							uw.HumanMessage.error(getTexts("Settings", "trans_fail"));
+							uw.HumanMessage.error(dio_icon + getTexts("Settings", "trans_fail"));
 						});
 					});
 				});*/
@@ -6552,7 +6610,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         addCopyListener: function() {
             new uw.ClipboardJS("#dio-copy-Traductions-quote").on("success", function() {
                 setTimeout(function() {
-                    uw.HumanMessage.success(getTexts("messages", "copybb"))
+                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
                 }, 50)
                 if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
                     uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
@@ -6983,7 +7041,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
               '#dio_town_popup .title { margin:5px;font-weight: bold; margin-right: 15px;} ' +
 
-              '#dio_town_popup .dio_branding { position:absolute; right:12px; top:8px; height: 20px; filter:sepia(1); -webkit-filter:sepia(1); opacity:0.5; } ' +
+              '#dio_town_popup .dio_icon { position:absolute; right:12px; top:8px; height: 22px; width: 25px; filter:sepia(1); -webkit-filter:sepia(1); opacity:0.5; } ' +
 
               '#dio_town_popup .unit_content, ' +
               '#dio_town_popup .move_counter_content, ' +
@@ -7106,39 +7164,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 popup += "<tr><td class='popup_middle_left'>&nbsp;</td><td style='width: auto;' class='popup_middle_middle'>";
                 //var group_name="";
 
-                var dadaa="";
-                /*var groupArrayy = uw.ITowns.townGroups.getGroupsDIOdav();
-                for (var group in groupArrayy) {
 
-                    if (groupArrayy.hasOwnProperty(group)) {
+                var Group_name = "";
 
-                        if (Game.premium_features.curator > Timestamp.now() & groupArrayy[group].towns.hasOwnProperty(townID) ) {
-                            //if (groupArrayy[townID].group < 3 ) {
-                            ITowns.town_groups._byId[-1].attributes.name = ITowns.town_groups._byId[group].attributes.name;
-                            ITowns.town_groups._byId[0].attributes.name = "";
-                            setTimeout(function () {
-                            ITowns.town_groups._byId[-1].attributes.name = ITowns.town_groups._byId[.1].attributes.name;
-                            ITowns.town_groups._byId[0].attributes.name = ITowns.town_groups._byId[0].attributes.name;
-                                }, 1);
-                                var group_name = "";
+                if (uw.Game.premium_features.curator >= uw.Timestamp.now()) {
+                    var Groups_town = uw.MM.DIO.getPlayer.Groups_town()[townID].groups, Group = 0;
 
-                                group_name += ITowns.town_groups._byId[group].attributes.name;
-                                // Title (town name)
-                                //group_name = ITowns.town_groups._byId[group].attributes.name;
-                                //if (ty) {group_name = ITowns.town_groups._byId[group].attributes.name;}
-                            dadaa = " (" + group_name + ")";
-
-
-                            //}else dadaa = " (...)";
+                    for (var group in Groups_town) {
+                        if (Groups_town.hasOwnProperty(group)) {
+                            if (group == 0 || group == -1) {
+                            }else {
+                                var group_name = uw.ITowns.town_groups._byId[group].attributes.name;
+                                Group_name += " (" + group_name + ")";
+                                Group += 1
+                            }
+                            if (Group > 1) Group_name = " (...)"
                         }
-                        //if (group == -1) {group_name="";}
-                        //else {// Title (town name)
-                        //    dadaa = "";
-                        //}
-                    }
-                }*/
+                    };
+                }
 
-                popup += "<h4><div style='margin-right:30px;'>" + uw.ITowns.getTown(townID).name + (dadaa == " ()" ? "" : dadaa) + "</div><img style='white-space: nowrap;' class='dio_branding' src='"+ dio_img +"'></h4>";
+                popup += "<h4><div style='margin-right:30px;'>" + uw.ITowns.getTown(townID).name + Group_name + "</div><div  class='dio_icon'></div></h4>";
 
                 // Count movement
                 var sup = 0, att = 0;
@@ -7273,29 +7318,29 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 popup += '<div class="support_filter attack_spy"></div><div class="spy_text">'+ pointNumber(spy_storage) +'</div>';
                 popup += "</td>";
 
-                popup += "<td></td>";
 
                 // - hero Content
                 if(DATA.options.dio_tih) {
                     var HeroArray = uw.ITowns.getHeroDIO()[townID];
                     if (HeroArray) {
 
+                        popup += "<td></td>";
                         popup += "<td class='hero_content'>";
                         popup += '<div class="hero_icon hero25x25 ' + HeroArray.hero_name + '"><span class="count text_shadow">' + HeroArray.hero_level + '</span></div>';
                         popup += "</td>";
-                        popup += "<td></td>";
 
                     }};
 
                 // - God Content
                 var god = uw.ITowns.getTowns()[townID].god();
-
-                popup += "<td class='god_content'>";
-                popup += '<div class="god_mini '+ god +'"></div>';
-                popup += "</td>";
+                if (god) {
+                    popup += "<td></td>";
+                    popup += "<td class='god_content'>";
+                    popup += '<div class="god_mini '+ god +'"></div>';
+                    popup += "</td>";
+                }
 
                 popup += "</tr></table></div>";
-
 
 
                 popup += "</td><td class='popup_middle_right'>&nbsp;</td></tr>";
@@ -7656,6 +7701,119 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     function addFunctionToITowns() {
         // Copy function and prevent an error
+        uw.MM.DIO = {
+            getPlayer : {},
+            info_dio : {
+                name : "DIO-TOOLS-David1327",
+                version : dio_version,
+                latest_version : uw.dio_latest_version,
+            },
+            lang : uw.Game.market_id,
+            land : uw.Game.world_id.substring(0, 2),
+        };
+
+        uw.MM.DIO.getPlayer.Groups = function () {
+            var town_groups_towns, town_groups, groups = {};
+
+            // #Grepolis Fix: 2.75 -> 2.76
+            if (uw.MM.collections) {
+                town_groups_towns = uw.MM.collections.TownGroupTown[0];
+                town_groups = uw.MM.collections.TownGroup[0];
+            } else {
+                town_groups_towns = uw.MM.getCollections().TownGroupTown[0];
+                town_groups = uw.MM.getCollections().TownGroup[0];
+            }
+
+            town_groups_towns.each(function (town_group_town) {
+                var gid = town_group_town.getGroupId(),
+                    group = groups[gid],
+                    town_id = town_group_town.getTownId();
+
+                if (!group) {
+                    groups[gid] = group = {
+                        id: gid,
+                        //name: town_groups.get(gid).getName(), // hier tritt manchmal ein Fehler auf: TypeError: Cannot read property "getName" of undefined at https://_.grepolis.com/cache/js/merged/game.js?1407322916:8298:525
+                        towns: {}
+                    };
+                }
+
+                group.towns[town_id] = {id: town_id};
+                //groups[gid].towns[town_id]={id:town_id};
+            });
+            //console.log(groups);
+            return groups;
+        };
+
+        uw.MM.DIO.getPlayer.Groups_town = function () {
+            var town_groups_towns, town_groups, groups = {};
+
+            // #Grepolis Fix: 2.75 -> 2.76
+            if (uw.MM.collections) {
+                town_groups_towns = uw.MM.collections.TownGroupTown[0];
+                town_groups = uw.MM.collections.TownGroup[0];
+            } else {
+                town_groups_towns = uw.MM.getCollections().TownGroupTown[0];
+                town_groups = uw.MM.getCollections().TownGroup[0];
+            }
+
+            town_groups_towns.each(function (town_group_town) {
+                var gid = town_group_town.getGroupId(),
+                    town_id = town_group_town.getTownId(),
+                    group = groups[town_id];
+
+                if (!group) {
+                    groups[town_id] = group = {
+                        id: town_id,
+                        //name: town_groups.get(gid).getName(), // hier tritt manchmal ein Fehler auf: TypeError: Cannot read property "getName" of undefined at https://_.grepolis.com/cache/js/merged/game.js?1407322916:8298:525
+                        groups: {}
+                    };
+                }
+                if (town_id !== 0 || town_id !== -1) {
+                group.groups[gid] = {
+                    id: gid,
+                    name : ITowns.town_groups._byId[gid].attributes.name
+                }
+                };
+                //groups[gid].towns[town_id]={id:town_id};
+            });
+            //console.log(groups);
+            return groups;
+        };
+
+        uw.MM.DIO.getPlayer.Hero = function  () {
+            var PlayerHero, heros = {};
+
+            // #Grepolis Fix: 2.75 -> 2.76
+            if (uw.MM.collections) {
+                PlayerHero = uw.MM.collections.PlayerHero[0];
+            } else {
+                PlayerHero = uw.MM.getCollections().PlayerHero[0];
+            }
+
+            PlayerHero.each(function (PlayerHero) {
+                var hero_name = PlayerHero.getId(),
+                    hero_level = PlayerHero.getLevel(),
+                    town_id = PlayerHero.getHomeTownId(),
+                    town_name = PlayerHero.getOriginTownName(),
+                    hero = heros[town_id];
+
+                if (!hero) {
+                    heros[town_id] = hero = {
+                        town_id: town_id,
+                        town: town_name,
+                        hero_name,
+                        hero_level: hero_level
+                    };
+                }
+            });
+            return heros;
+        };
+
+        //uw.MM.DIO.getHero = function () {};
+
+
+
+
         uw.ITowns.townGroups.getGroupsDIO = function () {
             var town_groups_towns, town_groups, groups = {};
 
@@ -7719,6 +7877,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             //console.log(groups);
             return groups;
         };*/
+
 
         uw.ITowns.getHeroDIO = function () {
             var town_groups_towns, town_groups, groups = {};
@@ -8304,7 +8463,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             //tooltip
 
-            $('#dio_help_available_units').tooltip('Wiki (' + getTexts("Options", "ava")[0] + ')');
+            $('#dio_help_available_units').tooltip('Wiki (' + dio_icon + getTexts("Options", "ava")[0] + ')');
             for (unit in unitArray) {
                 if (unitArray.hasOwnProperty(unit)) {
                     $('#dio' + unit).tooltip(uw.GameData.units[unit].name);
@@ -8590,7 +8749,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         UnitComparison.tooltips[UnitComparison.t] = uw.GameData.units[e].name;
                         UnitComparison.t++;
-                        $('#dio_help_UnitComparison').tooltip('Wiki (' + getTexts("Options", "com")[0] + ')');
+                        $('#dio_help_UnitComparison').tooltip('Wiki (' + dio_icon + getTexts("Options", "com")[0] + ')');
                     }
                 }
             }
@@ -8676,7 +8835,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             var wnd = b[b.length - 1];
             var c = wnd.getID();
             // attaques
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "attacking") + "')").each(function () {
+            $("DIV#gpwnd_" + c + " #report_list .color_highlight ").each(function () {
                 $(this).css({
                     "border-left" : "5px solid red"
                 }).addClass("angriffe");
@@ -8689,6 +8848,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
             // soutient
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "support") + "')").each(function () {
+                $(this).css({
+                    "border-left" : "5px solid green"
+                }).addClass("unterstützungen");
+            });
+            // ne peut pas soutenir
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + uw.DM.getl10n("report").inbox.filter_types.support.toLowerCase() + "')").each(function () {
                 $(this).css({
                     "border-left" : "5px solid green"
                 }).addClass("unterstützungen");
@@ -8711,7 +8876,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     "border-left" : "5px solid black"
                 });
             });
-            // (Vous avez lancé)
+            // (lancé)
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "enacted") + "')").each(function () {
                 $(this).css({
                     "border-left" : "5px solid purple"
@@ -8733,7 +8898,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "Reservations") + "')").each(function () {
                 $(this).css({
                     "border-left" : "5px solid yellow"
-                })
+                }).addClass("farm");
+            });
+            //Alliance (parrainé)
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "parrainé") + "')").each(function () {
+                $(this).css({
+                    "border-left" : "5px solid yellow"
+                }).addClass("farm");
             });
         },
         reportsFilter : function () {
@@ -9427,56 +9598,64 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var arrival_interval = {};
     // TODO: Change both functions in MultipleWindowHandler()
     function TownTabHandler(action) {
-        var wndArray, wndID, wndA;
-        wndArray = uw.Layout.wnd.getOpen(uw.Layout.wnd.TYPE_TOWN);
-        //console.log(wndArray);
-        for (var e in wndArray) {
-            if (wndArray.hasOwnProperty(e)) {
-                //console.log(wndArray[e].getHandler());
-                wndA = wndArray[e].getAction();
-                wndID = "#gpwnd_" + wndArray[e].getID() + " ";
-                if (!$(wndID).get(0)) {
-                    wndID = "#gpwnd_" + (wndArray[e].getID() + 1) + " ";
-                }
-                //console.log(wndID);
-                if (wndA === action) {
-                    switch (action) {
-                        case "trading":
-                            if ($(wndID + '#trade_tab').get(0)) {
-                                if (!$(wndID + '.dio_rec_trade').get(0) && DATA.options.dio_rec) {
-                                    RecruitingTrade.add(wndID);
-                                }
-                                //console.log(DATA.options.dio_per);
-                                if (!$(wndID + '.dio_btn_trade').get(0) && DATA.options.dio_per) {
-                                    addPercentTrade(wndID, false);
-                                }
-                            }
-                            //addTradeMarks(wndID, 15, 18, 15, "red"); // town festival
-                            break;
-                        case "info":
-                            //if (DATA.options.dio_sen) {
-                            uw.TownOverviewWindowFactory.openTownsOverview();
-                            //}
-                            //}
-                            break;
-                        case "support":
-                        case "attack":
-                            //if(!arrival_interval[wndID]){
-                            if (DATA.options.dio_way && !($('.js-casted-powers-viewport .unit_movement_boost').get(0) || $(wndID + '.short_duration').get(0))) {
-                                //if(arrival_interval[wndID]) console.log("add " + wndID);
-                                ShortDuration.add(wndID);
-                            } else $("#dio_short_duration_stylee").remove();
-                            if (DATA.options.dio_sen) {
-                                SentUnits.add(wndID, action);
-                            }
-                            //}
-                            break;
-                        case "rec_mark":
-                            //addTradeMarks(wndID, 15, 18, 15, "lime");
-                            break;
+        try {
+            var wndArray, wndID, wndA;
+            wndArray = uw.Layout.wnd.getOpen(uw.Layout.wnd.TYPE_TOWN);
+            //console.log(wndArray);
+            for (var e in wndArray) {
+                if (wndArray.hasOwnProperty(e)) {
+                    //console.log(wndArray[e].getHandler());
+                    //console.log(wndArray[e].getAction());
+                    //console.log(wndArray[e].getHandler());
+                    //wndA = wndArray[e].getAction();
+                    wndID = "#gpwnd_" + wndArray[e].getID() + " ";
+                    wnd = wndArray[e].getID();
+                    if (!$(wndID).get(0)) {
+                        wndID = "#gpwnd_" + (wndArray[e].getID() + 1) + " ";
+                        wnd = wndArray[e].getID() + 1;
                     }
+                    //console.log(wndID);
+                    //if (wndA === action) {
+                        switch (action) {
+                            case "trading":
+                                if ($(wndID + '#trade_tab').get(0)) {
+                                    if (!$(wndID + '.dio_rec_trade').get(0) && DATA.options.dio_rec) {
+                                        RecruitingTrade.add(wndID);
+                                    }
+                                    //console.log(DATA.options.dio_per);
+                                    if (!$(wndID + '.dio_btn_trade').get(0) && DATA.options.dio_per) {
+                                        addPercentTrade(wndID, false);
+                                    }
+                                }
+                                //addTradeMarks(wndID, 15, 18, 15, "red"); // town festival
+                                break;
+                            case "info":
+                                //console.log(wndArray[e].getAction());
+                                if (DATA.options.dio_BBt) {
+                                    BBtowninfo.towninfo(wnd);
+                                }
+                                break;
+                            case "support":
+                            case "attack":
+                                //if(!arrival_interval[wndID]){
+                                if (DATA.options.dio_way && !($('.js-casted-powers-viewport .unit_movement_boost').get(0) || $(wndID + '.short_duration').get(0))) {
+                                    //if(arrival_interval[wndID]) console.log("add " + wndID);
+                                    ShortDuration.add(wndID);
+                                } else $("#dio_short_duration_stylee").remove();
+                                if (DATA.options.dio_sen) {
+                                    SentUnits.add(wndID, action);
+                                }
+                                //}
+                                break;
+                            case "rec_mark":
+                                //addTradeMarks(wndID, 15, 18, 15, "lime");
+                                break;
+                        }
+                    //}
                 }
             }
+        } catch (error) {
+            errorHandling(error, "TownTabHandler");
         }
     }
 
@@ -9551,7 +9730,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                   '<div class="game_border_corner corner1"></div><div class="game_border_corner corner2"></div>' +
                   '<div class="game_border_corner corner3"></div><div class="game_border_corner corner4"></div>' +
                   '<div class="game_header bold">' +
-                  '<img src="'+ dio_img +'" style="width: 20px;float:left;margin: -2px 4px 0px -3px;opacity: 0.7;">' +
+                  '<div class="dio_icon b" style="opacity: 0.7;"></div>' +
                   '<div class="icon_sent townicon_' + (action == "attack" ? "lo" : "ld") + '"></div><span>' + getTexts("labels", "lab") + ' (' + (action == "attack" ? "OFF" : "DEF") + ')</span>' +
                   '</div>' +
                   '<div class="troops"><div class="units_list"></div><hr style="width: 172px;border: 1px solid rgb(185, 142, 93);margin: 3px 0px 2px -1px;">' +
@@ -11134,8 +11313,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
               '.place_sim_select_gods_wrap select { max-width: 200px; width: auto!important;} ' +
 
               //adaptation of the layout
-              '#place_simulator_form a.unit, #place_simulator_form div.unit { margin: 3px 2px;}' +
-              '.place_simulator_table .place_image { margin: 1px 2px;' +
+              '.place_sim_hero_container { width: 73px}' +
+              '.place_sim_hero_choose { width: 50px;' +
 
               '</style>').appendTo('head');
 
@@ -11217,7 +11396,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
               '#dio_simulator_strength .img_res { background: url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png) 0% 54%; background-size: 100%; } '+
               '#dio_simulator_strength .img_pop { background: url(https://gpall.innogamescdn.com/images/game/res/pop.png); background-size:100%; } '+
 
-              '#dio_simulator_strength .left_border { width: 46px; } '+
+              '#dio_simulator_strength .left_border { width: 48px; } '+
               '</style>'
              ).appendTo('head');
 
@@ -11238,7 +11417,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     function setStrengthSimulator() {
         $('<div id="dio_simulator_strength" style="width: 49%;">' +
-          '<div style="float:left; margin-right: -4px;"><h4>' + getTexts("labels", "str") + '</h4>' +
+          '<div style="float:left; margin-right: -6px;"><h4>' + getTexts("labels", "str") + '</h4>' +
           '<table class="place_simulator_table strength" cellpadding="0px" cellspacing="0px" style="align:center;">' +
           '<tr>' +
           '<td class="place_simulator_even"></td>' +
@@ -11260,20 +11439,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
           '<td class="left_border place_simulator_even" id="dio_def_ship">0</td>' +
           '</tr>' +
           '</table>' +
-          '</div><div><h4>' + getTexts("labels", "los") + '</h4>' +
+          '</div><div><h4 style="left: 6px; position: relative;">' + getTexts("labels", "los") + '</h4>' +
           '<table class="place_simulator_table loss" cellpadding="0px" cellspacing="0px" style="align:center; height: 64px;">' +
           '<tr>' +
-          //'<td class="place_simulator_even"></td>' +
+          '<td></td>' +
           '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_res"></div></td>' +
           '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_fav"></div></td>' +
           '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_pop"></div></td>' +
           '</tr><tr>' +
-          //'<td class="place_simulator_even"><div class="place_symbol place_att"></div></td>' +
+          '<td></td>' +
           '<td class="left_border place_simulator_odd" id="dio_att_res">0</td>' +
           '<td class="left_border place_simulator_even" id="dio_att_fav">0</td>' +
           '<td class="left_border place_simulator_odd" id="dio_att_pop">0</td>' +
           '</tr><tr>' +
-          //'<td class="place_simulator_even"><div class="place_symbol place_def"></div></td>' +
+          '<td></td>' +
           '<td class="left_border place_simulator_odd" id="dio_def_res">0</td>' +
           '<td class="left_border place_simulator_even" id="dio_def_fav">0</td>' +
           '<td class="left_border place_simulator_odd" id="dio_def_pop">0</td>' +
@@ -12116,7 +12295,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             textColor = ((uw.ITowns.player_gods.attributes.fury) == fury_max) ? textColor = "color:red;" : textColor = "color:blue";
             fury_row = '<td class="bold" style="'+ textColor +'">' + uw.ITowns.player_gods.attributes.fury + '/' + fury_max + '</td>';
 
-            tooltip_str = $('<div id"tooltip"><table><tr><td><img src="'+ dio_img +'" style="opacity: 0.30;"></td>' + pic_row + '</tr>' +
+            tooltip_str = $('<div id"tooltip"><table><tr><td><div class="dio_icon b" style="opacity: 0.30; width: 35px; height: 35px;"></td>' + pic_row + '</tr>' +
                             '<tr align="center"><td><img src="https://gpall.innogamescdn.com/images/game/res/favor.png"></td>' + fav_row + '</tr>' +
                             '<tr align="center"><td>+</td>' + prod_row + '</tr>' +
                             '</table></div>');
@@ -12377,8 +12556,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var Townbb = {
         activate: function () {
 
-            //Townbb.addBox();
-            Townbb.addButton();
+            this.addButton();
 
             // Style
             $('<style id="dio_townbb_style"> ' +
@@ -12392,7 +12570,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
               '#input_townbb { background-color: #ffe2a0; display: none; position: absolute; left: 23px; top: 29px; width: 153px; height: 12px; text-align: center; z-index: 6; } ' +
 
               // clipboard
-              '#dio_townbb-clipboard { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png); background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 6; top:29px ;left: 167px; } ' +
+              '#dio_townbb-clipboard { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png); background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 6; top:29px ;left: 167px; display: none;} ' +
               '</style>').appendTo("head");
         },
         deactivate: function () {
@@ -12403,12 +12581,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         addButton: function () {
 
             $('<a id="dio_townbb"></a><input id="input_townbb" type="text" onfocus="this.select();" onclick="this.select();"><div id="dio_townbb_logo"></div>').appendTo('.town_name_area');
+            $('<a id="dio_townbb-clipboard" data-clipboard-text="[town]' + uw.Game.townId + '[/town]"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));
             $("#dio_townbb").click(function () {
-
-                if ($('#dio_townbb-clipboard').is(':visible')){
-                    $('#dio_townbb-clipboard').remove();
-                }else { $('<a id="dio_townbb-clipboard" data-clipboard-text="[town]' + uw.Game.townId + '[/town]"></a>').appendTo('.town_name_area').tooltip(getTexts("messages", "copy"));}
-
+                $('#dio_townbb-clipboard').toggle();
                 $("#input_townbb").toggle();
                 $("#input_townbb").val("[town]" + uw.Game.townId + "[/town]");
             });
@@ -12417,11 +12592,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             setTimeout(function() {
                 new uw.ClipboardJS("#dio_townbb-clipboard").on("success", function() {
                     setTimeout(function() {
-                        uw.HumanMessage.success(getTexts("messages", "copybb"))
-                    $("#dio_townbb").click();
+                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                        $('#dio_townbb-clipboard').css({"display" : "none"})
+                        $("#input_townbb").css({"display" : "none"})
                     }, 50)
                 })
-            }, 50000)
+            }, 2000)
 
             // Tooltip
             $('#dio_townbb').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("market").city);
@@ -12436,92 +12612,147 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var BBtowninfo = {
         activate: function () {
 
-            var wnds = uw.GPWindowMgr.getOpen(uw.Layout.wnd.TYPE_TOWN);
-            for (var e in wnds) {
-                if (wnds.hasOwnProperty(e)) {
-                    var wndid = wnds[e].getID();
-                    // Style
-                    $('<style id="dio_BBtowninfo_style"> ' +
+            if ($('.dio_BBplayer').get(0)){
+            $('div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({"padding-left" : "23px"});
+            }
+            $('<style id="dio_BBtowninfo_style"> ' +
+              // Button
+              '.dio_BBplayer { background: url(https://gpfr.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -28px; height: 22px; width: 21px; } ' +
+              '.dio_BBalliance { background: url(https://gpfr.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -5px; height: 22px; width: 21px; } ' +
+              // clipboard
+              '.dio_clipboard-player { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png) #ffedc5; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+              '.dio_clipboard-alliance { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+              '.dio_clipboard-town { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+              // Style (text)
+              '.input_BBplayer { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
+              '.input_BBalliance { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
+              '#town_bbcode_id { background-color: #ffe2a0; } ' +
 
-                      // Button
-                      '#dio_'+wndid+'BBplayer { background: url(https://gpfr.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -28px; position:absolute; height: 22px; width: 21px; top:1px ;left: 0px; } ' +
-                      '#dio_'+wndid+'BBalliance { background: url(https://gpfr.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -5px; position:absolute; height: 22px; width: 21px; top:1px ;left: 0px;z-index: 555; } ' +
+              '</style>').appendTo("head");
+        },
+        profile: function () {
+            try {
+                var c = dio.wndId;
+                this.add(c);
 
-                      // clipboard
-                      '#dio_'+wndid+'clipboard-player { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png) #ffedc5; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; top:4px ; left: 206px; } ' +
-                      '#dio_'+wndid+'clipboard-alliance { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; top:4px ; left: 206px; } ' +
+                var grcrt = false, num = 2;
+                //grcrt ?
+                if (typeof(uw.GRCRT_Notifications) !== "undefined") {grcrt = true; num += 2;}
+                //Mole Hole ?
+                if (typeof(uw.mhCol) !== "undefined") { num += 1;}
 
+                // Function
+                if (!$('#dio_gpwnd_'+ c +'_BBplayer').get(0)){
 
-                      // Style (text)
-                      '#input_'+wndid+'BBplayer { background-color: #ffe2a0; display: none; position: absolute; left: 20px; top: 3px; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
-                      '#input_'+wndid+'BBalliance { background-color: #ffe2a0; display: none; position: absolute; left: 20px; top: 3px; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
-                      '#town_bbcode_id { background-color: #ffe2a0; } ' +
+                    // BBCode player
+                    $('<a id="dio_gpwnd_'+ c +'_BBplayer" class="dio_BBplayer" style="float: left; margin-right: 2px;"></a><input id="input_gpwnd_'+ c +'_BBplayer" class="input_BBplayer" style="top:25px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" type="text" onfocus="this.select();" onclick="this.select();"></div>').appendTo("div#gpwnd_"+ c +" div#player_info h3");
+                    $('<a id="dio_gpwnd_'+ c +'_clipboard-player" class="dio_clipboard-player" style="top:27px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_'+ c +'_BBplayer"></a>').appendTo("div#gpwnd_"+ c +" div#player_info h3").tooltip(dio_icon + getTexts("messages", "copy"));
+                    $('#dio_gpwnd_'+ c +'_BBplayer').click(function () {
+                        $('#dio_gpwnd_'+ c +'_clipboard-player').toggle();
+                        $('#input_gpwnd_'+ c +'_BBplayer').toggle();
+                        $('#input_gpwnd_'+ c +'_BBplayer').val("[player]" + $("div#gpwnd_"+ c +" div#player_info h3").text().trim() + "[/player]");
+                    });
 
-                      '</style>').appendTo("head");
+                    // BBCode alliance
+                    if ($("div#gpwnd_"+ c +" div#player_info a").text().trim() !== "") {
+                        $("div#gpwnd_"+ c +" div#player_info div#player_points").before('<a id="dio_gpwnd_'+ c +'_BBalliance" class="dio_BBalliance" style="position: relative; top: -2px; float: left; margin-right: 1px; left: -1px;"></a><input id="input_gpwnd_'+ c +'_BBalliance" class="input_BBalliance" style="top:50px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" onclick="this.select();" onfocus="this.select();"></div>');
+                        $("div#gpwnd_"+ c +" div#player_info div#player_points").after('<a id="dio_gpwnd_'+ c +'_clipboard-alliance" class="dio_clipboard-alliance" style="top:51px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_'+ c +'_BBalliance"></a>');
+                        $('#dio_gpwnd_'+ c +'_BBalliance').click(function () {
+                            $('#dio_gpwnd_'+ c +'_clipboard-alliance').toggle();
+                            //alliance name ?
+                            var text = $("div#gpwnd_"+ c +" div#player_info.bold")[0].children[num].attributes[2].textContent,
+                                re = /Layout.allianceProfile.open\('(.*?)',(.*?)\)/mg,
+                                alliance_id = text.replace(re , "$2"); var alliance_name = text.replace(re , "$1").replace(/\\/mg , "");
+                            $('#input_gpwnd_'+ c +'_BBalliance').toggle();
+                            $('#input_gpwnd_'+ c +'_BBalliance').val("[ally]" + alliance_name + "[/ally]");
+                        });
+                    }
+                };
+                // Tooltip
+                $('#dio_gpwnd_'+ c +'_BBplayer').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").player.name);
+                $('#dio_gpwnd_'+ c +'_BBalliance').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").ally.name);
+                $('#dio_gpwnd_'+ c +'_clipboard-alliance').tooltip(dio_icon + getTexts("messages", "copy"));
+            } catch (error) {
+                errorHandling(error, "BBtowninfo (profile)");
+            }
+        },
 
-                    if ($("div#gpwnd_"+wndid+" div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even div.list_item_left a.gp_player_link").is(':visible')){
-                        $('<style id="dio_BBplayer_style"> ' +
-                          // img
-                          'div#gpwnd_'+wndid+' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img { padding-left: 21px; } ' +
-                          'div#gpwnd_'+wndid+' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix { padding-left: 25px; } ' +
-                          '</style>').appendTo("head");
-                    }else {
-                        $('<style id="dio_BBplayer_style"> ' +
-                          'div#gpwnd_'+wndid+' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img { padding-left: 0px; } ' +
-                          '</style>').appendTo("head");}
+        towninfo: function (c) {
+            try {
+                this.add(c);
 
+                var MH = false;
+                if (typeof(uw.mhCol) !== "undefined") {
+                    MH = true;
+                    $('div#gpwnd_'+ c + ' #town_bbcode_id').css({"margin-right" : "22px"});
+                }
 
-                    // Function
-                    if (!$('#dio_'+wndid+'BBplayer').get(0)){
+                // Function
+                if (!$('#dio_gpwnd_'+ c +'_BBplayer').get(0)){
+                    $('div#gpwnd_'+ c +' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#gpwnd_'+ c +' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({"padding-left" : "23px"});
 
-                        // BBCode player
-                        if ($("div#gpwnd_"+wndid+" div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even div.list_item_left a.gp_player_link").is(':visible')){
-                            $('<a id="dio_'+wndid+'BBplayer"></a><input id="input_'+wndid+'BBplayer" type="text" onfocus="this.select();" onclick="this.select();"></div>').appendTo('div#gpwnd_'+wndid+' div#info_tab_content li.even div.list_item_left');
-                            $("#dio_"+wndid+"BBplayer").click(function () {
-
-                                if ($('#dio_'+wndid+'clipboard-player').is(':visible')){
-                                    $('#dio_'+wndid+'clipboard-player').remove();
-                                }else { $('<a id="dio_'+wndid+'clipboard-player" data-clipboard-text="[player]' + $("div#gpwnd_"+wndid+" div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even div.list_item_left a.gp_player_link").text().trim() + '[/player]"></a>').appendTo('div#gpwnd_'+wndid+' div#info_tab_content li.even div.list_item_left').tooltip(getTexts("messages", "copy"));}
-
-                                $("#input_"+wndid+"BBplayer").toggle();
-                                $("#input_"+wndid+"BBplayer").val("[player]" + $("div#gpwnd_"+wndid+" div#info_tab_content li.even div.list_item_left a.gp_player_link").text().trim() + "[/player]");
-                            });}
-
-                        // BBCode alliance
-                        $('<a id="dio_'+wndid+'BBalliance"></a><input id="input_'+wndid+'BBalliance" onclick="this.select();" onfocus="this.select();"></div>').appendTo('div#gpwnd_'+wndid+' ul.game_list li.odd.clearfix');
-                        $("#dio_"+wndid+"BBalliance").click(function () {
-
-                            if ($('#dio_'+wndid+'clipboard-alliance').is(':visible')){
-                                $('#dio_'+wndid+'clipboard-alliance').remove();
-                            }else { $('<a id="dio_'+wndid+'clipboard-alliance" data-clipboard-text="[ally]' + $("div#gpwnd_"+wndid+" div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix a").text().trim() + '[/ally]"></a>').appendTo('div#gpwnd_'+wndid+' div#info_tab_content li.odd.clearfix').tooltip(getTexts("messages", "copy"));}
-
-                            $("#input_"+wndid+"BBalliance").toggle();
-                            $("#input_"+wndid+"BBalliance").val("[ally]" + $("div#gpwnd_"+wndid+" div#info_tab_content li.odd.clearfix a").text().trim() + "[/ally]");
+                    // BBCode player
+                    if ($("div#gpwnd_"+ c +" div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even div.list_item_left a.gp_player_link").is(':visible')){
+                        $('<a id="dio_gpwnd_'+ c +'_BBplayer" class="dio_BBplayer" style="top:1px ;left: 0px; position:absolute;"></a><input id="input_gpwnd_'+ c +'_BBplayer" class="input_BBplayer" style="left: 20px; top: 3px;" onfocus="this.select();" onclick="this.select();"></div>').appendTo('div#gpwnd_'+ c +' div#info_tab_content li.even div.list_item_left');
+                        $('<a id="dio_gpwnd_'+ c +'_clipboard-player" class="dio_clipboard-player" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_'+ c +'_BBplayer"></a>').appendTo('div#gpwnd_'+ c +' div#info_tab_content li.even div.list_item_left').tooltip(dio_icon + getTexts("messages", "copy"));
+                        $('#dio_gpwnd_'+ c +'_BBplayer').click(function () {
+                            $('#dio_gpwnd_'+ c +'_clipboard-player').toggle();
+                            $('#input_gpwnd_'+ c +'_BBplayer').toggle();
+                            $('#input_gpwnd_'+ c +'_BBplayer').val("[player]" + $("div#gpwnd_"+ c +" div#info_tab_content li.even div.list_item_left a.gp_player_link").text().trim() + "[/player]");
                         });
 
-                        // Clipboard success
-                        new uw.ClipboardJS("#dio_"+wndid+"clipboard-player").on("success", function() {
-                            setTimeout(function() {
-                                uw.HumanMessage.success(getTexts("messages", "copybb"))
-                                $("#dio_"+wndid+"BBplayer").click();
-                            }, 50)
-                        })
-                        new uw.ClipboardJS("#dio_"+wndid+"clipboard-alliance").on("success", function() {
-                            setTimeout(function() {
-                                uw.HumanMessage.success(getTexts("messages", "copybb"))
-                                $("#dio_"+wndid+"BBalliance").click();
-                            }, 50)
-                        })
-                    }
-                }}
+                        // BBCode alliance
+                        $('<a id="dio_gpwnd_'+ c +'_BBalliance" class="dio_BBalliance" style="top: 1px; left: 0px; position: absolute;"></a><input id="input_gpwnd_'+ c +'_BBalliance" class="input_BBalliance" style="left: 20px; top: 3px;" onclick="this.select();" onfocus="this.select();"></div>').appendTo('div#gpwnd_'+ c +' ul.game_list li.odd.clearfix');
+                        $('<a id="dio_gpwnd_'+ c +'_clipboard-alliance" class="dio_clipboard-alliance" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_'+ c +'_BBalliance"></a>').appendTo('div#gpwnd_'+ c +' div#info_tab_content li.odd.clearfix').tooltip(dio_icon + getTexts("messages", "copy"));
+                        $('#dio_gpwnd_'+ c +'_BBalliance').click(function () {
+                            $('#dio_gpwnd_'+ c +'_clipboard-alliance').toggle();
+                            $('#input_gpwnd_'+ c +'_BBalliance').toggle();
+                            $('#input_gpwnd_'+ c +'_BBalliance').val("[ally]" + $("div#gpwnd_"+ c +" div#info_tab_content li.odd.clearfix a").text().trim() + "[/ally]");
+                        });
+                    } else {$('div#gpwnd_'+ c +' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img').css({"padding-left" : "0px"});}
 
-            // Tooltip
-            $('#dio_'+wndid+'BBplayer').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").player.name);
-            $('#dio_'+wndid+'BBalliance').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").ally.name);
+                    // clipboard town
+                    $('div#gpwnd_'+ c + ' #town_bbcode_link').append('<a id="dio_gpwnd_'+ c +'_clipboard-town" class="dio_clipboard-town" style="top:3px; ' + (MH ? "left: 171px;" : "right: 169px;") + '" data-clipboard-text="' + $('div#gpwnd_'+ c + ' #town_bbcode_id')[0].value + '"></a>');
+                    $('div#gpwnd_'+ c + ' #town_bbcode_link').click(function () {
+                        $('#dio_gpwnd_'+ c +'_clipboard-town').toggle();
+                    });
+                };
+
+                // Tooltip
+                $('#dio_gpwnd_'+ c +'_BBplayer').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").player.name);
+                $('#dio_gpwnd_'+ c +'_BBalliance').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").ally.name);
+            } catch (error) {
+                errorHandling(error, "BBtowninfo (towninfo)");
+            }
+        },
+        add: function (c) {
+            // Clipboard success
+            new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-player').on("success", function() {
+                setTimeout(function() {
+                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                    $('#dio_gpwnd_'+ c +'_clipboard-player').css({"display" : "none"})
+                    $('#input_gpwnd_'+ c +'_BBplayer').css({"display" : "none"})
+                }, 50)
+            })
+            new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-alliance').on("success", function() {
+                setTimeout(function() {
+                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                    $('#dio_gpwnd_'+ c +'_clipboard-alliance').css({"display" : "none"})
+                    $('#input_gpwnd_'+ c +'_BBalliance').css({"display" : "none"})
+                }, 50)
+            })
+            new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-town').on("success", function() {
+                setTimeout(function() {
+                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                    $('#dio_gpwnd_'+ c +'_clipboard-town').css({"display" : "none"})
+                    $('#div#gpwnd_'+ c + ' #town_bbcode_id').css({"display" : "none"})
+                }, 50)
+            })
         },
         deactivate: function () {
             $('#dio_BBtowninfo_style').remove();
-            $('#dio_BBplayer_style').remove();
+            $('.input_BBplayer,.input_BBalliance').css({"display" : "none"});
+            $('div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({"padding-left" : "0px"});
         },
     };
 
@@ -12534,7 +12765,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var cultureOverview = {
-        activate: function (e) {
+
+        timeout: null,
+        activate: function () {
+            if ($('#culture_points_overview_bottom').length) { cultureOverview.add(); }
+            cultureOverview.timeout = setInterval(() => {
+                if ($('#culture_points_overview_bottom').length) { cultureOverview.add(); }
+            }, 50000); //0.
+        },
+        add: function () {
             try {
                 var a = $("ul#cultur_overview_towns");
                 var b, c, d, e, f, i, j, k;
@@ -12605,7 +12844,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (k > 0) {
                         $("#dio_culture").text("[-" + k + "]");
                     } else {
-                        cultureOverview.activate.wnd.reloadContent();
+                        cultureOverview.add.wnd.reloadContent();
                     }
                 }
 
@@ -12614,12 +12853,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                                                    '<div id="dio_cultureBTN_triumph_r" class="dio_cultureBTN_r dio_cultureBTN_triumph"></div><div id="dio_cultureBTN_olympicgames_r" class="dio_cultureBTN_r dio_cultureBTN_olympicgames"></div>' +
                                                                    '<div id="dio_cultureBTN_cityfestival_r" class="dio_cultureBTN_r dio_cultureBTN_cityfestival"></div></div></div>');
 
-                    $("#culture_overview_wrapper").css({
-                        "top" : "35px",
-                        "height" : "370px"
-                    });
+                    $("#culture_overview_wrapper").css({"top" : "35px", "height" : "370px"});
                     $("#dio_cultureBTN_wrapper").css({
-
                         "color" : "white",
                         "font-family" : "Verdana",
                         "font-weight" : "bold",
@@ -12650,18 +12885,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         "border" : "2px groove gray",
                         "background" : "url(https://gpfr.innogamescdn.com/images/game/overviews/celebration_bg_new.png)"
                     });
-                    $(".dio_cultureBTN_cityfestival").css({
-                        "background-position" : "0 -109px"
-                    });
-                    $(".dio_cultureBTN_olympicgames").css({
-                        "background-position" : "0 -140px"
-                    });
-                    $(".dio_cultureBTN_triumph").css({
-                        "background-position" : "0 -110px"
-                    });
-                    $(".dio_cultureBTN_theather").css({
-                        "background-position" : "0 -170px"
-                    });
+                    $(".dio_cultureBTN_cityfestival").css({"background-position" : "0 -109px"});
+                    $(".dio_cultureBTN_olympicgames").css({"background-position" : "0 -140px"});
+                    $(".dio_cultureBTN_triumph").css({"background-position" : "0 -110px"});
+                    $(".dio_cultureBTN_theather").css({"background-position" : "0 -170px"});
+
                     var dio_cultureBTN_r_clicked_last = "";
                     function hideTownElements(JQelement) {
                         var dio_cultureBTN_mode = "";
@@ -12679,7 +12907,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 dio_cultureBTN_mode = "ul li:eq(3)";
                                 break;
                             default:
-                                setTimeout(function () { uw.HumanMessage.error("Error");}, 0);
+                                setTimeout(function () { uw.HumanMessage.error(dio_icon + "Error");}, 0);
                                 break;
                         }
                         if (dio_cultureBTN_r_clicked_last === JQelement.id) {
@@ -12745,6 +12973,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $(".dio_cultureBTN_triumph").remove();
             $(".dio_cultureBTN_theather").remove();
             $("#dio_cultureBTN_wrapper").remove();
+            clearTimeout(cultureOverview.timeout);
+            cultureOverview.timeout = null;
+            $("#culture_overview_wrapper").css({"top" : "0px"});
         },
     };
 
@@ -13292,43 +13523,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             if(HolidaySpecial.isXmas){ HolidaySpecial.XMas.add(); }
             if(HolidaySpecial.isNewYear){ HolidaySpecial.NewYear.add(); }
-
-            // Calculation Easter
-
-            // Jahreszahl
-            var X = 2019;
-
-            // Säkularzahl
-            var K = parseInt(X / 100, 10);
-            // Mondparameter
-            var A = X % 19;
-
-            // säkulare Mondschaltung
-            var M = 15 + parseInt((3 * K + 3)/4, 10) - parseInt((8 * K + 13)/25, 10);
-
-            // säkulare Sonnenschaltung
-            var S = 2 - parseInt((3 * K + 3)/4, 10);
-
-            // Erster Vollmond im Frühling
-            var D = (19 * A + M) % 30;
-
-            // Kalendarische Korrekturgröße
-            var R = parseInt((D + parseInt(A / 11, 10)) / 29, 10);
-
-            // Ostergrenze
-            var OG = 21 + D - R;
-
-            // Erster Sonntag im März
-            var SZ = 7 - ((2019 + parseInt(2019/4, 10) + S) % 7);
-
-            // Entfernung des Ostersonntags von der Ostergrenze
-            var OE = 7 - ((OG - SZ) % 7);
-
-            // Ostersonntag als Märzdatum
-            var OS = OG + OE;
-
-            // console.debug("DIO-TOOLS | Ostersonntag: " + OS);
-
         },
         XMas : {
             add : function(){
@@ -13353,15 +13547,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         NewYear : {
             add : function(){
 
-                var Year = new Date().getFullYear();
-                var DateYear = Year - 2020;
+                var Year = new Date().getFullYear() + "";
 
                 // TODO: Jahreszahl dynamisch setzen
                 $('<a href="https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/" target="_blank"><div id="dio_newYear">'+
-                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-2.gif">'+
-                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-0.gif">'+
-                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-2.gif">'+
-                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-'+ DateYear +'.gif">'+
+                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-'+ Year.substr(0, 1) +'.gif">'+
+                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-'+ Year.substr(1, 1) +'.gif">'+
+                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-'+ Year.substr(2, 1) +'.gif">'+
+                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-'+ Year.substr(3, 1) +'.gif">'+
                   '</div></a>').appendTo('#ui_box');
 
                 var dioNewYear = $('#dio_newYear');
@@ -13618,10 +13811,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         $('DIV#gpwnd_'+wndid+' A.select_all_units').after(' | <a class="dio_balanced" style="position:relative; top:4px" href="#">'+getTexts("Quack", "no_overload")+'</a> | <a class="dio_delete" style="position:relative; top:4px" href="#">'+uw.DM.getl10n("market").delete_all_market_offers+'</a>');
 
-                        $('<style id="dio-ship_count">' +
+                        /*$('<style id="dio-ship_count">' +
                           '.attack_support_window .town_units_wrapper .ship_count {margin-left: 0px!important;}' +
                           '.gtk-deselect-units { display: none;}' +
-                          '</style>').appendTo('head');
+                          '</style>').appendTo('head');*/
+
+                        $('.gtk-deselect-units').css({"display" : "none"});
+                        $('.attack_support_window .town_units_wrapper .ship_count').css({"margin-left" : "0px"});
 
                         var dio_bl_groundUnits=new Array('sword','slinger','archer','hoplite','rider','chariot','catapult','minotaur','zyklop','medusa','cerberus','fury','centaur','calydonian_boar','godsent');
 
@@ -14137,7 +14333,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         groups: -2,
         activate: function () {
             townslist.timeout = setInterval(() => {
-                cultureOverview.activate();
                 if ($('#town_groups_list').length) {
                     if (!$('.dio_town_bb').get(0)) {
                         townslist.add();
@@ -14183,7 +14378,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             bb_premiumb = "(" + bb_premium + ")";
                             bb_premiumc = true;
                         }
-                        var bb_count = 0, bb_nombre_ville = 0, bb_nonbre = 1, bb_ville = uw.DM.getl10n("market").city;
+                        var bb_count = 0, bb_nombre_ville = 0, bb_nonbre = 0, bb_ville = uw.DM.getl10n("market").city;
 
                         $.each(cities_towngroup, function (key, town) {
                             bb_nombre_ville++;
@@ -14202,7 +14397,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
 
                         if (bb_nombre_ville < 301) {
-                            bb_contentP1 += "(" + bb_nombre_ville + " " + bb_ville + ") (1/" + bb_nonbre + ")";
+                            bb_contentP1 += "(" + bb_nombre_ville + " " + bb_ville + ") " + (bb_nombre_ville < 61 ? "" : "(1/" + bb_nonbre + ")");
                             bb_contentP2 += "(" + bb_nombre_ville + " " + bb_ville + ") (2/" + bb_nonbre + ")";
                             bb_contentP3 += "(" + bb_nombre_ville + " " + bb_ville + ") (3/" + bb_nonbre + ")";
                             bb_contentP4 += "(" + bb_nombre_ville + " " + bb_ville + ") (4/" + bb_nonbre + ")";
@@ -14239,28 +14434,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
                             "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
                         var expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 120px; width: 99%;'>";
+                        if (bb_nombre_ville < 61) {
+                            var expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 235px; width: 99%;'>";
+                        }
                         var expRahmen_bP2 = "<textarea id='expTextareaP2' style='height: 120px; width: 98%;'>";
                         var expRahmen_bP3 = "<textarea id='expTextareaP3' style='height: 120px; width: 98%;'>";
                         var expRahmen_bP4 = "<textarea id='expTextareaP4' style='height: 120px; width: 98%;'>";
                         var expRahmen_bP5 = "<textarea id='expTextareaP5' style='height: 120px; width: 98%;'>";
-                        var expRahmen_cP1 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (1/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP1"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
-                        var expRahmen_cP2 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (2/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP2"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
-                        var expRahmen_cP3 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (3/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP3"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
-                        var expRahmen_cP4 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (4/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP4"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
-                        var expRahmen_cP5 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (5/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP5"') + "<button id='dio_close_bb' role='button' class='close_a ui-dialog-titlebar-close'></button></div>";
+                        var expRahmen_cP1 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + (bb_nombre_ville < 61 ? "" : " (1/" + bb_nonbre + ")"), "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP1"') + "</div>";
+                        var expRahmen_cP2 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (2/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP2"') + "</div>";
+                        var expRahmen_cP3 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (3/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP3"') + "</div>";
+                        var expRahmen_cP4 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (4/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP4"') + "</div>";
+                        var expRahmen_cP5 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (5/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP5"') + "</div>";
 
                         var expRahmen_d = "</div><div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
-                        var expRahmen_e = "<div style='font-weight: bold; margin-left: 5px;'>" + DM.getl10n("layout").town_name_area.no_towns_in_group + " " + bb_premiumb + "</div>";
+                        var expRahmen_e = "<div style='font-weight: bold; margin-left: 5px;'>" + uw.DM.getl10n("layout").town_name_area.no_towns_in_group + " " + bb_premiumb + "</div>";
 
-                        //var expTitel = getTexts("messages", "Tol") + "</div>";
                         var expTitel = "";
 
                         if (bb_nombre_ville > 300) {
                             expTitel = (bb_premiumc ? bb_premium + "(" + bb_ville + " 300/" + bb_nombre_ville + ")" : bb_ville + " 300/" + bb_nombre_ville) + "</div>";
-                            //wnd.setTitle(getTexts("labels", "tow") + (bb_premiumc ? " [" + bb_premiumc + "(" + bb_ville + " 300/" + bb_nombre_ville + ")]" : " (" + bb_ville + " 300/" + bb_nombre_ville + ")"));
                         } else {
                             expTitel = (bb_premiumc ? bb_premium + "(" + bb_nombre_ville + " " + bb_ville + ")" : bb_nombre_ville + " " + bb_ville) + "</div>";
-                            //wnd.setTitle(getTexts("labels", "tow") + (bb_premiumc ? " [" + bb_premiumc + "(" + bb_nombre_ville + " " + bb_ville + ")]" : " (" + bb_nombre_ville + " " + bb_ville + ")"));
                         }
 
                         wnd.setContent(expRahmen_a + expTitel +
@@ -14284,7 +14479,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         addCopyListener: function() {
             new uw.ClipboardJS("#dio-copy-townslist").on("success", function() {
                 setTimeout(function() {
-                    uw.HumanMessage.success(getTexts("messages", "copybb"))
+                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
                 }, 50)
                 if ($('#town_groups_list').length) {
                     $('.button.js-button-caption').click();
@@ -14328,18 +14523,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         let bb_content = "[quote]";
 
                         // Titre
-                        let t, p, a, i = "";
-                        (t = $("#message_message_list .game_header").clone()).find("*").remove()
-                        t = t.html().trim()
-                        p = $("#message_partner a.gp_player_link").text().trim()
-                        a = $("#message_partner span a").text().trim()
+                        let author, alliance, title, i;
+                        (title = $("#message_message_list .game_header").clone()).find("*").remove();
+                        title = title.html().trim();
+                        author = '[player]' + $("#message_partner a.gp_player_link").text().trim() + '[/player]';
+                        alliance = $("#message_partner span a").text().trim();
 
-                        if (p === "") p = "Grepolis";
+                        if (author === "[player][/player]") author = "Grepolis";
 
-                        if (a) {i = "([player]" + p + "[/player] [ally]"+ a +"[/ally])"}
-                        else if (p) {i = "([player]" + p + "[/player])"};
+                        if (alliance) {i = "(" + author + " [ally]"+ alliance +"[/ally])"}
+                        else {i = "(" + author + ")"};
 
-                        bb_content += "[b]" + uw.DM.getl10n("layout").main_menu.items.messages + ":[/b] " + t + " "+ i +"\n";
+                        bb_content += "[b]" + uw.DM.getl10n("layout").main_menu.items.messages + ":[/b] " + title + " "+ i +"\n";
                         bb_content += '[img]https://www.tuto-de-david1327.com/medias/images/transition-mini.png[/img]';
 
 
@@ -14476,7 +14671,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 return '[score]' + $(".bbcode_playername", this).text().trim() + '[/score]';
                             });
                             dio_messageExportTMP.find(".bbcode_application").replaceWith(function () { //replace invitation à rejoindre l'alliance
-                                return '[center][img]https://www.tuto-de-david1327.com/medias/images/horizontal-separator.png[/img][/center][center]' + $(this).text().trim() + '[/center]';
+                                return '[center][img]https://www.tuto-de-david1327.com/medias/images/horizontal-separator.png[/img][/center][center][b]' + $(this).text().trim().replace(/            /mg, "[img]https://www.tuto-de-david1327.com/medias/images/espace-1.png[/img]") + '[/b][/center]';
                             });
                             dio_messageExportTMP.find("table").replaceWith(function () { //replace table
                                 return '[table]' + $(this)[0].outerHTML + '[/table]';
@@ -14486,9 +14681,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             });
                             dio_messageExportTMP.find("script").remove(); //remove script tags
 
-                            const author = $(".message_poster .gp_player_link", this).text();
+                            author = '[player]' + $(".message_poster .gp_player_link", this).text() + '[/player]';
+                            if (author === "[player][/player]") author = "Grepolis";
                             const postDate = $(".message_poster .message_date", this).text().trim();
-                            bb_content += '[size=7][player]' + author + '[/player] ' + postDate + '[/size]\n';
+                            bb_content += '[size=7]' + author + ' ' + postDate + '[/size]\n';
                             bb_content += '[img]https://www.tuto-de-david1327.com/medias/images/transition-mini2.png[/img]\n';
                             let postHTML = $("#dio_messageExportTMP .message_post_content").html().trim();
                             postHTML = postHTML.replace(e, i)
@@ -14531,7 +14727,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         const BBwnd = uw.GPWindowMgr.Create(uw.GPWindowMgr.TYPE_DIO_BBCODEE) || uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
 
                         BBwnd.setContent(expRahmen_a + expTitel + expRahmen_b + bb_content + expRahmen_c + expRahmen_d + expRahmen_e);
-                        $('#dio_help_MessageExport').tooltip('Wiki (' + getTexts("Options", "Mse")[0] + ')');
+                        $('#dio_help_MessageExport').tooltip('Wiki (' + dio_icon + getTexts("Options", "Mse")[0] + ')');
                         $("#expTextarea").focus(function () {
                             const that = this;
                             setTimeout(function () {
@@ -14560,7 +14756,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         addCopyListener: function() {
             new uw.ClipboardJS("#dio-copy-message-quote").on("success", function() {
                 setTimeout(function() {
-                    uw.HumanMessage.success(getTexts("messages", "copybb"))
+                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
                     if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
                         uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
                     }
