@@ -26,7 +26,7 @@
 // @license     GPL-3.0
 // ==/UserScript==
 
-var dio_version = '4.25';
+var dio_version = '4.26';
 
 /*******************************************************************************************************************************
  * Global stuff
@@ -12581,7 +12581,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         addButton: function () {
 
             $('<a id="dio_townbb"></a><input id="input_townbb" type="text" onfocus="this.select();" onclick="this.select();"><div id="dio_townbb_logo"></div>').appendTo('.town_name_area');
-            $('<a id="dio_townbb-clipboard" data-clipboard-text="[town]' + uw.Game.townId + '[/town]"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));
+            $('<a id="dio_townbb-clipboard" data-clipboard-target="#input_townbb"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));
             $("#dio_townbb").click(function () {
                 $('#dio_townbb-clipboard').toggle();
                 $("#input_townbb").toggle();
