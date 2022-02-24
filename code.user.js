@@ -3,7 +3,7 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.25
+// @version		4.25.1
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -25,7 +25,6 @@
 // @grant       GM_getResourceText
 // @license     GPL-3.0
 // ==/UserScript==
-
 var dio_version = '4.26';
 
 /*******************************************************************************************************************************
@@ -68,7 +67,7 @@ if(GM && (uw.location.pathname.indexOf("game") >= 0)){
 
         notification : loadValue('notif', '0'),
 
-        error: loadValue('error', '{}'),
+        errorDio: loadValue('errorDio', '{}'),
 
         spellbox  :	loadValue("spellbox", '{ "top":"23%", "left": "-150%", "show": false }'),
         commandbox: loadValue("commandbox" , '{ "top":55, "left": 250 }'),
@@ -4098,6 +4097,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_Sel: true,	// selectunitshelper
         dio_Cul: true,	// cultureOverview
         dio_Cup: true,	// cultureProgress
+        dio_Cuo: true,	// culturePoints
         dio_Hot: (system() ? (false) : (true)), // hotkeys
         dio_Isl: true,	// islandFarmingVillages
         dio_Ish: true,	// farmingvillageshelper
@@ -4298,6 +4298,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('.settings-container').append(
                     '<div id="dio_settings" class="player_settings section"><div id="dio_bg_medusa"></div><div id="dio_bg_david1327"></div>' +
                     '<div class="game_header bold"><a href="'+ getTexts("link", "update") +'" target="_blank" style="color:white">DIO-TOOLS-David1327 (v' + dio_version + ')</a>' +
+                    '<div style="float: right; margin-right: 90px;" id="tuto2"><a target="_blank" style="color:white">BUG</a></div>' +
                     '<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com/TutoDeDavid1327/;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21" scrolling="no" frameborder="0" style="border:none; height:21px; position: absolute; right:-216px;" allowTransparency="true"></iframe></div>' +
 
                     // Check latest version
@@ -4529,6 +4530,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<td><div id="dio_Cup" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cup")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cup")[1] + '</p><br></td>' +
                     '</tr><tr>' +
+                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/advancement-of-culture.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
+                    '<td><div id="dio_Cuo" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cuo")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Cuo")[1] + '</p><br></td>' +
+                    '</tr><tr>' +
                     '<td><img src="https://www.tuto-de-david1327.com/medias/images/caves.jpg" alt="" /></td>' +
                     '<td><div id="dio_Hio" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hio")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Hio")[1] + '</p><br></td>' +
@@ -4721,6 +4726,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     Notification.activate();
                 });
 
+                $('#tuto2').click(function () {
+
+                    dio.bug = true;
+                    Notification.activate();
+                });
+
                 $("#dio_settings .checkbox_new").click(function () {
                     $(this).toggleClass("checked").toggleClass("disabled").toggleClass("green");
                     toggleActivation(this.id);
@@ -4879,6 +4890,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             case "dio_Cup":
                 FEATURE = cultureProgress;
                 break;
+            case "dio_Cuo":
+                FEATURE = culturePoints;
+                break;
             case "dio_Hot":
                 FEATURE = hotkeys;
                 break;
@@ -4939,13 +4953,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     function addSettingsButton() {
         var tooltip_str = "DIO-Tools-David1327: " + (uw.DM.getl10n("layout", "config_buttons").settings || "Settings");
 
-        $('<div class="btn_settings circle_button dio_settings"><div class="dio_icon js-caption"></div></div>').appendTo(".gods_area");
+        $('<div class="btn_settings circle_button dio_settings"><div class="dio_icon js-caption"></div></div><div class="dio_settings_test"></div>').appendTo(".gods_area");
 
         // Style
         $('<style id="dio_settings_button" type="text/css">' +
           '#ui_box .btn_settings.dio_settings { top:86px!important; right:106px!important; z-index:11; } ' +
           '#ui_box .dio_settings .dio_icon { margin:7px 0px 0px 4px; width:24px; height:24px; } ' +
           '#ui_box .dio_settings .dio_icon.click { margin-top:8px; }' +
+          '.dio_settings_test { width:24px; height:24px; } ' +
           '</style>').appendTo('head');
 
         // Tooltip
@@ -5569,6 +5584,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_Cup) {
                         cultureProgress.activate();
                     }
+                    if (DATA.options.dio_Cuo) {
+                        culturePoints.activate();
+                    }
                     break;
                 case "/farm_town_overviews/index":
                     if (DATA.options.dio_Ish) {
@@ -5880,22 +5898,27 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     function system() {
         let isMac = navigator.platform.toUpperCase().indexOf('MAC')>=0,
-              isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i)?true:false,
-              system = false;
+            isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i)?true:false,
+            system = false;
         if (isMacLike || isMac){system = true}
         return system;
-    }
+    };
 
     // Error Handling / Remote diagnosis / Automatic bug reports
     function errorHandling(e, fn) {
+        var error = 1;
         if (PID === 1538932 || PID === 100144) {
             uw.HumanMessage.error(dio_icon + "DIO-TOOLS(" + dio_version + ")-ERROR: " + e.message);
             console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.stack);
+            //DATA.errorDio[version][fn] = true;
+            //saveValue("errorDio", JSON.stringify(uw.MM.DIO.errorDio));
         } else {
-            if (!DATA.error[dio_version]) {
-                DATA.error[dio_version] = {};
-            }
+            //if (!DATA.error[dio_version]) {
+            //    DATA.error[dio_version] = {};
+            //}
             console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.stack);
+
+            //saveValue("error", JSON.stringify(DATA.error));
 
             /*if (DATA.options.dio_err && !DATA.error[dio_version][fn]) {
                 $.ajax({
@@ -5908,6 +5931,49 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 });
             }*/
+        }
+        try {
+            var nb = 1;
+            var errordio = uw.MM.DIO.errorDio, nb2 = 0, nb_error = 1;
+
+            if (typeof(errordio[fn]) !== "undefined") {
+                nb = nb + errordio[fn].nb;
+            }
+
+            var date = new Date();
+            errordio[fn] = {
+                "function" : fn,
+                message : e.name + ": " + e.message,
+                error : e.stack.replace(/'/g, '"'),
+                version : dio_version,
+                browser: getBrowser(),
+                system : ((system()) ? "Mac" : "Windows"),
+                nb : nb,
+                date : date.getDate() + "/" + (date.getMonth()+1) +"/" + date.getFullYear(),
+            };
+
+            $.each(errordio, function (name) {
+                if (name !== "nb") {
+                    nb2++;
+                }
+                errordio.nb = nb2;
+            });
+        } catch (error) {
+            var nb = 1;
+            var errordio = uw.MM.DIO.errorDio
+            if (typeof(errordio.errorHandling) !== "undefined") {
+                nb = nb + errordio.errorHandling.nb;
+            }
+            errordio.errorHandling = {
+                "function" : "errorHandling",
+                message : error.name + ": " + error.message,
+                error : error.stack.replace(/'/g, '"'),
+                version : dio_version,
+                browser: getBrowser(),
+                system : ((system()) ? "Mac" : "Windows"),
+                nb : nb,
+                date : date.getDate() + "/" + (date.getMonth()+1) +"/" + date.getFullYear(),
+            };
         }
     }
     var dio_bug = true;
@@ -6353,7 +6419,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 var HTML_tab4 = '<div style="overflow-x: hidden; padding-left: 5px; position: relative;"></div>' +
                     '</div>' +
-                    '<div style="bottom: 1px;position: absolute; font-weight: bold;">' +
+                    '<div style="bottom: -1px;position: absolute; font-weight: bold;">' +
+
+                    '<div id="dioerrordio" style=" float: left; margin: -5px 0 -5px 10px;">' + dio.createButton(getTexts("translations", "send")) + '</div>' +
 
                     '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
@@ -6368,15 +6436,79 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 504px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
-                HTML_tab4 += grepoGameBorder + getTexts("translations", "info") + '</div>';
+                HTML_tab4 += grepoGameBorder + 'BUG</div>';
 
-                HTML_tab4 += '<div id="NotifText">' +
-                    '</div>';
+                var name_a = "", errordio = uw.MM.DIO.errorDio;
+                $.each(errordio, function (name) {
+                    if (name !== "nb") {
+                        name_a += '<p><b>Function:</b> ' + errordio[name].function + '<br />' +
+                            '<b>Message:</b> ' + errordio[name].message + '<br />' +
+                            '<b>Error:</b> ' + errordio[name].error + '<br />' +
+                            '<b>Version:</b> ' + errordio[name].version + '<br />' +
+                            '<b>Browser:</b> ' + errordio[name].browser + '<br />' +
+                            '<b>System:</b> ' + errordio[name].system + '<br />' +
+                            '<b>Nb:</b> ' + errordio[name].nb + '<br />' +
+                            '<b>Date:</b> ' + errordio[name].date + '</p>';
+                    }
+                });
 
+                HTML_tab4 += '<div id="NotifText">' + name_a;
+                if (name_a === "") {
+                    HTML_tab4 += "no bug";
+                }
+                HTML_tab4 += '</div>';
                 return HTML_tab4;
             }
 
             function handle_and_style() {
+
+                $("#dioerrordio").click(function () {
+                    var name_a = "", errordio = uw.MM.DIO.errorDio;
+                    $.each(errordio, function (name) {
+                        if (name !== "nb") {
+                            name_a += 'Function: ' + errordio[name].function + "\n" +
+                                'Message: ' + errordio[name].message + "\n" +
+                                'Error: ' + errordio[name].error + "\n" +
+                                'Version: ' + errordio[name].version + "\n" +
+                                'Browser: ' + errordio[name].browser + "\n" +
+                                'System: ' + errordio[name].system + "\n" +
+                                'Nb: ' + errordio[name].nb + "\n" +
+                                'Date: ' + errordio[name].date + "\n\n";
+                        }
+                    });
+                    if (name_a === "") {
+                        uw.HumanMessage.error(dio_icon + "no bug");
+                        return;
+                    }
+                    uw.hOpenWindow.showConfirmDialog('', getTexts("translations", "trans_sure"), function () {
+                        //$("#ajax_loader").css({"visibility":"visible"});
+                        var trans_HTML_send = pName + '<br/>' + PID + '<br/>' + WID + '<p/>';
+
+                        var trans_BBcode_send = pName + '\n';
+                        trans_BBcode_send += "`" + name_a + "`\n";
+
+                        createWindowType("DIO_BBCODEE", getTexts("messages", "bbmessages"), 700, 350, true, ["center", "center", 100, 100]);
+                        var expRahmen_a = "<div class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
+                            "<div class='game_border_bottom'></div><div class='game_border_left'></div><div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
+                            "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div>" +
+                            "<div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
+                        //var expRahmen_b = "<div style=\"height: 225px; width: 685px;\">" + trans_HTML_send + "</div>";
+                        var expRahmen_c = "</div><textarea id='expTextarea' style=\"height: 225px; width: 685px;\">";
+                        var expRahmen_d = "</textarea></div><center>" + dio.createButton(getTexts("messages", "copy"), "dio-copy-Traductions-quote", null, 'data-clipboard-target="#expTextarea"') + "</center>";
+                        var expRahmen_e = "<div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
+
+                        var expTitel = getTexts("messages", "Tol");
+                        var BBwnd = uw.GPWindowMgr.Create(uw.GPWindowMgr.TYPE_DIO_BBCODEE) || uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
+                        //BBwnd.setTitle(getTexts("qtoolbox", "bb_codes") + " - " + getTexts("bbcode", "messages"));
+                        BBwnd.setContent(expRahmen_a + expTitel + expRahmen_c + trans_BBcode_send + expRahmen_d + expRahmen_e);
+
+                    });
+                });
+
+
+
+
+
                 $("#diomenu_einstellungen_sendmail").css({
                     "margin-left" : "1px"
                     //"top" : "30px"
@@ -6583,16 +6715,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
             var BBwnd = uw.GPWindowMgr.Create(uw.GPWindowMgr.TYPE_DIO_Notification) || uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_Notification);
             //BBwnd.setTitle(getTexts("qtoolbox", "settings"));
+            if (dio.bug) {
+            BBwnd.setContent(inhalte.dioset_tab4);
+            }else {
             BBwnd.setContent(inhalte.dioset_tab1);
+            }
             if ($("#diomenu_settings_tabs").length === 0) {
                 BBwnd.getJQElement().append('<div class="menu_wrapper minimize closable" style="left: 1px; right: 33px"><ul id="diomenu_settings_tabs" class="menu_inner" style="right: 24px;">' +
-                                            dio.grepo_submenu("dioset_tab4", (uw.DM.getl10n("context_menu").titles.info))[0].outerHTML +
+                                            dio.grepo_submenu("dioset_tab4", "BUG")[0].outerHTML +
                                             dio.grepo_submenu("dioset_tab3", getTexts("translations", "translations"))[0].outerHTML +
                                             dio.grepo_submenu("dioset_tab2", getTexts("labels", "donat"))[0].outerHTML +
                                             dio.grepo_submenu("dioset_tab1", getTexts("Settings", "Update"))[0].outerHTML + '</ul></div>');
             }
             $("#diomenu_settings_tabs li a").removeClass("active");
-            $("#dioset_tab1").addClass("active");
+            if (dio.bug) {
+                $("#dioset_tab4").addClass("active");
+                dio.bug = false
+            }else {$("#dioset_tab1").addClass("active");}
             handle_and_style();
             $("#diomenu_settings_tabs li a").click(function () {
                 $("#diomenu_settings_tabs li a").removeClass("active");
@@ -6600,7 +6739,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBwnd.setContent(inhalte[this.id]);
                 handle_and_style();
             });
-
         },
         create: function (nid, feature) {
             var Notification = new NotificationHandler();
@@ -7708,6 +7846,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version : dio_version,
                 latest_version : uw.dio_latest_version,
             },
+            errorDio: {nb : 0},
             lang : uw.Game.market_id,
             land : uw.Game.world_id.substring(0, 2),
         };
@@ -12440,11 +12579,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     });
 
                 $('<style id="dio_plusmenustyle" type="text/css">' +
-                  '.displayImp {display: block !important}' +
-                  '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative}' +
-                  '.dio_plusdraghandle {width:100%;height:11px;position:absolute;background:url(https://www.tuto-de-david1327.com/medias/images/draghandle.png)}' +
+                  '.displayImp {display: block !important;}' +
+                  '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
+                  '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(https://www.tuto-de-david1327.com/medias/images/draghandle.png)}' +
                   '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(https://www.tuto-de-david1327.com/medias/images/plusback.png)}' +
                   '#toolbar_activity_recruits_list {min-width: 113px;}' +
+                  '.dropdown-list .item_no_results, .dropdown-list.ui-draggable>div {cursor:text!important;}' +
                   '</style>').appendTo('head');
 
                 $('#toolbar_activity_recruits_list').draggable({
@@ -12510,7 +12650,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $("#" + dioJQselector + "STYLE").remove();
                 }
             } catch (error) {
-                errorHandling(error, "ForumDeleteMultiple");
+                errorHandling(error, "ActivityBoxes");
             }
         },
         deactivate: function () {// toolbar_activity_temple_commands
@@ -12765,7 +12905,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var cultureOverview = {
-
         timeout: null,
         activate: function () {
             if ($('#culture_points_overview_bottom').length) { cultureOverview.add(); }
@@ -12778,6 +12917,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var a = $("ul#cultur_overview_towns");
                 var b, c, d, e, f, i, j, k;
                 f = 0;
+
+                    var g = $("ul#culture_overview_towns span.eta");
+                    var h = $("#culture_points_overview_bottom #place_culture_count").text();
 
                 e = 0;
                 b = $('a[class~="confirm"][class~="type_triumph"]');
@@ -12821,32 +12963,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
 
-                var g = $("ul#culture_overview_towns span.eta");
-                var h = $("#culture_points_overview_bottom #place_culture_count").text();
-                if (h.indexOf("[") < 1) {
-                    i = h.split("/");
-                    j = parseInt(i[0]) + g.length;
-                    k = parseInt(i[1]) - j;
-                    if (k > 0) {
-                        $("#culture_points_overview_bottom #place_culture_count").append("<span id='dio_culture'>[-" + k + "]</span>");
-                    } else {
-                        var l = new Array;
-                        for (f = 0; f < g.length; f++)
-                            l.push($(g[f]).text());
-                        l.sort();
-                        var m = l[l.length + k - 1];
-                        $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'></span>]<span id='dio_cultureplus' style='color: #ECB44D'> +" + k * -1 + "</span>").find("span#dio_culture").countdown(m);
-                    }
-                } else {
-                    i = h.split("/");
-                    j = parseInt(i[0]) + g.length;
-                    k = parseInt(i[1]) - j;
-                    if (k > 0) {
-                        $("#dio_culture").text("[-" + k + "]");
-                    } else {
-                        cultureOverview.add.wnd.reloadContent();
-                    }
-                }
+                ///////
 
                 if ($('#dio_cultureBTN_wrapper').length == 0) {
                     $("#culture_overview_wrapper").parent().append('<div id="dio_cultureBTN_wrapper"><div class="dio_cultureBTN_wrapper_right"><div id="dio_cultureBTN_theather_r" class="dio_cultureBTN_r dio_cultureBTN_theather"></div>' +
@@ -12911,9 +13028,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 break;
                         }
                         if (dio_cultureBTN_r_clicked_last === JQelement.id) {
+
                             $("ul#culture_overview_towns li").filter(function () {
                                 return !!$(dio_cultureBTN_mode, this).find('.eta').length;
                             }).toggle();
+
+                            $("ul#culture_overview_towns li").filter(function () {
+                                return !!$(dio_cultureBTN_mode, this).find('.celebration_progressbar:not(:has(>.eta))').length;
+                            }).removeClass('hidden');
+
                             $(JQelement).toggleClass("culture_red");
                         } else {
                             $("ul#culture_overview_towns li").show().filter(function () {
@@ -12979,8 +13102,95 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
     };
 
+    var culturePoints = {
+        timeout: null,
+        activate: function () {
+            if ($('#culture_points_overview_bottom').length || $("#place_container").length) { culturePoints.add(); }
+            cultureOverview.timeout = setInterval(() => {
+                if ($('#culture_points_overview_bottom').length || $("#place_container").length) { culturePoints.add(); }
+            }, 50000); //0.
+        },
+        add: function () {
+            try {
+                var f, i, j, k;
+
+                if ($("#culture_points_overview_bottom").length) {
+                    //console.log("aaaaaa");
+                    //console.log(aaaaaa);
+                    let g = $("ul#culture_overview_towns span.eta");
+                    let h = $("#culture_points_overview_bottom #place_culture_count").text();
+                    i = h.split("/");
+                    j = parseInt(i[0]) + g.length;
+                    k = parseInt(i[1]) - j;
+                    if (h.indexOf("[") < 1) {
+                        if (k > 0) {
+                            $("#culture_points_overview_bottom #place_culture_count").append("<span id='dio_culture'>[-" + k + "]</span>");
+                        } else {
+                            $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'></span>]<span id='dio_cultureplus' style='color: #ECB44D'> +" + k * -1 + "</span>");
+                            setInterval(function () {
+                                if (k < 0) {
+                                    var l = new Array;
+                                    for (f = 0; f < g.length; f++)
+                                        l.push($(g[f]).text());
+                                    l.sort();
+                                    var m = l[l.length - 1];
+                                    m = m.replace(/\ /g, "").replace(/\n|\r/g, "");
+                                    $("#dio_culture").text(m);
+                                }
+                            }, 1100)
+                        }
+                    } else {
+                        if (k > 0) {
+                            $("#dio_culture").text("[-" + k + "]");
+                        } else {
+                            //cultureOverview.add.wnd.reloadContent();
+                        }
+                    }
+
+                };
+                if ($("#place_container").length) {
+                    let h = $("#place_container #place_culture_count").text();
+                    let g = 0;
+                    var inProgress = parseInt($('#place_culture_in_progress').text().match(/[0-9]+/));
+                    if (inProgress > 0) {g = inProgress;}
+                    console.log(inProgress);
+                    i = h.split("/");
+                    j = parseInt(i[0]) + g;
+                    k = parseInt(i[1]) - j;
+
+                    if (h.indexOf("[") < 1) {
+                        if (k > 0) {
+                            $("#place_container #place_culture_count").append("<span id='dio_cultureA'>[-" + k + "]</span>");
+                        } else {
+                            $("#place_container #place_culture_count").append("<span id='dio_cultureplusA' style='color: #ECB44D'> [+" + k * -1 + "]</span>");
+                        }
+                    } else {
+                        if (k > 0) {
+                            $("#dio_cultureA").text("[-" + k + "]");
+                        } else {
+                            $("dio_cultureplusA").text(" [+" + k * -1 + "]");
+                        }
+                    }
+                }
+            } catch (error) {
+                errorHandling(error, "culturePoints");
+            }
+        },
+        deactivate: function () {
+            $("#dio_culture").remove();
+            $("#dio_cultureplus").remove();
+            //
+            $("#dio_cultureA").remove();
+            $("#dio_cultureplusA").remove();
+
+            clearTimeout(culturePoints.timeout);
+            culturePoints.timeout = null;
+        },
+    };
+
+
     var cultureProgress = {
-        activate: function (e) {
+        activate: function () {
             try {
                 if ($("#place_culture_towns").is(":visible")) {
 
@@ -13927,7 +14137,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var hotkeys = {
-        timeout: null,
         ImagesHotkeys: {
             key : 'https://www.tuto-de-david1327.com/medias/images/dj4uootz.jpg',
             city_select : 'https://www.tuto-de-david1327.com/medias/images/nzhgrbzm.png',
@@ -13937,12 +14146,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
 
         activate: function () {
-            //ScriptManager.scriptmanager();
-
-            hotkeys.timeout = setInterval(() => {
-                    hotkeys.add();
-            }, 	28800000); //8h
-            hotkeys.add();
 
             $('.toolbar_activities .right').before('<a id="dio_BTN_HK" style="z-index: 6; top: -27px; left: 24px; float: right; position: relative;"><img src="https://www.tuto-de-david1327.com/medias/images/hotkeys.png" style="float:left; border-width: 0px"></a></a>');
 
@@ -14048,6 +14251,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
             });
             $('#dio_BTN_HK').tooltip(mousePopupHTML);
+
+            $("#dio_BTN_HK").click(function () {
+                hotkeys.add()
+            });
         },
         add: function () {
             try {
@@ -14256,8 +14463,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         deactivate: function () {
             $('#dio_BTN_HK').remove();
             $('#dio_MH_attsup_style').remove();
-            clearTimeout(hotkeys.timeout);
-            hotkeys.timeout = null;
         },
     };
 
