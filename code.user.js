@@ -3,7 +3,7 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.25.1
+// @version		4.25.2
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -936,6 +936,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt: ["BBcode button Player Info", "Addition of a BBcode button (player and alliance)"],
                 Rtt: ["Removal of the unit tooltips", ""],
                 Cup: ["Advancement of Culture (Administrator)", "Changed the presentation of the progress bar and added a progress bar for crops. Function of Akiway"],
+                Cuo: ["Points of Culture (Administrator)", "Add a counter for the Points of Culture. Quack function"],
                 Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
                 FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS",""],
                 Mole: ["Not compatible to activate in the parameters of Mole Hole",""],
@@ -1684,7 +1685,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 all : 'Tous',
                 export : 'Convertir le message en BB-Code',
                 Tol : 'Copier & colle (Fonction Quack)',
-                search_for : 'Rechercher',
                 copy : 'Copier',
                 bbmessages : 'BB-Code messages',
                 copybb : 'Le BBCode a été copié',
@@ -1695,7 +1695,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 name : 'Nom',
                 wood : 'Bois', //uw.DM.getl10n("barracks").cost_details.wood
                 stone : 'Pierre', //uw.DM.getl10n("barracks").cost_details.stone
-                silver : 'Pièces d\'argent' //uw.DM.getl10n("barracks").cost_details.iron
+                silver : 'Pièces d\'argent', //uw.DM.getl10n("barracks").cost_details.iron
+                search_for : 'Rechercher',
             },
             grepo_mainmenu : {
                 city_view : 'Vue de la ville',
@@ -4530,7 +4531,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<td><div id="dio_Cup" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cup")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cup")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/advancement-of-culture.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
+                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/culturepoints.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
                     '<td><div id="dio_Cuo" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cuo")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cuo")[1] + '</p><br></td>' +
                     '</tr><tr>' +
@@ -12171,159 +12172,167 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         // preload images
         loadSmileys: function () {
-            // Replace german sign smilies
-            if (MID == "de") {
-                smileyArray.standard[-1] = "land-germany";
-                smileyArray.standard[-2] = "land-germany2";
-                smileyArray.standard[-3] = "land-germany3";
-                smileyArray.standard[-4] = "land-germany-kings";
-                smileyArray.people[2] = "mttao-deutschland";
-                smileyArray.people[3] = "schal-deutschland";
-                smileyArray.other[-1] = "dagegen2";
-                smileyArray.other[-2] = "dafuer2";
-            }
-            if (MID == "fr") {
-                smileyArray.people[2] = "mttao-frankreich";
-                smileyArray.people[3] = "schal-frankreich";
-                smileyArray.standard[-1] = "land-france";
-                smileyArray.standard[-2] = "land-france2";
-                smileyArray.standard[-3] = "land-france3";
-            }
-            if (MID == "it") {
-                smileyArray.people[2] = "mttao-italien";
-                smileyArray.people[3] = "schal-italien";
-                smileyArray.standard[-1] = "land-italy";
-                smileyArray.standard[-2] = "land-italy2";
-                smileyArray.standard[-3] = "land-italy3";
-            }
-            if (MID == "ro") {
-                smileyArray.people[3] = "mttao-rumaenien";
-                smileyArray.standard[-1] = "land-romania";
-                smileyArray.standard[-2] = "land-romania2";
-                smileyArray.standard[-3] = "land-romania3";
-            }
-            if (MID == "br") {
-                smileyArray.people[2] = "mttao-portugal";
-                smileyArray.people[3] = "schal-portugal";
-                smileyArray.standard[-1] = "land-portugal";
-                smileyArray.standard[-2] = "land-portugal2";
-                smileyArray.standard[-3] = "land-portugal3";
-            }
-            if (MID == "pl") {
-                smileyArray.people[3] = "mttao-polen";
-                smileyArray.standard[-1] = "land-poland";
-                smileyArray.standard[-2] = "land-poland2";
-                smileyArray.standard[-3] = "land-poland3";
-            }
-            if (MID == "es") {
-                smileyArray.people[2] = "mttao-spanien";
-                smileyArray.people[3] = "schal-spanien";
-                smileyArray.standard[-1] = "land-spain";
-                smileyArray.standard[-2] = "land-spain2";
-                smileyArray.standard[-3] = "land-spain3";
-            }
-            if (MID == "sk") {
-                smileyArray.people[2] = "mttao-slowakei";
-                smileyArray.people[3] = "schal-slowakei";
-            }
+            try {
+                // Replace german sign smilies
+                if (MID == "de") {
+                    smileyArray.standard[-1] = "land-germany";
+                    smileyArray.standard[-2] = "land-germany2";
+                    smileyArray.standard[-3] = "land-germany3";
+                    smileyArray.standard[-4] = "land-germany-kings";
+                    smileyArray.people[2] = "mttao-deutschland";
+                    smileyArray.people[3] = "schal-deutschland";
+                    smileyArray.other[-1] = "dagegen2";
+                    smileyArray.other[-2] = "dafuer2";
+                }
+                if (MID == "fr") {
+                    smileyArray.people[2] = "mttao-frankreich";
+                    smileyArray.people[3] = "schal-frankreich";
+                    smileyArray.standard[-1] = "land-france";
+                    smileyArray.standard[-2] = "land-france2";
+                    smileyArray.standard[-3] = "land-france3";
+                }
+                if (MID == "it") {
+                    smileyArray.people[2] = "mttao-italien";
+                    smileyArray.people[3] = "schal-italien";
+                    smileyArray.standard[-1] = "land-italy";
+                    smileyArray.standard[-2] = "land-italy2";
+                    smileyArray.standard[-3] = "land-italy3";
+                }
+                if (MID == "ro") {
+                    smileyArray.people[3] = "mttao-rumaenien";
+                    smileyArray.standard[-1] = "land-romania";
+                    smileyArray.standard[-2] = "land-romania2";
+                    smileyArray.standard[-3] = "land-romania3";
+                }
+                if (MID == "br") {
+                    smileyArray.people[2] = "mttao-portugal";
+                    smileyArray.people[3] = "schal-portugal";
+                    smileyArray.standard[-1] = "land-portugal";
+                    smileyArray.standard[-2] = "land-portugal2";
+                    smileyArray.standard[-3] = "land-portugal3";
+                }
+                if (MID == "pl") {
+                    smileyArray.people[3] = "mttao-polen";
+                    smileyArray.standard[-1] = "land-poland";
+                    smileyArray.standard[-2] = "land-poland2";
+                    smileyArray.standard[-3] = "land-poland3";
+                }
+                if (MID == "es") {
+                    smileyArray.people[2] = "mttao-spanien";
+                    smileyArray.people[3] = "schal-spanien";
+                    smileyArray.standard[-1] = "land-spain";
+                    smileyArray.standard[-2] = "land-spain2";
+                    smileyArray.standard[-3] = "land-spain3";
+                }
+                if (MID == "sk") {
+                    smileyArray.people[2] = "mttao-slowakei";
+                    smileyArray.people[3] = "schal-slowakei";
+                }
 
-            for (var e in smileyArray) {
-                if (smileyArray.hasOwnProperty(e)) {
-                    for (var f in smileyArray[e]) {
-                        if (smileyArray[e].hasOwnProperty(f)) {
-                            var src = smileyArray[e][f];
+                for (var e in smileyArray) {
+                    if (smileyArray.hasOwnProperty(e)) {
+                        for (var f in smileyArray[e]) {
+                            if (smileyArray[e].hasOwnProperty(f)) {
+                                var src = smileyArray[e][f];
 
-                            smileyArray[e][f] = new Image();
-                            smileyArray[e][f].className = "smiley";
+                                smileyArray[e][f] = new Image();
+                                smileyArray[e][f].className = "smiley";
 
-                            if (src.substring(0, 2) == "i/") {
-                                smileyArray[e][f].src = "https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-" + src + ".gif";
-                            } else {
-                                if (SmileyBox.loading_error == false) {
+                                if (src.substring(0, 2) == "i/") {
                                     smileyArray[e][f].src = "https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-" + src + ".gif";
-                                    //console.debug("Smiley", e);
                                 } else {
-                                    smileyArray[e][f].src = 'https://i.imgur.com/VdjJJgk.gif';
+                                    if (SmileyBox.loading_error == false) {
+                                        smileyArray[e][f].src = "https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-" + src + ".gif";
+                                        //console.debug("Smiley", e);
+                                    } else {
+                                        smileyArray[e][f].src = 'https://i.imgur.com/VdjJJgk.gif';
+                                    }
                                 }
+                                smileyArray[e][f].onerror = function () {
+                                    this.src = 'https://i.imgur.com/VdjJJgk.gif';
+                                };
                             }
-                            smileyArray[e][f].onerror = function () {
-                                this.src = 'https://i.imgur.com/VdjJJgk.gif';
-                            };
                         }
                     }
                 }
+            } catch (error) {
+                errorHandling(error, "SmileyBox (loadSmileys)");
             }
         },
 
         // add smiley box
         add: function (e) {
-            var bbcodeBarId = "";
-            switch (e) {
-                case "/alliance_forum/forum":
-                    bbcodeBarId = "#forum";
-                    break;
-                case "/message/forward":
-                    bbcodeBarId = "#message_bbcodes";
-                    break;
-                case "/message/new":
-                    bbcodeBarId = "#message_bbcodes";
-                    break;
-                case "/message/view":
-                    bbcodeBarId = "#message_bbcodes";//setWonderIconsOnMap
-                    break;
-                case "/player_memo/load_memo_content":
-                    bbcodeBarId = "#memo_edit"; // old notes
-                    break;
-                case "/frontend_bridge/fetch":
-                    bbcodeBarId = ".notes_container"; // TODO: new notes
-                    break;
-            }
-            if (($(bbcodeBarId + ' #emots_popup_7').get(0) || $(bbcodeBarId + ' #emots_popup_15').get(0)) && (PID == 1538932 || PID === 100144)) {
-                $(bbcodeBarId + " .bb_button_wrapper").get(0).lastChild.remove();
-            }
-            $('<img title="' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327" class="dio_smiley_button" src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif">').appendTo(bbcodeBarId + ' .bb_button_wrapper');
-
-            $('<div class="dio_smiley_box game">' +
-              '<div class="bbcode_box middle_center"><div class="bbcode_box middle_right"></div><div class="bbcode_box middle_left"></div>' +
-              '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div><div class="bbcode_box top_center"></div>' +
-              '<div class="bbcode_box bottom_center"></div><div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
-              '<div class="dio_box_header">' +
-              '<span class="dio_group standard active">' + getTexts("labels", "std") + '</span>' +
-              '<span class="dio_group grepolis">' + getTexts("labels", "gre") + '</span>' +
-              '<span class="dio_group nature">' + getTexts("labels", "nat") + '</span>' +
-              '<span class="dio_group people">' + getTexts("labels", "ppl") + '</span>' +
-              '<span class="dio_group Party">' + getTexts("labels", "Par") + '</span>' +
-              '<span class="dio_group ' + (SmileyBox.isHalloween ? 'halloween' : (SmileyBox.isXmas ? 'xmas' : (SmileyBox.isEaster ? 'easter' : (SmileyBox.isLove ? 'love' : 'other')))) +
-              '">' + getTexts("labels", (SmileyBox.isHalloween ? 'hal' : (SmileyBox.isXmas ? 'xma' : (SmileyBox.isEaster ? 'eas' : (SmileyBox.isLove ? 'lov' : 'oth'))))) + '</span>' +
-              '</div>' +
-              '<hr>' +
-              '<div class="dio_box_content"></div>' +
-              '<hr>' +
-              '<div class="box_footer">' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327</div>' +
-              /*'<div class="box_footer"><a href="http://www.greensmilies.com/smilie-album/" target="_blank">WWW.GREENSMILIES.COM</a></div>' +*/
-              '</div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
-
-
-            $(bbcodeBarId + ' .dio_group').click(function () {
-                $('.dio_group.active').removeClass("active");
-                $(this).addClass("active");
-                // Change smiley group
-                SmileyBox.addSmileys(this.className.split(" ")[1], "#" + $(this).closest('.bb_button_wrapper').parent().get(0).id);
-            });
-
-            SmileyBox.addSmileys("standard", bbcodeBarId);
-
-            // smiley box toggle
-            $(bbcodeBarId + " .dio_smiley_button").toggleClick(
-                function () {
-                    this.src = smileyArray.button[0].src;
-                    $(this).closest('.bb_button_wrapper').find(".dio_smiley_box").get(0).style.display = "block";
-                },
-                function () {
-                    this.src = smileyArray.button[1].src;
-                    $(this).closest('.bb_button_wrapper').find(".dio_smiley_box").get(0).style.display = "none";
+            try {
+                var bbcodeBarId = "";
+                switch (e) {
+                    case "/alliance_forum/forum":
+                        bbcodeBarId = "#forum";
+                        break;
+                    case "/message/forward":
+                        bbcodeBarId = "#message_bbcodes";
+                        break;
+                    case "/message/new":
+                        bbcodeBarId = "#message_bbcodes";
+                        break;
+                    case "/message/view":
+                        bbcodeBarId = "#message_bbcodes";//setWonderIconsOnMap
+                        break;
+                    case "/player_memo/load_memo_content":
+                        bbcodeBarId = "#memo_edit"; // old notes
+                        break;
+                    case "/frontend_bridge/fetch":
+                        bbcodeBarId = ".notes_container"; // TODO: new notes
+                        break;
                 }
-            );
+                if (($(bbcodeBarId + ' #emots_popup_7').get(0) || $(bbcodeBarId + ' #emots_popup_15').get(0)) && (PID == 1538932 || PID === 100144)) {
+                    $(bbcodeBarId + " .bb_button_wrapper").get(0).lastChild.remove();
+                }
+                $('<img title="' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327" class="dio_smiley_button" src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif">').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+
+                $('<div class="dio_smiley_box game">' +
+                  '<div class="bbcode_box middle_center"><div class="bbcode_box middle_right"></div><div class="bbcode_box middle_left"></div>' +
+                  '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div><div class="bbcode_box top_center"></div>' +
+                  '<div class="bbcode_box bottom_center"></div><div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
+                  '<div class="dio_box_header">' +
+                  '<span class="dio_group standard active">' + getTexts("labels", "std") + '</span>' +
+                  '<span class="dio_group grepolis">' + getTexts("labels", "gre") + '</span>' +
+                  '<span class="dio_group nature">' + getTexts("labels", "nat") + '</span>' +
+                  '<span class="dio_group people">' + getTexts("labels", "ppl") + '</span>' +
+                  '<span class="dio_group Party">' + getTexts("labels", "Par") + '</span>' +
+                  '<span class="dio_group ' + (SmileyBox.isHalloween ? 'halloween' : (SmileyBox.isXmas ? 'xmas' : (SmileyBox.isEaster ? 'easter' : (SmileyBox.isLove ? 'love' : 'other')))) +
+                  '">' + getTexts("labels", (SmileyBox.isHalloween ? 'hal' : (SmileyBox.isXmas ? 'xma' : (SmileyBox.isEaster ? 'eas' : (SmileyBox.isLove ? 'lov' : 'oth'))))) + '</span>' +
+                  '</div>' +
+                  '<hr>' +
+                  '<div class="dio_box_content"></div>' +
+                  '<hr>' +
+                  '<div class="box_footer">' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327</div>' +
+                  /*'<div class="box_footer"><a href="http://www.greensmilies.com/smilie-album/" target="_blank">WWW.GREENSMILIES.COM</a></div>' +*/
+                  '</div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+
+
+                $(bbcodeBarId + ' .dio_group').click(function () {
+                    $('.dio_group.active').removeClass("active");
+                    $(this).addClass("active");
+                    // Change smiley group
+                    SmileyBox.addSmileys(this.className.split(" ")[1], "#" + $(this).closest('.bb_button_wrapper').parent().get(0).id);
+                });
+
+                SmileyBox.addSmileys("standard", bbcodeBarId);
+
+                // smiley box toggle
+                $(bbcodeBarId + " .dio_smiley_button").toggleClick(
+                    function () {
+                        this.src = smileyArray.button[0].src;
+                        $(this).closest('.bb_button_wrapper').find(".dio_smiley_box").get(0).style.display = "block";
+                    },
+                    function () {
+                        this.src = smileyArray.button[1].src;
+                        $(this).closest('.bb_button_wrapper').find(".dio_smiley_box").get(0).style.display = "none";
+                    }
+                );
+            } catch (error) {
+                errorHandling(error, "SmileyBox (add)");
+            }
         },
 
         // insert smileys from arrays into smiley box
@@ -13104,49 +13113,57 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var culturePoints = {
         timeout: null,
+        timeout2: null,
         activate: function () {
             if ($('#culture_points_overview_bottom').length || $("#place_container").length) { culturePoints.add(); }
-            cultureOverview.timeout = setInterval(() => {
+            culturePoints.timeout = setInterval(() => {
                 if ($('#culture_points_overview_bottom').length || $("#place_container").length) { culturePoints.add(); }
             }, 50000); //0.
         },
         add: function () {
             try {
                 var f, i, j, k;
+                    var test = false;
+                    //var test = -1;
 
                 if ($("#culture_points_overview_bottom").length) {
-                    //console.log("aaaaaa");
-                    //console.log(aaaaaa);
+                    clearTimeout(culturePoints.timeout2);
+                    culturePoints.timeout2 = null;
                     let g = $("ul#culture_overview_towns span.eta");
                     let h = $("#culture_points_overview_bottom #place_culture_count").text();
                     i = h.split("/");
                     j = parseInt(i[0]) + g.length;
                     k = parseInt(i[1]) - j;
+                    if (test) {k = test;}
                     if (h.indexOf("[") < 1) {
                         if (k > 0) {
                             $("#culture_points_overview_bottom #place_culture_count").append("<span id='dio_culture'>[-" + k + "]</span>");
                         } else {
                             $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'></span>]<span id='dio_cultureplus' style='color: #ECB44D'> +" + k * -1 + "</span>");
-                            setInterval(function () {
-                                if (k < 0) {
-                                    var l = new Array;
-                                    for (f = 0; f < g.length; f++)
-                                        l.push($(g[f]).text());
-                                    l.sort();
-                                    var m = l[l.length - 1];
-                                    m = m.replace(/\ /g, "").replace(/\n|\r/g, "");
-                                    $("#dio_culture").text(m);
+                            clearTimeout(culturePoints.timeout2);
+                            culturePoints.timeout2 = setInterval(() => {
+                                if ($("#culture_points_overview_bottom").length) {
+                                    $("#dio_culture").text(culturePoints.heure(g, h, test));
                                 }
-                            }, 1100)
+                            }, 1000)
                         }
                     } else {
                         if (k > 0) {
                             $("#dio_culture").text("[-" + k + "]");
                         } else {
+                            clearTimeout(culturePoints.timeout2);
+                            culturePoints.timeout2 = setInterval(() => {
+                                if ($("#culture_points_overview_bottom").length) {
+                                    $("#dio_culture").text(culturePoints.heure(g, h, test));
+                                }
+                            }, 1000)
                             //cultureOverview.add.wnd.reloadContent();
                         }
                     }
 
+                } else {
+                    clearTimeout(culturePoints.timeout2);
+                    culturePoints.timeout2 = null;
                 };
                 if ($("#place_container").length) {
                     let h = $("#place_container #place_culture_count").text();
@@ -13157,7 +13174,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     i = h.split("/");
                     j = parseInt(i[0]) + g;
                     k = parseInt(i[1]) - j;
-
+                    if (test) {k = test;}
                     if (h.indexOf("[") < 1) {
                         if (k > 0) {
                             $("#place_container #place_culture_count").append("<span id='dio_cultureA'>[-" + k + "]</span>");
@@ -13172,9 +13189,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                     }
                 }
+                $('#dio_culture').tooltip(dio_icon);
+                $('#dio_cultureA').tooltip(dio_icon);
             } catch (error) {
                 errorHandling(error, "culturePoints");
             }
+        },
+        heure: function (g, h, test) {
+            var f, i, j, k;
+            i = h.split("/");
+            j = parseInt(i[0]) + g.length;
+            k = parseInt(i[1]) - j;
+            if (test) {k = test;}
+            if (k <= 0) {
+                var l = new Array;
+                for (f = 0; f < g.length; f++)
+                    l.push($(g[f]).text());
+                l.sort();
+                var m = l[l.length + k - 1];
+                m = m.replace(/\ /g, "").replace(/\n|\r/g, "");
+            } else {m = "";
+                    clearTimeout(culturePoints.timeout2);
+                    culturePoints.timeout2 = null;
+                    culturePoints.add();
+                   }
+            return m;
         },
         deactivate: function () {
             $("#dio_culture").remove();
@@ -13185,6 +13224,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             clearTimeout(culturePoints.timeout);
             culturePoints.timeout = null;
+
+            clearTimeout(culturePoints.timeout2);
+            culturePoints.timeout2 = null;
         },
     };
 
@@ -13291,7 +13333,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
             } catch (error) {
-                errorHandling(error, "hidesIndexIron");
+                errorHandling(error, "hidesIndexIron 'add");
             }
         },
         add2: function () {
@@ -13316,7 +13358,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $(this).toggleClass('active')
                 });*/
             } catch (error) {
-                errorHandling(error, "hidesIndexIron");
+                errorHandling(error, "hidesIndexIron (add2)");
             }
         },
         deactivate: function () {
@@ -13375,8 +13417,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 ];
 
                 $("#wrapper.game_inner_box").after('<div id="dio_hides_sort_control" class="overview_search_bar"><div id="dio_button_table_resize"></div>' + hidesOverview.grepo_dropdown("dio_sort_towns", sort_options) + hidesOverview.grepo_input("margin-top:0px","dio_sortfilterbox","")[0].outerHTML +
-                               '<div id="dio_sortinit" class="button_order_by active"></div><div id="dio_hides_silver_total"><span class="resource_iron_icon iron"><span class="silver_amount">' + silver_total + '</span></span></div><div class="border"></div></div>');
-
+                                                   '<div id="dio_sortinit" class="button_order_by active"></div><div id="dio_hides_silver_total"><span class="resource_iron_icon iron"><span class="silver_amount">' + silver_total + '</span></span></div><div class="border"></div></div>');
+                $('#dio_button_table_resize').tooltip(dio_icon);
+                $('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
                 function table_resize_handler1() {
                     $(this).addClass("active");
                     $("#hides_overview_towns").addClass("dio_resize");
@@ -13514,7 +13557,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }*/
             } catch (error) {
-                errorHandling(error, "hidesOverview");
+                errorHandling(error, "hidesOverview (init)");
             }
         },
         refresh_silver_total : function (xhr) {
@@ -13785,26 +13828,160 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
     var Scrollbar = {
         activate : function(){
+            try {
+                // Scrollbar Style: Chrome, opera, safari
+                $('#dio_Scrollbar_display_none').remove();
+                $('<style id="dio_Scrollbar_display">' +
+                  '#scrollbar { display:block!important; } ' +
+                  '</style>').appendTo('head');
 
-            // Scrollbar Style: Chrome, opera, safari
-            $('#dio_Scrollbar_display_none').remove();
-            $('<style id="dio_Scrollbar_display">' +
-              '#scrollbar { display:block!important; } ' +
-              '</style>').appendTo('head');
+                //button
+                var scroll_vertical = "height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-"
+                var scroll_horizontal = "width: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-"
 
-            //button
-            var scroll_vertical = "height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-"
-            var scroll_horizontal = "width: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-"
+                if (DATA.options.dio_aaa || DATA.options.dio_bbb || DATA.options.dio_ccc || DATA.options.dio_ddd || DATA.options.dio_eee){
+                    //Blue (Bleu)
+                    if (DATA.options.dio_aaa){
+                        $('<style id="dio_Scrollbar">' +
 
-            if (DATA.options.dio_aaa || DATA.options.dio_bbb || DATA.options.dio_ccc || DATA.options.dio_ddd || DATA.options.dio_eee){
-                //Blue (Bleu)
-                if (DATA.options.dio_aaa){
+                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                          '::-webkit-scrollbar-track { background-color: rgba(145, 165, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                          '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.5); border-radius: 3px; } ' +
+                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.8); } ' +
+
+                          /* Button Up */
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-blue.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-blue-hover.png);} ' +
+
+                          /* Button Down */
+                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-blue.png);} ' +
+                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-blue-hover.png);} ' +
+
+                          /* Button Left */
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-blue.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-blue-hover.png);} ' +
+
+                          /* Button Right */
+                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-blue.png);} ' +
+                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-blue-hover.png);} ' +
+
+                          '</style>').appendTo('head');
+                    }
+                    //Red (Rouge)
+                    if (DATA.options.dio_bbb){
+                        $('<style id="dio_Scrollbar">' +
+
+                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                          '::-webkit-scrollbar-track { background-color: rgba(193, 145, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                          '::-webkit-scrollbar-thumb { background-color: rgba(188, 37, 37, 0.5); border-radius: 3px; } ' +
+                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(188, 37, 37, 0.8); } ' +
+
+                          /* Button Up */
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-red.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-red-hover.png);} ' +
+
+                          /* Button Down */
+                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-red.png);} ' +
+                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-red-hover.png);} ' +
+
+                          /* Button Left */
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-red.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-red-hover.png);} ' +
+
+                          /* Button Right */
+                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-red.png);} ' +
+                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-red-hover.png);} ' +
+
+                          '</style>').appendTo('head');
+                    }
+                    //Green (Vert)
+                    if (DATA.options.dio_ccc){
+                        $('<style id="dio_Scrollbar">' +
+
+                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                          '::-webkit-scrollbar-track { background-color: rgba(147, 193, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                          '::-webkit-scrollbar-thumb { background-color: rgba(37, 188, 46, 0.5); border-radius: 3px; } ' +
+                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 188, 46, 0.8); } ' +
+
+                          /* Button Up */
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-green.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-green-hover.png);} ' +
+
+                          /* Button Down */
+                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-green.png);} ' +
+                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-green-hover.png);} ' +
+
+                          /* Button Left */
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-green.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-green-hover.png);} ' +
+
+                          /* Button Right */
+                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-green.png);} ' +
+                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-green-hover.png);} ' +
+
+                          '</style>').appendTo('head');
+                    }
+                    //Pink (Rose)
+                    if (DATA.options.dio_ddd){
+                        $('<style id="dio_Scrollbar">' +
+
+                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                          '::-webkit-scrollbar-track { background-color: rgba(165, 145, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                          '::-webkit-scrollbar-thumb { background-color: rgba(162, 37, 188, 0.5); border-radius: 3px; } ' +
+                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(162, 37, 188, 0.8); } ' +
+
+                          /* Button Up */
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-pink.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-pink-hover.png);} ' +
+
+                          /* Button Down */
+                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-pink.png);} ' +
+                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-pink-hover.png);} ' +
+
+                          /* Button Left */
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-pink.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-pink-hover.png);} ' +
+
+                          /* Button Right */
+                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-pink.png);} ' +
+                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-pink-hover.png);} ' +
+
+                          '</style>').appendTo('head');
+                    }
+                    //White (Blanc)
+                    if (DATA.options.dio_eee){
+                        $('<style id="dio_Scrollbar">' +
+
+                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                          '::-webkit-scrollbar-track { background-color: rgba(255, 255, 255, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                          '::-webkit-scrollbar-thumb { background-color: rgba(152, 152, 152, 0.5); border-radius: 3px; } ' +
+                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(152, 152, 152, 0.8); } ' +
+
+                          /* Button Up */
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-white.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-white-hover.png);} ' +
+
+                          /* Button Down */
+                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-white.png);} ' +
+                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-white-hover.png);} ' +
+
+                          /* Button Left */
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-white.png);} ' +
+                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-white-hover.png);} ' +
+
+                          /* Button Right */
+                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-white.png);} ' +
+                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-white-hover.png);} ' +
+
+                          '</style>').appendTo('head');
+                    }
+                }else {
                     $('<style id="dio_Scrollbar">' +
 
                       '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
                       '::-webkit-scrollbar-track { background-color: rgba(145, 165, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                      '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.5); border-radius: 3px; } ' +
-                      '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.8); } ' +
+                      '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.6); border-radius: 3px; } ' +
+                      '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.9); } ' +
 
                       /* Button Up */
                       '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-blue.png);} ' +
@@ -13824,139 +14001,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                       '</style>').appendTo('head');
                 }
-                //Red (Rouge)
-                if (DATA.options.dio_bbb){
-                    $('<style id="dio_Scrollbar">' +
-
-                      '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                      '::-webkit-scrollbar-track { background-color: rgba(193, 145, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                      '::-webkit-scrollbar-thumb { background-color: rgba(188, 37, 37, 0.5); border-radius: 3px; } ' +
-                      '::-webkit-scrollbar-thumb:hover { background-color: rgba(188, 37, 37, 0.8); } ' +
-
-                      /* Button Up */
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-red.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-red-hover.png);} ' +
-
-                      /* Button Down */
-                      '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-red.png);} ' +
-                      '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-red-hover.png);} ' +
-
-                      /* Button Left */
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-red.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-red-hover.png);} ' +
-
-                      /* Button Right */
-                      '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-red.png);} ' +
-                      '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-red-hover.png);} ' +
-
-                      '</style>').appendTo('head');
-                }
-                //Green (Vert)
-                if (DATA.options.dio_ccc){
-                    $('<style id="dio_Scrollbar">' +
-
-                      '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                      '::-webkit-scrollbar-track { background-color: rgba(147, 193, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                      '::-webkit-scrollbar-thumb { background-color: rgba(37, 188, 46, 0.5); border-radius: 3px; } ' +
-                      '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 188, 46, 0.8); } ' +
-
-                      /* Button Up */
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-green.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-green-hover.png);} ' +
-
-                      /* Button Down */
-                      '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-green.png);} ' +
-                      '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-green-hover.png);} ' +
-
-                      /* Button Left */
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-green.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-green-hover.png);} ' +
-
-                      /* Button Right */
-                      '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-green.png);} ' +
-                      '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-green-hover.png);} ' +
-
-                      '</style>').appendTo('head');
-                }
-                //Pink (Rose)
-                if (DATA.options.dio_ddd){
-                    $('<style id="dio_Scrollbar">' +
-
-                      '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                      '::-webkit-scrollbar-track { background-color: rgba(165, 145, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                      '::-webkit-scrollbar-thumb { background-color: rgba(162, 37, 188, 0.5); border-radius: 3px; } ' +
-                      '::-webkit-scrollbar-thumb:hover { background-color: rgba(162, 37, 188, 0.8); } ' +
-
-                      /* Button Up */
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-pink.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-pink-hover.png);} ' +
-
-                      /* Button Down */
-                      '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-pink.png);} ' +
-                      '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-pink-hover.png);} ' +
-
-                      /* Button Left */
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-pink.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-pink-hover.png);} ' +
-
-                      /* Button Right */
-                      '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-pink.png);} ' +
-                      '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-pink-hover.png);} ' +
-
-                      '</style>').appendTo('head');
-                }
-                //White (Blanc)
-                if (DATA.options.dio_eee){
-                    $('<style id="dio_Scrollbar">' +
-
-                      '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                      '::-webkit-scrollbar-track { background-color: rgba(255, 255, 255, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                      '::-webkit-scrollbar-thumb { background-color: rgba(152, 152, 152, 0.5); border-radius: 3px; } ' +
-                      '::-webkit-scrollbar-thumb:hover { background-color: rgba(152, 152, 152, 0.8); } ' +
-
-                      /* Button Up */
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-white.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-white-hover.png);} ' +
-
-                      /* Button Down */
-                      '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-white.png);} ' +
-                      '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-white-hover.png);} ' +
-
-                      /* Button Left */
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-white.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-white-hover.png);} ' +
-
-                      /* Button Right */
-                      '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-white.png);} ' +
-                      '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-white-hover.png);} ' +
-
-                      '</style>').appendTo('head');
-                }
-            }else {
-                $('<style id="dio_Scrollbar">' +
-
-                  '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                  '::-webkit-scrollbar-track { background-color: rgba(145, 165, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                  '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.6); border-radius: 3px; } ' +
-                  '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.9); } ' +
-
-                  /* Button Up */
-                  '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-blue.png);} ' +
-                  '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-blue-hover.png);} ' +
-
-                  /* Button Down */
-                  '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-blue.png);} ' +
-                  '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-blue-hover.png);} ' +
-
-                  /* Button Left */
-                  '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-blue.png);} ' +
-                  '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-blue-hover.png);} ' +
-
-                  /* Button Right */
-                  '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-blue.png);} ' +
-                  '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-blue-hover.png);} ' +
-
-                  '</style>').appendTo('head');
+            } catch (error) {
+                errorHandling(error, "Scrollbar");
             }
         },
         deactivate : function(){
@@ -14324,7 +14370,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                         // Rapports
                         if (((MID == 'de') ? e.keyCode == "66" : e.keyCode == "82") && (DATA.options.dio_Hot)) {
-                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_REPORT, DM.getl10n("layout").main_menu.items.reports || "Reports");
+                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_REPORT, uw.DM.getl10n("layout").main_menu.items.reports || "Reports");
                         }
                         // Forum
                         if (e.keyCode == "70" && ((DATA.options.dio_Hot))) {
@@ -14376,7 +14422,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                         // Messages
                         if (((MID == 'de') ? e.keyCode == "78" : e.keyCode == "77") && (DATA.options.dio_Hot)) {
-                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_MESSAGE, DM.getl10n("layout").main_menu.items.messages || "Messages")
+                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_MESSAGE, uw.DM.getl10n("layout").main_menu.items.messages || "Messages")
                         }
                         // Forum
                         if (e.keyCode == "70" && (DATA.options.dio_Hot)) {
@@ -14472,56 +14518,60 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var islandFarmingVillages = {
         activate: function () {
-            $('<style id="dio_message_recipients_style">' +
-              '#message_recipients { width:630px ; }' +
-              '#message_subject { width:630px ; }' +
-              '#message_alliance { position:absolute; right: 3px; top: 6px; }' +
-              'div.island_info_wrapper div.center1 { left:239px; width: 466px; top: 0px; }' +
-              'div.island_info_left { bottom: 0px; left: 0px; position: absolute; }' +
-              'div.island_info_towns ul#island_info_towns_left_sorted_by_name { height: 347px; }' +
-              'div.island_info_right { bottom: 0px; right: 0px; position: absolute; }' +
-              'div.island_info_right UL.game_list { height: 378px; }' +
-              '#farm_town_overview_btn { top: 465px; right: 9px; }' +
-              '</style>').appendTo('head');
+            try {
+                $('<style id="dio_message_recipients_style">' +
+                  '#message_recipients { width:630px ; }' +
+                  '#message_subject { width:630px ; }' +
+                  '#message_alliance { position:absolute; right: 3px; top: 6px; }' +
+                  'div.island_info_wrapper div.center1 { left:239px; width: 466px; top: 0px; }' +
+                  'div.island_info_left { bottom: 0px; left: 0px; position: absolute; }' +
+                  'div.island_info_towns ul#island_info_towns_left_sorted_by_name { height: 347px; }' +
+                  'div.island_info_right { bottom: 0px; right: 0px; position: absolute; }' +
+                  'div.island_info_right UL.game_list { height: 378px; }' +
+                  '#farm_town_overview_btn { top: 465px; right: 9px; }' +
+                  '</style>').appendTo('head');
 
-            $("#island_towns_controls").append('<a id="dio_message_island"></a>');
-            $('<style id="dio_message_recipients_stylee">' +
-              '#dio_message_island { float: right; right: 3px; height: 23px; width: 22px; background: url("https://www.tuto-de-david1327.com/medias/images/islandmessage.png") no-repeat; 0px 0px; }' +
-              '</style>').appendTo('head');
+                $("#island_towns_controls").append('<a id="dio_message_island"></a>');
+                $('<style id="dio_message_recipients_stylee">' +
+                  '#dio_message_island { float: right; right: 3px; height: 23px; width: 22px; background: url("https://www.tuto-de-david1327.com/medias/images/islandmessage.png") no-repeat; 0px 0px; }' +
+                  '</style>').appendTo('head');
 
-            $("#dio_message_island").hover(
-                function () {
-                    $(this).css({
-                        "background-position" : "0px -23px"
+                $("#dio_message_island").hover(
+                    function () {
+                        $(this).css({
+                            "background-position" : "0px -23px"
+                        });
+                    },
+                    function () {
+                        $(this).css({
+                            "background-position" : "0px 0px"
+                        });
                     });
-                },
-                function () {
-                    $(this).css({
-                        "background-position" : "0px 0px"
+                $("#dio_message_island").click(function () {
+                    var spielernamen = "";
+                    if (!$("#island_info_towns_left_sorted_by_name li span.player_name a.gp_player_link").is(":visible")) {
+                        $("#island_info_towns_left_sorted_by_name li span.player_name").each(function () {
+                            if ($(this).text() != pName && $(this).text() != uw.DM.getl10n("alliance").profile.tooltip_msg_no_recipients && $(this).text() != getTexts("messages", "no_cities") + "." && spielernamen.indexOf($(this).text()) < 0) {
+                                spielernamen += $(this).text() + ";";
+                            }
+                        });
+                    } else {
+                        $("#island_info_towns_left_sorted_by_name li span.player_name a.gp_player_link").each(function () {
+                            if ($(this).text() != pName && $(this).text() != uw.DM.getl10n("alliance").profile.tooltip_msg_no_recipients && $(this).text() != getTexts("messages", "no_cities") + "." && spielernamen.indexOf($(this).text()) < 0) {
+                                spielernamen += $(this).text() + ";";
+                            }
+                        });
+                    }
+                    uw.Layout.newMessage.open({
+                        recipients : spielernamen
                     });
                 });
-            $("#dio_message_island").click(function () {
-                var spielernamen = "";
-                if (!$("#island_info_towns_left_sorted_by_name li span.player_name a.gp_player_link").is(":visible")) {
-                    $("#island_info_towns_left_sorted_by_name li span.player_name").each(function () {
-                        if ($(this).text() != pName && $(this).text() != uw.DM.getl10n("alliance").profile.tooltip_msg_no_recipients && $(this).text() != getTexts("messages", "no_cities") + "." && spielernamen.indexOf($(this).text()) < 0) {
-                            spielernamen += $(this).text() + ";";
-                        }
-                    });
-                } else {
-                    $("#island_info_towns_left_sorted_by_name li span.player_name a.gp_player_link").each(function () {
-                        if ($(this).text() != pName && $(this).text() != uw.DM.getl10n("alliance").profile.tooltip_msg_no_recipients && $(this).text() != getTexts("messages", "no_cities") + "." && spielernamen.indexOf($(this).text()) < 0) {
-                            spielernamen += $(this).text() + ";";
-                        }
-                    });
-                }
-                uw.Layout.newMessage.open({
-                    recipients : spielernamen
-                });
-            });
 
-            // Tooltip
-            $('#dio_message_island').tooltip(dio_icon + uw.DM.getl10n("layout").main_menu.items.messages +" "+ uw.DM.getl10n("bbcodes").island.name);
+                // Tooltip
+                $('#dio_message_island').tooltip(dio_icon + uw.DM.getl10n("layout").main_menu.items.messages +" "+ uw.DM.getl10n("bbcodes").island.name);
+            } catch (error) {
+                errorHandling(error, "islandFarmingVillages");
+            }
         },
         deactivate: function () {
             $('#dio_message_island').remove();
@@ -14555,130 +14605,135 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
               '</style>').appendTo('head');
         },
         add : function () {
-            if (!$('#town_groups_list a.town_bb').length != 0) {
-                $('.content .group_name .name').append('<a class="dio_town_bb"><div id="dio_town_list_bb"></div></a>');
-                $('.dio_town_bb').click(function (e) {
-                    var towngrp_id = $(this).parent().data('groupid');
-                    if (townslist.groups === towngrp_id) {
-                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
-                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                        }
-                        townslist.groups = -2;
-                    }
-                    else {
-                        var cities_towngroup = uw.ITowns.town_group_towns.getTowns(towngrp_id);
-                        var bb_contentP1 = "[quote][size=9][player]" + pName + "[/player][/size] ";
-                        var bb_contentP2 = bb_contentP1, bb_contentP3 = bb_contentP1, bb_contentP4 = bb_contentP1, bb_contentP5 = bb_contentP1;
-                        var bb_premium = 0, bb_premiumb = "", bb_premiumc = false;
-                        if (townslist.groups != towngrp_id & $('#dio_townslist').length) {
+            try {
+                if (!$('#town_groups_list a.town_bb').length != 0) {
+                    $('.content .group_name .name').append('<a class="dio_town_bb"><div id="dio_town_list_bb"></div></a>');
+                    $('.dio_town_bb').click(function (e) {
+                        var towngrp_id = $(this).parent().data('groupid');
+                        if (townslist.groups === towngrp_id) {
                             if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
                                 uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
                             }
-                        }
-                        townslist.groups = towngrp_id;
-
-                        if (uw.Game.premium_features.curator >= uw.Timestamp.now()) {
-                            bb_premium = uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + ": " + uw.MM.getCollections().TownGroup[0]._byId[towngrp_id].attributes.name +" ";
-                            bb_contentP1 += bb_premium; bb_contentP2 += bb_premium; bb_contentP3 += bb_premium; bb_contentP4 += bb_premium; bb_contentP5 += bb_premium;
-                            bb_premiumb = "(" + bb_premium + ")";
-                            bb_premiumc = true;
-                        }
-                        var bb_count = 0, bb_nombre_ville = 0, bb_nonbre = 0, bb_ville = uw.DM.getl10n("market").city;
-
-                        $.each(cities_towngroup, function (key, town) {
-                            bb_nombre_ville++;
-                        });
-
-                        if (bb_nombre_ville < 61) {
-                            bb_nonbre = 1;
-                        } else if (bb_nombre_ville < 121) {
-                            bb_nonbre = 2;
-                        } else if (bb_nombre_ville < 181) {
-                            bb_nonbre = 3;
-                        } else if (bb_nombre_ville < 241) {
-                            bb_nonbre = 4;
-                        } else {
-                            bb_nonbre = 5;
-                        }
-
-                        if (bb_nombre_ville < 301) {
-                            bb_contentP1 += "(" + bb_nombre_ville + " " + bb_ville + ") " + (bb_nombre_ville < 61 ? "" : "(1/" + bb_nonbre + ")");
-                            bb_contentP2 += "(" + bb_nombre_ville + " " + bb_ville + ") (2/" + bb_nonbre + ")";
-                            bb_contentP3 += "(" + bb_nombre_ville + " " + bb_ville + ") (3/" + bb_nonbre + ")";
-                            bb_contentP4 += "(" + bb_nombre_ville + " " + bb_ville + ") (4/" + bb_nonbre + ")";
-                            bb_contentP5 += "(" + bb_nombre_ville + " " + bb_ville + ") (5/" + bb_nonbre + ")";
-                        } else {
-                            bb_contentP1 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (1/5)";
-                            bb_contentP2 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (2/5)";
-                            bb_contentP3 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (3/5)";
-                            bb_contentP4 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (4/5)";
-                            bb_contentP5 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (5/5)";
-                            bb_nonbre = 5;}
-
-                        bb_contentP1 += "\n[table]\n"; bb_contentP2 += "\n[table]\n"; bb_contentP3 += "\n[table]\n"; bb_contentP4 += "\n[table]\n"; bb_contentP5 += "\n[table]\n";
-                        $.each(cities_towngroup, function (key, town) {
-
-                            bb_count++;
-
-                            if (bb_count < 61) { bb_contentP1 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                               }else if (bb_count < 121) {
-                                                   bb_contentP2 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                               }else if (bb_count < 181) {
-                                                   bb_contentP3 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                               }else if (bb_count < 241) {
-                                                   bb_contentP4 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                               }else if (bb_count < 301) {
-                                                   bb_contentP5 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                               }else {}
-                        });
-                        var wnd = uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_DIO_BBCODE) || uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                        var dio_version_PUB = "[url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v."+ dio_version + "[/quote]";
-                        bb_contentP1 += "[/table]" + dio_version_PUB; bb_contentP2 += "[/table]" + dio_version_PUB; bb_contentP3 += "[/table]" + dio_version_PUB; bb_contentP4 += "[/table]" + dio_version_PUB; bb_contentP5 += "[/table]" + dio_version_PUB;
-                        var expRahmen_a = "<button id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></button><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
-                            "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
-                            "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
-                            "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
-                        var expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 120px; width: 99%;'>";
-                        if (bb_nombre_ville < 61) {
-                            var expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 235px; width: 99%;'>";
-                        }
-                        var expRahmen_bP2 = "<textarea id='expTextareaP2' style='height: 120px; width: 98%;'>";
-                        var expRahmen_bP3 = "<textarea id='expTextareaP3' style='height: 120px; width: 98%;'>";
-                        var expRahmen_bP4 = "<textarea id='expTextareaP4' style='height: 120px; width: 98%;'>";
-                        var expRahmen_bP5 = "<textarea id='expTextareaP5' style='height: 120px; width: 98%;'>";
-                        var expRahmen_cP1 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + (bb_nombre_ville < 61 ? "" : " (1/" + bb_nonbre + ")"), "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP1"') + "</div>";
-                        var expRahmen_cP2 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (2/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP2"') + "</div>";
-                        var expRahmen_cP3 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (3/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP3"') + "</div>";
-                        var expRahmen_cP4 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (4/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP4"') + "</div>";
-                        var expRahmen_cP5 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (5/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP5"') + "</div>";
-
-                        var expRahmen_d = "</div><div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
-                        var expRahmen_e = "<div style='font-weight: bold; margin-left: 5px;'>" + uw.DM.getl10n("layout").town_name_area.no_towns_in_group + " " + bb_premiumb + "</div>";
-
-                        var expTitel = "";
-
-                        if (bb_nombre_ville > 300) {
-                            expTitel = (bb_premiumc ? bb_premium + "(" + bb_ville + " 300/" + bb_nombre_ville + ")" : bb_ville + " 300/" + bb_nombre_ville) + "</div>";
-                        } else {
-                            expTitel = (bb_premiumc ? bb_premium + "(" + bb_nombre_ville + " " + bb_ville + ")" : bb_nombre_ville + " " + bb_ville) + "</div>";
-                        }
-
-                        wnd.setContent(expRahmen_a + expTitel +
-                                       (bb_nombre_ville > 0 ? (expRahmen_bP1 + bb_contentP1 + expRahmen_cP1) : expRahmen_e) +
-                                       (bb_nombre_ville > 60 ? (expRahmen_bP2 + bb_contentP2 + expRahmen_cP2) : "") +
-                                       (bb_nombre_ville > 120 ? (expRahmen_bP3 + bb_contentP3 + expRahmen_cP3) : "") +
-                                       (bb_nombre_ville > 180 ? (expRahmen_bP4 + bb_contentP4 + expRahmen_cP4) : "") +
-                                       (bb_nombre_ville > 240 ? (expRahmen_bP5 + bb_contentP5 + expRahmen_cP5) : "") +
-                                       expRahmen_d);
-
-                        $('.close_a').click(function () {
-                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
                             townslist.groups = -2;
-                        });
-                    }
-                });
+                        }
+                        else {
+                            var cities_towngroup = uw.ITowns.town_group_towns.getTowns(towngrp_id);
+                            var bb_contentP1 = "[quote][size=9][player]" + pName + "[/player][/size] ";
+                            var bb_contentP2 = bb_contentP1, bb_contentP3 = bb_contentP1, bb_contentP4 = bb_contentP1, bb_contentP5 = bb_contentP1;
+                            var bb_premium = 0, bb_premiumb = "", bb_premiumc = false;
+                            if (townslist.groups != towngrp_id & $('#dio_townslist').length) {
+                                if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
+                                    uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                                }
+                            }
+                            townslist.groups = towngrp_id;
+
+                            if (uw.Game.premium_features.curator >= uw.Timestamp.now()) {
+                                bb_premium = uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + ": " + uw.MM.getCollections().TownGroup[0]._byId[towngrp_id].attributes.name +" ";
+                                bb_contentP1 += bb_premium; bb_contentP2 += bb_premium; bb_contentP3 += bb_premium; bb_contentP4 += bb_premium; bb_contentP5 += bb_premium;
+                                bb_premiumb = "(" + bb_premium + ")";
+                                bb_premiumc = true;
+                            }
+                            var bb_count = 0, bb_nombre_ville = 0, bb_nonbre = 0, bb_ville = uw.DM.getl10n("market").city;
+
+                            $.each(cities_towngroup, function (key, town) {
+                                bb_nombre_ville++;
+                            });
+
+                            if (bb_nombre_ville < 61) {
+                                bb_nonbre = 1;
+                            } else if (bb_nombre_ville < 121) {
+                                bb_nonbre = 2;
+                            } else if (bb_nombre_ville < 181) {
+                                bb_nonbre = 3;
+                            } else if (bb_nombre_ville < 241) {
+                                bb_nonbre = 4;
+                            } else {
+                                bb_nonbre = 5;
+                            }
+
+                            if (bb_nombre_ville < 301) {
+                                bb_contentP1 += "(" + bb_nombre_ville + " " + bb_ville + ") " + (bb_nombre_ville < 61 ? "" : "(1/" + bb_nonbre + ")");
+                                bb_contentP2 += "(" + bb_nombre_ville + " " + bb_ville + ") (2/" + bb_nonbre + ")";
+                                bb_contentP3 += "(" + bb_nombre_ville + " " + bb_ville + ") (3/" + bb_nonbre + ")";
+                                bb_contentP4 += "(" + bb_nombre_ville + " " + bb_ville + ") (4/" + bb_nonbre + ")";
+                                bb_contentP5 += "(" + bb_nombre_ville + " " + bb_ville + ") (5/" + bb_nonbre + ")";
+                            } else {
+                                bb_contentP1 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (1/5)";
+                                bb_contentP2 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (2/5)";
+                                bb_contentP3 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (3/5)";
+                                bb_contentP4 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (4/5)";
+                                bb_contentP5 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (5/5)";
+                                bb_nonbre = 5;}
+
+                            bb_contentP1 += "\n[table]\n"; bb_contentP2 += "\n[table]\n"; bb_contentP3 += "\n[table]\n"; bb_contentP4 += "\n[table]\n"; bb_contentP5 += "\n[table]\n";
+                            $.each(cities_towngroup, function (key, town) {
+
+                                bb_count++;
+
+                                if (bb_count < 61) { bb_contentP1 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                                   }else if (bb_count < 121) {
+                                                       bb_contentP2 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                                   }else if (bb_count < 181) {
+                                                       bb_contentP3 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                                   }else if (bb_count < 241) {
+                                                       bb_contentP4 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                                   }else if (bb_count < 301) {
+                                                       bb_contentP5 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                                   }else {}
+                            });
+                            var wnd = uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_DIO_BBCODE) || uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                            var dio_version_PUB = "[url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v."+ dio_version + "[/quote]";
+                            bb_contentP1 += "[/table]" + dio_version_PUB; bb_contentP2 += "[/table]" + dio_version_PUB; bb_contentP3 += "[/table]" + dio_version_PUB; bb_contentP4 += "[/table]" + dio_version_PUB; bb_contentP5 += "[/table]" + dio_version_PUB;
+                            var expRahmen_a = "<button id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></button><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
+                                "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
+                                "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
+                                "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
+                            var expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 120px; width: 99%;'>";
+                            if (bb_nombre_ville < 61) {
+                                expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 235px; width: 99%;'>";
+                            }
+                            var expRahmen_bP2 = "<textarea id='expTextareaP2' style='height: 120px; width: 98%;'>";
+                            var expRahmen_bP3 = "<textarea id='expTextareaP3' style='height: 120px; width: 98%;'>";
+                            var expRahmen_bP4 = "<textarea id='expTextareaP4' style='height: 120px; width: 98%;'>";
+                            var expRahmen_bP5 = "<textarea id='expTextareaP5' style='height: 120px; width: 98%;'>";
+                            var expRahmen_cP1 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + (bb_nombre_ville < 61 ? "" : " (1/" + bb_nonbre + ")"), "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP1"') + "</div>";
+                            var expRahmen_cP2 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (2/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP2"') + "</div>";
+                            var expRahmen_cP3 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (3/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP3"') + "</div>";
+                            var expRahmen_cP4 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (4/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP4"') + "</div>";
+                            var expRahmen_cP5 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (5/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP5"') + "</div>";
+
+                            var expRahmen_d = "</div><div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
+                            var expRahmen_e = "<div style='font-weight: bold; margin-left: 5px;'>" + uw.DM.getl10n("layout").town_name_area.no_towns_in_group + " " + bb_premiumb + "</div>";
+
+                            var expTitel = "";
+
+                            if (bb_nombre_ville > 300) {
+                                expTitel = (bb_premiumc ? bb_premium + "(" + bb_ville + " 300/" + bb_nombre_ville + ")" : bb_ville + " 300/" + bb_nombre_ville) + "</div>";
+                            } else {
+                                expTitel = (bb_premiumc ? bb_premium + "(" + bb_nombre_ville + " " + bb_ville + ")" : bb_nombre_ville + " " + bb_ville) + "</div>";
+                            }
+
+                            wnd.setContent(expRahmen_a + expTitel +
+                                           (bb_nombre_ville > 0 ? (expRahmen_bP1 + bb_contentP1 + expRahmen_cP1) : expRahmen_e) +
+                                           (bb_nombre_ville > 60 ? (expRahmen_bP2 + bb_contentP2 + expRahmen_cP2) : "") +
+                                           (bb_nombre_ville > 120 ? (expRahmen_bP3 + bb_contentP3 + expRahmen_cP3) : "") +
+                                           (bb_nombre_ville > 180 ? (expRahmen_bP4 + bb_contentP4 + expRahmen_cP4) : "") +
+                                           (bb_nombre_ville > 240 ? (expRahmen_bP5 + bb_contentP5 + expRahmen_cP5) : "") +
+                                           expRahmen_d);
+
+                            $('.close_a').click(function () {
+                                uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                                townslist.groups = -2;
+                            });
+                        }
+                    });
 
 
+                }
+                $('#dio_town_list_bb').tooltip(dio_icon + getTexts("Options", "Tol")[0]);
+            } catch (error) {
+                errorHandling(error, "townslist");
             }
         },
         addCopyListener: function() {
@@ -15018,22 +15073,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         //Counting resources in town right now
         init: function () {
-            let wood_total = 0;
-            let stone_total = 0;
-            let silver_total = 0;
-            const city_boxes = $('#trade_overview_wrapper').find(".trade_town");
-            for (var a = 0; a < city_boxes.length-2; a++) {
-                wood_total += parseInt($(city_boxes[a]).find(".resource_wood_icon").text());
-                stone_total += parseInt($(city_boxes[a]).find(".resource_stone_icon").text());
-                silver_total += parseInt($(city_boxes[a]).find(".resource_iron_icon").text());
-            }
+            try {
+                let wood_total = 0;
+                let stone_total = 0;
+                let silver_total = 0;
+                const city_boxes = $('#trade_overview_wrapper').find(".trade_town");
+                for (var a = 0; a < city_boxes.length-2; a++) {
+                    wood_total += parseInt($(city_boxes[a]).find(".resource_wood_icon").text());
+                    stone_total += parseInt($(city_boxes[a]).find(".resource_stone_icon").text());
+                    silver_total += parseInt($(city_boxes[a]).find(".resource_iron_icon").text());
+                }
 
-            //Appending counter to trade window
-            const wnd = uw.GPWindowMgr.getFocusedWindow() || false;
-            const dio_wnd = wnd.getJQElement().find(".overview_search_bar");
-            dio_wnd.append('<div id="dio_resource_counter" nobr><div id="dio_wood_counter"><span class="resource_wood_icon wood"><span class="wood_amount">'+wood_total+'</span></span></div>' +
-                           '<div id="dio_stone_counter"><span class="resource_stone_icon stone"><span class="stone_amount">'+stone_total+'</span></span></div>' +
-                           '<div id="dio_silver_counter"><span class="resource_iron_icon iron"><span class="iron_amount">'+silver_total+'</span></span></div></div>');
+                //Appending counter to trade window
+                const wnd = uw.GPWindowMgr.getFocusedWindow() || false;
+                const dio_wnd = wnd.getJQElement().find(".overview_search_bar");
+                dio_wnd.append('<div id="dio_resource_counter" nobr><div id="dio_wood_counter"><span class="resource_wood_icon wood"><span class="wood_amount">'+wood_total+'</span></span></div>' +
+                               '<div id="dio_stone_counter"><span class="resource_stone_icon stone"><span class="stone_amount">'+stone_total+'</span></span></div>' +
+                               '<div id="dio_silver_counter"><span class="resource_iron_icon iron"><span class="iron_amount">'+silver_total+'</span></span></div></div>');
+            } catch (error) {
+                errorHandling(error, "resCounter");
+            }
         },
         deactivate: function () {
             $('#dio_trade_overview_style').remove();
