@@ -3,7 +3,7 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.25.4
+// @version		4.25.5
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -13123,25 +13123,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             try {
                 var f, i, j, k;
                     //var test = false;
-                    var test = 1;
+                    var test = 100;
                 if ($("#culture_points_overview_bottom").length) {
                     let g = $("ul#culture_overview_towns span.eta");
                     let h = $("#culture_points_overview_bottom #place_culture_count").text();
                     i = h.split("/");
                     j = parseInt(i[0]) + g.length;
                     k = parseInt(i[1]) - j;
-                    if (test <= 0) {k = test;}
+                    //console.log(k);
+                    if (test != 100) {k = k - test;}
                     if (h.indexOf("[") < 1) {
                         if (k > 0) {
-                            $("#culture_points_overview_bottom #place_culture_count").append("<span id='dio_culture'>[-" + k + "]</span>");
+                            $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'>-" + k + "</span>]<span id='dio_cultureplus' style='color: #ECB44D'></span>");
                         } else {
                             $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'></span>]<span id='dio_cultureplus' style='color: #ECB44D'> +" + k * -1 + "</span>").find("span#dio_culture").countdown(culturePoints.heure(g, h, test));
                         }
                     } else {
                         if (k > 0) {
-                            $("#dio_culture").text("[-" + k + "]");
+                            $("#dio_culture").text("-" + k);
+                            $("#dio_cultureplus").text("");
                         } else {
                             $("#dio_culture").countdown(culturePoints.heure(g, h, test))
+                            $("#dio_cultureplus").text(" +" + k * -1);
                         }
                     }
                 };
@@ -13153,7 +13156,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     i = h.split("/");
                     j = parseInt(i[0]) + g;
                     k = parseInt(i[1]) - j;
-                    if (test <= 0) {k = test;}
+                    if (test != 100) {k = k - test;}
                     if (h.indexOf("[") < 1) {
                         if (k > 0) {
                             $("#place_container #place_culture_count").append("<span id='dio_cultureA'>[-" + k + "]</span>");
@@ -13168,8 +13171,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                     }
                 }
-                $('#dio_culture').tooltip(dio_icon);
-                $('#dio_cultureA').tooltip(dio_icon);
+                $('#dio_culture, dio_cultureplus, #dio_cultureA, dio_cultureplusA').tooltip(dio_icon);
             } catch (error) {
                 errorHandling(error, "culturePoints");
             }
@@ -13179,7 +13181,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             i = h.split("/");
             j = parseInt(i[0]) + g.length;
             k = parseInt(i[1]) - j;
-            if (test <= 0) {k = test;}
+            if (test != 100) {k = k - test;}
             if (k <= 0) {
                 var l = new Array;
                 for (f = 0; f < g.length; f++)
