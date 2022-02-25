@@ -3,7 +3,7 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.25.2
+// @version		4.25.3
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -13140,7 +13140,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             $("#culture_points_overview_bottom #place_culture_count").append("<span id='dio_culture'>[-" + k + "]</span>");
                         } else {
                             $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'></span>]<span id='dio_cultureplus' style='color: #ECB44D'> +" + k * -1 + "</span>");
-                            clearTimeout(culturePoints.timeout2);
                             culturePoints.timeout2 = setInterval(() => {
                                 if ($("#culture_points_overview_bottom").length) {
                                     $("#dio_culture").text(culturePoints.heure(g, h, test));
@@ -13151,7 +13150,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if (k > 0) {
                             $("#dio_culture").text("[-" + k + "]");
                         } else {
-                            clearTimeout(culturePoints.timeout2);
                             culturePoints.timeout2 = setInterval(() => {
                                 if ($("#culture_points_overview_bottom").length) {
                                     $("#dio_culture").text(culturePoints.heure(g, h, test));
