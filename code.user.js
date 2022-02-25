@@ -3,7 +3,7 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.25.3
+// @version		4.25.4
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -13113,7 +13113,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var culturePoints = {
         timeout: null,
-        timeout2: null,
         activate: function () {
             if ($('#culture_points_overview_bottom').length || $("#place_container").length) { culturePoints.add(); }
             culturePoints.timeout = setInterval(() => {
@@ -13123,56 +13122,38 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         add: function () {
             try {
                 var f, i, j, k;
-                    var test = false;
-                    //var test = -1;
-
+                    //var test = false;
+                    var test = 1;
                 if ($("#culture_points_overview_bottom").length) {
-                    clearTimeout(culturePoints.timeout2);
-                    culturePoints.timeout2 = null;
                     let g = $("ul#culture_overview_towns span.eta");
                     let h = $("#culture_points_overview_bottom #place_culture_count").text();
                     i = h.split("/");
                     j = parseInt(i[0]) + g.length;
                     k = parseInt(i[1]) - j;
-                    if (test) {k = test;}
+                    if (test <= 0) {k = test;}
                     if (h.indexOf("[") < 1) {
                         if (k > 0) {
                             $("#culture_points_overview_bottom #place_culture_count").append("<span id='dio_culture'>[-" + k + "]</span>");
                         } else {
-                            $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'></span>]<span id='dio_cultureplus' style='color: #ECB44D'> +" + k * -1 + "</span>");
-                            culturePoints.timeout2 = setInterval(() => {
-                                if ($("#culture_points_overview_bottom").length) {
-                                    $("#dio_culture").text(culturePoints.heure(g, h, test));
-                                }
-                            }, 1000)
+                            $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'></span>]<span id='dio_cultureplus' style='color: #ECB44D'> +" + k * -1 + "</span>").find("span#dio_culture").countdown(culturePoints.heure(g, h, test));
                         }
                     } else {
                         if (k > 0) {
                             $("#dio_culture").text("[-" + k + "]");
                         } else {
-                            culturePoints.timeout2 = setInterval(() => {
-                                if ($("#culture_points_overview_bottom").length) {
-                                    $("#dio_culture").text(culturePoints.heure(g, h, test));
-                                }
-                            }, 1000)
-                            //cultureOverview.add.wnd.reloadContent();
+                            $("#dio_culture").countdown(culturePoints.heure(g, h, test))
                         }
                     }
-
-                } else {
-                    clearTimeout(culturePoints.timeout2);
-                    culturePoints.timeout2 = null;
                 };
                 if ($("#place_container").length) {
                     let h = $("#place_container #place_culture_count").text();
                     let g = 0;
                     var inProgress = parseInt($('#place_culture_in_progress').text().match(/[0-9]+/));
                     if (inProgress > 0) {g = inProgress;}
-                    console.log(inProgress);
                     i = h.split("/");
                     j = parseInt(i[0]) + g;
                     k = parseInt(i[1]) - j;
-                    if (test) {k = test;}
+                    if (test <= 0) {k = test;}
                     if (h.indexOf("[") < 1) {
                         if (k > 0) {
                             $("#place_container #place_culture_count").append("<span id='dio_cultureA'>[-" + k + "]</span>");
@@ -13198,19 +13179,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             i = h.split("/");
             j = parseInt(i[0]) + g.length;
             k = parseInt(i[1]) - j;
-            if (test) {k = test;}
+            if (test <= 0) {k = test;}
             if (k <= 0) {
                 var l = new Array;
                 for (f = 0; f < g.length; f++)
-                    l.push($(g[f]).text());
+                    //l.push($(g[f]).text());
+                    l.push(g[f].dataset.timestamp);
                 l.sort();
                 var m = l[l.length + k - 1];
-                m = m.replace(/\ /g, "").replace(/\n|\r/g, "");
-            } else {m = "";
-                    clearTimeout(culturePoints.timeout2);
-                    culturePoints.timeout2 = null;
-                    culturePoints.add();
-                   }
+            } else {m = ""; culturePoints.add();}
             return m;
         },
         deactivate: function () {
@@ -13222,9 +13199,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             clearTimeout(culturePoints.timeout);
             culturePoints.timeout = null;
-
-            clearTimeout(culturePoints.timeout2);
-            culturePoints.timeout2 = null;
         },
     };
 
