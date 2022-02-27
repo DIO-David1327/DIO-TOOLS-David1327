@@ -1,1 +1,1 @@
-var dio_latest_version = '4.25';
+var dio_latest_version = '4.26';
