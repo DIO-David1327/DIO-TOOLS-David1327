@@ -14313,6 +14313,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $("#dio_BTN_HK").click(function () {
                 hotkeys.add()
             });
+            hotkeys.add();
         },
         add: function () {
             try {
