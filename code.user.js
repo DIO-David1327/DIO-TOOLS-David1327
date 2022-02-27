@@ -3,7 +3,7 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.25.5
+// @version		4.26
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -390,7 +390,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
         WID, MID, AID, PID, LID, Points, pName, tName;
 
-
     var updateversion = dio_version.replace(/\./g, "-");
     var dio_sprite = "https://www.tuto-de-david1327.com/medias/images/dio-sprite-5.png"; // http://abload.de/img/dio_spritejmqxp.png, -> Forbidden!?
     /*dio_sprite = "https://www.tuto-de-david1327.com/medias/images/d9xuhtcctx5fdi8i.2.png"; // http://abload.de/img/dio_spritejmqxp.png, -> Forbidden!?*/
@@ -618,6 +617,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt: ["BBcode-Schaltfläche Spielerinfo", "Hinzufügen einer BBcode-Schaltfläche (Spieler und Allianz)"],
                 Rtt: ["Entfernen der Tooltips des Geräts", ""],
                 Cup: ["Advancement of Culture (Administrator)", "Die Darstellung des Fortschrittsbalkens wurde geändert und ein Fortschrittsbalken für Ernten hinzugefügt. Funktion von Akiway"],
+                Cuo: ["Kulturpunkte (Administrator)", "Fügen Sie einen Zähler für die Kulturpunkte hinzu. Quack funktion"],
                 Rct: ["Handel -> Ressourcenzähler (Administrator)", "Eine Zählung aller Ressourcen in deiner Stadt"],
                 FLASK : ["Nicht kompatibel zur Aktivierung in den Parametern von FLASK-TOOLS",""],
                 Mole : ["Nicht kompatibel zur Aktivierung in den Parametern von Mole Hole",""],
@@ -1240,6 +1240,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt: ["Informazioni sul giocatore del pulsante BBcode", "Aggiunta di un pulsante BBcode (giocatore e alleanza)"],
                 Rtt: ["Rimozione dei tooltip dell'unità", ""],
                 Cup: ["Advancement of Culture (Administrator)", "Cambiata la presentazione della barra di avanzamento e aggiunta una barra di avanzamento per le colture. Funzione di Akiway"],
+                Cuo: ["Punti di Cultura (Amministratore)", "Aggiungi un segnalino per i Punti Cultura. Funzione Quack"],
                 Rct: ["Commercio -> Contatore risorse (amministratore)", "Un conteggio di tutte le risorse nella tua città"],
                 FLASK : ["Non compatibile per attivare nei parametri di FLASK-TOOLS",""],
                 Mole : ["Non compatibile per attivare nei parametri di Mole Hole",""],
@@ -1537,6 +1538,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt: ["Bouton BBcode Infos joueur", "Ajout d'un bouton BBcode (joueur et alliance)"],
                 Rtt: ["Suppression des info-bulles de l'unité", ""],
                 Cup: ["Avancement de la culture (Administrateur)", "Modification de la présentation de la barre de progression et ajout d'une barre de progression pour les cultures. Fonction d'Akiway"],
+                Cuo: ["Points de Culture (Administrateur)", "Ajoutez un compteur pour les points de culture. Fonction Quack"],
                 Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"],
                 FLASK : ["Non compatible à activer dans les paramètres de FLASK-TOOLS",""],
                 Mole : ["Non compatible à activer dans les paramètres de Mole Hole",""],
@@ -1831,6 +1833,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt: ["Информация об игроке, кнопка BBcode", "Добавление кнопки BBcode (игрок и альянс)"],
                 Rtt: ["Удаление всплывающих подсказок для юнита", ""],
                 //Cup: ["Advancement of Culture (Administrator)", "Changed the presentation of the progress bar and added a progress bar for crops. Function of Akiway"],
+                //Cuo: ["Points de Culture (Administrateur)", "Ajoutez un compteur pour les points de culture. Fonction Quack"],
                 //Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
@@ -2113,6 +2116,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt: ["BBcode button Informacje o graczu", "Dodanie przycisku BBcode (gracz i sojusz)"],
                 Rtt: ["Usunięcie podpowiedzi jednostki", ""],
                 Cup: ["Postęp Kultury (Administrator)", "Zmieniono prezentację paska postępu i dodano pasek postępu dla upraw. Funkcja Akiway"],
+                Cuo: ["Punkty Kultury (Administrator)", "Dodaj licznik dla Punktów Kultury. Funkcja Quack"],
                 Rct: ["Handel -> Licznik zasobów (Administrator)", "Licznik wszystkich zasobów w Twoim mieście"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
@@ -2393,6 +2397,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt: ["Información del jugador del botón BBcode", "Adición de un botón BBcode (jugador y alianza)"],
                 Rtt: ["Eliminación de la información sobre herramientas de la unidad", ""],
                 Cup: ["Avance de la cultura (Administrador) "," Se modificó la presentación de la barra de progreso y se agregó una barra de progreso para los cultivos. Función de Akiway"],
+                Cuo: ["Puntos de Cultura (Administrador)", "Agrega un contador para los Puntos de Cultura. Función Quack"],
                 Rct: ["Comercio -> Contador de recursos (Administrador) "," Un recuento de todos los recursos de tu ciudad"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
@@ -2675,6 +2680,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt: ["Κουμπί BBcode Πληροφορίες προγράμματος αναπαραγωγής", "Προσθήκη κουμπιού BBcode (player και alliance)"],
                 Rtt: ["Remoção das dicas da unidade", ""],
                 Cup: ["Avanço da Cultura (Administrador)","Alterada a apresentação da barra de progresso e adicionada uma barra de progresso para as colheitas. Função de Akiway"],
+                Cuo: ["Pontos de Cultura (Administrador)", "Adicione um contador para os Pontos de Cultura. Função Quack"],
                 Rct: ["Comércio -> Contador de recursos (Administrador) "," Uma contagem de todos os recursos em sua cidade"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
@@ -2957,7 +2963,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rep: ["Reports", "Přidání barevného filtru. Quack funkce"],
                 BBt: ["Tlačítko BBcode Player Info", "Přidání tlačítka BBcode (hráč a spojenectví)"],
                 Rtt: ["Odstranění popisů jednotky", ""],
-                Cup: ["Advancement of Culture (Administrator)","Změnilo se zobrazení pruhu postupu a přidal se ukazatel průběhu pro plodiny. Funkce Akiway"],
+                Cup: ["Rozvoj kultury (správce)","Změnilo se zobrazení pruhu postupu a přidal se ukazatel průběhu pro plodiny. Funkce Akiway"],
+                Cuo: ["Body kultury (správce)", "Přidejte počítadlo pro body kultury. Quack funkce"],
                 Rct: ["Obchod -> Počítadlo zdrojů (správce)","Počet všech zdrojů ve vašem městě"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
@@ -3237,7 +3244,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rep: ["Rapoarte", "Adăugarea unui filtru de culori. Funcția Quack"],
                 BBt: ["Butonul BBcode Informații jucător", "Adăugarea unui buton BBcode (jucător și alianță)"],
                 Rtt: ["Îndepărtarea sfaturilor de instrumente ale unității", ""],
-                Cup: ["Advancement of Culture (Administrator)","A modificat prezentarea barei de progres și a adăugat o bară de progres pentru culturi. Funcția Akiway"],
+                Cup: ["Avansarea culturii (Administrator)","A modificat prezentarea barei de progres și a adăugat o bară de progres pentru culturi. Funcția Akiway"],
+                Cuo: ["Puncte de cultură (Administrator)", "Adăugați un contor pentru punctele de cultură. Funcția Quack"],
                 Rct: ["Comerț -> Contor de resurse (Administrator)","Un număr al tuturor resurselor din orașul dvs."],
                 //FLASK : ["",""],
                 //Mole : ["",""],
@@ -3518,7 +3526,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rep: ["Reports", "Een kleurenfilter toevoegen. Quack-functie"],
                 BBt: ["BBcode-knop Spelerinfo", "Toevoeging van een BBcode-knop (speler en alliantie)"],
                 Rtt: ["Verwijderen van de tooltips van de unit", ""],
-                Cup: ["Advancement of Culture (Administrator)", "De presentatie van de voortgangsbalk gewijzigd en een voortgangsbalk voor gewassen toegevoegd. Functie van Akiway"],
+                Cup: ["Cultuurbevordering (Beheerder)", "De presentatie van de voortgangsbalk gewijzigd en een voortgangsbalk voor gewassen toegevoegd. Functie van Akiway"],
+                Cuo: ["Cultuurpunten (Beheerder)", "Voeg een teller toe voor de Cultuurpunten. Quack-functie"],
                 Rct: ["Handel -> Grondstoffenteller (Beheerder)", "Een telling van alle grondstoffen in je stad"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
@@ -3794,6 +3803,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBt : ['Κουμπί bbcode για πληροφορίες παίχτη', 'Προσθήκη κουμπιού με bbcode (παίχτη και συμμαχίας)'],
                 Rtt : ['Αφαίρεση του μηνύματος επεξήγησης των μονάδων', ''],
                 Cup : ['Προβιβασμός επιπέδου Πολιτισμού (Διαχειριστής)', 'Άλλαξε την παρουσίαση της μπάρας προόδου και πρόσθεσε μια μπάρα προόδου για τους πόρους. Λειτουργία του Akiway'],
+                Cuo : ["Σημεία Πολιτισμού (Διαχειριστής)", "Προσθέστε έναν μετρητή για τα Σημεία Πολιτισμού. Λειτουργία Quack"],
                 Rct : ['Εμπόριο -> Μετρητής πόρων (Διαχειριστής)', 'Μια μέτρηση όλων των πόρων στην πόλη σου'],
                 err : ['Στείλε αναφορές για bug αυτόματα', 'Αν ενεργοποιήσεις αυτή την επιλογή, μπορείς να βοηθήσεις στην εύρεση προβλημάτων του παιχνιδιού.'],
                 //FLASK : ["",""],
@@ -4153,6 +4163,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var version_text = '', version_color = 'black';
 
     function getLatestVersion() {
+        var version_latest = "??";
+        try {
+            version_latest = uw.dio_latest_version;
+        } catch (error) {
+            errorHandling(error, "dio_latest_version");
+        }
         $('<style id="dio_version">' +
           '#dio_version_info .version_icon { background: url(' + dio_sprite + ') -50px -50px no-repeat; width:25px; height:25px; float:left; z-index: 5; } ' +
           '#dio_version_info .version_icon.red { filter:hue-rotate(-100deg); -webkit-filter: hue-rotate(-100deg); } ' +
@@ -4163,11 +4179,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         var v_info = $('#dio_version_info');
         try {
             if (version_text === '') {
-                if (dio_version > uw.dio_latest_version) {
+                if (dio_version > version_latest) {
                     version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts("Settings", 'version_dev') + "</div><div class='version_icon blue'></div></a>";
                     version_color = 'darkblue';
                     Messageversion = uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_dev'));
-                } else if (dio_version == uw.dio_latest_version) {
+                } else if (dio_version == version_latest) {
                     version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts("Settings", 'version_new') + "</div><div class='version_icon green'></div></a>";
                 } else {
                     version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts("Settings", 'version_old') + "</div><div class='version_icon red'></div></a>" +
@@ -5911,13 +5927,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         if (PID === 1538932 || PID === 100144) {
             uw.HumanMessage.error(dio_icon + "DIO-TOOLS(" + dio_version + ")-ERROR: " + e.message);
             console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.stack);
+            //console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.name + ": " + e.toString());
             //DATA.errorDio[version][fn] = true;
             //saveValue("errorDio", JSON.stringify(uw.MM.DIO.errorDio));
         } else {
             //if (!DATA.error[dio_version]) {
             //    DATA.error[dio_version] = {};
             //}
-            console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.stack);
+            console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.toString());
 
             //saveValue("error", JSON.stringify(DATA.error));
 
@@ -5934,7 +5951,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }*/
         }
         try {
-            var nb = 1;
+            let nb = 1;
             var errordio = uw.MM.DIO.errorDio, nb2 = 0, nb_error = 1;
 
             if (typeof(errordio[fn]) !== "undefined") {
@@ -5944,7 +5961,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             var date = new Date();
             errordio[fn] = {
                 "function" : fn,
-                message : e.name + ": " + e.message,
+                message : e.toString(),
                 error : e.stack.replace(/'/g, '"'),
                 version : dio_version,
                 browser: getBrowser(),
@@ -5959,23 +5976,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
                 errordio.nb = nb2;
             });
-        } catch (error) {
-            var nb = 1;
-            var errordio = uw.MM.DIO.errorDio
-            if (typeof(errordio.errorHandling) !== "undefined") {
-                nb = nb + errordio.errorHandling.nb;
-            }
-            errordio.errorHandling = {
-                "function" : "errorHandling",
-                message : error.name + ": " + error.message,
-                error : error.stack.replace(/'/g, '"'),
-                version : dio_version,
-                browser: getBrowser(),
-                system : ((system()) ? "Mac" : "Windows"),
-                nb : nb,
-                date : date.getDate() + "/" + (date.getMonth()+1) +"/" + date.getFullYear(),
-            };
-        }
+        } catch (e) {}
     }
     var dio_bug = true;
     $('<style id="dio_window">' +
@@ -6070,11 +6071,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // NotificationType
             uw.NotificationType.DIO_TOOLS = "diotools";
 
-            var notifN = 26;
+            var notifN = 27;
             var titreN =
-                	0; // nouvelles fonctionnalités
+                //	0; // nouvelles fonctionnalités
                 //	1; // nouvelles fonctionnalités + titre
-                //	2; // ""
+                	2; // ""
 
             var titre = [getTexts("Settings", "Feature"),
                          getTexts("Settings", "Feature") + ' (' + getTexts("Options", "")[0] + ')',
@@ -6142,46 +6143,33 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-tip.png) no-repeat;font-weight: bold;">News and changes</div>' +
 
-'<p>To see in detail the changes on the code it&#39;s here -&gt;</p>' +
+'<p>To see in detail the changes on the code it&#39;s here -&gt;&nbsp;</p>' +
 
-'<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- Popup Icons :</span></span><br />' +
-'-&gt; Adding the name of the City group.<br />' +
-'<img alt="Capture d ecran 2021 12 06 192632" height="209" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-192632.png" width="339" /><img alt="Capture d ecran 2021 12 06 192346" height="184" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-192346.png" width="286" /></p>' +
-
-'<p>&nbsp;</p>' +
-
-'<p><span style="font-size:18px;">- BBcode Player Info button :</span><br />' +
-'&nbsp;-&gt; Extension of the option in player profiles. (compatible with other scripts)<br />' +
-'&nbsp;<img alt="Capture d ecran 2021 12 06 193506" height="167" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-193506.png" width="361" /></p>' +
-
-'<p>&nbsp;</p>' +
-
-'<p><span style="font-size:18px;">- List of cities in BB-Code :</span><br />' +
-'&nbsp;-&gt; Optimization.</p>' +
-
-'<p><span style="font-size:18px;">- <span style="font-size:18px;"><span style="font-size:18px;">Translations :</span></span></span><br />' +
-'-&gt; Thanks to &quot;Krieger des Lichts&quot; for improving the German language</p>' +
+'<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- <span style="font-size:18px;">Points of Culture (Administrator) :</span></span></span><br />' +
+'-&gt; The counter and now add in the agora. <strong>[-9]</strong><br />' +
+'&nbsp;<img alt="Capture d ecran 2022 02 25 183746" height="60" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-183746.png" width="698" /></p>' +
 
                     '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
 
 '<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
 
-'<p><span style="font-size:18px;">- </span><span style="font-size:18px;"> BB-Code messages :</span><br />' +
-'-&gt; Error correction and optimization.<br />' +
-'&nbsp;<img alt="Capture d ecran 2021 12 06 195523" height="25" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-195523.png" width="188" /></p>' +
+'<p><span style="font-size:18px;">- </span><span style="font-size:18px;"> Points of Culture (Administrator) :</span><br />' +
+'-&gt; Error correction and optimization.&nbsp;<strong>Thanks to &quot;@Neriss&quot; for reporting the issue</strong><br />' +
+'&nbsp;<img alt="Capture d ecran 2022 02 25 180353" height="38" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-180353.png" width="277" /></p>' +
 
 '<p><span style="font-size:18px;"></span></p>' +
 
-'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"></span><span style="font-size:18px;"> Popup Icon&nbsp;:</span><br />' +
-'-&gt; Image cause slowdowns (Thanks to Neriss for creating a ticket on Discord)<br />' +
-'&nbsp;<img alt="Capture d ecran 2021 12 06 194038" height="38" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-194038.png" width="38" /></p>' +
+'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"></span><span style="font-size:18px;"> BBcode of the city&nbsp;:</span><br />' +
+'-&gt; Error Fix (Copy button not updating)&nbsp;<strong>Thanks to &quot;@Neriss&quot; and &quot;@SunKing&quot; for reporting the issue</strong><br />' +
+'&nbsp;<img alt="Capture d ecran 2022 02 25 181643" height="53" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-181643.png" width="249" /></p>' +
 
-'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"> Report :</span><br />' +
-'&nbsp;-&gt;&nbsp;Bug fixes and optimization.<br />' +
-'&nbsp;<img alt="Capture d ecran 2021 12 06 195111" height="35" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2021-12-06-195111.png" width="247" /></p>' +
+'<p><span style="font-size:18px;">-</span><span style="font-size:18px;">&nbsp;Activity box :</span><br />' +
+'&nbsp;-&gt; It was difficult to find the area to move it.<br />' +
+'&nbsp;<img alt="Capture d ecran 2022 02 25 181939" height="55" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-181939.png" width="130" /></p>' +
 
-'<p><span style="font-size:18px;">-&nbsp;</span><span style="font-size:18px;">Culture Insight (Administrator) :</span><br />' +
-'&nbsp;-&gt;&nbsp;Bug fixes and optimization.</p>' +
+'<p><span style="font-size:18px;">-&nbsp;</span><span style="font-size:18px;">Keyboard shortcuts for Windows :</span><br />' +
+'&nbsp;-&gt;&nbsp;Just press the HK button to restart the function. <strong>Thanks to &quot;@Neriss&quot; for reporting the issue</strong><br />' +
+'&nbsp;<img alt="Capture d ecran 2022 02 25 183038" height="55" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-183038.png" width="135" /></p>' +
 
                     '<div style="height: 30px;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
 
@@ -6446,6 +6434,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             '<b>Message:</b> ' + errordio[name].message + '<br />' +
                             '<b>Error:</b> ' + errordio[name].error + '<br />' +
                             '<b>Version:</b> ' + errordio[name].version + '<br />' +
+                            '<b>latest_version:</b> ' + uw.MM.DIO.info_dio.latest_version + '<br />' +
                             '<b>Browser:</b> ' + errordio[name].browser + '<br />' +
                             '<b>System:</b> ' + errordio[name].system + '<br />' +
                             '<b>Nb:</b> ' + errordio[name].nb + '<br />' +
@@ -6471,6 +6460,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 'Message: ' + errordio[name].message + "\n" +
                                 'Error: ' + errordio[name].error + "\n" +
                                 'Version: ' + errordio[name].version + "\n" +
+                                'latest_version ' + uw.MM.DIO.info_dio.latest_version + "\n" +
                                 'Browser: ' + errordio[name].browser + "\n" +
                                 'System: ' + errordio[name].system + "\n" +
                                 'Nb: ' + errordio[name].nb + "\n" +
@@ -6481,11 +6471,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         uw.HumanMessage.error(dio_icon + "no bug");
                         return;
                     }
-                    uw.hOpenWindow.showConfirmDialog('', getTexts("translations", "trans_sure"), function () {
-                        //$("#ajax_loader").css({"visibility":"visible"});
+                    uw.hOpenWindow.showConfirmDialog('', getTexts("translations", "send"), function () {
                         var trans_HTML_send = pName + '<br/>' + PID + '<br/>' + WID + '<p/>';
 
-                        var trans_BBcode_send = pName + '\n';
+                        var trans_BBcode_send = pName + '\n' + WID + '\n\n';
                         trans_BBcode_send += "`" + name_a + "`\n";
 
                         createWindowType("DIO_BBCODEE", getTexts("messages", "bbmessages"), 700, 350, true, ["center", "center", 100, 100]);
@@ -6532,9 +6521,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         var trans_HTML_send = pName + '<br/>' + PID + '<br/>' + WID + '<p/>';
                         $('#trans_content > DIV').each(function (i) {
                             if ($('.toSend', this).length != 0) {
-                                trans_HTML_send += '<b>' + $('SPAN', this).text() + ' : {</b><br/>';
+                                trans_HTML_send += '<b>' + $('SPAN', this).text() + ': {</b><br/>';
                                 $('.toSend', this).each(function (index) {
-                                    trans_HTML_send += $(this).data('name') + ' : "' + $('td:last textarea', this).val() + '",<br/>';
+                                    trans_HTML_send += $(this).data('name') + ': "' + $('td:last textarea', this).val() + '",<br/>';
                                 });
                                 trans_HTML_send += '},<br/>';
                             }
@@ -7839,154 +7828,161 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
 
     function addFunctionToITowns() {
-        // Copy function and prevent an error
-        uw.MM.DIO = {
-            getPlayer : {},
-            info_dio : {
-                name : "DIO-TOOLS-David1327",
-                version : dio_version,
-                latest_version : uw.dio_latest_version,
-            },
-            errorDio: {nb : 0},
-            lang : uw.Game.market_id,
-            land : uw.Game.world_id.substring(0, 2),
-        };
-
-        uw.MM.DIO.getPlayer.Groups = function () {
-            var town_groups_towns, town_groups, groups = {};
-
-            // #Grepolis Fix: 2.75 -> 2.76
-            if (uw.MM.collections) {
-                town_groups_towns = uw.MM.collections.TownGroupTown[0];
-                town_groups = uw.MM.collections.TownGroup[0];
-            } else {
-                town_groups_towns = uw.MM.getCollections().TownGroupTown[0];
-                town_groups = uw.MM.getCollections().TownGroup[0];
+        try {
+            var version_latest = "??";
+            try {
+                version_latest = uw.dio_latest_version;
+            } catch (error) {
+                errorHandling(error, "dio_latest_version");
             }
+            // Copy function and prevent an error
+            uw.MM.DIO = {
+                getPlayer : {},
+                info_dio : {
+                    name : "DIO-TOOLS-David1327",
+                    version : dio_version,
+                    latest_version : version_latest,
+                },
+                errorDio: {nb : 0},
+                lang : uw.Game.market_id,
+                land : uw.Game.world_id.substring(0, 2),
+            };
 
-            town_groups_towns.each(function (town_group_town) {
-                var gid = town_group_town.getGroupId(),
-                    group = groups[gid],
-                    town_id = town_group_town.getTownId();
+            uw.MM.DIO.getPlayer.Groups = function () {
+                var town_groups_towns, town_groups, groups = {};
 
-                if (!group) {
-                    groups[gid] = group = {
-                        id: gid,
-                        //name: town_groups.get(gid).getName(), // hier tritt manchmal ein Fehler auf: TypeError: Cannot read property "getName" of undefined at https://_.grepolis.com/cache/js/merged/game.js?1407322916:8298:525
-                        towns: {}
+                // #Grepolis Fix: 2.75 -> 2.76
+                if (uw.MM.collections) {
+                    town_groups_towns = uw.MM.collections.TownGroupTown[0];
+                    town_groups = uw.MM.collections.TownGroup[0];
+                } else {
+                    town_groups_towns = uw.MM.getCollections().TownGroupTown[0];
+                    town_groups = uw.MM.getCollections().TownGroup[0];
+                }
+
+                town_groups_towns.each(function (town_group_town) {
+                    var gid = town_group_town.getGroupId(),
+                        group = groups[gid],
+                        town_id = town_group_town.getTownId();
+
+                    if (!group) {
+                        groups[gid] = group = {
+                            id: gid,
+                            //name: town_groups.get(gid).getName(), // hier tritt manchmal ein Fehler auf: TypeError: Cannot read property "getName" of undefined at https://_.grepolis.com/cache/js/merged/game.js?1407322916:8298:525
+                            towns: {}
+                        };
+                    }
+
+                    group.towns[town_id] = {id: town_id};
+                    //groups[gid].towns[town_id]={id:town_id};
+                });
+                //console.log(groups);
+                return groups;
+            };
+
+            uw.MM.DIO.getPlayer.Groups_town = function () {
+                var town_groups_towns, town_groups, groups = {};
+
+                // #Grepolis Fix: 2.75 -> 2.76
+                if (uw.MM.collections) {
+                    town_groups_towns = uw.MM.collections.TownGroupTown[0];
+                    town_groups = uw.MM.collections.TownGroup[0];
+                } else {
+                    town_groups_towns = uw.MM.getCollections().TownGroupTown[0];
+                    town_groups = uw.MM.getCollections().TownGroup[0];
+                }
+
+                town_groups_towns.each(function (town_group_town) {
+                    var gid = town_group_town.getGroupId(),
+                        town_id = town_group_town.getTownId(),
+                        group = groups[town_id];
+
+                    if (!group) {
+                        groups[town_id] = group = {
+                            id: town_id,
+                            //name: town_groups.get(gid).getName(), // hier tritt manchmal ein Fehler auf: TypeError: Cannot read property "getName" of undefined at https://_.grepolis.com/cache/js/merged/game.js?1407322916:8298:525
+                            groups: {}
+                        };
+                    }
+                    if (town_id !== 0 || town_id !== -1) {
+                        group.groups[gid] = {
+                            id: gid,
+                            name : ITowns.town_groups._byId[gid].attributes.name
+                        }
                     };
+                    //groups[gid].towns[town_id]={id:town_id};
+                });
+                //console.log(groups);
+                return groups;
+            };
+
+            uw.MM.DIO.getPlayer.Hero = function  () {
+                var PlayerHero, heros = {};
+
+                // #Grepolis Fix: 2.75 -> 2.76
+                if (uw.MM.collections) {
+                    PlayerHero = uw.MM.collections.PlayerHero[0];
+                } else {
+                    PlayerHero = uw.MM.getCollections().PlayerHero[0];
                 }
 
-                group.towns[town_id] = {id: town_id};
-                //groups[gid].towns[town_id]={id:town_id};
-            });
-            //console.log(groups);
-            return groups;
-        };
+                PlayerHero.each(function (PlayerHero) {
+                    var hero_name = PlayerHero.getId(),
+                        hero_level = PlayerHero.getLevel(),
+                        town_id = PlayerHero.getHomeTownId(),
+                        town_name = PlayerHero.getOriginTownName(),
+                        hero = heros[town_id];
 
-        uw.MM.DIO.getPlayer.Groups_town = function () {
-            var town_groups_towns, town_groups, groups = {};
+                    if (!hero) {
+                        heros[town_id] = hero = {
+                            town_id: town_id,
+                            town: town_name,
+                            hero_name,
+                            hero_level: hero_level
+                        };
+                    }
+                });
+                return heros;
+            };
 
-            // #Grepolis Fix: 2.75 -> 2.76
-            if (uw.MM.collections) {
-                town_groups_towns = uw.MM.collections.TownGroupTown[0];
-                town_groups = uw.MM.collections.TownGroup[0];
-            } else {
-                town_groups_towns = uw.MM.getCollections().TownGroupTown[0];
-                town_groups = uw.MM.getCollections().TownGroup[0];
-            }
-
-            town_groups_towns.each(function (town_group_town) {
-                var gid = town_group_town.getGroupId(),
-                    town_id = town_group_town.getTownId(),
-                    group = groups[town_id];
-
-                if (!group) {
-                    groups[town_id] = group = {
-                        id: town_id,
-                        //name: town_groups.get(gid).getName(), // hier tritt manchmal ein Fehler auf: TypeError: Cannot read property "getName" of undefined at https://_.grepolis.com/cache/js/merged/game.js?1407322916:8298:525
-                        groups: {}
-                    };
-                }
-                if (town_id !== 0 || town_id !== -1) {
-                group.groups[gid] = {
-                    id: gid,
-                    name : ITowns.town_groups._byId[gid].attributes.name
-                }
-                };
-                //groups[gid].towns[town_id]={id:town_id};
-            });
-            //console.log(groups);
-            return groups;
-        };
-
-        uw.MM.DIO.getPlayer.Hero = function  () {
-            var PlayerHero, heros = {};
-
-            // #Grepolis Fix: 2.75 -> 2.76
-            if (uw.MM.collections) {
-                PlayerHero = uw.MM.collections.PlayerHero[0];
-            } else {
-                PlayerHero = uw.MM.getCollections().PlayerHero[0];
-            }
-
-            PlayerHero.each(function (PlayerHero) {
-                var hero_name = PlayerHero.getId(),
-                    hero_level = PlayerHero.getLevel(),
-                    town_id = PlayerHero.getHomeTownId(),
-                    town_name = PlayerHero.getOriginTownName(),
-                    hero = heros[town_id];
-
-                if (!hero) {
-                    heros[town_id] = hero = {
-                        town_id: town_id,
-                        town: town_name,
-                        hero_name,
-                        hero_level: hero_level
-                    };
-                }
-            });
-            return heros;
-        };
-
-        //uw.MM.DIO.getHero = function () {};
+            //uw.MM.DIO.getHero = function () {};
 
 
 
 
-        uw.ITowns.townGroups.getGroupsDIO = function () {
-            var town_groups_towns, town_groups, groups = {};
+            uw.ITowns.townGroups.getGroupsDIO = function () {
+                var town_groups_towns, town_groups, groups = {};
 
-            // #Grepolis Fix: 2.75 -> 2.76
-            if (uw.MM.collections) {
-                town_groups_towns = uw.MM.collections.TownGroupTown[0];
-                town_groups = uw.MM.collections.TownGroup[0];
-            } else {
-                town_groups_towns = uw.MM.getCollections().TownGroupTown[0];
-                town_groups = uw.MM.getCollections().TownGroup[0];
-            }
-
-            town_groups_towns.each(function (town_group_town) {
-                var gid = town_group_town.getGroupId(),
-                    group = groups[gid],
-                    town_id = town_group_town.getTownId();
-
-                if (!group) {
-                    groups[gid] = group = {
-                        id: gid,
-                        //name: town_groups.get(gid).getName(), // hier tritt manchmal ein Fehler auf: TypeError: Cannot read property "getName" of undefined at https://_.grepolis.com/cache/js/merged/game.js?1407322916:8298:525
-                        towns: {}
-                    };
+                // #Grepolis Fix: 2.75 -> 2.76
+                if (uw.MM.collections) {
+                    town_groups_towns = uw.MM.collections.TownGroupTown[0];
+                    town_groups = uw.MM.collections.TownGroup[0];
+                } else {
+                    town_groups_towns = uw.MM.getCollections().TownGroupTown[0];
+                    town_groups = uw.MM.getCollections().TownGroup[0];
                 }
 
-                group.towns[town_id] = {id: town_id};
-                //groups[gid].towns[town_id]={id:town_id};
-            });
-            //console.log(groups);
-            return groups;
-        };
+                town_groups_towns.each(function (town_group_town) {
+                    var gid = town_group_town.getGroupId(),
+                        group = groups[gid],
+                        town_id = town_group_town.getTownId();
 
-        /*uw.ITowns.townGroups.getGroupsDIOdav = function () {
+                    if (!group) {
+                        groups[gid] = group = {
+                            id: gid,
+                            //name: town_groups.get(gid).getName(), // hier tritt manchmal ein Fehler auf: TypeError: Cannot read property "getName" of undefined at https://_.grepolis.com/cache/js/merged/game.js?1407322916:8298:525
+                            towns: {}
+                        };
+                    }
+
+                    group.towns[town_id] = {id: town_id};
+                    //groups[gid].towns[town_id]={id:town_id};
+                });
+                //console.log(groups);
+                return groups;
+            };
+
+            /*uw.ITowns.townGroups.getGroupsDIOdav = function () {
             var town_groups_towns, town_groups, groups = {};
 
             // #Grepolis Fix: 2.75 -> 2.76
@@ -8019,35 +8015,38 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         };*/
 
 
-        uw.ITowns.getHeroDIO = function () {
-            var town_groups_towns, town_groups, groups = {};
+            uw.ITowns.getHeroDIO = function () {
+                var town_groups_towns, town_groups, groups = {};
 
-            // #Grepolis Fix: 2.75 -> 2.76
-            var PlayerHero;
-            if (uw.MM.collections) {
-                PlayerHero = uw.MM.collections.PlayerHero[0];
-            } else {
-                PlayerHero = uw.MM.getCollections().PlayerHero[0];
-            }
-
-            PlayerHero.each(function (PlayerHero) {
-                var hero_name = PlayerHero.getId(),
-                    hero_level = PlayerHero.getLevel(),
-                    town_id = PlayerHero.getHomeTownId(),
-                    town_name = PlayerHero.getOriginTownName(),
-                    group = groups[town_id];
-
-                if (!group) {
-                    groups[town_id] = group = {
-                        town_id: town_id,
-                        town: town_name,
-                        hero_name,
-                        hero_level: hero_level
-                    };
+                // #Grepolis Fix: 2.75 -> 2.76
+                var PlayerHero;
+                if (uw.MM.collections) {
+                    PlayerHero = uw.MM.collections.PlayerHero[0];
+                } else {
+                    PlayerHero = uw.MM.getCollections().PlayerHero[0];
                 }
-            });
-            return groups;
-        };
+
+                PlayerHero.each(function (PlayerHero) {
+                    var hero_name = PlayerHero.getId(),
+                        hero_level = PlayerHero.getLevel(),
+                        town_id = PlayerHero.getHomeTownId(),
+                        town_name = PlayerHero.getOriginTownName(),
+                        group = groups[town_id];
+
+                    if (!group) {
+                        groups[town_id] = group = {
+                            town_id: town_id,
+                            town: town_name,
+                            hero_name,
+                            hero_level: hero_level
+                        };
+                    }
+                });
+                return groups;
+            };
+        } catch (error) {
+            errorHandling(error, "addFunctionToITowns");
+        }
     }
 
 
@@ -9830,7 +9829,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //SentUnits.update(data.sending_type); ????
             });
 
-
         },
         deactivate: function () {
             $.Observer(uw.GameEvents.command.send_unit).unsubscribe('DIO_SEND_UNITS');
@@ -10659,68 +10657,72 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var res = {};
 
     function setPercentTrade(wndID, ww) {
-        var a = ww ? "ww_" : "", own_town = $(wndID + '.town_info').get(0) ? true : false;
+        try {
+            var a = ww ? "ww_" : "", own_town = $(wndID + '.town_info').get(0) ? true : false;
 
-        $(wndID + '.dio_btn_trade').toggleClick(function () {
-            res.wood = {};
-            res.stone = {};
-            res.iron = {};
-            res.sum = {};
+            $(wndID + '.dio_btn_trade').toggleClick(function () {
+                res.wood = {};
+                res.stone = {};
+                res.iron = {};
+                res.sum = {};
 
-            res.sum.amount = 0;
-            // Set amount of resources to 0
-            setAmount(true, a, wndID);
-            // Total amount of resources // TODO: ITowns.getTown(Game.townId).getCurrentResources(); ?
-            for (var e in res) {
-                if (res.hasOwnProperty(e) && e != "sum") {
-                    res[e].rest = false;
-                    res[e].amount = parseInt($('.ui_resources_bar .' + e + ' .amount').get(0).innerHTML, 10);
-                    res.sum.amount += res[e].amount;
-                }
-            }
-            // Percentage of total resources
-            res.wood.percent = 100 / res.sum.amount * res.wood.amount;
-            res.stone.percent = 100 / res.sum.amount * res.stone.amount;
-            res.iron.percent = 100 / res.sum.amount * res.iron.amount;
-
-            // Total trading capacity
-            res.sum.cur = parseInt($(wndID + '#' + a + 'big_progressbar .caption .curr').get(0).innerHTML, 10);
-
-            // Amount of resources on the percentage of trading capacity (%)
-            res.wood.part = parseInt(res.sum.cur / 100 * res.wood.percent, 10);
-            res.stone.part = parseInt(res.sum.cur / 100 * res.stone.percent, 10);
-            res.iron.part = parseInt(res.sum.cur / 100 * res.iron.percent, 10);
-
-            // Get rest warehouse capacity of each resource type
-            for (var f in res) {
-                if (res.hasOwnProperty(f) && f != "sum") {
-                    if (!ww && own_town) { // Own town
-                        var curr = parseInt($(wndID + '#town_capacity_' + f + ' .amounts .curr').get(0).innerHTML.replace('+', '').trim(), 10) || 0,
-                            curr2 = parseInt($(wndID + '#town_capacity_' + f + ' .amounts .curr2').get(0).innerHTML.replace('+', '').trim(), 10) || 0,
-                            max = parseInt($(wndID + '#town_capacity_' + f + ' .amounts .max').get(0).innerHTML.replace('+', '').trim(), 10) || 0;
-
-                        res[f].cur = curr + curr2;
-                        res[f].max = max - res[f].cur;
-
-                        if (res[f].max < 0) {
-                            res[f].max = 0;
-                        }
-
-                    } else { // World wonder or foreign town
-                        res[f].max = 30000;
+                res.sum.amount = 0;
+                // Set amount of resources to 0
+                setAmount(true, a, wndID);
+                // Total amount of resources // TODO: ITowns.getTown(Game.townId).getCurrentResources(); ?
+                for (var e in res) {
+                    if (res.hasOwnProperty(e) && e != "sum") {
+                        res[e].rest = false;
+                        res[e].amount = parseInt($('.ui_resources_bar .' + e + ' .amount').get(0).innerHTML, 10);
+                        res.sum.amount += res[e].amount;
                     }
                 }
-            }
-            // Rest of fraction (0-2 units) add to stone amount
-            res.stone.part += res.sum.cur - (res.wood.part + res.stone.part + res.iron.part);
+                // Percentage of total resources
+                res.wood.percent = 100 / res.sum.amount * res.wood.amount;
+                res.stone.percent = 100 / res.sum.amount * res.stone.amount;
+                res.iron.percent = 100 / res.sum.amount * res.iron.amount;
 
-            res.sum.rest = 0;
-            rest_count = 0;
-            calcRestAmount();
-            setAmount(false, a, wndID);
-        }, function () {
-            setAmount(true, a, wndID);
-        });
+                // Total trading capacity
+                res.sum.cur = parseInt($(wndID + '#' + a + 'big_progressbar .caption .curr').get(0).innerHTML, 10);
+
+                // Amount of resources on the percentage of trading capacity (%)
+                res.wood.part = parseInt(res.sum.cur / 100 * res.wood.percent, 10);
+                res.stone.part = parseInt(res.sum.cur / 100 * res.stone.percent, 10);
+                res.iron.part = parseInt(res.sum.cur / 100 * res.iron.percent, 10);
+
+                // Get rest warehouse capacity of each resource type
+                for (var f in res) {
+                    if (res.hasOwnProperty(f) && f != "sum") {
+                        if (!ww && own_town) { // Own town
+                            var curr = parseInt($(wndID + '#town_capacity_' + f + ' .amounts .curr').get(0).innerHTML.replace('+', '').trim(), 10) || 0,
+                                curr2 = parseInt($(wndID + '#town_capacity_' + f + ' .amounts .curr2').get(0).innerHTML.replace('+', '').trim(), 10) || 0,
+                                max = parseInt($(wndID + '#town_capacity_' + f + ' .amounts .max').get(0).innerHTML.replace('+', '').trim(), 10) || 0;
+
+                            res[f].cur = curr + curr2;
+                            res[f].max = max - res[f].cur;
+
+                            if (res[f].max < 0) {
+                                res[f].max = 0;
+                            }
+
+                        } else { // World wonder or foreign town
+                            res[f].max = 30000;
+                        }
+                    }
+                }
+                // Rest of fraction (0-2 units) add to stone amount
+                res.stone.part += res.sum.cur - (res.wood.part + res.stone.part + res.iron.part);
+
+                res.sum.rest = 0;
+                rest_count = 0;
+                calcRestAmount();
+                setAmount(false, a, wndID);
+            }, function () {
+                setAmount(true, a, wndID);
+            });
+        } catch (error) {
+            errorHandling(error, "setPercentTrade");
+        }
     }
 
     function calcRestAmount() {
@@ -11208,72 +11210,76 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var TransportCapacity = {
         timeout: null,
         activate: function () {
-            // transporter display
-            $(
-                '<div id="dio_tr_recruit" class="checkbox_new checked" style="right: 10px; bottom: 2px; position: absolute;"><div class="dio_tr_recruit"></div><div class="cbx_icon" style="margin-top:2px"></div></div></tr></table>' +
-                //'<a id="dio_Port" style="position: absolute; width: 60px; height: 26px;"></a>' +
-                '<div id="dio_transporter" class="cont" style="height:25px;">' +
-                '<table style=" margin:0px;"><tr align="center" >' +
-                '<td><img id="dio_ship_img" class="ico" src="https://www.tuto-de-david1327.com/medias/images/mini-bateau.png"></td>' +
-                '<td><span id="dio_ship" class="bold text_shadow" style="color:#FFCC66;font-size: 10px;line-height: 2.1;"></span></td></tr>' +
-                '<tr align="center"><td></td>' +
-                '<td><span id="dio_ship-def" class="bold text_shadow" style="color:#FFCC66;font-size: 10px;line-height: 2.1;"></span></td></tr>' +
-                //'<div id="tr_recruit" class="checkbox_new checked" style="margin-left:-1px"><div class="tr_options tr_recruit"></div><div class="cbx_icon" style="margin-top:2px"></div></div>' +
-                "</div>"
-            ).appendTo(".units_naval .content");
+            try {
+                // transporter display
+                $(
+                    '<div id="dio_tr_recruit" class="checkbox_new checked" style="right: 10px; bottom: 2px; position: absolute;"><div class="dio_tr_recruit"></div><div class="cbx_icon" style="margin-top:2px"></div></div></tr></table>' +
+                    //'<a id="dio_Port" style="position: absolute; width: 60px; height: 26px;"></a>' +
+                    '<div id="dio_transporter" class="cont" style="height:25px;">' +
+                    '<table style=" margin:0px;"><tr align="center" >' +
+                    '<td><img id="dio_ship_img" class="ico" src="https://www.tuto-de-david1327.com/medias/images/mini-bateau.png"></td>' +
+                    '<td><span id="dio_ship" class="bold text_shadow" style="color:#FFCC66;font-size: 10px;line-height: 2.1;"></span></td></tr>' +
+                    '<tr align="center"><td></td>' +
+                    '<td><span id="dio_ship-def" class="bold text_shadow" style="color:#FFCC66;font-size: 10px;line-height: 2.1;"></span></td></tr>' +
+                    //'<div id="tr_recruit" class="checkbox_new checked" style="margin-left:-1px"><div class="tr_options tr_recruit"></div><div class="cbx_icon" style="margin-top:2px"></div></div>' +
+                    "</div>"
+                ).appendTo(".units_naval .content");
 
-            $(".units_naval .nav .border_top").click(function () {
-                uw.DocksWindowFactory.openDocksWindow();
-            });
+                $(".units_naval .nav .border_top").click(function () {
+                    uw.DocksWindowFactory.openDocksWindow();
+                });
 
-            $(".dio_tr_recruit").css({
-                background:
-                "url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png)",
-                "background-position-y": "0px",
-                "background-size": "100%",
-                width: "18px",
-                height: "18px",
-                float: "left",
-            });
+                $(".dio_tr_recruit").css({
+                    background:
+                    "url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png)",
+                    "background-position-y": "0px",
+                    "background-size": "100%",
+                    width: "18px",
+                    height: "18px",
+                    float: "left",
+                });
 
-            $("#dio_transporter.cont").css({
-                background: "url(https://gpall.innogamescdn.com/images/game/layout/layout_units_nav_border.png)",
-            });
+                $("#dio_transporter.cont").css({
+                    background: "url(https://gpall.innogamescdn.com/images/game/layout/layout_units_nav_border.png)",
+                });
 
-            $("#dio_transporter").hover(function () {
-                $(this).css("cursor", "pointer");
-            });
+                $("#dio_transporter").hover(function () {
+                    $(this).css("cursor", "pointer");
+                });
 
-            $("#dio_tr_recruit.checkbox_new").click(function () {
-                if ($(this).find("DIV.tr_deactivated").length === 0) {
-                    $(this).toggleClass("checked");
-                }
-            });
+                $("#dio_tr_recruit.checkbox_new").click(function () {
+                    if ($(this).find("DIV.tr_deactivated").length === 0) {
+                        $(this).toggleClass("checked");
+                    }
+                });
 
-            TransportCapacity.timeout = setInterval(() => {
-                TransportCapacity.update();
-            }, 800);
-
-            $("#dio_tr_recruit").toggleClick(function () {
-                TransportCapacity.update();
-            });
-            $("#dio_transporter").toggleClick(
-                function () {
-                    $("#dio_ship_img").get(0).src = "https://www.tuto-de-david1327.com/medias/images/mini-bateau-red.png";
-                    shipsize = true
+                TransportCapacity.timeout = setInterval(() => {
                     TransportCapacity.update();
-                },
-                function () {
-                    $("#dio_ship_img").get(0).src = "https://www.tuto-de-david1327.com/medias/images/mini-bateau.png";
-                    shipsize = false
-                    TransportCapacity.update();
-                }
-            );
-            TransportCapacity.update();
+                }, 800);
 
-            $("#dio_tr_recruit").tooltip(
-                dio_icon + getTexts("transport_calc", "recruits")
-            );
+                $("#dio_tr_recruit").toggleClick(function () {
+                    TransportCapacity.update();
+                });
+                $("#dio_transporter").toggleClick(
+                    function () {
+                        $("#dio_ship_img").get(0).src = "https://www.tuto-de-david1327.com/medias/images/mini-bateau-red.png";
+                        shipsize = true
+                        TransportCapacity.update();
+                    },
+                    function () {
+                        $("#dio_ship_img").get(0).src = "https://www.tuto-de-david1327.com/medias/images/mini-bateau.png";
+                        shipsize = false
+                        TransportCapacity.update();
+                    }
+                );
+                TransportCapacity.update();
+
+                $("#dio_tr_recruit").tooltip(
+                    dio_icon + getTexts("transport_calc", "recruits")
+                );
+            } catch (error) {
+                errorHandling(error, "TransportCapacity (activate)");
+            }
         },
         deactivate: function () {
             $("#dio_transporter").remove();
@@ -11418,7 +11424,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
 
             } catch (error) {
-                errorHandling(error, "TransportCapacity");
+                errorHandling(error, "TransportCapacity (update)");
             }
         },
     };
@@ -11477,39 +11483,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     };
 
     function afterSimulation() {
-        let lossArray = {att: {res: 0, fav: 0, pop: 0}, def: {res: 0, fav: 0, pop: 0}},
-            wall_level = parseInt($('.place_sim_wrap_mods .place_insert_field[name="sim[mods][def][wall_level]"]').val(), 10),
-            wall_damage = parseInt($('#building_place_def_losses_wall_level').get(0).innerHTML, 10),
-            wall_iron = [0, 200, 429, 670, 919, 1175, 1435, 1701, 1970, 2242, 2518, 2796, 3077, 3360, 3646, 3933, 4222, 4514, 4807, 5101, 5397, 5695, 5994, 6294, 6596, 6899];
+        try {
+            let lossArray = {att: {res: 0, fav: 0, pop: 0}, def: {res: 0, fav: 0, pop: 0}},
+                wall_level = parseInt($('.place_sim_wrap_mods .place_insert_field[name="sim[mods][def][wall_level]"]').val(), 10),
+                wall_damage = parseInt($('#building_place_def_losses_wall_level').get(0).innerHTML, 10),
+                wall_iron = [0, 200, 429, 670, 919, 1175, 1435, 1701, 1970, 2242, 2518, 2796, 3077, 3360, 3646, 3933, 4222, 4514, 4807, 5101, 5397, 5695, 5994, 6294, 6596, 6899];
 
-        // Calculate unit losses
-        $('#place_sim_ground_units .place_losses, #place_sim_naval_units .place_losses').each(function () {
-            const loss = parseInt(this.innerHTML, 10) || 0;
-            //console.log(this.innerHTML);
-            if (loss > 0) {
-                const unit = this.id.substring(26);
-                const side = this.id.split("_")[2]; // att / def
-                lossArray[side].res += loss * (uw.GameData.units[unit].resources.wood + uw.GameData.units[unit].resources.stone + uw.GameData.units[unit].resources.iron);
-                lossArray[side].fav += loss * uw.GameData.units[unit].favor;
-                lossArray[side].pop += loss * uw.GameData.units[unit].population;
+            // Calculate unit losses
+            $('#place_sim_ground_units .place_losses, #place_sim_naval_units .place_losses').each(function () {
+                const loss = parseInt(this.innerHTML, 10) || 0;
+                //console.log(this.innerHTML);
+                if (loss > 0) {
+                    const unit = this.id.substring(26);
+                    const side = this.id.split("_")[2]; // att / def
+                    lossArray[side].res += loss * (uw.GameData.units[unit].resources.wood + uw.GameData.units[unit].resources.stone + uw.GameData.units[unit].resources.iron);
+                    lossArray[side].fav += loss * uw.GameData.units[unit].favor;
+                    lossArray[side].pop += loss * uw.GameData.units[unit].population;
+                }
+            });
+            // Calculate wall resource losses
+            for (let w = wall_level; w > wall_level - wall_damage; w--) {
+                lossArray.def.res += 400 + w * 350 + wall_iron[w]; // wood amount is constant, stone amount is multiplicative and iron amount is irregular for wall levels
             }
-        });
-        // Calculate wall resource losses
-        for (let w = wall_level; w > wall_level - wall_damage; w--) {
-            lossArray.def.res += 400 + w * 350 + wall_iron[w]; // wood amount is constant, stone amount is multiplicative and iron amount is irregular for wall levels
-        }
 
-        // Insert losses into table
-        for (let x in lossArray) {
-            if (lossArray.hasOwnProperty(x)) {
-                for (var z in lossArray[x]) {
-                    if (lossArray[x].hasOwnProperty(z)) {
-                        //console.log(((z === "res") && (lossArray[x][z] > 10000)) ? (Math.round(lossArray[x][z] / 1000) + "k") : lossArray[x][z]);
-                        $("#dio_" + x + "_" + z).get(0).innerHTML = ((z === "res") && (lossArray[x][z] > 10000)) ? (Math.round(lossArray[x][z] / 1000) + "k") : lossArray[x][z];
+            // Insert losses into table
+            for (let x in lossArray) {
+                if (lossArray.hasOwnProperty(x)) {
+                    for (var z in lossArray[x]) {
+                        if (lossArray[x].hasOwnProperty(z)) {
+                            //console.log(((z === "res") && (lossArray[x][z] > 10000)) ? (Math.round(lossArray[x][z] / 1000) + "k") : lossArray[x][z]);
+                            $("#dio_" + x + "_" + z).get(0).innerHTML = ((z === "res") && (lossArray[x][z] > 10000)) ? (Math.round(lossArray[x][z] / 1000) + "k") : lossArray[x][z];
 
+                        }
                     }
                 }
             }
+        } catch (error) {
+            errorHandling(error, "afterSimulation");
         }
     }
 
@@ -11556,126 +11566,130 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
 
     function setStrengthSimulator() {
-        $('<div id="dio_simulator_strength" style="width: 49%;">' +
-          '<div style="float:left; margin-right: -6px;"><h4>' + getTexts("labels", "str") + '</h4>' +
-          '<table class="place_simulator_table strength" cellpadding="0px" cellspacing="0px" style="align:center;">' +
-          '<tr>' +
-          '<td class="place_simulator_even"></td>' +
-          '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_hack"></div></td>' +
-          '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_pierce"></div></td>' +
-          '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_dist"></div></td>' +
-          '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_ship"></div></td>' +
-          '</tr><tr>' +
-          '<td class="place_simulator_even"><div class="place_symbol place_att"></div></td>' +
-          '<td class="left_border place_simulator_odd" id="dio_att_b">0</td>' +
-          '<td class="left_border place_simulator_even" id="dio_att_s">0</td>' +
-          '<td class="left_border place_simulator_odd" id="dio_att_d">0</td>' +
-          '<td class="left_border place_simulator_even" id="dio_att_ship">0</td>' +
-          '</tr><tr>' +
-          '<td class="place_simulator_even"><div class="place_symbol place_def"></div></td>' +
-          '<td class="left_border place_simulator_odd" id="dio_def_b">0</td>' +
-          '<td class="left_border place_simulator_even" id="dio_def_s">0</td>' +
-          '<td class="left_border place_simulator_odd" id="dio_def_d">0</td>' +
-          '<td class="left_border place_simulator_even" id="dio_def_ship">0</td>' +
-          '</tr>' +
-          '</table>' +
-          '</div><div><h4 style="left: 6px; position: relative;">' + getTexts("labels", "los") + '</h4>' +
-          '<table class="place_simulator_table loss" cellpadding="0px" cellspacing="0px" style="align:center; height: 64px;">' +
-          '<tr>' +
-          '<td></td>' +
-          '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_res"></div></td>' +
-          '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_fav"></div></td>' +
-          '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_pop"></div></td>' +
-          '</tr><tr>' +
-          '<td></td>' +
-          '<td class="left_border place_simulator_odd" id="dio_att_res">0</td>' +
-          '<td class="left_border place_simulator_even" id="dio_att_fav">0</td>' +
-          '<td class="left_border place_simulator_odd" id="dio_att_pop">0</td>' +
-          '</tr><tr>' +
-          '<td></td>' +
-          '<td class="left_border place_simulator_odd" id="dio_def_res">0</td>' +
-          '<td class="left_border place_simulator_even" id="dio_def_fav">0</td>' +
-          '<td class="left_border place_simulator_odd" id="dio_def_pop">0</td>' +
-          '</tr>' +
-          '</table>' +
-          '</div></div>').appendTo('#simulator_body');
+        try {
+            $('<div id="dio_simulator_strength" style="width: 49%;">' +
+              '<div style="float:left; margin-right: -6px;"><h4>' + getTexts("labels", "str") + '</h4>' +
+              '<table class="place_simulator_table strength" cellpadding="0px" cellspacing="0px" style="align:center;">' +
+              '<tr>' +
+              '<td class="place_simulator_even"></td>' +
+              '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_hack"></div></td>' +
+              '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_pierce"></div></td>' +
+              '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_dist"></div></td>' +
+              '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_ship"></div></td>' +
+              '</tr><tr>' +
+              '<td class="place_simulator_even"><div class="place_symbol place_att"></div></td>' +
+              '<td class="left_border place_simulator_odd" id="dio_att_b">0</td>' +
+              '<td class="left_border place_simulator_even" id="dio_att_s">0</td>' +
+              '<td class="left_border place_simulator_odd" id="dio_att_d">0</td>' +
+              '<td class="left_border place_simulator_even" id="dio_att_ship">0</td>' +
+              '</tr><tr>' +
+              '<td class="place_simulator_even"><div class="place_symbol place_def"></div></td>' +
+              '<td class="left_border place_simulator_odd" id="dio_def_b">0</td>' +
+              '<td class="left_border place_simulator_even" id="dio_def_s">0</td>' +
+              '<td class="left_border place_simulator_odd" id="dio_def_d">0</td>' +
+              '<td class="left_border place_simulator_even" id="dio_def_ship">0</td>' +
+              '</tr>' +
+              '</table>' +
+              '</div><div><h4 style="left: 6px; position: relative;">' + getTexts("labels", "los") + '</h4>' +
+              '<table class="place_simulator_table loss" cellpadding="0px" cellspacing="0px" style="align:center; height: 64px;">' +
+              '<tr>' +
+              '<td></td>' +
+              '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_res"></div></td>' +
+              '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_fav"></div></td>' +
+              '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_pop"></div></td>' +
+              '</tr><tr>' +
+              '<td></td>' +
+              '<td class="left_border place_simulator_odd" id="dio_att_res">0</td>' +
+              '<td class="left_border place_simulator_even" id="dio_att_fav">0</td>' +
+              '<td class="left_border place_simulator_odd" id="dio_att_pop">0</td>' +
+              '</tr><tr>' +
+              '<td></td>' +
+              '<td class="left_border place_simulator_odd" id="dio_def_res">0</td>' +
+              '<td class="left_border place_simulator_even" id="dio_def_fav">0</td>' +
+              '<td class="left_border place_simulator_odd" id="dio_def_pop">0</td>' +
+              '</tr>' +
+              '</table>' +
+              '</div></div>').appendTo('#simulator_body');
 
 
-        $('#dio_simulator_strength .left_border').each(function () {
-            $(this)[0].align = 'center';
-        });
+            $('#dio_simulator_strength .left_border').each(function () {
+                $(this)[0].align = 'center';
+            });
 
-        $('#dio_simulator_strength .strength').tooltip(dio_icon + getTexts("labels", "str") + " (" + getTexts("labels", "mod") + ")");
-        $('#dio_simulator_strength .loss').tooltip(dio_icon + getTexts("labels", "los"));
+            $('#dio_simulator_strength .strength').tooltip(dio_icon + getTexts("labels", "str") + " (" + getTexts("labels", "mod") + ")");
+            $('#dio_simulator_strength .loss').tooltip(dio_icon + getTexts("labels", "los"));
 
-        // Klick auf Einheitenbild
-        $('.index_unit').click(function () {
-            const type = $(this).attr('class').split(" ")[4];
-            $('.place_insert_field[name="sim[units][att][' + type + ']"]').change();
-        });
+            // Klick auf Einheitenbild
+            $('.index_unit').click(function () {
+                const type = $(this).attr('class').split(" ")[4];
+                $('.place_insert_field[name="sim[units][att][' + type + ']"]').change();
+            });
 
-        $('#place_sim_ground_units .place_insert_field, #place_sim_naval_units .place_insert_field').on('input change', function () {
-            name = $(this).attr("name").replace(/\]/g, "").split("[");
-            const str = this;
+            $('#place_sim_ground_units .place_insert_field, #place_sim_naval_units .place_insert_field').on('input change', function () {
+                name = $(this).attr("name").replace(/\]/g, "").split("[");
+                const str = this;
+                setTimeout(function () {
+                    const unit_type = $(str).closest('.place_simulator_table').attr("id").split("_")[2];
+                    let val, e;
+
+                    val = parseInt($(str).val(), 10);
+                    val = val || 0;
+
+                    if (unit_type == "ground") {
+                        unitsGround[name[2]][name[3]] = val;
+
+                        if (name[2] == "def") {
+                            UnitStrength.calcDef(unitsGround.def);
+                        } else {
+                            UnitStrength.calcOff(unitsGround.att, unitsGround.att);
+                        }
+                        $('#dio_' + name[2] + '_b').get(0).innerHTML = blunt;
+                        $('#dio_' + name[2] + '_s').get(0).innerHTML = sharp;
+                        $('#dio_' + name[2] + '_d').get(0).innerHTML = dist;
+
+                    } else {
+                        let att = 0, def = 0;
+                        unitsNaval[name[2]][name[3]] = val;
+
+                        if (name[2] == "def") {
+                            for (e in unitsNaval.def) {
+                                if (unitsNaval.def.hasOwnProperty(e)) {
+                                    def += unitsNaval.def[e] * uw.GameData.units[e].defense;
+                                }
+                            }
+                            $('#dio_def_ship').get(0).innerHTML = def;
+
+                        } else {
+                            for (e in unitsNaval.att) {
+                                if (unitsNaval.att.hasOwnProperty(e)) {
+                                    att += unitsNaval.att[e] * uw.GameData.units[e].attack;
+                                }
+                            }
+                            $('#dio_att_ship').get(0).innerHTML = att;
+                        }
+                    }
+                }, 100);
+            });
+
+            // Abfrage wegen eventueller Spionageweiterleitung
+            getUnitInputs();
             setTimeout(function () {
-                const unit_type = $(str).closest('.place_simulator_table').attr("id").split("_")[2];
-                let val, e;
-
-                val = parseInt($(str).val(), 10);
-                val = val || 0;
-
-                if (unit_type == "ground") {
-                    unitsGround[name[2]][name[3]] = val;
-
-                    if (name[2] == "def") {
-                        UnitStrength.calcDef(unitsGround.def);
-                    } else {
-                        UnitStrength.calcOff(unitsGround.att, unitsGround.att);
-                    }
-                    $('#dio_' + name[2] + '_b').get(0).innerHTML = blunt;
-                    $('#dio_' + name[2] + '_s').get(0).innerHTML = sharp;
-                    $('#dio_' + name[2] + '_d').get(0).innerHTML = dist;
-
-                } else {
-                    let att = 0, def = 0;
-                    unitsNaval[name[2]][name[3]] = val;
-
-                    if (name[2] == "def") {
-                        for (e in unitsNaval.def) {
-                            if (unitsNaval.def.hasOwnProperty(e)) {
-                                def += unitsNaval.def[e] * uw.GameData.units[e].defense;
-                            }
-                        }
-                        $('#dio_def_ship').get(0).innerHTML = def;
-
-                    } else {
-                        for (e in unitsNaval.att) {
-                            if (unitsNaval.att.hasOwnProperty(e)) {
-                                att += unitsNaval.att[e] * uw.GameData.units[e].attack;
-                            }
-                        }
-                        $('#dio_att_ship').get(0).innerHTML = att;
-                    }
-                }
+                setChangeUnitInputs("def");
             }, 100);
-        });
 
-        // Abfrage wegen eventueller Spionageweiterleitung
-        getUnitInputs();
-        setTimeout(function () {
-            setChangeUnitInputs("def");
-        }, 100);
+            $('#select_insert_units').change(function () {
+                var side = $(this).find('option:selected').val();
 
-        $('#select_insert_units').change(function () {
-            var side = $(this).find('option:selected').val();
-
-            setTimeout(function () {
-                getUnitInputs();
-                if (side === "att" || side === "def") {
-                    setChangeUnitInputs(side);
-                }
-            }, 200);
-        });
+                setTimeout(function () {
+                    getUnitInputs();
+                    if (side === "att" || side === "def") {
+                        setChangeUnitInputs(side);
+                    }
+                }, 200);
+            });
+            } catch (error) {
+                errorHandling(error, "setStrengthSimulator");
+            }
     }
 
     function getUnitInputs() {
@@ -11714,223 +11728,224 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     // Funktion aufteilen...
     function addForm(e) {
-        var textareaId = "", bbcodeBarId = "";
+        try {
+            var textareaId = "", bbcodeBarId = "";
 
-        switch (e) {
-            case "/alliance_forum/forum":
-                textareaId = "#forum_post_textarea";
-                bbcodeBarId = "#forum";
-                break;
-            case "/message/forward":
-                textareaId = "#message_message";
-                bbcodeBarId = "#message_bbcodes";
-                break;
-            case "/message/new":
-                textareaId = "#message_new_message";
-                bbcodeBarId = "#message_bbcodes";
-                break;
-            case "/message/view":
-                textareaId = "#message_reply_message";
-                bbcodeBarId = "#message_bbcodes";
-                break;
-            case "/player_memo/load_memo_content":
-                textareaId = "#memo_text_area";
-                bbcodeBarId = "#memo_edit";
-                break;
-        }
+            switch (e) {
+                case "/alliance_forum/forum":
+                    textareaId = "#forum_post_textarea";
+                    bbcodeBarId = "#forum";
+                    break;
+                case "/message/forward":
+                    textareaId = "#message_message";
+                    bbcodeBarId = "#message_bbcodes";
+                    break;
+                case "/message/new":
+                    textareaId = "#message_new_message";
+                    bbcodeBarId = "#message_bbcodes";
+                    break;
+                case "/message/view":
+                    textareaId = "#message_reply_message";
+                    bbcodeBarId = "#message_bbcodes";
+                    break;
+                case "/player_memo/load_memo_content":
+                    textareaId = "#memo_text_area";
+                    bbcodeBarId = "#memo_edit";
+                    break;
+            }
 
-        $('<a title="' + getTexts("Options", "bbc")[0] + '" href="#" class="dio_bbcode_option dio_def_form" name="dio_def_form"></a>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+            $('<a title="' + getTexts("Options", "bbc")[0] + '" href="#" class="dio_bbcode_option dio_def_form" name="dio_def_form"></a>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
 
-        $('.dio_def_form_button').css({
-            cursor: 'pointer',
-            marginTop: '3px'
-        });
+            $('.dio_def_form_button').css({
+                cursor: 'pointer',
+                marginTop: '3px'
+            });
 
-        $(bbcodeBarId + ' .dio_bbcode_option').css({
-            background: 'url("https://www.tuto-de-david1327.com/medias/images/bbcodebarid.png")',
-            display: 'block',
-            float: 'left',
-            width: '22px',
-            height: '23px',
-            margin: '0 3px 0 0',
-            position: 'relative'
-        });
-        $(bbcodeBarId + ' .dio_def_form').css({
-            backgroundPosition: '-89px 0px'
-        });
-        var imgArray = {
-            wall: 	'https://www.tuto-de-david1327.com/medias/images/40px-remparts.png', 	// 'https://gpall.innogamescdn.com/images/game/main/wall.png',
-            tower: 	'https://www.tuto-de-david1327.com/medias/images/40px-tour.png', 		// 'https://gpall.innogamescdn.com/images/game/main/tower.png',
-            hide: 	'https://www.tuto-de-david1327.com/medias/images/40px-grotte.png', 		// 'https://gpall.innogamescdn.com/images/game/main/hide.png'
+            $(bbcodeBarId + ' .dio_bbcode_option').css({
+                background: 'url("https://www.tuto-de-david1327.com/medias/images/bbcodebarid.png")',
+                display: 'block',
+                float: 'left',
+                width: '22px',
+                height: '23px',
+                margin: '0 3px 0 0',
+                position: 'relative'
+            });
+            $(bbcodeBarId + ' .dio_def_form').css({
+                backgroundPosition: '-89px 0px'
+            });
+            var imgArray = {
+                wall: 	'https://www.tuto-de-david1327.com/medias/images/40px-remparts.png', 	// 'https://gpall.innogamescdn.com/images/game/main/wall.png',
+                tower: 	'https://www.tuto-de-david1327.com/medias/images/40px-tour.png', 		// 'https://gpall.innogamescdn.com/images/game/main/tower.png',
+                hide: 	'https://www.tuto-de-david1327.com/medias/images/40px-grotte.png', 		// 'https://gpall.innogamescdn.com/images/game/main/hide.png'
 
-            spy: 	'https://www.tuto-de-david1327.com/medias/images/40px-spy.png',
-            pop: 	'https://www.tuto-de-david1327.com/medias/images/40px-pop.png',
+                spy: 	'https://www.tuto-de-david1327.com/medias/images/40px-spy.png',
+                pop: 	'https://www.tuto-de-david1327.com/medias/images/40px-pop.png',
 
-            rev1: 	'https://www.tuto-de-david1327.com/medias/images/40px-rev1.png',
-            rev0: 	'https://www.tuto-de-david1327.com/medias/images/40px-rev0.png',
-            eo1: 	'https://www.tuto-de-david1327.com/medias/images/40px-eo1.png',
-            eo0: 	'https://www.tuto-de-david1327.com/medias/images/40px-eo0.png',
-            att: 	'https://www.tuto-de-david1327.com/medias/images/40px-att.png',
-            sup: 	'https://www.tuto-de-david1327.com/medias/images/40px-sup.png',
+                rev1: 	'https://www.tuto-de-david1327.com/medias/images/40px-rev1.png',
+                rev0: 	'https://www.tuto-de-david1327.com/medias/images/40px-rev0.png',
+                eo1: 	'https://www.tuto-de-david1327.com/medias/images/40px-eo1.png',
+                eo0: 	'https://www.tuto-de-david1327.com/medias/images/40px-eo0.png',
+                att: 	'https://www.tuto-de-david1327.com/medias/images/40px-att.png',
+                sup: 	'https://www.tuto-de-david1327.com/medias/images/40px-sup.png',
 
-            zeus: 		'https://www.tuto-de-david1327.com/medias/images/40px-zeus.png',
-            hera: 		'https://www.tuto-de-david1327.com/medias/images/40px-hera.png',
-            athena: 	'https://www.tuto-de-david1327.com/medias/images/40px-athena.png',
-            poseidon: 	'https://www.tuto-de-david1327.com/medias/images/40px-poseidon.png',
-            hades: 		'https://www.tuto-de-david1327.com/medias/images/40px-hades.png',
-            artemis: 	'https://www.tuto-de-david1327.com/medias/images/40px-artemis.png',
-            nogod: 		'https://www.tuto-de-david1327.com/medias/images/40px-nogod.png',
-            aphrodite: 	'https://www.tuto-de-david1327.com/medias/images/40px-aphrodite.png',
-            ares: 		'https://www.tuto-de-david1327.com/medias/images/40px-ares.png',
+                zeus: 		'https://www.tuto-de-david1327.com/medias/images/40px-zeus.png',
+                hera: 		'https://www.tuto-de-david1327.com/medias/images/40px-hera.png',
+                athena: 	'https://www.tuto-de-david1327.com/medias/images/40px-athena.png',
+                poseidon: 	'https://www.tuto-de-david1327.com/medias/images/40px-poseidon.png',
+                hades: 		'https://www.tuto-de-david1327.com/medias/images/40px-hades.png',
+                artemis: 	'https://www.tuto-de-david1327.com/medias/images/40px-artemis.png',
+                nogod: 		'https://www.tuto-de-david1327.com/medias/images/40px-nogod.png',
+                aphrodite: 	'https://www.tuto-de-david1327.com/medias/images/40px-aphrodite.png',
+                ares: 		'https://www.tuto-de-david1327.com/medias/images/40px-ares.png',
 
-            captain: 	'https://www.tuto-de-david1327.com/medias/images/40px-captain.png',
-            commander: 'https://www.tuto-de-david1327.com/medias/images/40px-commander.png',
-            priest: 	'https://www.tuto-de-david1327.com/medias/images/40px-priest.png',
+                captain: 	'https://www.tuto-de-david1327.com/medias/images/40px-captain.png',
+                commander: 'https://www.tuto-de-david1327.com/medias/images/40px-commander.png',
+                priest: 	'https://www.tuto-de-david1327.com/medias/images/40px-priest.png',
 
-            phalanx: 	'https://www.tuto-de-david1327.com/medias/images/40px-phalange.png',
-            ram: 		'https://www.tuto-de-david1327.com/medias/images/40px-belier.png',
+                phalanx: 	'https://www.tuto-de-david1327.com/medias/images/40px-phalange.png',
+                ram: 		'https://www.tuto-de-david1327.com/medias/images/40px-belier.png',
 
-            militia: 	'https://www.tuto-de-david1327.com/medias/images/40px-milice.png', 				// 'https://wiki.en.grepolis.com/images/9/9b/Militia_40x40.png',
-            sword: 		'https://www.tuto-de-david1327.com/medias/images/combattant-a-l-epee-1.png', 	// 'https://wiki.en.grepolis.com/images/9/9c/Sword_40x40.png',
-            slinger: 	'https://www.tuto-de-david1327.com/medias/images/frondeur-1.png', 				// 'https://wiki.en.grepolis.com/images/d/dc/Slinger_40x40.png',
-            archer: 	'https://www.tuto-de-david1327.com/medias/images/archer-1.png', 				// 'https://wiki.en.grepolis.com/images/1/1a/Archer_40x40.png',
-            hoplite: 	'https://www.tuto-de-david1327.com/medias/images/hoplite-1.png', 				// 'https://wiki.en.grepolis.com/images/b/bd/Hoplite_40x40.png',
-            rider: 		'https://www.tuto-de-david1327.com/medias/images/cavalier-1.png', 				// 'https://wiki.en.grepolis.com/images/e/e9/Rider_40x40.png',
-            chariot: 	'https://www.tuto-de-david1327.com/medias/images/char-1.png', 					// 'https://wiki.en.grepolis.com/images/b/b8/Chariot_40x40.png',
-            catapult: 	'https://www.tuto-de-david1327.com/medias/images/catapulte-1.png', 				// 'https://wiki.en.grepolis.com/images/f/f0/Catapult_40x40.png',
-            godsent: 	'https://www.tuto-de-david1327.com/medias/images/40px-ed.png', 					// 'https://wiki.de.grepolis.com/images/6/6e/Grepolis_Wiki_225.png',
+                militia: 	'https://www.tuto-de-david1327.com/medias/images/40px-milice.png', 				// 'https://wiki.en.grepolis.com/images/9/9b/Militia_40x40.png',
+                sword: 		'https://www.tuto-de-david1327.com/medias/images/combattant-a-l-epee-1.png', 	// 'https://wiki.en.grepolis.com/images/9/9c/Sword_40x40.png',
+                slinger: 	'https://www.tuto-de-david1327.com/medias/images/frondeur-1.png', 				// 'https://wiki.en.grepolis.com/images/d/dc/Slinger_40x40.png',
+                archer: 	'https://www.tuto-de-david1327.com/medias/images/archer-1.png', 				// 'https://wiki.en.grepolis.com/images/1/1a/Archer_40x40.png',
+                hoplite: 	'https://www.tuto-de-david1327.com/medias/images/hoplite-1.png', 				// 'https://wiki.en.grepolis.com/images/b/bd/Hoplite_40x40.png',
+                rider: 		'https://www.tuto-de-david1327.com/medias/images/cavalier-1.png', 				// 'https://wiki.en.grepolis.com/images/e/e9/Rider_40x40.png',
+                chariot: 	'https://www.tuto-de-david1327.com/medias/images/char-1.png', 					// 'https://wiki.en.grepolis.com/images/b/b8/Chariot_40x40.png',
+                catapult: 	'https://www.tuto-de-david1327.com/medias/images/catapulte-1.png', 				// 'https://wiki.en.grepolis.com/images/f/f0/Catapult_40x40.png',
+                godsent: 	'https://www.tuto-de-david1327.com/medias/images/40px-ed.png', 					// 'https://wiki.de.grepolis.com/images/6/6e/Grepolis_Wiki_225.png',
 
-            def_sum: 	'https://www.tuto-de-david1327.com/medias/images/40px-def-sum.png',
+                def_sum: 	'https://www.tuto-de-david1327.com/medias/images/40px-def-sum.png',
 
-            minotaur: 	'https://www.tuto-de-david1327.com/medias/images/40px-minotaure.jpg', 	// 'https://wiki.de.grepolis.com/images/7/70/Minotaur_40x40.png',
-            manticore: 	'https://www.tuto-de-david1327.com/medias/images/40px-manticore.jpg', 	// 'https://wiki.de.grepolis.com/images/5/5e/Manticore_40x40.png',
-            zyclop: 	'https://www.tuto-de-david1327.com/medias/images/40px-cyclope.jpg', 	// 'https://wiki.de.grepolis.com/images/6/66/Zyklop_40x40.png',
-            sea_monster: 'https://www.tuto-de-david1327.com/medias/images/40px-hydre.jpg', 		// 'https://wiki.de.grepolis.com/images/7/70/Sea_monster_40x40.png',
-            harpy: 		'https://www.tuto-de-david1327.com/medias/images/40px-harpie.jpg', 		// 'https://wiki.de.grepolis.com/images/8/80/Harpy_40x40.png',
-            medusa: 	'https://www.tuto-de-david1327.com/medias/images/40px-meduse.jpg', 		// 'https://wiki.de.grepolis.com/images/d/db/Medusa_40x40.png',
-            centaur: 	'https://www.tuto-de-david1327.com/medias/images/40px-centaure.jpg', 	// 'https://wiki.de.grepolis.com/images/5/53/Centaur_40x40.png',
-            pegasus: 	'https://www.tuto-de-david1327.com/medias/images/40px-pegase.jpg', 		// 'https://wiki.de.grepolis.com/images/5/54/Pegasus_40x40.png',
-            cerberus: 	'https://www.tuto-de-david1327.com/medias/images/40px-cerbere.jpg', 	// 'https://wiki.de.grepolis.com/images/6/67/Zerberus_40x40.png',
-            fury: 		'https://www.tuto-de-david1327.com/medias/images/40px-erinye.jpg', 		// 'https://wiki.de.grepolis.com/images/6/67/Erinys_40x40.png',
-            griffin: 	'https://www.tuto-de-david1327.com/medias/images/40px-griffon.jpg', 	// 'https://wiki.de.grepolis.com/images/d/d1/Unit_greif.png',
-            calydonian_boar: 'https://www.tuto-de-david1327.com/medias/images/40px-sc.jpg', 	// 'https://wiki.de.grepolis.com/images/9/93/Unit_eber.png',
-            spartoi: 	'https://www.tuto-de-david1327.com/medias/images/40px-spartoi.png',
-            siren: 		'https://www.tuto-de-david1327.com/medias/images/40px-siren-1.png',
-            satyr: 		'https://www.tuto-de-david1327.com/medias/images/40px-satyr.png',
-            ladon: 		'https://www.tuto-de-david1327.com/medias/images/40px-ladon.png',
+                minotaur: 	'https://www.tuto-de-david1327.com/medias/images/40px-minotaure.jpg', 	// 'https://wiki.de.grepolis.com/images/7/70/Minotaur_40x40.png',
+                manticore: 	'https://www.tuto-de-david1327.com/medias/images/40px-manticore.jpg', 	// 'https://wiki.de.grepolis.com/images/5/5e/Manticore_40x40.png',
+                zyclop: 	'https://www.tuto-de-david1327.com/medias/images/40px-cyclope.jpg', 	// 'https://wiki.de.grepolis.com/images/6/66/Zyklop_40x40.png',
+                sea_monster: 'https://www.tuto-de-david1327.com/medias/images/40px-hydre.jpg', 		// 'https://wiki.de.grepolis.com/images/7/70/Sea_monster_40x40.png',
+                harpy: 		'https://www.tuto-de-david1327.com/medias/images/40px-harpie.jpg', 		// 'https://wiki.de.grepolis.com/images/8/80/Harpy_40x40.png',
+                medusa: 	'https://www.tuto-de-david1327.com/medias/images/40px-meduse.jpg', 		// 'https://wiki.de.grepolis.com/images/d/db/Medusa_40x40.png',
+                centaur: 	'https://www.tuto-de-david1327.com/medias/images/40px-centaure.jpg', 	// 'https://wiki.de.grepolis.com/images/5/53/Centaur_40x40.png',
+                pegasus: 	'https://www.tuto-de-david1327.com/medias/images/40px-pegase.jpg', 		// 'https://wiki.de.grepolis.com/images/5/54/Pegasus_40x40.png',
+                cerberus: 	'https://www.tuto-de-david1327.com/medias/images/40px-cerbere.jpg', 	// 'https://wiki.de.grepolis.com/images/6/67/Zerberus_40x40.png',
+                fury: 		'https://www.tuto-de-david1327.com/medias/images/40px-erinye.jpg', 		// 'https://wiki.de.grepolis.com/images/6/67/Erinys_40x40.png',
+                griffin: 	'https://www.tuto-de-david1327.com/medias/images/40px-griffon.jpg', 	// 'https://wiki.de.grepolis.com/images/d/d1/Unit_greif.png',
+                calydonian_boar: 'https://www.tuto-de-david1327.com/medias/images/40px-sc.jpg', 	// 'https://wiki.de.grepolis.com/images/9/93/Unit_eber.png',
+                spartoi: 	'https://www.tuto-de-david1327.com/medias/images/40px-spartoi.png',
+                siren: 		'https://www.tuto-de-david1327.com/medias/images/40px-siren-1.png',
+                satyr: 		'https://www.tuto-de-david1327.com/medias/images/40px-satyr.png',
+                ladon: 		'https://www.tuto-de-david1327.com/medias/images/40px-ladon.png',
 
-            big_transporter: 	'https://www.tuto-de-david1327.com/medias/images/40px-bt.png', 		// 'https://wiki.en.grepolis.com/images/0/04/Big_transporter_40x40.png',
-            bireme: 			'https://www.tuto-de-david1327.com/medias/images/40px-bireme.png', 	// 'https://wiki.en.grepolis.com/images/4/44/Bireme_40x40.png',
-            attack_ship: 		'https://www.tuto-de-david1327.com/medias/images/40px-bf.png', 		// 'https://wiki.en.grepolis.com/images/e/e6/Attack_ship_40x40.png',
-            demolition_ship: 	'https://www.tuto-de-david1327.com/medias/images/40px-brulot.png', 	// 'https://wiki.en.grepolis.com/images/e/ec/Demolition_ship_40x40.png',
-            small_transporter: 	'https://www.tuto-de-david1327.com/medias/images/40px-btr.png', 	// 'https://wiki.en.grepolis.com/images/8/85/Small_transporter_40x40.png',
-            trireme: 			'https://www.tuto-de-david1327.com/medias/images/40px-triere.png', 	// 'https://wiki.en.grepolis.com/images/a/ad/Trireme_40x40.png',
-            colonize_ship: 		'https://www.tuto-de-david1327.com/medias/images/40px-bc.png', 		// 'https://wiki.en.grepolis.com/images/d/d1/Colonize_ship_40x40.png',
+                big_transporter: 	'https://www.tuto-de-david1327.com/medias/images/40px-bt.png', 		// 'https://wiki.en.grepolis.com/images/0/04/Big_transporter_40x40.png',
+                bireme: 			'https://www.tuto-de-david1327.com/medias/images/40px-bireme.png', 	// 'https://wiki.en.grepolis.com/images/4/44/Bireme_40x40.png',
+                attack_ship: 		'https://www.tuto-de-david1327.com/medias/images/40px-bf.png', 		// 'https://wiki.en.grepolis.com/images/e/e6/Attack_ship_40x40.png',
+                demolition_ship: 	'https://www.tuto-de-david1327.com/medias/images/40px-brulot.png', 	// 'https://wiki.en.grepolis.com/images/e/ec/Demolition_ship_40x40.png',
+                small_transporter: 	'https://www.tuto-de-david1327.com/medias/images/40px-btr.png', 	// 'https://wiki.en.grepolis.com/images/8/85/Small_transporter_40x40.png',
+                trireme: 			'https://www.tuto-de-david1327.com/medias/images/40px-triere.png', 	// 'https://wiki.en.grepolis.com/images/a/ad/Trireme_40x40.png',
+                colonize_ship: 		'https://www.tuto-de-david1327.com/medias/images/40px-bc.png', 		// 'https://wiki.en.grepolis.com/images/d/d1/Colonize_ship_40x40.png',
 
-            move_icon: 'https://gpall.innogamescdn.com/images/game/unit_overview/', // '?',
+                move_icon: 'https://gpall.innogamescdn.com/images/game/unit_overview/', // '?',
 
-            bordure: 'https://www.tuto-de-david1327.com/medias/images/transition-mini.png' //'https://www.tuto-de-david1327.com/medias/images/bordure.png'
-        };
+                bordure: 'https://www.tuto-de-david1327.com/medias/images/transition-mini.png' //'https://www.tuto-de-david1327.com/medias/images/bordure.png'
+            };
 
-        $('<div class="dio_bb_def_chooser">' +
-          '<div class="bbcode_box middle_center">' +
-          '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div>' +
-          '<div class="bbcode_box top_center"></div><div class="bbcode_box bottom_center"></div>' +
-          '<div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
-          '<div class="bbcode_box middle_left"></div><div class="bbcode_box middle_right"></div>' +
-          '<div class="bbcode_box content clearfix" style="padding:5px">' +
-          '<div id="f_uni" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "det") + '</div></div><br><br>' +
-          '<div id="f_prm" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "prm") + '</div></div><br><br>' +
-          '<div id="f_sil" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "sil") + '</div></div><br><br>' +
-          /*'<div id="f_mov" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "mov") + '</div></div><br><br>' +*/
-          '<div><a class="button" id="dio_insert" href="#"><span class="left"><span class="right"><span class="middle"><small>' + dio_icon + '' + getTexts("buttons", "ins") + '</small></span></span></span><span></span></a></div>' +
-          '</div></div></div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+            $('<div class="dio_bb_def_chooser">' +
+              '<div class="bbcode_box middle_center">' +
+              '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div>' +
+              '<div class="bbcode_box top_center"></div><div class="bbcode_box bottom_center"></div>' +
+              '<div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
+              '<div class="bbcode_box middle_left"></div><div class="bbcode_box middle_right"></div>' +
+              '<div class="bbcode_box content clearfix" style="padding:5px">' +
+              '<div id="f_uni" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "det") + '</div></div><br><br>' +
+              '<div id="f_prm" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "prm") + '</div></div><br><br>' +
+              '<div id="f_sil" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "sil") + '</div></div><br><br>' +
+              /*'<div id="f_mov" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "mov") + '</div></div><br><br>' +*/
+              '<div><a class="button" id="dio_insert" href="#"><span class="left"><span class="right"><span class="middle"><small>' + dio_icon + '' + getTexts("buttons", "ins") + '</small></span></span></span><span></span></a></div>' +
+              '</div></div></div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
 
-        $('.dio_bb_def_chooser').css({
-            display: 'none',
-            top: '38px',
-            left: '510px',
-            position: 'absolute',
-            width: '190px',
-            zIndex: 10000
-        });
+            $('.dio_bb_def_chooser').css({
+                display: 'none',
+                top: '38px',
+                left: '510px',
+                position: 'absolute',
+                width: '190px',
+                zIndex: 10000
+            });
 
-        $(bbcodeBarId + " .dio_bb_def_chooser .checkbox_new").click(function () {
-            $(this).toggleClass("checked");
-        });
+            $(bbcodeBarId + " .dio_bb_def_chooser .checkbox_new").click(function () {
+                $(this).toggleClass("checked");
+            });
 
-        $(bbcodeBarId + ' .dio_def_form').toggleClick(function () {
-            $(this).parent().find(".dio_bb_def_chooser").get(0).style.display = "block";
-        }, function () {
-            $(this).parent().find(".dio_bb_def_chooser").get(0).style.display = "none";
-        });
+            $(bbcodeBarId + ' .dio_def_form').toggleClick(function () {
+                $(this).parent().find(".dio_bb_def_chooser").get(0).style.display = "block";
+            }, function () {
+                $(this).parent().find(".dio_bb_def_chooser").get(0).style.display = "none";
+            });
 
-        $(bbcodeBarId + ' #dio_insert').click(function () {
-            var textarea = $(textareaId).get(0), text = $(textarea).val(), troop_table = "", troop_img = "", troop_count = "", separator = "", move_table = "", landunit_sum = 0;
+            $(bbcodeBarId + ' #dio_insert').click(function () {
+                var textarea = $(textareaId).get(0), text = $(textarea).val(), troop_table = "", troop_img = "", troop_count = "", separator = "", move_table = "", landunit_sum = 0;
 
-            $('.dio_def_form').click();
+                $('.dio_def_form').click();
 
-            if ($('#f_uni').hasClass("checked")) {
-                $('.units_land .unit, .units_naval .unit').each(function () {
-                    troop_img += separator + '[img]' + imgArray[this.className.split(" ")[1]] + '[/img]';
-                    troop_count += separator + '[center]' + $(this).find(".value").get(0).innerHTML + '[/center]';
+                if ($('#f_uni').hasClass("checked")) {
+                    $('.units_land .unit, .units_naval .unit').each(function () {
+                        troop_img += separator + '[img]' + imgArray[this.className.split(" ")[1]] + '[/img]';
+                        troop_count += separator + '[center]' + $(this).find(".value").get(0).innerHTML + '[/center]';
+                        separator = "[||]";
+                    });
+                } else {
+                    $('.units_land .unit').each(function () {
+                        var a = this.className.split(" ")[1], def = (uw.GameData.units[a].def_hack + uw.GameData.units[a].def_pierce + uw.GameData.units[a].def_distance) / (3 * uw.GameData.units[a].population);
+                        if (def > 10) {
+                            landunit_sum += parseInt($(this).find(".value").get(0).innerHTML, 10) * uw.GameData.units[a].population * ((def > 20) ? 2 : 1);
+                        }
+                    });
+                    landunit_sum = (landunit_sum > 10000) ? ((Math.round(landunit_sum / 100)) / 10) + "k" : landunit_sum;
+
+                    troop_img += '[img]' + imgArray.def_sum + '[/img]';
+                    troop_count += '[center]' + landunit_sum + '[/center]';
                     separator = "[||]";
-                });
-            } else {
-                $('.units_land .unit').each(function () {
-                    var a = this.className.split(" ")[1], def = (uw.GameData.units[a].def_hack + uw.GameData.units[a].def_pierce + uw.GameData.units[a].def_distance) / (3 * uw.GameData.units[a].population);
-                    if (def > 10) {
-                        landunit_sum += parseInt($(this).find(".value").get(0).innerHTML, 10) * uw.GameData.units[a].population * ((def > 20) ? 2 : 1);
-                    }
-                });
-                landunit_sum = (landunit_sum > 10000) ? ((Math.round(landunit_sum / 100)) / 10) + "k" : landunit_sum;
+                    $('.units_naval .unit').each(function () {
+                        troop_img += separator + '[img]' + imgArray[this.className.split(" ")[1]] + '[/img]';
+                        troop_count += separator + '[center]' + $(this).find(".value").get(0).innerHTML + '[/center]';
+                    });
+                }
+                if (troop_img !== "") {
+                    troop_table = "\n[table][**]" + troop_img + "[/**][**]" + troop_count + "[/**][/table]\n";
+                }
 
-                troop_img += '[img]' + imgArray.def_sum + '[/img]';
-                troop_count += '[center]' + landunit_sum + '[/center]';
-                separator = "[||]";
-                $('.units_naval .unit').each(function () {
-                    troop_img += separator + '[img]' + imgArray[this.className.split(" ")[1]] + '[/img]';
-                    troop_count += separator + '[center]' + $(this).find(".value").get(0).innerHTML + '[/center]';
-                });
-            }
-            if (troop_img !== "") {
-                troop_table = "\n[table][**]" + troop_img + "[/**][**]" + troop_count + "[/**][/table]\n";
-            }
+                var str = '[img]' + imgArray.bordure + '[/img]' +
+                    '\n[color=#006B00][size=12][u][b]' + getTexts("labels", "ttl") + '[/b][/u][/size][/color]\n\n' +
+                    //'[table][**][img]'+ imgArray.sup +'[/img][||]'+
+                    '[size=12][town]' + uw.ITowns.getTown(uw.Game.townId).getId() + '[/town] ([player]' + uw.Game.player_name + '[/player])[/size]' +
+                    '\n[size=8][url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v.'+ dio_version + '[/size]' +
+                    //'[||][img]'+ imgArray['rev' + (uw.ITowns.getTown(uw.Game.townId).hasConqueror()?1:0)] +'[/img][/**][/table]'+
+                    '\n\n[i][b]' + getTexts("labels", "inf") + '[/b][/i]' + troop_table +
+                    '[table][*]' +
+                    '[img]' + imgArray.wall + '[/img][|]\n' +
+                    '[img]' + imgArray.tower + '[/img][|]\n' +
+                    '[img]' + imgArray.phalanx + '[/img][|]\n' +
+                    '[img]' + imgArray.ram + '[/img][|]\n' +
+                    ($('#f_prm').hasClass("checked") ? '[img]' + imgArray.commander + '[/img][|]\n' : ' ') +
+                    ($('#f_prm').hasClass("checked") ? '[img]' + imgArray.captain + '[/img][|]\n' : ' ') +
+                    ($('#f_prm').hasClass("checked") ? '[img]' + imgArray.priest + '[/img][|]\n' : ' ') +
+                    ($('#f_sil').hasClass("checked") ? '[center][img]' + imgArray.spy + '[/img][/center][|]\n' : ' ') +
+                    '[img]' + imgArray.pop + '[/img][|]\n' +
+                    '[img]' + imgArray[(uw.ITowns.getTown(uw.Game.townId).god() || "nogod")] + '[/img][/*]\n' +
+                    '[**][center]' + uw.ITowns.getTown(uw.Game.townId).buildings().getBuildingLevel("wall") + '[/center][||]' +
+                    '[center]' + uw.ITowns.getTown(uw.Game.townId).buildings().getBuildingLevel("tower") + '[/center][||]' +
+                    '[center]' + (uw.ITowns.getTown(uw.Game.townId).researches().attributes.phalanx ? '✔️' : '❌') + '[/center][||]' +
+                    '[center]' + (uw.ITowns.getTown(uw.Game.townId).researches().attributes.ram ? '✔️' : '❌') + '[/center][||]' +
+                    ($('#f_prm').hasClass("checked") ? '[center]' + ((uw.Game.premium_features.commander >= uw.Timestamp.now()) ? '✔️' : '❌') + '[/center][||]' : ' ') +
+                    ($('#f_prm').hasClass("checked") ? '[center]' + ((uw.Game.premium_features.captain >= uw.Timestamp.now()) ? '✔️' : '❌') + '[/center][||]' : ' ') +
+                    ($('#f_prm').hasClass("checked") ? '[center]' + ((uw.Game.premium_features.priest >= uw.Timestamp.now()) ? '✔️' : '❌') + '[/center][||]' : ' ') +
+                    ($('#f_sil').hasClass("checked") ? '[center]' + Math.round(uw.ITowns.getTown(uw.Game.townId).getEspionageStorage() / 1000) + 'k[/center][||]' : ' ') +
+                    '[center]' + uw.ITowns.getTown(uw.Game.townId).getAvailablePopulation() + '[/center][||]' +
+                    '[center]' + $('.favor_amount').get(0).innerHTML + '[/center]' +
+                    '[/**][/table]';
 
-            var str = '[img]' + imgArray.bordure + '[/img]' +
-                '\n[color=#006B00][size=12][u][b]' + getTexts("labels", "ttl") + '[/b][/u][/size][/color]\n\n' +
-                //'[table][**][img]'+ imgArray.sup +'[/img][||]'+
-                '[size=12][town]' + uw.ITowns.getTown(uw.Game.townId).getId() + '[/town] ([player]' + uw.Game.player_name + '[/player])[/size]' +
-                '\n[size=8][url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v.'+ dio_version + '[/size]' +
-                //'[||][img]'+ imgArray['rev' + (uw.ITowns.getTown(uw.Game.townId).hasConqueror()?1:0)] +'[/img][/**][/table]'+
-                '\n\n[i][b]' + getTexts("labels", "inf") + '[/b][/i]' + troop_table +
-                '[table][*]' +
-                '[img]' + imgArray.wall + '[/img][|]\n' +
-                '[img]' + imgArray.tower + '[/img][|]\n' +
-                '[img]' + imgArray.phalanx + '[/img][|]\n' +
-                '[img]' + imgArray.ram + '[/img][|]\n' +
-                ($('#f_prm').hasClass("checked") ? '[img]' + imgArray.commander + '[/img][|]\n' : ' ') +
-                ($('#f_prm').hasClass("checked") ? '[img]' + imgArray.captain + '[/img][|]\n' : ' ') +
-                ($('#f_prm').hasClass("checked") ? '[img]' + imgArray.priest + '[/img][|]\n' : ' ') +
-                ($('#f_sil').hasClass("checked") ? '[center][img]' + imgArray.spy + '[/img][/center][|]\n' : ' ') +
-                '[img]' + imgArray.pop + '[/img][|]\n' +
-                '[img]' + imgArray[(uw.ITowns.getTown(uw.Game.townId).god() || "nogod")] + '[/img][/*]\n' +
-                '[**][center]' + uw.ITowns.getTown(uw.Game.townId).buildings().getBuildingLevel("wall") + '[/center][||]' +
-                '[center]' + uw.ITowns.getTown(uw.Game.townId).buildings().getBuildingLevel("tower") + '[/center][||]' +
-                '[center]' + (uw.ITowns.getTown(uw.Game.townId).researches().attributes.phalanx ? '✔️' : '❌') + '[/center][||]' +
-                '[center]' + (uw.ITowns.getTown(uw.Game.townId).researches().attributes.ram ? '✔️' : '❌') + '[/center][||]' +
-                ($('#f_prm').hasClass("checked") ? '[center]' + ((uw.Game.premium_features.commander >= uw.Timestamp.now()) ? '✔️' : '❌') + '[/center][||]' : ' ') +
-                ($('#f_prm').hasClass("checked") ? '[center]' + ((uw.Game.premium_features.captain >= uw.Timestamp.now()) ? '✔️' : '❌') + '[/center][||]' : ' ') +
-                ($('#f_prm').hasClass("checked") ? '[center]' + ((uw.Game.premium_features.priest >= uw.Timestamp.now()) ? '✔️' : '❌') + '[/center][||]' : ' ') +
-                ($('#f_sil').hasClass("checked") ? '[center]' + Math.round(uw.ITowns.getTown(uw.Game.townId).getEspionageStorage() / 1000) + 'k[/center][||]' : ' ') +
-                '[center]' + uw.ITowns.getTown(uw.Game.townId).getAvailablePopulation() + '[/center][||]' +
-                '[center]' + $('.favor_amount').get(0).innerHTML + '[/center]' +
-                '[/**][/table]';
+                var bb_count_str = parseInt(str.match(/\[/g).length, 10), bb_count_move = 0;
 
-            var bb_count_str = parseInt(str.match(/\[/g).length, 10), bb_count_move = 0;
-
-            var i = 0;
-            /*if ($('#f_mov').hasClass("checked")) {
+                var i = 0;
+                /*if ($('#f_mov').hasClass("checked")) {
                 move_table += '\n[i][b]' + getTexts("labels", "mov") + '[/b][/i]\n[table]';
 
                 $('#toolbar_activity_commands').mouseover();
@@ -11958,11 +11973,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 move_table += "[*][|][color=#800000][size=6][i] (" + getTexts("labels", "dev") + ": ±1s)[/i][/size][/color][/*][/table]\n";
             }*/
 
-            str += move_table + '[img]' + imgArray.bordure + '[/img]\n';
+                str += move_table + '[img]' + imgArray.bordure + '[/img]\n';
 
 
-            $(textarea).val(text.substring(0, $(textarea).get(0).selectionStart) + str + text.substring($(textarea).get(0).selectionEnd));
-        });
+                $(textarea).val(text.substring(0, $(textarea).get(0).selectionStart) + str + text.substring($(textarea).get(0).selectionEnd));
+            });
+        } catch (error) {
+            errorHandling(error, "addForm");
+        }
     }
 
     function getArrivalTime(duration_time) {
@@ -12337,37 +12355,41 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
         // insert smileys from arrays into smiley box
         addSmileys: function (type, bbcodeBarId) {
-            // reset smilies
-            if ($(bbcodeBarId + " .dio_box_content").get(0)) {
-                $(bbcodeBarId + " .dio_box_content").get(0).innerHTML = '';
-            }
-            // add smilies
-            for (var e in smileyArray[type]) {
-                if (smileyArray[type].hasOwnProperty(e)) {
-                    $(smileyArray[type][e]).clone().appendTo(bbcodeBarId + " .dio_box_content");
-                    //$('<img class="smiley" src="' + smileyArray[type][e].src + '" alt="" />').appendTo(bbcodeBarId + " .dio_box_content");
+            try {
+                // reset smilies
+                if ($(bbcodeBarId + " .dio_box_content").get(0)) {
+                    $(bbcodeBarId + " .dio_box_content").get(0).innerHTML = '';
                 }
-            }
-            $('.smiley').css({margin: '0px', padding: '2px', maxHeight: '35px', cursor: 'pointer'});
-
-            $(bbcodeBarId + " .dio_box_content .smiley").click(function () {
-                var textarea;
-                if (uw.location.pathname.indexOf("game") >= 0) {
-                    // hide smiley box
-                    $(this).closest('.bb_button_wrapper').find(".dio_smiley_button").click();
-                    // find textarea
-                    textarea = $(this).closest('.gpwindow_content').find("textarea").get(0);
-                } else {
-
-                    if ($('.editor_textbox_container').get(0)) {
-                        textarea = $('.editor_textbox_container .cke_contents textarea').get(0);
-                    } else {
-                        $(this).appendTo('iframe .forum');
+                // add smilies
+                for (var e in smileyArray[type]) {
+                    if (smileyArray[type].hasOwnProperty(e)) {
+                        $(smileyArray[type][e]).clone().appendTo(bbcodeBarId + " .dio_box_content");
+                        //$('<img class="smiley" src="' + smileyArray[type][e].src + '" alt="" />').appendTo(bbcodeBarId + " .dio_box_content");
                     }
                 }
-                var text = $(textarea).val();
-                $(textarea).val(text.substring(0, $(textarea).get(0).selectionStart) + "[img]" + this.src + "[/img]" + text.substring($(textarea).get(0).selectionEnd));
-            });
+                $('.smiley').css({margin: '0px', padding: '2px', maxHeight: '35px', cursor: 'pointer'});
+
+                $(bbcodeBarId + " .dio_box_content .smiley").click(function () {
+                    var textarea;
+                    if (uw.location.pathname.indexOf("game") >= 0) {
+                        // hide smiley box
+                        $(this).closest('.bb_button_wrapper').find(".dio_smiley_button").click();
+                        // find textarea
+                        textarea = $(this).closest('.gpwindow_content').find("textarea").get(0);
+                    } else {
+
+                        if ($('.editor_textbox_container').get(0)) {
+                            textarea = $('.editor_textbox_container .cke_contents textarea').get(0);
+                        } else {
+                            $(this).appendTo('iframe .forum');
+                        }
+                    }
+                    var text = $(textarea).val();
+                    $(textarea).val(text.substring(0, $(textarea).get(0).selectionStart) + "[img]" + this.src + "[/img]" + text.substring($(textarea).get(0).selectionEnd));
+                });
+            } catch (error) {
+                errorHandling(error, "SmileyBox (addSmileys)");
+            }
         }
     };
 
@@ -12397,69 +12419,56 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FavorPopup.setFavorPopup();
             });
 
-            //Before update 2.231
-            /*$('.gods_favor_button_area, #favor_circular_progress').bind('mouseover mouseout', function () {
-                return false;
-            });*/
-
             //Update 2.231
             $('<div id="dio_FavorPopup" style="width: 100px; height: 33px; position: absolute; left: 35px; top: 2px;"></div>').appendTo('.gods_favor_amount');
-
             $('<div id="dio_FuryPopup" class="fury_amount" style="width: 67px; height: 33px; position: absolute; right: 50px; top: 2px;"></div>').appendTo('.gods_favor_amount');
+        },
 
-            //$('<div id="dio_FuryPopup" class="fury_amount" style="width: 57px; height: 33px; position: fixed; right: 70px; top: 202px;"></div>').appendTo('.gods_favor_amount');
+        setFavorPopup: function () {
+            try {
+                var pic_row = "", fav_row = "", prod_row = "", tooltip_str, textColor, tooltip_fury;
+
+                for (var g in FavorPopup.godArray) {
+                    if (FavorPopup.godArray.hasOwnProperty(g)) {
+                        if (uw.ITowns.player_gods.attributes.temples_for_gods[g]) {
+                            pic_row += '<td><div style="transform:scale(0.8); margin: -6px;"; class="god_mini ' + [g] + '";></td>';
+                            textColor = ((uw.ITowns.player_gods.attributes[g + "_favor"]) == uw.ITowns.player_gods.attributes.max_favor) ? textColor = "color:red;" : textColor = "color:blue";
+                            fav_row += '<td class="bold" style="'+ textColor +'">' + uw.ITowns.player_gods.attributes[g + "_favor"] + '</td>';
+                            prod_row += '<td class="bold">' + uw.ITowns.player_gods.attributes.production_overview[g].production + '</td>';
+                        }
+                    }
+                }
+
+                var fury_row = ""
+                var fury_max = uw.ITowns.player_gods.attributes.max_fury
+
+                textColor = ((uw.ITowns.player_gods.attributes.fury) == fury_max) ? textColor = "color:red;" : textColor = "color:blue";
+                fury_row = '<td class="bold" style="'+ textColor +'">' + uw.ITowns.player_gods.attributes.fury + '/' + fury_max + '</td>';
+
+                tooltip_str = $('<div id"tooltip"><table><tr><td><div class="dio_icon b" style="opacity: 0.30; width: 35px; height: 35px;"></td>' + pic_row + '</tr>' +
+                                '<tr align="center"><td><img src="https://gpall.innogamescdn.com/images/game/res/favor.png"></td>' + fav_row + '</tr>' +
+                                '<tr align="center"><td>+</td>' + prod_row + '</tr>' +
+                                '</table></div>');
+
+                tooltip_fury = $('<div id"tooltip"><table><tr align="center"><td><img src="https://www.tuto-de-david1327.com/medias/images/fury.png"></td>' + fury_row + '</tr>' +
+                                 '</table></div>');
+
+
+                //Update 2.231
+                $('#dio_FavorPopup').tooltip(tooltip_str);
+                $('#dio_FuryPopup').tooltip(tooltip_fury);
+            } catch (error) {
+                errorHandling(error, "FavorPopup (setFavorPopup)");
+            }
         },
 
         deactivate: function () {
 
             $('.gods_area').unbind('mouseover');
-
-            //Before update 2.231
-            //$('.gods_favor_button_area, #favor_circular_progress').unbind('mouseover mouseout');
-
-            //Update 2.231
             $('#dio_FavorPopup').remove();
             $('#dio_FuryPopup').remove();
             $('#dio-amount').remove();
         },
-
-        setFavorPopup: function () {
-            var pic_row = "", fav_row = "", prod_row = "", tooltip_str, textColor, tooltip_fury;
-
-            for (var g in FavorPopup.godArray) {
-                if (FavorPopup.godArray.hasOwnProperty(g)) {
-                    if (uw.ITowns.player_gods.attributes.temples_for_gods[g]) {
-                        pic_row += '<td><div style="transform:scale(0.8); margin: -6px;"; class="god_mini ' + [g] + '";></td>';
-                        textColor = ((uw.ITowns.player_gods.attributes[g + "_favor"]) == uw.ITowns.player_gods.attributes.max_favor) ? textColor = "color:red;" : textColor = "color:blue";
-                        fav_row += '<td class="bold" style="'+ textColor +'">' + uw.ITowns.player_gods.attributes[g + "_favor"] + '</td>';
-                        prod_row += '<td class="bold">' + uw.ITowns.player_gods.attributes.production_overview[g].production + '</td>';
-                    }
-                }
-            }
-
-            var fury_row = ""
-            var fury_max = uw.ITowns.player_gods.attributes.max_fury
-
-            textColor = ((uw.ITowns.player_gods.attributes.fury) == fury_max) ? textColor = "color:red;" : textColor = "color:blue";
-            fury_row = '<td class="bold" style="'+ textColor +'">' + uw.ITowns.player_gods.attributes.fury + '/' + fury_max + '</td>';
-
-            tooltip_str = $('<div id"tooltip"><table><tr><td><div class="dio_icon b" style="opacity: 0.30; width: 35px; height: 35px;"></td>' + pic_row + '</tr>' +
-                            '<tr align="center"><td><img src="https://gpall.innogamescdn.com/images/game/res/favor.png"></td>' + fav_row + '</tr>' +
-                            '<tr align="center"><td>+</td>' + prod_row + '</tr>' +
-                            '</table></div>');
-
-            tooltip_fury = $('<div id"tooltip"><table><tr align="center"><td><img src="https://www.tuto-de-david1327.com/medias/images/fury.png"></td>' + fury_row + '</tr>' +
-                             '</table></div>');
-
-            //Before update 2.231
-            //$('.gods_favor_button_area, #favor_circular_progress').tooltip(tooltip_str);
-
-            //Update 2.231
-            $('#dio_FavorPopup').tooltip(tooltip_str);
-            //if (Game.gods_active.ares) {
-            $('#dio_FuryPopup').tooltip(tooltip_fury);
-            //}
-        }
     };
 
     /*******************************************************************************************************************************
@@ -12705,7 +12714,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var Townbb = {
         activate: function () {
 
-            this.addButton();
+            Townbb.addButton();
 
             // Style
             $('<style id="dio_townbb_style"> ' +
@@ -12728,29 +12737,32 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('#input_townbb').remove();
         },
         addButton: function () {
+            try {
+                $('<a id="dio_townbb"></a><input id="input_townbb" type="text" onfocus="this.select();" onclick="this.select();"><div id="dio_townbb_logo"></div>').appendTo('.town_name_area');
+                $('<a id="dio_townbb-clipboard" data-clipboard-target="#input_townbb"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));
+                $("#dio_townbb").click(function () {
+                    $('#dio_townbb-clipboard').toggle();
+                    $("#input_townbb").toggle();
+                    $("#input_townbb").val("[town]" + uw.Game.townId + "[/town]");
+                });
 
-            $('<a id="dio_townbb"></a><input id="input_townbb" type="text" onfocus="this.select();" onclick="this.select();"><div id="dio_townbb_logo"></div>').appendTo('.town_name_area');
-            $('<a id="dio_townbb-clipboard" data-clipboard-target="#input_townbb"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));
-            $("#dio_townbb").click(function () {
-                $('#dio_townbb-clipboard').toggle();
-                $("#input_townbb").toggle();
-                $("#input_townbb").val("[town]" + uw.Game.townId + "[/town]");
-            });
+                // clipboard
+                setTimeout(function() {
+                    new uw.ClipboardJS("#dio_townbb-clipboard").on("success", function() {
+                        setTimeout(function() {
+                            uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                            $('#dio_townbb-clipboard').css({"display" : "none"})
+                            $("#input_townbb").css({"display" : "none"})
+                        }, 50)
+                    })
+                }, 2000)
 
-            // clipboard
-            setTimeout(function() {
-                new uw.ClipboardJS("#dio_townbb-clipboard").on("success", function() {
-                    setTimeout(function() {
-                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                        $('#dio_townbb-clipboard').css({"display" : "none"})
-                        $("#input_townbb").css({"display" : "none"})
-                    }, 50)
-                })
-            }, 2000)
-
-            // Tooltip
-            $('#dio_townbb').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("market").city);
-            $('#dio_townbb-clipboard').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("market").city);
+                // Tooltip
+                $('#dio_townbb').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("market").city);
+                $('#dio_townbb-clipboard').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("market").city);
+            } catch (error) {
+                errorHandling(error, "Townbb (addButton)");
+            }
         },
     };
 
@@ -12875,28 +12887,32 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
         },
         add: function (c) {
-            // Clipboard success
-            new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-player').on("success", function() {
-                setTimeout(function() {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                    $('#dio_gpwnd_'+ c +'_clipboard-player').css({"display" : "none"})
-                    $('#input_gpwnd_'+ c +'_BBplayer').css({"display" : "none"})
-                }, 50)
-            })
-            new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-alliance').on("success", function() {
-                setTimeout(function() {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                    $('#dio_gpwnd_'+ c +'_clipboard-alliance').css({"display" : "none"})
-                    $('#input_gpwnd_'+ c +'_BBalliance').css({"display" : "none"})
-                }, 50)
-            })
-            new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-town').on("success", function() {
-                setTimeout(function() {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                    $('#dio_gpwnd_'+ c +'_clipboard-town').css({"display" : "none"})
-                    $('#div#gpwnd_'+ c + ' #town_bbcode_id').css({"display" : "none"})
-                }, 50)
-            })
+            try {
+                // Clipboard success
+                new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-player').on("success", function() {
+                    setTimeout(function() {
+                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                        $('#dio_gpwnd_'+ c +'_clipboard-player').css({"display" : "none"})
+                        $('#input_gpwnd_'+ c +'_BBplayer').css({"display" : "none"})
+                    }, 50)
+                })
+                new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-alliance').on("success", function() {
+                    setTimeout(function() {
+                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                        $('#dio_gpwnd_'+ c +'_clipboard-alliance').css({"display" : "none"})
+                        $('#input_gpwnd_'+ c +'_BBalliance').css({"display" : "none"})
+                    }, 50)
+                })
+                new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-town').on("success", function() {
+                    setTimeout(function() {
+                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                        $('#dio_gpwnd_'+ c +'_clipboard-town').css({"display" : "none"})
+                        $('#div#gpwnd_'+ c + ' #town_bbcode_id').css({"display" : "none"})
+                    }, 50)
+                })} catch (error) {
+                    errorHandling(error, "BBtowninfo (add)");
+                    uw.HumanMessage.error(dio_icon + "Error");
+                }
         },
         deactivate: function () {
             $('#dio_BBtowninfo_style').remove();
@@ -13096,7 +13112,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $(".dio_cultureBTN_triumph").tooltip(dio_icon + getTexts("Quack", "triumph"));
                 $(".dio_cultureBTN_theather").tooltip(dio_icon + getTexts("Quack", "theater"));
             } catch (error) {
-                errorHandling(error, "cultureOverview");
+                errorHandling(error, "cultureOverview (add)");
             }
         },
         deactivate: function () {
@@ -13134,13 +13150,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (test != 100) {k = k - test;}
                     if (h.indexOf("[") < 1) {
                         if (k > 0) {
-                            $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'>-" + k + "</span>]<span id='dio_cultureplus' style='color: #ECB44D'></span>");
+                            $("#culture_points_overview_bottom #place_culture_count").append(" <span id='dio_culture'>[-" + k + "]</span><span id='dio_cultureplus' style='color: #ECB44D'></span>");
                         } else {
                             $("#culture_points_overview_bottom #place_culture_count").append(" [<span id='dio_culture'></span>]<span id='dio_cultureplus' style='color: #ECB44D'> +" + k * -1 + "</span>").find("span#dio_culture").countdown(culturePoints.heure(g, h, test));
                         }
                     } else {
                         if (k > 0) {
-                            $("#dio_culture").text("-" + k);
+                            $("#dio_culture").text("[-" + k + "]");
                             $("#dio_cultureplus").text("");
                         } else {
                             $("#dio_culture").countdown(culturePoints.heure(g, h, test))
@@ -13173,23 +13189,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
                 $('#dio_culture, dio_cultureplus, #dio_cultureA, dio_cultureplusA').tooltip(dio_icon);
             } catch (error) {
-                errorHandling(error, "culturePoints");
+                errorHandling(error, "culturePoints (add)");
             }
         },
         heure: function (g, h, test) {
-            var f, i, j, k;
-            i = h.split("/");
-            j = parseInt(i[0]) + g.length;
-            k = parseInt(i[1]) - j;
-            if (test != 100) {k = k - test;}
-            if (k <= 0) {
-                var l = new Array;
-                for (f = 0; f < g.length; f++)
-                    //l.push($(g[f]).text());
-                    l.push(g[f].dataset.timestamp);
-                l.sort();
-                var m = l[l.length + k - 1];
-            } else {m = ""; culturePoints.add();}
+            try {
+                var f, i, j, k;
+                i = h.split("/");
+                j = parseInt(i[0]) + g.length;
+                k = parseInt(i[1]) - j;
+                if (test != 100) {k = k - test;}
+                if (k <= 0) {
+                    var l = new Array;
+                    for (f = 0; f < g.length; f++)
+                        //l.push($(g[f]).text());
+                        l.push(g[f].dataset.timestamp);
+                    l.sort();
+                    var m = l[l.length + k - 1];
+                } else {m = ""; culturePoints.add();}
+            } catch (error) {
+                errorHandling(error, "culturePoints (heure)");
+                m = "";
+            }
             return m;
         },
         deactivate: function () {
@@ -13222,20 +13243,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     //Progress Bar
                     if (!$("#culture_points_overview_bottom #dio-ProgressBar").length) {
                         $('<div id="dio-ProgressBar">').insertBefore("#culture_points_overview_bottom #place_culture_bar");
+                        $('<div id="dio-Bar">').insertBefore("#culture_points_overview_bottom #place_culture_bar");
                         $('<style id="dio-ProgressBar-style">' +
                           '#culture_points_overview_bottom #dio-ProgressBar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;filter: hue-rotate(-40deg) brightness(2);}' +
+                          '#culture_points_overview_bottom #dio-Bar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;}' +
                           '</style>').appendTo('head');
                     }
 
                     if (!$("#place_container #dio-ProgressBar").length) {
                         $('<div id="dio-ProgressBar">').insertBefore("#place_container #place_culture_bar");
+                        $('<div id="dio-Bar">').insertBefore("#place_container #place_culture_bar");
                         $('<style id="dio-ProgressBar-style">' +
                           '#place_container #dio-ProgressBar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;filter: hue-rotate(-40deg) brightness(2);}' +
+                          '#place_container #dio-Bar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;}' +
                           '</style>').appendTo('head');
                     }
 
                     $("#culture_points_overview_bottom #place_culture_bar, #place_container #place_culture_bar").css({
-                        "width" : "calc(" +percentLeft + "% - 1px)"
+                        "display" : "none"
+                    });
+
+                    $("#culture_points_overview_bottom #dio-Bar, #place_container #dio-Bar").css({
+                        "width" : "calc(" + percentLeft + "% - 1px)"
                     });
 
                     $("#culture_points_overview_bottom #dio-ProgressBar, #place_container #dio-ProgressBar").css({
@@ -13252,6 +13281,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         deactivate: function () {
             $("#dio-ProgressBar-style").remove();
             $("#dio-ProgressBar").remove();
+            $("#dio-Bar").remove();
+            $("#culture_points_overview_bottom #place_culture_bar, #place_container #place_culture_bar").css({
+                "display" : "block"
+            });
         },
     };
 
@@ -13364,6 +13397,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
               '#hides_overview_towns.dio_resize .box_content { display: none;} ' +
               '#hides_overview_towns.dio_resize .hide_buttons, #hides_overview_towns.dio_resize .spinner { top: 23px;} ' +
               '</style>').appendTo("head");
+            if ($('#hides_overview_wrapper').length) {
+                hidesOverview.init();
+            }
         },
         init : function () {
             try {
@@ -15044,6 +15080,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
               '#dio_silver_counter .resource_iron_icon {padding-left: 24px; width: auto;}' +
               '#dio_silver_counter .iron_amount {display: inline; padding-right: 2px; font-size: 10px}' +
               '</style>').appendTo("head");
+            if ($('#trade_overview_wrapper').length) {
+                resCounter.init();
+            }
         },
         //Counting resources in town right now
         init: function () {
