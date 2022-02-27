@@ -1,6 +1,4 @@
 var data_month = ([
-    ['2021/01', 15, 9.36],
-    ['2021/02', 15, 19.07],
     ['2021/03', 15, 51.15],
     ['2021/04', 15, 0],
     ['2021/05', 15, 19.07],
@@ -11,7 +9,9 @@ var data_month = ([
     ['2021/10', 15, 9],
     ['2021/11', 15, 66.85],
     ['2021/12', 15, 9.36],
-]);
+    ['2022/01', 15, 15.8],
+    ['2022/02', 15, 4.5],
+]);    
 
 var detailData = {
     '2020/01': [
@@ -29,14 +29,14 @@ var detailData = {
         { 'dat': '2020-03-24', 'inc': 9.36, 'who': 'Andreas A', 'pays': ['DE', 'Allemagne', 'Germany'] },
     ], '2020/04': [
         { 'dat': '2020-04-12', 'inc': 4.5, 'who': 'Kallerberg', 'pays': ['DE', 'Allemagne', 'Germany'] },
-        { 'dat': '2020-04-30', 'inc': 4.5, 'who': 'Antonio A', 'pays': ['ES', 'Espagne', 'Spain'] },
+        { 'dat': '2020-04-30', 'inc': 4.5, 'who': 'Antonio-Acuña B', 'pays': ['ES', 'Espagne', 'Spain'] },
     ], '2020/05': [
         { 'dat': '2020-05-15', 'inc': 9.36, 'who': 'Andreas S', 'pays': ['DE', 'Allemagne', 'Germany'] },
         { 'dat': '2020-05-27', 'inc': 19.07, 'who': 'kanokwan s', 'pays': ['DE', 'Allemagne', 'Germany'] },
     ], '2020/06': [
         { 'dat': '2020-06-10', 'inc': 4.5, 'who': 'Swen A', 'pays': ['DE', 'Allemagne', 'Germany'] },
     ], '2020/07': [
-        { 'dat': '2020-07-06', 'inc': 4.5, 'who': 'Raul G', 'pays': ['ES', 'Espagne', 'Spain'] },
+        { 'dat': '2020-07-06', 'inc': 4.5, 'who': 'Raul-Garcia C', 'pays': ['ES', 'Espagne', 'Spain'] },
         { 'dat': '2020-07-17', 'inc': 47.2, 'who': 'Nepomuk P', 'pays': ['CH', 'Suisse', 'Swiss'] },
     ], '2020/08': [
     ], '2020/09': [
@@ -54,7 +54,7 @@ var detailData = {
         { 'dat': '2020-12-02', 'inc': 19.07, 'who': 'Christiane G', 'pays': ['DE', 'Allemagne', 'Germany'] },
         { 'dat': '2020-12-24', 'inc': 4.5, 'who': 'Mateusz O', 'pays': ['PL', 'Pologne', 'Poland'] },
     ], '2021/01': [
-        { 'dat': '2021-01-21', 'inc': 9.36, 'who': 'Jean P', 'pays': ['FR', 'France', 'France'] },
+        { 'dat': '2021-01-21', 'inc': 9.36, 'who': 'Jean-Paul B', 'pays': ['FR', 'France', 'France'] },
     ], '2021/02': [
         { 'dat': '2021-02-04', 'inc': 19.07, 'who': 'Artur Z', 'pays': ['PL', 'Pologne', 'Poland'] },
     ], '2021/03': [
@@ -78,15 +78,20 @@ var detailData = {
         { 'dat': '2021-10-18', 'inc': 4.5, 'who': 'Petr M', 'pays': ['CZ', 'Tchéquie', 'Czechia'] },
         { 'dat': '2021-10-31', 'inc': 4.5, 'who': 'Detlef Z', 'pays': ['DE', 'Allemagne', 'Germany'] },
     ], '2021/11': [
-        { 'dat': '2021-11-02', 'inc': 4.5, 'who': 'Societatea d', 'pays': ['RO', 'Roumanie', 'Romania'] },
+        { 'dat': '2021-11-02', 'inc': 4.5, 'who': 'Societatea-de-Salvare B', 'pays': ['RO', 'Roumanie', 'Romania'] },
         { 'dat': '2021-11-03', 'inc': 14.21, 'who': 'Attila', 'pays': ['DE', 'Allemagne', 'Germany'] },
         { 'dat': '2021-11-05', 'inc': 0.38, 'who': 'Francesco L', 'pays': ['IT', 'Italie', 'Italy'] },
         { 'dat': '2021-11-05', 'inc': 28.78, 'who': 'glaglatoulle', 'pays': ['FR', 'France', 'France'] },
         { 'dat': '2021-11-05', 'inc': 4.5, 'who': 'Comte M', 'pays': ['FR', 'France', 'France'] },
         { 'dat': '2021-11-13', 'inc': 4.5, 'who': 'Sven O', 'pays': ['DE', 'Allemagne', 'Germany'] },
         { 'dat': '2021-11-27', 'inc': 9.36, 'who': 'Ocaso', 'pays': ['DE', 'Allemagne', 'Germany'] },
-        { 'dat': '2021-11-30', 'inc': 0.62, 'who': 'Gyorgy C', 'pays': ['', ' ', ''] },
+        { 'dat': '2021-11-30', 'inc': 0.62, 'who': 'Gyorgy C', 'pays': ['NL', 'Pays-Bas', 'Netherlands'] },
     ], '2021/12': [
-        { 'dat': '2021-12-29', 'inc': 9.36, 'who': 'SABINE B', 'pays': ['', ' ', ''] },
+        { 'dat': '2021-12-29', 'inc': 9.36, 'who': 'SABINE B', 'pays': ['FR', 'France', 'France'] },
+    ], '2022/01': [
+        { 'dat': '2022-01-05', 'inc': 4.5, 'who': 'Diana S', 'pays': ['DE', 'Allemagne', 'Germany'] },
+        { 'dat': '2022-01-11', 'inc': 11.3, 'who': 'Ulla R', 'pays': ['SE', 'Suède', 'Sweden'] },
+    ], '2022/02': [
+        { 'dat': '2022-02-22', 'inc': 4.5, 'who': 'José-Miguel A', 'pays': ['ES', 'Espagne', 'Spain'] },
     ],
-};    
+};       
