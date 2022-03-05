@@ -14313,6 +14313,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $("#dio_BTN_HK").click(function () {
                 hotkeys.add()
             });
+            hotkeys.add();
         },
         add: function () {
             try {
@@ -14483,7 +14484,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             uw.FarmTownOverviewWindowFactory.openFarmTownOverview();
                         }
                         // Plannificateur
-                        if ((e.keyCode == "192" || e.keyCode == "221" || e.keyCode == "187") && (DATA.options.dio_Hot)) {
+                        if ((e.keyCode == "192" || e.keyCode == "221" || e.keyCode == "187" || e.keyCode == "61") && (DATA.options.dio_Hot)) {
                             uw.AttackPlannerWindowFactory.openAttackPlannerWindow();
                         }
                         // Outil de réservation
