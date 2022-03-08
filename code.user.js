@@ -25,7 +25,7 @@
 // @grant       GM_getResourceText
 // @license     GPL-3.0
 // ==/UserScript==
-var dio_version = '4.26';
+var dio_version = '4.27';
 
 /*******************************************************************************************************************************
  * Global stuff
@@ -261,37 +261,37 @@ function DIO_FORUM() {
         xfEdit: null,
         xfAvat: "n",
 
-        GetEmotss: function () {
+        GetEmotss: () => {
             FDio.emots || ($.ajax({
                 timeout: 1e4,
-                complete: function () {
+                complete: () => {
                     FDio.emots = !0;
                     var e = $(".fr-element.fr-view:first");
                     function t(e, t, o) {
                         return $("<li/>", {
                             style: "float:left; width:35px; height:25; margin-top:4px; margin-left: 5px;"
                         }).click(function () {
-                            $("#dio_emot_popup ul li").css("background", 'url("' + FDio.Home + 'medias/images/etabB.gif") no-repeat')
-                            $(this).css("background", 'url("' + FDio.Home + 'medias/images/etabA.gif") no-repeat')
-                            document.getElementById("dio_emots_poup_content").innerHTML = ""
-                            $.each(o, function (e, t) {
-                                (e = FDio.HomeImg + t + ".gif")
-                                $("#dio_emots_poup_content").append($("<img/>", {
-                                    src: e,
-                                    title: "",
-                                    class: ".Smilie",
-                                    style: "margin-right: 5px; padding: 2px; border: 1px solid transparent; cursor: pointer;"
-                                }).mouseover(function () {
-                                    this.style.backgroundColor = "#08944d33"
-                                    this.style.border = "1px solid #00800080"
-                                }).mouseout(function () {
-                                    this.style.backgroundColor = "transparent"
-                                    this.style.border = "1px solid transparent"
-                                }).click(function (e) {
-                                    FDio.xfPasteImage($(this).attr("src"))
-                                }))
-                            })
-                        }).html("<center>" + t + "<center>")
+                            $("#dio_emot_popup ul li").css("background", 'url("' + FDio.Home + 'medias/images/etabB.gif") no-repeat');
+                            $(this).css("background", 'url("' + FDio.Home + 'medias/images/etabA.gif") no-repeat');
+                            document.getElementById("dio_emots_poup_content").innerHTML = "";
+                            $.each(o, (e, t) => {
+                                    (e = FDio.HomeImg + t + ".gif");
+                                    $("#dio_emots_poup_content").append($("<img/>", {
+                                        src: e,
+                                        title: "",
+                                        class: ".Smilie",
+                                        style: "margin-right: 5px; padding: 2px; border: 1px solid transparent; cursor: pointer;"
+                                    }).mouseover(function () {
+                                        this.style.backgroundColor = "#08944d33";
+                                        this.style.border = "1px solid #00800080";
+                                    }).mouseout(function () {
+                                        this.style.backgroundColor = "transparent";
+                                        this.style.border = "1px solid transparent";
+                                    }).click(function () {
+                                        FDio.xfPasteImage($(this).attr("src"));
+                                    }));
+                                });
+                        }).html("<center>" + t + "<center>");
                     }
                     var dioEmots, dioEmotsbutton;
                     e.length && (FDio.xfEdit = e.closest("form"),
@@ -334,14 +334,14 @@ function DIO_FORUM() {
                                 //id: "dio_smiley_button",
                                 //class: "far fa-smile button",
                                 //style: "z-index:2; height: 18px; margin: 0 3px -9px 3px; border: transparent; background:url('" + FDio.HomeImg + "smile.gif') no-repeat 0px 0px"
-                            }).click(function () {
+                            }).click(() => {
                                 //$("#dio_emot_popup.content").height() < 80 ? $("#dio_emot_popup.content").css("overflow", "auto") : $("#dio_emot_popup.content").css("overflow-y", "scroll"),
-                                $("#dio_emot_popup").toggle()
+                                $("#dio_emot_popup").toggle();
                             }),
 
                             ((!$('#dio_smiley_button').length) ? (
                                 $(".fr-toolbar").length && ($("#xfSmilie-1").after(dioEmotsbutton))) : ""),
-                            $("#dio_emot_popup ul li:first").click()))
+                            $("#dio_emot_popup ul li:first").click()));
 
                     $('<style id="dio_emot_popup_style">' +
                         // Chrome Scroollbar Style
@@ -354,18 +354,19 @@ function DIO_FORUM() {
                         '</style>').appendTo('head');
 
                 },
-                error: function () {
+                error: () => {
                     FDio.emots = !1,
                         //setTimeout(FDio.GetEmotss(), 1e4)
-                        setTimeout(function () {
-                            FDio.GetEmotss();
-                        }, 1e4);
+                        setTimeout(() => {
+                                FDio.GetEmotss();
+                            }, 1e4);
                 }
             }),
                 FDio.emots = !1,
-                setTimeout(function () {
-                    FDio.GetEmotss();
-                }, 1e4))//,
+                setTimeout(() => {
+                        FDio.GetEmotss();
+                    }, 1e4)); //,
+
             //setTimeout(FDio.GetEmotss(), 1e4))
         },
 
@@ -379,9 +380,9 @@ function DIO_FORUM() {
         },
     };
     FDio.GetEmotss();
-    setInterval(function () {
-        FDio.GetEmotss();
-    }, 10000);
+    setInterval(() => {
+            FDio.GetEmotss();
+        }, 10000);
 }
 
 
