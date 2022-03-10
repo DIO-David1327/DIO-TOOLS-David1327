@@ -3,7 +3,7 @@
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.26.2
+// @version		4.26.3
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -528,10 +528,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     /*******************************************************************************************************************************
      * Language versions: German, Italian, English, French, Russian, Polish, Spanish, Romanian
      *******************************************************************************************************************************/
-    let daaaa = "";
-    if (system()) {
-        daaaa = "Mac"
-    } else daaaa = "Windows"
     var LANG = {
         //////////////////////////////////////////////
         //      German Translation by Diony         //
@@ -539,37 +535,54 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         de: {
             Notification: {
                 //A: "",
-                B: "Wichtige Informationen Benutzerdefinierte Optionen wurden zurückgesetzt ",
-                C: 'Die Optionen "Tastaturkürzel für Windows" und "Stadtansicht" sind in den Einstellungen aktiv',
+                //B: "",
+                //C: "",
             },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://de.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.36671/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools bietet unter anderem einige Anzeigen, eine Smileyauswahlbox,<br>Handelsoptionen und einige Veränderungen des Layouts.",
                 act: "Funktionen der Toolsammlung aktivieren/deaktivieren:",
                 prv: "Vorschau einzelner Funktionen:",
-
+        
                 version_old: "DIO-Tools-Version ist nicht aktuell",
                 version_new: "DIO-Tools-Version ist aktuell",
                 version_dev: "DIO-Tools-Entwicklerversion",
-
+        
                 version_update: "Aktualisieren",
                 Donate: "Spenden",
-
-                forum: "Tuto de david1327",
+        
+                //forum: "",
                 Update: "Aktualisieren " + dio_version,
                 Feature: "Neue Funktion",
                 Feature2: "Neue Version",
                 Learn_more: "Mehr erfahren",
-
+        
                 cat_units: "Einheiten",
                 cat_icons: "Stadticons",
                 cat_forum: "Forum",
                 cat_trade: "Handel",
                 cat_wonders: "Weltwunder",
                 cat_layout: "Layout",
-                cat_other: "Sonstiges"
+                cat_other: "Sonstiges",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Biremenzähler", "Zählt die jeweiligen Biremen einer Stadt und summiert diese.<br><br>Anzeige im Minimap-Bullauge oben links"],
@@ -587,7 +600,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 pop: ["Gunst-Popup", 'Ändert das Aussehen des Gunst-Popups'],
                 tsk: ["Taskleiste", 'Vergrößert die Taskleiste'],
                 rew: ["Tägliche Belohnung", 'Minimiert das "Tägliche Belohnung"-Fenster beim Start'],
-                cha: ["Chat", "Ersetzt den Allianzchat durch einen Welten-Chat"],
                 bbc: ["DEF-Formular", "Erweitert die BBCode-Leiste um ein automatisches DEF-Formular"],
                 com: ["Einheitenvergleich", "Fügt Einheitenvergleichstabellen hinzu"],
                 tic: ["Stadticons", "Jede Stadt erhält ein Icon für den Stadttyp (Automatische Erkennung)", "Zusätzliche Icons stehen bei der manuellen Auswahl zur Verfügung"],
@@ -624,7 +636,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Handel -> Ressourcenzähler (Administrator)", "Eine Zählung aller Ressourcen in deiner Stadt"],
                 FLASK: ["Nicht kompatibel zur Aktivierung in den Parametern von FLASK-TOOLS", ""],
                 Mole: ["Nicht kompatibel zur Aktivierung in den Parametern von Mole Hole", ""],
-
+        
                 err: ["Automatische Fehlerberichte senden", "Wenn du diese Option aktivierst, kannst du dabei helfen Fehler zu identifizieren."],
                 her: ["Thrakische Eroberung", "Verkleinerung der Karte der Thrakischen Eroberung."],
             },
@@ -651,16 +663,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Verfügbar",
                 outer: "Außerhalb",
                 con: "Selektierte Stadt",
-                // Smileys
+                /// Smileys
                 std: "Standard",
                 gre: "Grepo",
                 nat: "Natur",
                 ppl: "Leute",
+                //Par: "",
                 oth: "Sonstige",
+                //hal: "",
                 xma: "Weihnachten",
                 eas: "Ostern",
                 lov: "Liebe",
-                // Defense form
+                /// Defense form
                 ttl: "Übersicht: Stadtverteidigung",
                 inf: "Informationen zur Stadt:",
                 dev: "Abweichung",
@@ -668,15 +682,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Premiumboni",
                 sil: "Silberstand",
                 mov: "Truppenbewegungen:",
-                // WW
+                /// WW
                 leg: "WW-Anteil",
                 stg: "Stufe",
                 tot: "Gesamt",
-                // Simulator
+                /// Simulator
                 str: "Einheitenstärke",
                 los: "Verluste",
                 mod: "ohne Modifikatoreinfluss",
-                // Comparison box
+                /// Comparison box
                 dsc: "Einheitenvergleich",
                 hck: "Schlag",
                 prc: "Stich",
@@ -690,11 +704,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Baukosten (Rohstoffe)",
                 fav: "Gunst",
                 tim: "Bauzeit (s)",
-                // Trade
+                /// Trade
                 rat: "Ressourcenverhältnis eines Einheitentyps",
                 shr: "Anteil an der Lagerkapazität der Zielstadt",
                 per: "Prozentualer Handel",
-                // Sent units box
+                /// Sent units box
                 lab: "Abgeschickt",
                 rec: "Ressourcen",
                 improved_movement: "Verbesserte Truppenbewegung",
@@ -708,7 +722,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Nützliche Info",
                 reme: ["Mulțumesc tuturor celor care au contribuit dezvoltării DIO-Tools", ""],
-
+        
                 Trou: ["Tutorial Specializări Trupe Grepolis - Tutorialul lui david1327", "Tot ce trebuie să ști despre puterile / slăbiciunile trupelor de pe Grepolis"],
                 util: ["Site-uri utilitare pentru Grepolis - Tutorialul lui david1327", "O multitudine de unelte pentru Grepolis: Statisticici, Hărți, Unelte, Scripturi, Forum ... toate sunt listate aici."]
             },
@@ -759,6 +773,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 profile: 'Profil',
                 ranking: 'Rangliste',
                 notes: 'Notizen',
+                //chat: '',
                 council: 'Konzil der Helden'
             },
             messages: {
@@ -802,6 +817,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 spying: 'spioniert',
                 spy: 'Spion',
                 support: 'stationierte',
+                //support2: '',
                 supporting: 'unterstützt',
                 attacking: 'greift',
                 farming_village: 'Bauerndorf',
@@ -842,22 +858,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         en: {
             Notification: {
                 //A: "",
-                B: "Important information Custom options have been reset",
-                C: 'The "Keyboard shortcuts for Windows" and "City view" options are active in the settings',
+                //B: "",
+                //C: "",
             },
             link: {
-                //update
+                ///update
                 update: "https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327.html",
                 update_direct: "https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html",
-                //donate:
+                ///donate:
                 Donate: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url",
-                //autre
+                ///autre
                 Update: "https://www.tuto-de-david1327.com/en/annonces/dio-tools-david1327/update-to-version-" + updateversion + ".html",
                 contact: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/",
                 forum: "https://en.forum.grepolis.com/index.php?threads/dio-tools-david1327.62408/",
                 link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html",
                 link_utile: "https://www.tuto-de-david1327.com/en/pages/info/utility-sites.html",
-                //help
+                ///help
                 available_units: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/units-overview.html",
                 UnitComparison: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/unit-comparison.html",
                 MessageExport: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/bb-code-messages.html",
@@ -867,20 +883,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.",
                 act: "Activate/deactivate features of the toolset:",
                 prv: "Preview of several features:",
-
+        
                 version_old: "Version is not up to date",
                 version_new: "Version is up to date",
                 version_dev: "Developer version",
-
+        
                 version_update: "Update",
                 Donate: "Donate",
-
+        
                 forum: "Tuto de david1327",
                 Update: "Update " + dio_version,
                 Feature: "New Feature",
                 Feature2: "New version",
                 Learn_more: "Learn more",
-
+        
                 cat_units: "Units",
                 cat_icons: "Town icons",
                 cat_forum: "Forum",
@@ -943,8 +959,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
                 FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""],
                 Mole: ["Not compatible to activate in the parameters of Mole Hole", ""],
-
-
+        
                 err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."],
                 //her: ["Thracian Conquest", "Downsizing of the map of the Thracian conquest."],
             },
@@ -971,7 +986,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Available",
                 outer: "Outside",
                 con: "Select town",
-                // Smileys
+                /// Smileys
                 std: "Standard",
                 gre: "Grepo",
                 nat: "Nature",
@@ -982,7 +997,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Xmas",
                 eas: "Easter",
                 lov: "Love",
-                // Defense form
+                /// Defense form
                 ttl: "Overview: Town defense",
                 inf: "Town information:",
                 dev: "Deviation",
@@ -990,15 +1005,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Premium bonuses",
                 sil: "Silver volume",
                 mov: "Troop movements:",
-                // WW
+                /// WW
                 leg: "WW Share",
                 stg: "Stage",
                 tot: "Total",
-                // Simulator
+                /// Simulator
                 str: "Unit strength",
                 los: "Loss",
                 mod: "without modificator influence",
-                // Comparison box
+                /// Comparison box
                 dsc: "Unit comparison",
                 hck: "Blunt",
                 prc: "Sharp",
@@ -1012,11 +1027,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Costs (resources)",
                 fav: "Favor",
                 tim: "Recruiting time (s)",
-                // Trade
+                /// Trade
                 rat: "Resource ratio of an unit type",
                 shr: "Share of the storage capacity of the target city",
                 per: "Percentage trade",
-                // Sent units box
+                /// Sent units box
                 lab: "Sent units",
                 rec: "Resources",
                 improved_movement: "Improved troop movement",
@@ -1030,7 +1045,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Useful info",
                 reme: ["I thank all those who contributed to the development of DIO tools", ""],
-
+        
                 Trou: ["Grepolis Troops Specialization Tutorial - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"],
                 util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."],
             },
@@ -1085,15 +1100,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 council: 'Council of Heroes'
             },
             messages: {
-                ghosttown: 'Ghost town',
-                no_cities: 'No cities on this island',
-                all: 'all',
-                export: 'Convert message into BB-Code',
-                Tol: 'Copy & Paste (Quack function)',
-                copy: 'Copy',
-                bbmessages: 'BB-Code messages',
-                copybb: 'BBCode has been copied',
-                écrit: 'has written the following:',
+                ghosttown: "Ghost town",
+                no_cities: "No cities on this island",
+                all: "all",
+                export: "Convert message into BB-Code",
+                Tol: "Copy & Paste (Quack function)",
+                copy: "Copy",
+                bbmessages: "BB-Code messages",
+                copybb: "BBCode has been copied",
+                écrit: "has written the following:",
             },
             caves: {
                 stored_silver: 'Stored silver coins',
@@ -1125,7 +1140,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 spying: 'spying',
                 spy: 'Spy',
                 support: 'support',
-                support2: 'ne peut pas soutenir',
+                support2: "can't support", //???
                 supporting: 'stationed',
                 attacking: 'attacking',
                 farming_village: 'farming village',
@@ -1166,37 +1181,54 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         it: {
             Notification: {
                 //A: "",
-                B: "Informazioni importanti Le opzioni personalizzate sono state ripristinate ",
-                C: 'Le opzioni "Scorciatoie da tastiera per Windows" e "Vista città" sono attive nelle impostazioni',
+                //B: "",
+                //C: "",
             },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://it.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.22111/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.",
                 act: "Activate/deactivate features of the toolset:",
                 prv: "Preview of several features:",
-
+        
                 version_old: "La versione non è aggiornata",
                 version_new: "La versione è aggiornata",
                 version_dev: "Versione per sviluppatori",
-
+        
                 version_update: "Aggiornare",
                 Donate: "Donare",
-
-                forum: "Tuto de david1327",
+        
+                //forum: "",
                 Update: "Aggiornare " + dio_version,
                 Feature: "Nuova caratteristica",
                 Feature2: "Nuova versione",
                 Learn_more: "Per saperne di più",
-
+        
                 cat_units: "Unità",
                 cat_icons: "Icone città",
                 cat_forum: "Forum",
                 cat_trade: "Commercio",
                 cat_wonders: "Mondo meravigliarsi",
                 cat_layout: "Disposizione",
-                cat_other: "Altro"
+                cat_other: "Altro",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 bir: ["Conta biremi", "Conta le biremi di una città e le somma"],
@@ -1220,6 +1252,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 til: ["Lista città", "Aggiunge le icone delle città alla lista città"],
                 tim: ["Mappa", "Aggiunge le icone città alla mappa strategica"],
                 tiw: ["Popup icona", ""],
+                //wwc: ["", ""],
+                //wwr: ["", ""],
+                //wwi: ["", ""],
                 con: ["Menu selezione", 'Scambia il pulsante "Seleziona città" con "Panoramica città" nel menu selezione'],
                 sen: ["Unità inviate", 'Mostra le unità inviate nella finestre di attacco/supporto'],
                 tov: ["Panoramica città", 'Sostituisce la panoramica città con la vecchia finestra vecchio stile'],
@@ -1247,12 +1282,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Commercio -> Contatore risorse (amministratore)", "Un conteggio di tutte le risorse nella tua città"],
                 FLASK: ["Non compatibile per attivare nei parametri di FLASK-TOOLS", ""],
                 Mole: ["Non compatibile per attivare nei parametri di Mole Hole", ""],
-
+        
                 err: ["Invia automaticamente il report dei bug", "Se attivi questa opzione, puoi aiutare a identificare i bug."],
                 her: ["Conquista della Tracia", "Ridimensiona la mappa della conquista della Tracia"],
             },
             Town_icons: {
-                // Town icons
                 //LandOff: "",
                 //LandDef: "",
                 //NavyOff: "",
@@ -1275,17 +1309,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Disponibili",
                 outer: "Fuori",
                 con: "Seleziona città",
-                // Smileys
+                /// Smileys
                 std: "Standard",
                 gre: "Grepo",
                 nat: "Natura",
                 ppl: "Persone",
+                //Par: "",
                 oth: "Altro",
                 hal: "Halloween",
                 xma: "Natale",
                 eas: "Pasqua",
                 lov: "Amore",
-                // Defense form
+                /// Defense form
                 ttl: "Panoramica: difesa della città",
                 inf: "Informazioni città:",
                 dev: "Errore",
@@ -1293,11 +1328,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Bonus premium",
                 sil: "Argento in caverna",
                 mov: "Movimenti truppi:",
-                // Simulator
+                /// WW
+                //leg: "",
+                //stg: "",
+                //tot: "",
+                /// Simulator
                 str: "Forza delle unità",
                 los: "Perse",
                 mod: "Senza influenza dei modificatori",
-                // Comparison box
+                /// Comparison box
                 dsc: "Paragone unità",
                 hck: "Contundente",
                 prc: "Arma bianca",
@@ -1311,16 +1350,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Costi (risorse)",
                 fav: "Favori",
                 tim: "Tempo di reclutamento",
-                // Trade
+                /// Trade
                 rat: "Quantità di risorse per tipo unità",
                 shr: "Quantità della capacità del magazzino della città bersaglio",
                 per: "Commercio percentuale",
-                // Sent units box
+                /// Sent units box
                 lab: "Unità inviate",
                 rec: "Risorse",
                 improved_movement: "Movimento accelerato unità",
-                donat: "donare",
                 Tran: "Traduzioni",
+                donat: "donare",
                 Happy: "Felice anno nuovo!",
                 Merry: "Ho Ho Ho, buon Natale!",
                 tow: "BBCode città",
@@ -1329,7 +1368,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Informazioni Utili",
                 reme: ["Ringrazio tutti coloro che hanno contribuito allo sviluppo di DIO-Tools-david1327", ""],
-
+        
                 Trou: ["Specializzazione delle truppe di Grepolis lezione - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"],
                 util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."]
             },
@@ -1370,6 +1409,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 city_list: 'Elenco città',
                 attack_planner: 'Pianificatore attacchi',
                 farming_villages: 'Villaggi rurali',
+                menu: "",
                 city_view: 'Panoramica città',
                 messages: 'Messaggi',
                 reports: 'Rapporti',
@@ -1379,6 +1419,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 profile: 'Profilo',
                 ranking: 'Classifica',
                 notes: 'Note',
+                //chat: "",
                 council: 'Concilio degli eroi'
             },
             messages: {
@@ -1415,6 +1456,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Optipop: "Popolazione ottimale per",
                 army: "Non hai un esercito.",
             },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
+            },
             translations: {
                 info: 'Info',
                 trans: 'Traduzione per lingua',
@@ -1447,17 +1503,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //////////////////////////////////////////////
         fr: {
             Notification: {
-                A: daaaa,
-                B: "Information important Les options personnalisées ont été réinitialisé",
-                C: 'Les option "Raccourcis clavier pour Windows" et "Vue de la ville" sont à active dans les paramètres',
+                //A: "",
+                //B: "",
+                //C: "",
             },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
                 Update: "https://www.tuto-de-david1327.com/annonces/dio-tools-david1327/mise-a-jour-" + updateversion + ".html",
                 contact: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/",
                 forum: "https://fr.forum.grepolis.com/index.php?threads/dio-tools-david1327.79567/",
                 link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html",
                 link_utile: "https://www.tuto-de-david1327.com/pages/info/sites-utilitaires.html",
-                //help
+                ///help
                 available_units: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/apercu-des-unites.html",
                 UnitComparison: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/comparaison-des-unites.html",
                 MessageExport: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/bb-code-messages.html",
@@ -1467,21 +1529,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools offres certains écrans, une boîte de smiley, les options <br>commerciales, des changements à la mise en page et d'autres choses.",
                 act: "Activation/Désactivation des fonctions:",
                 prv: "Aperçu des fonctions séparées:",
-
+        
                 version_old: "La version n'est pas à jour",
                 version_new: "La version est à jour",
                 version_dev: "Version développeur",
-
+        
                 version_update: "Mettre à jour",
                 Donate: "Faire un don",
-
-
-                forum: "Tuto de david1327",
+        
+                //forum: "",
                 Update: "Mise à jour " + dio_version,
                 Feature: "Nouvelle fonctionnalité",
                 Feature2: "Nouvelle version",
                 Learn_more: "En savoir plus",
-
+        
                 cat_units: "Unités",
                 cat_icons: "Icônes de la ville",
                 cat_forum: "Forum",
@@ -1545,7 +1606,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"],
                 FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""],
                 Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""],
-
+        
                 err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
             },
             Town_icons: {
@@ -1571,17 +1632,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Disponible",
                 outer: "Extérieur",
                 con: "Sélectionner",
-                // Smileys
+                /// Smileys
                 std: "Standard",
                 gre: "Grepo",
                 nat: "Nature",
                 ppl: "Gens",
                 Par: "Fête",
                 oth: "Autres",
+                hal: "Halloween",
                 xma: "Noël",
                 eas: "Pâques",
                 lov: "Amour",
-                // Defense form
+                /// Defense form
                 ttl: "Aperçu: Défense de ville",
                 inf: "Renseignements sur la ville:",
                 dev: "Différence",
@@ -1589,15 +1651,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Bonus premium",
                 sil: "Remplissage de la grotte",
                 mov: "Mouvements de troupes:",
-                // WW
+                /// WW
                 leg: "Participation",
                 stg: "Niveau",
                 tot: "Total",
-                // Simulator
+                /// Simulator
                 str: "Force unitaire",
                 los: "Pertes",
                 mod: "sans influence de modificateur",
-                // Comparison box
+                /// Comparison box
                 dsc: "Comparaison des unités",
                 hck: "Contond.",
                 prc: "Blanche",
@@ -1611,17 +1673,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Coût de construction",
                 fav: "Faveur",
                 tim: "Temps de construction (s)",
-                // Trade
+                /// Trade
                 rat: "Ratio des ressources d'un type d'unité",
                 shr: "Part de la capacité de stockage de la ville cible",
                 per: "Commerce de pourcentage",
-                // Sent units box
+                /// Sent units box
                 lab: "Envoyée",
                 rec: "Ressources",
                 improved_movement: "Mouvement des troupes amélioré",
-                Thanks_generator: "Générateur de remerciements",
-                donat: "Contribution (Dons)",
                 Tran: "Traductions",
+                donat: "Contribution (Dons)",
                 Happy: "Bonne année!",
                 Merry: "Ho! Ho! Ho! Joyeux Noël!",
                 tow: "BBCode ville",
@@ -1630,7 +1691,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Informations utiles",
                 reme: ["Je remercie tous ceux qui ont contribué au développement de DIO-Tools", ""],
-
+        
                 Trou: ["Tuto spécialisation Troupes Grepolis - tuto de david1327", "Tuto Troupes Grepolis se qui faux savoir sur les troupe de grepolis Point forts/faibles des unités"],
                 util: ["Sites utilitaires pour grepolis - Tuto de david1327", "Une multitude d'outils pour Grepolis : Statistiques, Maps, Outils, Script, Forum... ils sont tous répertorié ici."]
             },
@@ -1697,6 +1758,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             caves: {
                 stored_silver: 'Capacité de stockage des pièces d\'argent',
+                silver_to_store: "Pièces d'argent stockables",
                 name: 'Nom',
                 wood: 'Bois', //uw.DM.getl10n("barracks").cost_details.wood
                 stone: 'Pierre', //uw.DM.getl10n("barracks").cost_details.stone
@@ -1706,7 +1768,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             grepo_mainmenu: {
                 city_view: 'Vue de la ville',
                 island_view: "Vue île",
-                delete: 'Supprimer'  //uw.DM.getl10n("notes").btn_delete
             },
             transport_calc: {
                 recruits: 'Nombre d\'unités dans la queue de recrutement',
@@ -1764,37 +1825,64 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //      Russian Translation by MrBobr       //
         //////////////////////////////////////////////
         ru: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
+            link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
+                //forum: "",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
+            },
             Settings: {
                 dsc: "DIO-Tools изменяет некоторые окна, добавляет новые смайлы, отчёты,<br>улучшеные варианты торговли и другие функции.",
                 act: "Включение/выключение функций:",
                 prv: "Примеры внесённых изменений:",
-
+        
                 //version_old: "",
                 //version_new: "",
                 //version_dev: "",
-
+        
                 //version_update: "",
                 Donate: "Пожертвовать",
-
+        
+                //forum: "",
                 //Update: " "+ dio_version,
                 //Feature: "",
                 //Feature2: "",
                 //Learn_more: "",
-
+        
                 //cat_units: "",
                 //cat_icons: "",
                 //cat_forum: "",
                 //cat_trade: "",
                 //cat_wonders: "",
                 //cat_layout: "",
-                //cat_other: ""
+                //cat_other: "",
+                //cat_Premium: "",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Счётчик бирем", "Показывает число бирем во всех городах"],
-                ava: ["Обзор единиц", "Указывает единицы всех городов"], // ?
+                ava: ["Обзор единиц", "Указывает единицы всех городов"], 
+                ava2: ["", ""],
                 sml: ["Смайлы", "Добавляет кнопку для вставки смайлов в сообщения"],
                 str: ["Сила отряда", "Добавляет таблицу общей силы отряда в некоторых окнах"],
-                //trd: [ "Торговля",		"Добавляет маркеры и отправку недостающих ресурсов, необходимых для фестиваля. Инструменты для долевой торговли" ],
+                //tra: [ "", ""],
                 per: ["Процент торговля", ""],
                 rec: ["Рекрутинг торговля", ""],
                 cnt: ["Завоевания", "Отображение общего числа атак/подкреплений в окне завоевания города"],
@@ -1840,11 +1928,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-
+        
                 err: ["Отправить сообщения об ошибках автоматически", "Если вы включите эту опцию, вы можете помочь идентифицировать ошибки"],
+                //her: ["", ""],
             },
             Town_icons: {
-                // Town icons
                 //LandOff: "",
                 //LandDef: "",
                 //NavyOff: "",
@@ -1861,14 +1949,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Pink: 'Розовый',
                 White: "Белый",
             },
-
             labels: {
                 uni: "Обзор единиц",
                 total: "Oбщий",
                 available: "доступный",
                 outer: "вне",
                 con: "выбирать",
-                // Smileys
+                /// Smileys
                 //std: "",
                 //gre: "",
                 //nat: "",
@@ -1879,7 +1966,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //xma: "",
                 //eas: "",
                 //lov: "",
-                // Defense form
+                /// Defense form
                 ttl: "Обзор: Отчёт о городе",
                 inf: "Информация о войсках и постройках:",
                 dev: "Отклонение",
@@ -1887,15 +1974,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Премиум-бонусы",
                 sil: "Серебро в пещере",
                 mov: "Перемещения",
-                // WW
+                /// WW
                 //leg: "",
                 //stg: "",
                 //tot: "",
-                // Simulator
+                /// Simulator
                 str: "Сила войск",
                 los: "Потери",
                 mod: "без учёта заклинаний, бонусов, исследований",
-                // Comparison box
+                /// Comparison box
                 dsc: "Сравнение юнитов",
                 hck: "Ударное",
                 prc: "Колющее",
@@ -1909,25 +1996,25 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Стоимость (ресурсы)",
                 fav: "Благосклонность",
                 tim: "Время найма (с)",
-                // Trade
+                /// Trade
                 //rat: "",
                 //shr: "",
                 //per: "",
-                rec: "Ресурсы",
-                // Sent units box
+                /// Sent units box
                 lab: "Отправлено",
+                rec: "Ресурсы",
                 improved_movement: "Улучшенная перемещение войск",
+                Tran: "Переводы",
                 donat: "Пожертвования",
                 //Happy: "",
                 //Merry: "",
-                Tran: "Переводы",
                 tow: "BBCode город",
                 ingame_name: ["Не стесняйтесь обращаться ко мне, если вы предпочитаете, чтобы вас назвали в честь названия игры", "Я благодарен игрокам за советы и идеи, они дают мне силы работать дальше. К сожалению, проект отнимает очень много времени, поэтому я буду рад любой поддержке. Я хочу поблагодарить всех, кто помогал проекту, будь то Пожертвования, советы, отчеты с ошибками или просто добрые слова в мой адрес."]
             },
             tutoriel: {
                 tuto: "Полезная информация",
                 reme: ["Я благодарю всех, кто внес вклад в разработку DIO-TOOLS-David1327", ""],
-
+        
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -1994,10 +2081,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             caves: {
                 stored_silver: 'Встроенные cереб. монеты',
+                silver_to_store: "",
                 name: 'название',
                 wood: 'древесина',
                 stone: 'камень',
-                silver: 'Сереб. монеты'
+                silver: 'Сереб. монеты',
+                search_for: ""
             },
             grepo_mainmenu: {
                 city_view: 'Обзор города',
@@ -2012,6 +2101,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //pop: "",
                 //Optipop : "",
                 //army : "",
+            },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
             },
             translations: {
                 info: 'информация',
@@ -2044,40 +2148,64 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //       Polish Translation by anpu         //
         //////////////////////////////////////////////
         pl: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
-                forum: "https://pl.forum.grepolis.com/index.php?threads/dio-tools-david1327.30016/"
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
+                forum: "https://pl.forum.grepolis.com/index.php?threads/dio-tools-david1327.30016/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools oferuje (między innymi) poprawione widoki, nowe uśmieszki,<br>opcje handlu i zmiany w wyglądzie.",
                 act: "Włącz/wyłącz funkcje skryptu:",
                 prv: "podgląd poszczególnych opcji:",
-
+        
                 version_old: "Wersja nie jest aktualizowana",
                 version_new: "Wersja jest zaktualizowana",
                 version_dev: "Wersja dla programistów",
-
+        
                 version_update: "aktualizacja",
                 Donate: "Podarować",
-
+        
+                //forum: "",
                 Update: "Aktualizacja " + dio_version,
                 Feature: "Nowa cecha",
                 Feature2: "Nowa wersja",
                 Learn_more: "Ucz się więcej",
-
+        
                 //cat_units: "",
                 //cat_icons: "",
                 //cat_forum: "",
                 //cat_trade: "",
                 //cat_wonders: "",
                 //cat_layout: "",
-                //cat_other: ""
+                //cat_other: "",
+                //cat_Premium: "",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Licznik birem", "Zlicza i sumuje biremy z miast"],
                 ava: ["Przegląd jednostek", "Wskazuje jednostki wszystkich miast"], // ?
+                //ava2: ["", ""],
                 sml: ["Emotki", "Dodaje dodatkowe (zielone) emotikonki"],
                 str: ["Siła jednostek", "dodaje tabelki z siłą jednostek w różnych miejscach gry"],
-                //trd: [ "Handel",			"Rozszerza okno handlu o handel procentowy, proporcje surowców wg jednostek, dodaje znaczniki dla festynów" ],
+                //tra: [ "", ""],
                 per: ["Handel procentowy", ""],
                 rec: ["Handel rekrutacyjne", ""],
                 cnt: ["Podboje", "Zlicza wsparcia/ataki w oknie podboju (tylko własne podboje)"],
@@ -2123,8 +2251,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Handel -> Licznik zasobów (Administrator)", "Licznik wszystkich zasobów w Twoim mieście"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-
+        
                 err: ["Automatycznie wysyłać raporty o błędach", "Jeśli włączysz tę opcję, możesz pomóc zidentyfikować błędy"],
+                //her: ["", ""],
             },
             Town_icons: {
                 //LandOff: "",
@@ -2149,7 +2278,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Dostępny",
                 outer: "Na zewnątrz",
                 con: "Wybierz miasto",
-                // Smileys
+                /// Smileys
                 std: "Standard" /* "Standardowe" */,
                 gre: "Grepo",
                 nat: "Przyroda",
@@ -2160,7 +2289,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //xma: "",
                 //eas: "",
                 //lov: "",
-                // Defense form
+                /// Defense form
                 ttl: "Podgląd: Obrona miasta",
                 inf: "Informacje o mieście:",
                 dev: "Ochyłka",
@@ -2168,15 +2297,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "opcje Premium",
                 sil: "Ilość srebra",
                 mov: "Ruchy wojsk",
-                // WW
+                /// WW
                 leg: "Udział w Cudzie",
                 stg: "Poziom",
                 tot: "Łącznie",
-                // Simulator
+                /// Simulator
                 str: "Siła jednostek",
                 los: "Straty",
                 mod: "bez modyfikatorów",
-                // Comparison box
+                /// Comparison box
                 dsc: "Porównianie jednostek",
                 hck: "Obuchowa",
                 prc: "Tnąca",
@@ -2190,11 +2319,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Koszta (surowce)",
                 fav: "Łaski",
                 tim: "Czas rekrutacji (s)",
-                // Trade
+                /// Trade
                 rat: "Stosunek surowców dla wybranej jednostki",
                 shr: "procent zapełnienia magazynu w docelowym mieście",
                 per: "Handel procentowy",
-                // Sent units box
+                /// Sent units box
                 lab: "Wysłane jednostki",
                 rec: "Zasoby",
                 improved_movement: "Przyspieszone ruchy wojsk",
@@ -2208,7 +2337,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Przydatna informacja",
                 reme: ["Dziękuję wszystkim, którzy przyczynili się do rozwoju DIO-TOOLS-David1327", ""],
-
+        
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -2275,10 +2404,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             caves: {
                 stored_silver: 'Przechowywane srebrne monety',
+                //silver_to_store: "",
                 name: 'Nazwa',
                 wood: 'Drewno',
                 stone: 'Kamień',
-                silver: 'Srebrne monety'
+                silver: 'Srebrne monety',
+                //search_for: ""
             },
             grepo_mainmenu: {
                 city_view: 'Podgląd miasta',
@@ -2293,6 +2424,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //pop: "",
                 //Optipop : "",
                 //army : "",
+            },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
             },
             translations: {
                 info: 'информация',
@@ -2325,37 +2471,61 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         // Spanish Translation by Juana de Castilla //
         //////////////////////////////////////////////
         es: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://es.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.45017/"
+                //link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html",
+                //link_utile: "https://www.tuto-de-david1327.com/en/pages/info/utility-sites.html",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools ofrece, entre otras cosas, varias pantallas, ventana de <br>emoticones, opciones de comercio y algunos cambios en el diseño.",
                 act: "Activar/desactivar características de las herramientas:",
                 prv: "Vista previa de varias características:",
-
+        
                 version_old: "La versión no está actualizada",
                 version_new: "La versión está actualizada",
                 version_dev: "Versión de desarrollador",
-
+        
                 version_update: "poner al día",
                 Donate: "Donar",
-
+        
+                //forum: "",
                 Update: "Actualizar " + dio_version,
                 Feature: "Nueva caracteristica",
                 Feature2: "Nueva versión",
                 Learn_more: "Aprende más",
-
+        
                 //cat_units: "",
                 //cat_icons: "",
                 //cat_forum: "",
                 //cat_trade: "",
                 //cat_wonders: "",
                 //cat_layout: "",
-                //cat_other: ""
+                //cat_other: "",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Contador de birremes", "Cuenta los birremes de una ciudad y los suma"],
                 ava: ["Información general unidades", "Indica las unidades de todas las ciudades"], // ?
+                //ava2: ["", ""],
                 sml: ["Emoticones", "Código BB para emoticones"],
                 str: ["Fortaleza de la Unidad", "Añade tabla de fortalezas de cada unidad en varias zonas"],
                 trd: ["Comercio", "Añade en la pestaña de comercio un porcentaje de comercio y reclutamiento y limitadores de Mercado por cada ciudad"],
@@ -2404,8 +2574,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Comercio -> Contador de recursos (Administrador) ", " Un recuento de todos los recursos de tu ciudad"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-
+        
                 err: ["Enviar informes de errores automáticamente", "Si se activa esta opción, puede ayudar a identificar errores."],
+                //her: ["", ""],
             },
             Town_icons: {
                 //LandOff: "",
@@ -2489,7 +2660,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Información útil",
                 reme: ["Agradezco a todos los que contribuyeron al desarrollo de DIO-TOOLS-David1327", ""],
-
+        
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -2560,7 +2731,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 name: 'Nombre',
                 wood: 'Madera',
                 stone: 'Piedra',
-                silver: 'Monedas de plata'
+                silver: 'Monedas de plata',
+                //search_for: ''
             },
             grepo_mainmenu: {
                 city_view: 'Vista de la ciudad',
@@ -2575,6 +2747,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //pop: "",
                 //Optipop : "",
                 //army : "",
+            },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
             },
             translations: {
                 info: 'информация',
@@ -2608,37 +2795,61 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //   Portuguese (BR) Translation by  HELL   //
         //////////////////////////////////////////////
         br: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://br.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.23781/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools oferece, entre outras coisas, algumas telas, uma caixa de smiley, opções de comércio <br> e algumas alterações no layout.",
                 act: "Ativar/desativar recursos do conjunto de ferramentas:",
                 prv: "Pré-visualização de vários recursos:",
-
+        
                 version_old: "Versão não está atualizada",
                 version_new: "Versão está atualizada",
                 version_dev: "Versão do desenvolvedor",
-
+        
                 version_update: "Atualização",
                 Donate: "Doar",
-
+        
+                //forum: "",
                 Update: "Atualizar " + dio_version,
                 Feature: "Novo Recurso",
                 Feature2: "Nova versão",
                 Learn_more: "Saber mais",
-
+        
                 cat_units: "Unidades",
                 cat_icons: "Ícones nas Cidades",
                 cat_forum: "Forum",
                 cat_trade: "Comércio",
                 cat_wonders: "Maravilhas do Mundo",
                 cat_layout: "Layout",
-                cat_other: "Outros"
+                cat_other: "Outros",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 // bir: ["Contador de Birremes", "Conta as biremes da cidade na cidade"],
                 ava: ["Visão Geral da unidade", "Indica as unidades de todas as cidades"], // ?
+                //ava2: ["", ""],
                 sml: ["Smilies", "Estende o bbcode com uma caixa de smiley"],
                 str: ["Força das Tropas", "Adiciona quadros de força das tropas em diversas áreas"],
                 tra: ["Capacidade de Transporte", "Mostra a capacidade de transporte ocupado e disponível no menu de unidades"],
@@ -2687,9 +2898,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Comércio -> Contador de recursos (Administrador) ", " Uma contagem de todos os recursos em sua cidade"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-
+        
                 err: ["Enviar automaticamente relatórios de erros", "Se você ativar essa opção, você pode ajudar a identificar erros."],
-                her: ["Conquista Thracian", "Redução de tamanho do mapa da conquista Thracian."],
+                //her: ["Conquista Thracian", "Redução de tamanho do mapa da conquista Thracian."],
             },
             Town_icons: {
                 //LandOff: "",
@@ -2714,7 +2925,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Disponível",
                 outer: "Fora",
                 con: "Selecionar cidade",
-                // Smileys
+                /// Smileys
                 std: "Padrão",
                 gre: "Grepo",
                 nat: "Natural",
@@ -2725,7 +2936,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Natal",
                 //eas: "",
                 //lov: "",
-                // Defense form
+                /// Defense form
                 ttl: "Pedido de Apoio",
                 inf: "Informação da cidade:",
                 dev: "Desvio",
@@ -2733,15 +2944,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Bônus Premium",
                 sil: "Prata na Gruta",
                 mov: "Movimentação de Tropas:",
-                // WW
+                /// WW
                 leg: "WW Maravilhas",
                 stg: "Level",
                 tot: "Total",
-                // Simulator
+                /// Simulator
                 str: "Força das Unidades",
                 los: "Perdas",
                 mod: "Sem modificador de influência",
-                // Comparison box
+                /// Comparison box
                 dsc: "Comparação de unidades",
                 hck: "Impacto",
                 prc: "Corte",
@@ -2755,16 +2966,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Custo (recursos)",
                 fav: "Favor",
                 tim: "Tempo de recrutamento (s)",
-                // Trade
+                /// Trade
                 rat: "Proporção de recursos de um tipo de unidade",
                 shr: "A partir do armazenamento sobre a cidade de destino",
                 per: "Percentual de comércio",
-                // Sent units box
+                /// Sent units box
                 lab: "Unidades enviadas",
                 rec: "Recursos",
                 improved_movement: "Movimentação de tropas com ajuste de bônus",
-                donat: "Doações",
                 Tran: "Traduções",
+                donat: "Doações",
                 Happy: "Feliz Ano Novo!",
                 Merry: "Ho ho ho feliz Natal!",
                 //tow: "",
@@ -2773,7 +2984,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Informações úteis",
                 reme: ["Agradeço a todos que contribuíram para o desenvolvimento de DIO-TOOLS-David1327", ""],
-
+        
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -2827,38 +3038,54 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 chat: 'Chat',
                 council: 'Conselho de Heróis'
             },
+            messages: {
+                ghosttown: "Cidade-fantasma",
+                no_cities: "Nenhuma cidade nesta ilha",
+                all: "Tudo",
+                export: "Converter mensagem em BB-Code",
+                Tol: "Copiar e colar (Função Quack)",
+                copy: "Copiar",
+                bbmessages: "Mensagens do BB-Code",
+                copybb: "BBCode foi copiado",
+                écrit: "escreveu o seguinte:",
+            },
             caves: {
                 stored_silver: 'Moedas de prata armazenadss',
                 silver_to_store: 'Moedas de prata armazenáveis',
                 name: 'Nome',
                 wood: 'Madeira',
                 stone: 'Pedra',
-                silver: 'Moedas de prata'
-            },
-            messages: {
-                ghosttown: 'Cidade-fantasma',
-                no_cities: 'Nenhuma cidade nesta ilha',
-                all: 'Tudo',
-                export: 'Converter mensagem em BB-Code',
-                Tol: 'Copiar e colar (Função Quack)',
-                copy: 'Copiar',
-                bbmessages: 'Mensagens do BB-Code',
-                copybb: 'BBCode foi copiado',
-                écrit: 'escreveu o seguinte:',
+                silver: 'Moedas de prata',
+                //search_for: ""
             },
             grepo_mainmenu: {
                 city_view: 'Vista da cidade',
                 island_view: 'Vista Ilha'
             },
             transport_calc: {
-                recruits: 'Contagem das unidades na fila de recrutamento',
+                recruits: "Contagem das unidades na fila de recrutamento",
                 //slowtrans : "",
                 //fasttrans : "",
                 //Lack: "",
                 //Still: "",
                 //pop: "",
                 //Optipop : "",
-                //army : "",
+                //army: "",
+            },
+            reports: {
+                //choose_folder: "",
+                //enacted: "",
+                //conquered: "",
+                //spying: "",
+                //spy: "",
+                //support: "",
+                //support2: "",
+                //supporting: "",
+                //attacking: "",
+                //farming_village: "",
+                //gold: "",
+                //Quests: "",
+                //Reservations: "",
             },
             translations: {
                 info: 'Info',
@@ -2892,37 +3119,61 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //       Czech Translation by Piwus         //
         //////////////////////////////////////////////
         cz: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://cz.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.8478/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools nabízí,mimo jiné,některá nová zobrazení,okénko smajlíků,<br>obchodní možnosti a některé změny v rozložení panelů.",
                 act: "Aktivovat/Deaktivovat funkce  sady nástrojů:",
                 prv: "Ukázka několika funkcí:",
-
+        
                 version_old: "Verze je zastaralá",
                 version_new: "Verze je aktuální",
                 version_dev: "Vývojářská verze",
-
+        
                 version_update: "Aktualizovat",
                 Donate: "Darovat",
-
+        
+                //forum: "",
                 Update: "Aktualizace " + dio_version,
                 Feature: "Nová vlastnost",
                 Feature2: "Nová verze",
                 Learn_more: "Zjistit více",
-
+        
                 cat_units: "Jednotky",
                 cat_icons: "Ikony měst",
                 cat_forum: "Forum",
                 cat_trade: "Obchod",
                 cat_wonders: "Div světa",
                 cat_layout: "Okna",
-                cat_other: "Ostatní"
+                cat_other: "Ostatní",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 // bir: ["Počítadlo birém", "Spočítá každé birémy ve městech a sečte je."],
                 ava: ["Jednotky Přehled", "Označuje jednotky všemi městy"], // ?
+                //ava2: ["", ""],
                 sml: ["Smajlíci", "Rozšiřuje panel BBkodů okénkem smajlíků"],
                 str: ["Síla jednotek", "Přidává tabulku sil jednotek v různých  oblastech"],
                 tra: ["Transportní kapacita", "Zobrazuje obsazenou a dostupnou transportní kapacitu v nabídce jednotek"],
@@ -2971,7 +3222,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Obchod -> Počítadlo zdrojů (správce)", "Počet všech zdrojů ve vašem městě"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-
+        
                 err: ["Hlásit chyby automaticky", "Pokud aktivuješ tuto možnost,pomůžeš nám identifikovat chyby."],
                 her: ["Thrácké dobývání", "Redukuje mapy Thráckého dobývání."],
             },
@@ -2998,7 +3249,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "K dispozici",
                 outer: "Vně",
                 con: "Zvolit město",
-                // Smileys
+                /// Smileys
                 std: "Standartní",
                 gre: "Grepo",
                 nat: "Příroda",
@@ -3009,7 +3260,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Vánoce",
                 //eas: "",
                 //lov: "",
-                // Defense form
+                /// Defense form
                 ttl: "Přehled: Obrana města",
                 inf: "Informace o městě:",
                 dev: "Odchylka",
@@ -3017,15 +3268,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Prémiové bonusy",
                 sil: "Objem stříbra",
                 mov: "Pohyby vojsk:",
-                // WW
+                /// WW
                 leg: "Podíl divu světa",
                 stg: "Stupeň",
                 tot: "Celkem",
-                // Simulator
+                /// Simulator
                 str: "Síla jednotek",
                 los: "Ztráta",
                 mod: "bez vlivu modifikátoru",
-                // Comparison box
+                /// Comparison box
                 dsc: "Porovnání jednotek",
                 hck: "Sečné",
                 prc: "Bodné",
@@ -3039,11 +3290,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Náklady (suroviny)",
                 fav: "Přízeň",
                 tim: "Doba rekrutování (s)",
-                // Trade
+                /// Trade
                 rat: "Poměr surovin typu jednotky",
                 shr: "Podíl na úložné kapacitě cílového města",
                 per: "Procentuální obchod",
-                // Sent units box
+                /// Sent units box
                 lab: "Odeslané jednotky",
                 rec: "Zdroje",
                 improved_movement: "Vylepšený pohyb jednotek",
@@ -3057,7 +3308,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Užitečné informace",
                 reme: ["Děkuji všem, kteří se podíleli na vývoji DIO-TOOLS-David1327", ""],
-
+        
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -3098,6 +3349,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 city_list: 'Seznam měst',
                 attack_planner: 'Plánovač útoků',
                 farming_villages: 'Zemědělské vesnice',
+                //menu: '',
                 city_view: 'Přehled města',
                 messages: 'Zprávy',
                 reports: 'Hlášení',
@@ -3107,6 +3359,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 profile: 'Profil',
                 ranking: 'Žebříček',
                 notes: 'Poznámky',
+                //chat: '',
                 council: 'Shromáždění hrdinů'
             },
             messages: {
@@ -3122,10 +3375,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             caves: {
                 stored_silver: 'Uložené stříbrné mince',
+                //silver_to_store: '',
                 name: 'Jméno',
                 wood: 'Dřevo',
                 stone: 'Kámen',
                 silver: 'Stříbrné mince',
+                //search_for: ''
             },
             grepo_mainmenu: {
                 city_view: 'Přehled města',
@@ -3140,6 +3395,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //pop: "",
                 //Optipop : "",
                 //army : "",
+            },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
             },
             translations: {
                 info: 'Info',
@@ -3172,33 +3442,56 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //     Romanian Translation by Nicolae01    //
         //////////////////////////////////////////////
         ro: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://ro.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.12961/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools oferă, printre altele, câteva afișaje, emoticoane, opțiuni de tranzacționare și unele modificări ale aspectului.",
                 act: "Activați / dezactivați caracteristicile instrumentelor:",
                 prv: "Previzualizarea mai multor funcții:",
-
+        
                 version_old: "Versiunea nu este la zi",
                 version_new: "Versiunea este la zi",
                 version_dev: "Versiunea dezvoltatorului",
-
+        
                 version_update: "Versiune la zi",
                 Donate: "Donează",
-
+        
+                //forum: "",
                 Update: "Actualizați " + dio_version,
                 Feature: "Optiune noua",
                 Feature2: "Versiune noua",
                 Learn_more: "Aflați mai multe",
-
+        
                 cat_units: "Unități",
                 cat_icons: "Iconițele pentru orașe",
                 cat_forum: "Forum",
                 cat_trade: "Magazin",
                 cat_wonders: "Minunile Lumii",
                 cat_layout: "Schemă",
-                cat_other: "Diverse"
+                cat_other: "Diverse",
+                //cat_Premium: "",
+                cat_Quack: "Quack",
             },
             Options: {
                 bir: ["Contor de bireme", "Numără câte bireme sunt în orașe și face suma lor"],
@@ -3252,7 +3545,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Comerț -> Contor de resurse (Administrator)", "Un număr al tuturor resurselor din orașul dvs."],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-
+        
                 err: ["Trimite rapoarte de eroare automatic", "Dacă activezi această opțiune, poți ajuta în identificarea erorilor."],
                 her: ["Cucerirea Tracică", "Reducerea hărții cuceririi tracice."],
             },
@@ -3279,7 +3572,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Disponibile",
                 outer: "Afară",
                 con: "Alege orașul",
-                // Smileys
+                /// Smileys
                 std: "Standard",
                 gre: "Grepolis",
                 nat: "Natură",
@@ -3290,7 +3583,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Crăciun",
                 eas: "Paște",
                 lov: "Dragoste",
-                // Defense form
+                /// Defense form
                 ttl: "Vedere de ansamblu: Apărarea orașului",
                 inf: "Informațiile orașului:",
                 dev: "Deviere",
@@ -3298,15 +3591,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Bonusurile premium",
                 sil: "Volumul argintului",
                 mov: "Mișcările trupelor:",
-                // WW
+                /// WW
                 leg: "ML Participare",
                 stg: "Stagiu",
                 tot: "Total",
-                // Simulator
+                /// Simulator
                 str: "Puterea unităților",
                 los: "Pierderi",
                 mod: "fără modificator de influență",
-                // Comparison box
+                /// Comparison box
                 dsc: "Comparare unități",
                 hck: "Neascuțit",
                 prc: "Ascuțit",
@@ -3320,11 +3613,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Cost (resurse)",
                 fav: "Favoruri",
                 tim: "Timp de recrutare (s)",
-                // Trade
+                /// Trade
                 rat: "Raportul resurselor față de tipul de unitate",
                 shr: "Ponderarea capacității de stocare a orașului țintă",
                 per: "Procent resurse",
-                // Sent units box
+                /// Sent units box
                 lab: "Unități trimise",
                 rec: "Resurse",
                 improved_movement: "Mișcare îmbunătățită a trupelor",
@@ -3338,7 +3631,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Informații utile",
                 reme: ["Mulțumesc tuturor celor care au contribuit dezvoltării DIO-Tools", ""],
-
+        
                 Trou: ["Tutorial Specializări Trupe Grepolis - Tutorialul lui david1327", "Tot ce trebuie să ști despre puterile / slăbiciunile trupelor de pe Grepolis"],
                 util: ["Site-uri utilitare pentru Grepolis - Tutorialul lui david1327", "O multitudine de unelte pentru Grepolis: Statisticici, Hărți, Unelte, Scripturi, Forum ... toate sunt listate aici."]
             },
@@ -3364,6 +3657,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 last_city: 'Ultimul oras',
                 next_city: 'Urmatorul oras',
                 jump_city: 'Salt la orasul curent',
+                //administrator: "",
                 captain: 'Capitan',
                 trade_ov: 'Negot',
                 command_ov: 'Comenzi',
@@ -3388,6 +3682,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 profile: 'Profil',
                 ranking: 'Clasament',
                 notes: 'Notite',
+                //chat: "",
                 council: 'Consiliul eroilor'
             },
             messages: {
@@ -3407,7 +3702,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 name: 'Nume',
                 wood: 'Lemn',
                 stone: 'Piatra',
-                silver: 'Monede de argint '
+                silver: 'Monede de argint ',
+                //search_for: ""
             },
             grepo_mainmenu: {
                 city_view: 'Vezi Oras',
@@ -3422,6 +3718,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //pop: "",
                 //Optipop : "",
                 //army : "",
+            },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
             },
             translations: {
                 info: 'Info',
@@ -3454,33 +3765,56 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //   Néerlandais Translation by Firebloem   //
         //////////////////////////////////////////////
         nl: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://nl.forum.grepolis.com/index.php?threads/dio-tools-david1327.39609/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools biedt onder andere, enkele displays, een smileybox,<br> handelsopties en enkele wijzigingen in de lay-out.",
                 act: "Functies van de toolset activeren/deactiveren:",
                 prv: "Voorbeeld van verschillende functies:",
-
+        
                 version_old: "Versie is niet actueel",
                 version_new: "Versie is bijgewerkt",
                 version_dev: "Ontwikkelaarsversie",
-
+        
                 version_update: "Update",
                 Donate: "Doneer",
-
+        
+                //forum: "",
                 Update: "Bijwerken " + dio_version,
                 Feature: "Nieuwe functie",
                 Feature2: "Nieuwe versie",
                 Learn_more: "Kom meer te weten",
-
+        
                 cat_units: "Eenheden",
                 cat_icons: "Stad pictogrammen",
                 cat_forum: "Forum",
                 cat_trade: "Handel",
                 cat_wonders: "Wereld Wonder",
                 cat_layout: "Lay-out",
-                cat_other: "Diversen"
+                cat_other: "Diversen",
+                //cat_Premium: "",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Biremen teller", "Telt de biremen van een stad en somt deze op"],
@@ -3534,7 +3868,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Handel -> Grondstoffenteller (Beheerder)", "Een telling van alle grondstoffen in je stad"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-
+        
                 err: ["Stuur automatisch bugrapporten", "Als u deze optie activeert, kunt u helpen bij het identificeren van bugs."],
                 her: ["Thracische verovering", "Verkleinen van de kaart van de verovering van Thracië."],
             },
@@ -3561,7 +3895,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Beschikbaar",
                 outer: "Buiten",
                 con: "Stad selecteren",
-                // Smileys
+                /// Smileys
                 std: "Standaard",
                 gre: "Grepolis",
                 nat: "Natuur",
@@ -3572,7 +3906,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Kerstmis",
                 eas: "Pasen",
                 lov: "Liefde",
-                // Verdedigingsformulier
+                /// Defense form
                 ttl: "Overzicht: Stadsverdediging",
                 inf: "Stadsinformatie:",
                 dev: "Afwijking",
@@ -3580,15 +3914,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Premium bonussen",
                 sil: "Zilver volume",
                 mov: "Troepenbewegingen:",
-                // WW
+                /// WW
                 leg: "WW Aandeel",
                 stg: "Stadium",
                 tot: "Totaal",
-                // Simulator
+                /// Simulator
                 str: "Eenheidssterkte",
                 los: "Verloren",
                 mod: "zonder invloed van modificator",
-                // vergelijkingstabel
+                /// Comparison box
                 dsc: "Eenheidsvergelijking",
                 hck: "Slag",
                 prc: "Steek",
@@ -3602,16 +3936,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Kosten (grondstoffen)",
                 fav: "Gunst",
                 tim: "Bouwtijd (s)",
-                // Handel
+                /// Trade
                 rat: "Grondstoffenverhouding van een eenheidstype",
                 shr: "Deel van de opslagcapaciteit van de doelstad",
                 per: "Procentuele handel",
-                // Verzonden eenhedentabel
+                /// Sent units box
                 lab: "Verzonden eenheden",
                 rec: "Middelen",
                 improved_movement: "Verbeterde troepbeweging",
-                donat: "Doneren",
                 Tran: "Vertalingen",
+                donat: "Doneren",
                 Happy: "Gelukkig nieuwjaar!",
                 Merry: "Ho Ho Ho, Merry Christmas!",
                 tow: "BBCode stad",
@@ -3620,7 +3954,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "=Grepolis Gidsen=",
                 reme: "Ik dank iedereen die heeft bijgedragen aan de ontwikkeling van DIO-Tools",
-
+        
                 Trou: ["Grepolis Troepen Specialisatie Tutorial - tuto de david1327", "Wat u moet weten over de troepen van grepolis, Sterke/zwakke punten van de eenheden"],
                 util: ["Hulpprogramma's voor grepolis - Tuto de david1327", "Een veelheid aan tools voor Grepolis: Statistieken, Kaarten, Tools, Script, Forum ... ze worden hier allemaal vermeld."]
             },
@@ -3661,6 +3995,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 city_list: 'Stedenlijst',
                 attack_planner: 'Aanvalsplanner',
                 farming_villages: 'Boerendorpen',
+                //menu: "",
                 city_view: 'Stadsoverzicht',
                 messages: 'Berichten',
                 reports: 'Rapporten',
@@ -3670,6 +4005,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 profile: 'Profiel',
                 ranking: 'Ranglijst',
                 notes: 'Notities',
+                //chat: "",
                 council: 'Raad van Helden'
             },
             messages: {
@@ -3689,7 +4025,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 name: 'Naam',
                 wood: 'Hout',
                 stone: 'Steen',
-                silver: 'Zilverstukken'
+                silver: 'Zilverstukken',
+                //search_for: ""
             },
             grepo_mainmenu: {
                 city_view: 'Stadsoverzicht',
@@ -3704,6 +4041,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //pop: "",
                 //Optipop : "",
                 //army : "",
+            },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
             },
             translations: {
                 info: 'Info',
@@ -3736,20 +4088,47 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //      GREEK Translation by AbstractGR     //
         //////////////////////////////////////////////
         gr: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
+            link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
+                //forum: "",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
+            },
             Settings: {
                 dsc: 'Το DIO-Tools προσφέρει, ανάμεσα σε άλλα πράγματα, κάποιες νέες απεικονίσεις, μενού με smiley, επιλογές εμπορίου και κάποιες αλλαγές στο σχέδιο του παιχνιδιού.',
                 act: 'Ενεργοποίησε/απενεργοποίησε τα χαρακτηριστικά του συνόλου των εργαλείων:',
                 prv: 'Προεπισκόπηση μερικών χαρακτηριστικών:',
+        
                 version_old: 'Η έκδοση δεν είναι ενημερωμένη',
                 version_new: 'Η έκδοση είναι ενημερωμένη',
                 version_dev: 'Έκδοση προγραμματιστή',
+        
                 version_update: 'Αναβάθμιση',
                 Donate: 'Δωρεά',
-                forum: 'Tuto de david1327',
+        
+                //forum: "",
                 Update: 'Έκδοση' + dio_version,
                 Feature: 'Νέο χαρακτηριστικό',
                 Feature2: 'Νέα έκδοση',
                 Learn_more: 'Μάθε περισσότερα',
+        
                 cat_units: 'Μονάδες',
                 cat_icons: 'Εικονίδια πόλεων',
                 cat_forum: 'Φόρουμ',
@@ -3757,9 +4136,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_wonders: 'Θαύμα του κόσμου',
                 cat_layout: 'Σχέδιο',
                 cat_other: 'Διάφορα',
+                //cat_Premium: "",
+                cat_Quack: "Quack",
             },
-
             Options: {
+                //bir: ["", ""],
                 ava: ['Επισκόπηση μονάδων', 'Μετράει όλες τις μονάδες από όλες τις πόλεις'],
                 ava2: ['Αριθμός ωκεανού', 'Μονάδα επέκτασης'],
                 sml: ['Smilies', 'Επεκτείνει τη μπάρα bbcode ανά μενού με smilies'],
@@ -3808,11 +4189,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Cup: ['Προβιβασμός επιπέδου Πολιτισμού (Διαχειριστής)', 'Άλλαξε την παρουσίαση της μπάρας προόδου και πρόσθεσε μια μπάρα προόδου για τους πόρους. Λειτουργία του Akiway'],
                 Cuo: ["Σημεία Πολιτισμού (Διαχειριστής)", "Προσθέστε έναν μετρητή για τα Σημεία Πολιτισμού. Λειτουργία Quack"],
                 Rct: ['Εμπόριο -> Μετρητής πόρων (Διαχειριστής)', 'Μια μέτρηση όλων των πόρων στην πόλη σου'],
+                FLASK: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του FLASK-TOOLS',
+                Mole: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του Mole Hole',
+        
                 err: ['Στείλε αναφορές για bug αυτόματα', 'Αν ενεργοποιήσεις αυτή την επιλογή, μπορείς να βοηθήσεις στην εύρεση προβλημάτων του παιχνιδιού.'],
-                //FLASK : ["",""],
-                //Mole : ["",""],
+                //her: ["", ""],
             },
-
             Town_icons: {
                 LandOff: 'Επιθετικά ξηράς',
                 LandDef: 'Αμυντικά ξηράς',
@@ -3823,24 +4205,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Out: 'Εξωτερικά',
                 Emp: 'Άδειο',
             },
-
             Color: {
                 Blue: 'Μπλε',
                 Red: 'Κόκκινο',
                 Green: 'Πράσινο',
                 Pink: 'Ροζ',
                 White: 'Άσπρο',
-                FLASK: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του FLASK-TOOLS',
-                Mole: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του Mole Hole',
             },
-
             labels: {
                 uni: 'Προεπισκόπηση μονάδων',
                 total: 'Σύνολο',
                 available: 'Διαθέσιμα',
                 outer: 'Έξω',
                 con: 'Διάλεξε πόλη',
+                /// Smileys
                 std: 'Πρότυπο',
+                //gre: "",
                 nat: 'Φύση',
                 ppl: 'Άνθρωποι',
                 Par: 'Party',
@@ -3849,6 +4229,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: 'Χριστούγεννα',
                 eas: 'Πάσχα',
                 lov: 'Αγάπη',
+                /// Defense form
                 ttl: 'Προεπισκόπηση: Άμυνα πόλης',
                 inf: 'Πληροφορίες πόλης:',
                 dev: 'Απόκλιση',
@@ -3856,12 +4237,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: 'Δώρα premium',
                 sil: 'Όγκος ασημιού',
                 mov: 'Κινήσεις στρατευμάτων:',
+                /// WW
                 leg: 'Μερίδιο θαύματος του κόσμου',
                 stg: 'Στάδιο',
                 tot: 'Σύνολο',
+                /// Simulator
                 str: 'Δύναμη μονάδας',
                 los: 'Ήττα',
                 mod: 'χωρίς επιρροή τροποποίησης',
+                /// Comparison box
                 dsc: 'Σύγκριση μονάδων',
                 hck: 'Κρουστικό',
                 prc: 'Διατρητικό',
@@ -3875,9 +4259,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: 'Κόστη (πόροι)',
                 fav: 'Εύνοια',
                 tim: 'Χρόνος στρατολόγησης (δ)',
+                /// Trade
                 rat: 'Αναλογία πόρων ενός τύπου μονάδων',
                 shr: 'Μερίδιο της χωρητικότητας της αποθήκης του στοχευμένης πόλης',
                 per: 'Ποσοστιαίο εμπόριο',
+                /// Sent units box
                 lab: 'Σταλμένες μονάδες',
                 rec: 'Πόροι',
                 improved_movement: 'Βελτιωμένη κίνηση στρατευμάτων',
@@ -3888,27 +4274,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 tow: 'Κωδικός BB πόλης',
                 ingame_name: ['Μη διστάσετε να επικοινωνήσετε μαζί μου αν προτιμάτε να καλείστε με το όνομα του παιχνιδιού που έχετε', 'Καθώς είναι μεγάλο το έργο και μπορεί να είναι αρκετά χρονοβόρο προσπαθώ πάντα να είμαι ευγνώμων με κάθε είδους υποστήριξη. Για αυτό θα ήθελα να ευχαριστήσω όλους που με έχουν υποστηρίξει σε αυτό το έργο- είτε από δωρεές, γνώση, δημιουργηκότητα, αναφορές προβλημάτων ή με λίγα ενθαρρυντικά λόγια.'],
             },
-
             tutoriel: {
                 tuto: 'Χρήσιμες πληροφορίες',
                 reme: 'Ευχαριστώ όλους εκείνους που συνείσφεραν στην ανάπτυξη του DIO tools,',
+        
                 Trou: ['Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - tuto de david1327', 'Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων'],
                 util: ['Χρήσιμες ιστοσελίδες για το grepolis - tuto de david1327', 'Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.'],
             },
-
             Quack: {
+                // delete multiple forum
                 delete_mul: 'Διαγραφή πολλαπλών μηνυμάτων',
                 delete_sure: 'Θες να διαγράψεις αυτά τα μηνύματα;',
                 no_selection: 'Δεν έχουν επιλεγεί μηνύματα',
                 mark_All: 'Σημείωσε τα όλα',
+                //select unit shelper
                 no_overload: 'Χωρίς υπερφόρτωση',
                 delete: 'Διέγραψε',
+                //culture Overview
                 cityfestivals: 'Γιορτές πόλης',
                 olympicgames: 'Ολυμπιακοί αγώνες',
                 triumph: 'Παρελάσεις θριάμβου',
                 theater: 'Θεατρικές παραστάσεις',
             },
-
             hotkeys: {
                 hotkeys: 'Πλήκτρα γρήγορης πρόσβασης',
                 Senate: 'Σύγκλητος',
@@ -3944,7 +4331,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 chat: 'Συνομιλία',
                 council: 'Συμβούλιο των Ηρώων',
             },
-
             messages: {
                 ghosttown: 'Πόλη φάντασμα',
                 no_cities: 'Δεν υπάρχουν πόλεις σε αυτό το νησί',
@@ -3956,7 +4342,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 copybb: 'Ο κωδικός BB έχει αντιγραφεί',
                 écrit: 'έχει γράψει τα παρακάτω:',
             },
-
             caves: {
                 stored_silver: 'Αποθηκευμένα ασημένα νομίσματα',
                 silver_to_store: 'Ασημένια νομίσματα που μπορούν να αποθηκευτούν',
@@ -3966,12 +4351,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 silver: 'Ασημένια νομίσματα',
                 search_for: 'Ψάξε για',
             },
-
             grepo_mainmenu: {
                 city_view: 'Επισκόπηση πόλης',
                 island_view: 'Επισκόπηση νησιού',
             },
-
             transport_calc: {
                 recruits: 'Μέτρημα μονάδες στην ουρά στρατολόγησης',
                 slowtrans: 'Μέτρημα αργών μεταφορικών πλοίων',
@@ -3982,7 +4365,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Optipop: 'Βέλτιστος πληθυσμός για',
                 army: 'Δεν έχεις στρατό.',
             },
-
             reports: {
                 choose_folder: 'Διάλεξε φάκελο',
                 enacted: 'εκτέλεσε',
@@ -3990,6 +4372,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 spying: 'κατασκοπεύει',
                 spy: 'Κατάσκοπος',
                 support: 'υποστήριξη',
+                support2: "", //???
                 supporting: 'υποστηρίζει',
                 attacking: 'επιτίθεται',
                 farming_village: 'αγροτικό χωριό',
@@ -3997,7 +4380,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Quests: 'Αποστολές',
                 Reservations: 'Κρατήσεις',
             },
-
             translations: {
                 info: 'Πληροφορίες',
                 trans: 'Μετάφραση για γλώσσα',
@@ -4021,13 +4403,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 send: 'Πάραγε μήνυμα',
                 name: 'Όνομα',
             },
-
             buttons: {
-                sav: 'Αποθήκευση',
-                ins: 'Εισαγωγή',
-                res: 'Επαναφορά',
+                sav: 'Αποθήκευση', ins: 'Εισαγωγή', res: 'Επαναφορά',
             },
-
         },
     };
 
@@ -4162,7 +4540,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
         }
     }
-    var Messageversion = '';
     var version_text = '', version_color = 'black';
 
     function getLatestVersion() {
@@ -4185,14 +4562,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 if (dio_version > version_latest) {
                     version_text = "<a href='" + getTexts('link', 'update') + "' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts("Settings", 'version_dev') + "</div><div class='version_icon blue'></div></a>";
                     version_color = 'darkblue';
-                    Messageversion = uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_dev'));
+                    uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_dev'));
                 } else if (dio_version == version_latest) {
                     version_text = "<a href='" + getTexts('link', 'update') + "' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts("Settings", 'version_new') + "</div><div class='version_icon green'></div></a>";
                 } else {
                     version_text = "<a href='" + getTexts('link', 'update') + "' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts("Settings", 'version_old') + "</div><div class='version_icon red'></div></a>" +
                         "<a class='version_text' href='" + getTexts('link', 'update_direct') + "' target='_blank'>--> " + getTexts("Settings", 'version_update') + "</a>";
                     version_color = 'crimson';
-                    Messageversion = uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_old'));
+                    uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_old'));
                 }
                 v_info.html(version_text).css({ color: version_color });
             }
