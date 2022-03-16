@@ -23,6 +23,7 @@
 // @grant		GM_deleteValue
 // @grant		GM_xmlhttpRequest
 // @grant       GM_getResourceText
+// @grant       GM_setClipboard
 // @license     GPL-3.0
 // ==/UserScript==
 var dio_version = '4.27';
@@ -31,7 +32,7 @@ var dio_version = '4.27';
  * Global stuff
  *******************************************************************************************************************************/
 
-var uw = unsafeWindow || window, $ = uw.jQuery || jQuery, DATA, GM;
+var uw = (typeof (unsafeWindow) ? unsafeWindow || window : window ), $ = uw.jQuery || jQuery, DATA, GM;
 
 // GM-API?
 GM = (typeof GM_info === 'object');
@@ -56,18 +57,18 @@ function loadValue(name, default_val) {
 if (GM && (uw.location.pathname.indexOf("game") >= 0)) {
     var WID = uw.Game.world_id, MID = uw.Game.market_id, AID = uw.Game.alliance_id;
 
-    //GM_deleteValue(WID + "_bullseyeUnit");
-
     DATA = {
         // GLOBAL
         options: loadValue("options", "{}"),
+
+        test: loadValue("test", "{}"),
 
         user: loadValue("dio_user", "{}"),
         count: loadValue("dio_count", "[]"),
 
         notification: loadValue('notif', '0'),
 
-        errorDio: loadValue('errorDio', '{}'),
+        error: loadValue('error', '{}'),
 
         spellbox: loadValue("spellbox", '{ "top":"23%", "left": "-150%", "show": false }'),
         commandbox: loadValue("commandbox", '{ "top":55, "left": 250 }'),
@@ -118,6 +119,7 @@ uw.deleteValueGM = function (name) {
         GM_deleteValue(name);
     }, 0);
 };
+//deleteValueGM("error");
 
 uw.getImageDataFromCanvas = function (x, y) {
 
@@ -387,6 +389,7 @@ function DIO_FORUM() {
 
 
 function DIO_GAME(dio_version, gm, DATA, time_a) {
+
     var MutationObserver = uw.MutationObserver || window.MutationObserver,
 
         WID, MID, AID, PID, LID, Points, pName, tName;
@@ -560,20 +563,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools bietet unter anderem einige Anzeigen, eine Smileyauswahlbox,<br>Handelsoptionen und einige Veränderungen des Layouts.",
                 act: "Funktionen der Toolsammlung aktivieren/deaktivieren:",
                 prv: "Vorschau einzelner Funktionen:",
-        
+
                 version_old: "DIO-Tools-Version ist nicht aktuell",
                 version_new: "DIO-Tools-Version ist aktuell",
                 version_dev: "DIO-Tools-Entwicklerversion",
-        
+
                 version_update: "Aktualisieren",
                 Donate: "Spenden",
-        
+
                 //forum: "",
                 Update: "Aktualisieren " + dio_version,
                 Feature: "Neue Funktion",
                 Feature2: "Neue Version",
                 Learn_more: "Mehr erfahren",
-        
+
                 cat_units: "Einheiten",
                 cat_icons: "Stadticons",
                 cat_forum: "Forum",
@@ -636,7 +639,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Handel -> Ressourcenzähler (Administrator)", "Eine Zählung aller Ressourcen in deiner Stadt"],
                 FLASK: ["Nicht kompatibel zur Aktivierung in den Parametern von FLASK-TOOLS", ""],
                 Mole: ["Nicht kompatibel zur Aktivierung in den Parametern von Mole Hole", ""],
-        
+
                 err: ["Automatische Fehlerberichte senden", "Wenn du diese Option aktivierst, kannst du dabei helfen Fehler zu identifizieren."],
                 her: ["Thrakische Eroberung", "Verkleinerung der Karte der Thrakischen Eroberung."],
             },
@@ -722,7 +725,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Nützliche Info",
                 reme: ["Mulțumesc tuturor celor care au contribuit dezvoltării DIO-Tools", ""],
-        
+
                 Trou: ["Tutorial Specializări Trupe Grepolis - Tutorialul lui david1327", "Tot ce trebuie să ști despre puterile / slăbiciunile trupelor de pe Grepolis"],
                 util: ["Site-uri utilitare pentru Grepolis - Tutorialul lui david1327", "O multitudine de unelte pentru Grepolis: Statisticici, Hărți, Unelte, Scripturi, Forum ... toate sunt listate aici."]
             },
@@ -883,20 +886,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.",
                 act: "Activate/deactivate features of the toolset:",
                 prv: "Preview of several features:",
-        
+
                 version_old: "Version is not up to date",
                 version_new: "Version is up to date",
                 version_dev: "Developer version",
-        
+
                 version_update: "Update",
                 Donate: "Donate",
-        
+
                 forum: "Tuto de david1327",
                 Update: "Update " + dio_version,
                 Feature: "New Feature",
                 Feature2: "New version",
                 Learn_more: "Learn more",
-        
+
                 cat_units: "Units",
                 cat_icons: "Town icons",
                 cat_forum: "Forum",
@@ -959,7 +962,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
                 FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""],
                 Mole: ["Not compatible to activate in the parameters of Mole Hole", ""],
-        
+
                 err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."],
                 //her: ["Thracian Conquest", "Downsizing of the map of the Thracian conquest."],
             },
@@ -1045,7 +1048,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Useful info",
                 reme: ["I thank all those who contributed to the development of DIO tools", ""],
-        
+
                 Trou: ["Grepolis Troops Specialization Tutorial - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"],
                 util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."],
             },
@@ -1206,20 +1209,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.",
                 act: "Activate/deactivate features of the toolset:",
                 prv: "Preview of several features:",
-        
+
                 version_old: "La versione non è aggiornata",
                 version_new: "La versione è aggiornata",
                 version_dev: "Versione per sviluppatori",
-        
+
                 version_update: "Aggiornare",
                 Donate: "Donare",
-        
+
                 //forum: "",
                 Update: "Aggiornare " + dio_version,
                 Feature: "Nuova caratteristica",
                 Feature2: "Nuova versione",
                 Learn_more: "Per saperne di più",
-        
+
                 cat_units: "Unità",
                 cat_icons: "Icone città",
                 cat_forum: "Forum",
@@ -1282,7 +1285,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Commercio -> Contatore risorse (amministratore)", "Un conteggio di tutte le risorse nella tua città"],
                 FLASK: ["Non compatibile per attivare nei parametri di FLASK-TOOLS", ""],
                 Mole: ["Non compatibile per attivare nei parametri di Mole Hole", ""],
-        
+
                 err: ["Invia automaticamente il report dei bug", "Se attivi questa opzione, puoi aiutare a identificare i bug."],
                 her: ["Conquista della Tracia", "Ridimensiona la mappa della conquista della Tracia"],
             },
@@ -1368,7 +1371,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Informazioni Utili",
                 reme: ["Ringrazio tutti coloro che hanno contribuito allo sviluppo di DIO-Tools-david1327", ""],
-        
+
                 Trou: ["Specializzazione delle truppe di Grepolis lezione - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"],
                 util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."]
             },
@@ -1529,20 +1532,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools offres certains écrans, une boîte de smiley, les options <br>commerciales, des changements à la mise en page et d'autres choses.",
                 act: "Activation/Désactivation des fonctions:",
                 prv: "Aperçu des fonctions séparées:",
-        
+
                 version_old: "La version n'est pas à jour",
                 version_new: "La version est à jour",
                 version_dev: "Version développeur",
-        
+
                 version_update: "Mettre à jour",
                 Donate: "Faire un don",
-        
+
                 //forum: "",
                 Update: "Mise à jour " + dio_version,
                 Feature: "Nouvelle fonctionnalité",
                 Feature2: "Nouvelle version",
                 Learn_more: "En savoir plus",
-        
+
                 cat_units: "Unités",
                 cat_icons: "Icônes de la ville",
                 cat_forum: "Forum",
@@ -1606,7 +1609,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"],
                 FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""],
                 Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""],
-        
+
                 err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
             },
             Town_icons: {
@@ -1691,7 +1694,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Informations utiles",
                 reme: ["Je remercie tous ceux qui ont contribué au développement de DIO-Tools", ""],
-        
+
                 Trou: ["Tuto spécialisation Troupes Grepolis - tuto de david1327", "Tuto Troupes Grepolis se qui faux savoir sur les troupe de grepolis Point forts/faibles des unités"],
                 util: ["Sites utilitaires pour grepolis - Tuto de david1327", "Une multitude d'outils pour Grepolis : Statistiques, Maps, Outils, Script, Forum... ils sont tous répertorié ici."]
             },
@@ -1852,20 +1855,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools изменяет некоторые окна, добавляет новые смайлы, отчёты,<br>улучшеные варианты торговли и другие функции.",
                 act: "Включение/выключение функций:",
                 prv: "Примеры внесённых изменений:",
-        
+
                 //version_old: "",
                 //version_new: "",
                 //version_dev: "",
-        
+
                 //version_update: "",
                 Donate: "Пожертвовать",
-        
+
                 //forum: "",
                 //Update: " "+ dio_version,
                 //Feature: "",
                 //Feature2: "",
                 //Learn_more: "",
-        
+
                 //cat_units: "",
                 //cat_icons: "",
                 //cat_forum: "",
@@ -1878,7 +1881,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Options: {
                 //bir: ["Счётчик бирем", "Показывает число бирем во всех городах"],
-                ava: ["Обзор единиц", "Указывает единицы всех городов"], 
+                ava: ["Обзор единиц", "Указывает единицы всех городов"],
                 ava2: ["", ""],
                 sml: ["Смайлы", "Добавляет кнопку для вставки смайлов в сообщения"],
                 str: ["Сила отряда", "Добавляет таблицу общей силы отряда в некоторых окнах"],
@@ -1928,7 +1931,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-        
+
                 err: ["Отправить сообщения об ошибках автоматически", "Если вы включите эту опцию, вы можете помочь идентифицировать ошибки"],
                 //her: ["", ""],
             },
@@ -2014,7 +2017,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Полезная информация",
                 reme: ["Я благодарю всех, кто внес вклад в разработку DIO-TOOLS-David1327", ""],
-        
+
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -2175,20 +2178,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools oferuje (między innymi) poprawione widoki, nowe uśmieszki,<br>opcje handlu i zmiany w wyglądzie.",
                 act: "Włącz/wyłącz funkcje skryptu:",
                 prv: "podgląd poszczególnych opcji:",
-        
+
                 version_old: "Wersja nie jest aktualizowana",
                 version_new: "Wersja jest zaktualizowana",
                 version_dev: "Wersja dla programistów",
-        
+
                 version_update: "aktualizacja",
                 Donate: "Podarować",
-        
+
                 //forum: "",
                 Update: "Aktualizacja " + dio_version,
                 Feature: "Nowa cecha",
                 Feature2: "Nowa wersja",
                 Learn_more: "Ucz się więcej",
-        
+
                 //cat_units: "",
                 //cat_icons: "",
                 //cat_forum: "",
@@ -2251,7 +2254,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Handel -> Licznik zasobów (Administrator)", "Licznik wszystkich zasobów w Twoim mieście"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-        
+
                 err: ["Automatycznie wysyłać raporty o błędach", "Jeśli włączysz tę opcję, możesz pomóc zidentyfikować błędy"],
                 //her: ["", ""],
             },
@@ -2337,7 +2340,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Przydatna informacja",
                 reme: ["Dziękuję wszystkim, którzy przyczynili się do rozwoju DIO-TOOLS-David1327", ""],
-        
+
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -2498,20 +2501,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools ofrece, entre otras cosas, varias pantallas, ventana de <br>emoticones, opciones de comercio y algunos cambios en el diseño.",
                 act: "Activar/desactivar características de las herramientas:",
                 prv: "Vista previa de varias características:",
-        
+
                 version_old: "La versión no está actualizada",
                 version_new: "La versión está actualizada",
                 version_dev: "Versión de desarrollador",
-        
+
                 version_update: "poner al día",
                 Donate: "Donar",
-        
+
                 //forum: "",
                 Update: "Actualizar " + dio_version,
                 Feature: "Nueva caracteristica",
                 Feature2: "Nueva versión",
                 Learn_more: "Aprende más",
-        
+
                 //cat_units: "",
                 //cat_icons: "",
                 //cat_forum: "",
@@ -2574,7 +2577,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Comercio -> Contador de recursos (Administrador) ", " Un recuento de todos los recursos de tu ciudad"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-        
+
                 err: ["Enviar informes de errores automáticamente", "Si se activa esta opción, puede ayudar a identificar errores."],
                 //her: ["", ""],
             },
@@ -2660,7 +2663,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Información útil",
                 reme: ["Agradezco a todos los que contribuyeron al desarrollo de DIO-TOOLS-David1327", ""],
-        
+
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -2822,20 +2825,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools oferece, entre outras coisas, algumas telas, uma caixa de smiley, opções de comércio <br> e algumas alterações no layout.",
                 act: "Ativar/desativar recursos do conjunto de ferramentas:",
                 prv: "Pré-visualização de vários recursos:",
-        
+
                 version_old: "Versão não está atualizada",
                 version_new: "Versão está atualizada",
                 version_dev: "Versão do desenvolvedor",
-        
+
                 version_update: "Atualização",
                 Donate: "Doar",
-        
+
                 //forum: "",
                 Update: "Atualizar " + dio_version,
                 Feature: "Novo Recurso",
                 Feature2: "Nova versão",
                 Learn_more: "Saber mais",
-        
+
                 cat_units: "Unidades",
                 cat_icons: "Ícones nas Cidades",
                 cat_forum: "Forum",
@@ -2898,7 +2901,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Comércio -> Contador de recursos (Administrador) ", " Uma contagem de todos os recursos em sua cidade"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-        
+
                 err: ["Enviar automaticamente relatórios de erros", "Se você ativar essa opção, você pode ajudar a identificar erros."],
                 //her: ["Conquista Thracian", "Redução de tamanho do mapa da conquista Thracian."],
             },
@@ -2984,7 +2987,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Informações úteis",
                 reme: ["Agradeço a todos que contribuíram para o desenvolvimento de DIO-TOOLS-David1327", ""],
-        
+
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -3146,20 +3149,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools nabízí,mimo jiné,některá nová zobrazení,okénko smajlíků,<br>obchodní možnosti a některé změny v rozložení panelů.",
                 act: "Aktivovat/Deaktivovat funkce  sady nástrojů:",
                 prv: "Ukázka několika funkcí:",
-        
+
                 version_old: "Verze je zastaralá",
                 version_new: "Verze je aktuální",
                 version_dev: "Vývojářská verze",
-        
+
                 version_update: "Aktualizovat",
                 Donate: "Darovat",
-        
+
                 //forum: "",
                 Update: "Aktualizace " + dio_version,
                 Feature: "Nová vlastnost",
                 Feature2: "Nová verze",
                 Learn_more: "Zjistit více",
-        
+
                 cat_units: "Jednotky",
                 cat_icons: "Ikony měst",
                 cat_forum: "Forum",
@@ -3222,7 +3225,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Obchod -> Počítadlo zdrojů (správce)", "Počet všech zdrojů ve vašem městě"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-        
+
                 err: ["Hlásit chyby automaticky", "Pokud aktivuješ tuto možnost,pomůžeš nám identifikovat chyby."],
                 her: ["Thrácké dobývání", "Redukuje mapy Thráckého dobývání."],
             },
@@ -3308,7 +3311,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Užitečné informace",
                 reme: ["Děkuji všem, kteří se podíleli na vývoji DIO-TOOLS-David1327", ""],
-        
+
                 //Trou: ["", ""],
                 //util: ["", ""],
             },
@@ -3469,20 +3472,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools oferă, printre altele, câteva afișaje, emoticoane, opțiuni de tranzacționare și unele modificări ale aspectului.",
                 act: "Activați / dezactivați caracteristicile instrumentelor:",
                 prv: "Previzualizarea mai multor funcții:",
-        
+
                 version_old: "Versiunea nu este la zi",
                 version_new: "Versiunea este la zi",
                 version_dev: "Versiunea dezvoltatorului",
-        
+
                 version_update: "Versiune la zi",
                 Donate: "Donează",
-        
+
                 //forum: "",
                 Update: "Actualizați " + dio_version,
                 Feature: "Optiune noua",
                 Feature2: "Versiune noua",
                 Learn_more: "Aflați mai multe",
-        
+
                 cat_units: "Unități",
                 cat_icons: "Iconițele pentru orașe",
                 cat_forum: "Forum",
@@ -3545,7 +3548,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Comerț -> Contor de resurse (Administrator)", "Un număr al tuturor resurselor din orașul dvs."],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-        
+
                 err: ["Trimite rapoarte de eroare automatic", "Dacă activezi această opțiune, poți ajuta în identificarea erorilor."],
                 her: ["Cucerirea Tracică", "Reducerea hărții cuceririi tracice."],
             },
@@ -3631,7 +3634,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "Informații utile",
                 reme: ["Mulțumesc tuturor celor care au contribuit dezvoltării DIO-Tools", ""],
-        
+
                 Trou: ["Tutorial Specializări Trupe Grepolis - Tutorialul lui david1327", "Tot ce trebuie să ști despre puterile / slăbiciunile trupelor de pe Grepolis"],
                 util: ["Site-uri utilitare pentru Grepolis - Tutorialul lui david1327", "O multitudine de unelte pentru Grepolis: Statisticici, Hărți, Unelte, Scripturi, Forum ... toate sunt listate aici."]
             },
@@ -3792,20 +3795,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: "DIO-Tools biedt onder andere, enkele displays, een smileybox,<br> handelsopties en enkele wijzigingen in de lay-out.",
                 act: "Functies van de toolset activeren/deactiveren:",
                 prv: "Voorbeeld van verschillende functies:",
-        
+
                 version_old: "Versie is niet actueel",
                 version_new: "Versie is bijgewerkt",
                 version_dev: "Ontwikkelaarsversie",
-        
+
                 version_update: "Update",
                 Donate: "Doneer",
-        
+
                 //forum: "",
                 Update: "Bijwerken " + dio_version,
                 Feature: "Nieuwe functie",
                 Feature2: "Nieuwe versie",
                 Learn_more: "Kom meer te weten",
-        
+
                 cat_units: "Eenheden",
                 cat_icons: "Stad pictogrammen",
                 cat_forum: "Forum",
@@ -3868,7 +3871,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Handel -> Grondstoffenteller (Beheerder)", "Een telling van alle grondstoffen in je stad"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
-        
+
                 err: ["Stuur automatisch bugrapporten", "Als u deze optie activeert, kunt u helpen bij het identificeren van bugs."],
                 her: ["Thracische verovering", "Verkleinen van de kaart van de verovering van Thracië."],
             },
@@ -3954,7 +3957,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: "=Grepolis Gidsen=",
                 reme: "Ik dank iedereen die heeft bijgedragen aan de ontwikkeling van DIO-Tools",
-        
+
                 Trou: ["Grepolis Troepen Specialisatie Tutorial - tuto de david1327", "Wat u moet weten over de troepen van grepolis, Sterke/zwakke punten van de eenheden"],
                 util: ["Hulpprogramma's voor grepolis - Tuto de david1327", "Een veelheid aan tools voor Grepolis: Statistieken, Kaarten, Tools, Script, Forum ... ze worden hier allemaal vermeld."]
             },
@@ -4115,20 +4118,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 dsc: 'Το DIO-Tools προσφέρει, ανάμεσα σε άλλα πράγματα, κάποιες νέες απεικονίσεις, μενού με smiley, επιλογές εμπορίου και κάποιες αλλαγές στο σχέδιο του παιχνιδιού.',
                 act: 'Ενεργοποίησε/απενεργοποίησε τα χαρακτηριστικά του συνόλου των εργαλείων:',
                 prv: 'Προεπισκόπηση μερικών χαρακτηριστικών:',
-        
+
                 version_old: 'Η έκδοση δεν είναι ενημερωμένη',
                 version_new: 'Η έκδοση είναι ενημερωμένη',
                 version_dev: 'Έκδοση προγραμματιστή',
-        
+
                 version_update: 'Αναβάθμιση',
                 Donate: 'Δωρεά',
-        
+
                 //forum: "",
                 Update: 'Έκδοση' + dio_version,
                 Feature: 'Νέο χαρακτηριστικό',
                 Feature2: 'Νέα έκδοση',
                 Learn_more: 'Μάθε περισσότερα',
-        
+
                 cat_units: 'Μονάδες',
                 cat_icons: 'Εικονίδια πόλεων',
                 cat_forum: 'Φόρουμ',
@@ -4191,7 +4194,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ['Εμπόριο -> Μετρητής πόρων (Διαχειριστής)', 'Μια μέτρηση όλων των πόρων στην πόλη σου'],
                 FLASK: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του FLASK-TOOLS',
                 Mole: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του Mole Hole',
-        
+
                 err: ['Στείλε αναφορές για bug αυτόματα', 'Αν ενεργοποιήσεις αυτή την επιλογή, μπορείς να βοηθήσεις στην εύρεση προβλημάτων του παιχνιδιού.'],
                 //her: ["", ""],
             },
@@ -4277,7 +4280,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tutoriel: {
                 tuto: 'Χρήσιμες πληροφορίες',
                 reme: 'Ευχαριστώ όλους εκείνους που συνείσφεραν στην ανάπτυξη του DIO tools,',
-        
+
                 Trou: ['Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - tuto de david1327', 'Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων'],
                 util: ['Χρήσιμες ιστοσελίδες για το grepolis - tuto de david1327', 'Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.'],
             },
@@ -4414,12 +4417,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     console.debug("SPRACHE", MID);
     // Translation GET
+
     function getTexts(category, name) {
-        var txt = "???";
-        if (LANG[MID]) {
-            if (LANG[MID][category]) {
-                if (LANG[MID][category][name]) {
-                    txt = LANG[MID][category][name];
+        var txt = "???", lang = MID;
+        if (DATA.test.lang) {lang = DATA.test.lang}
+        if (LANG[lang]) {
+            if (LANG[lang][category]) {
+                if (LANG[lang][category][name]) {
+                    txt = LANG[lang][category][name];
                 } else {
                     if (LANG.en[category]) {
                         if (LANG.en[category][name]) {
@@ -4639,7 +4644,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         '#dio_settings .dio_options_table p { margin:0px; } ' +
         '#dio_settings #dio_donate_btn { filter: hue-rotate(45deg); -webkit-filter: hue-rotate(45deg); } ' +
         /*'#dio_settings #dio_donate_btn:hover { filter: hue-rotate(70deg); -webkit-filter: hue-rotate(70deg); } ' +
-  
+
                     '#dio_donate_btn { background: url(' + dio_sprite + '); width:92px; height:26px; background-position: 0px -228px; } ' +
                     '#dio_donate_btn.de { background-position: 0px -264px; width:98px; } ' +
                     '#dio_donate_btn.fr { background-position: 0px -300px; width:124px; } ' +
@@ -4692,11 +4697,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             if (!$('#dio_settings').get(0)) {
 
                 var Browser = getBrowser().replace(/(1|2|3|4|5|6|7|8|9|\ )/gm, "");
+                var Navigator = navigator.language[0] + navigator.language[1];
+                var trans = [(DATA.test.lang ? "Actuel " + (DATA.test.lang).toUpperCase() : getTexts("translations", "translations")), getTexts("buttons", "res") + " (" + (MID).toUpperCase() + ")"];
+                (typeof (navigator) ? (LANG[Navigator] ? trans.push("Local " + Navigator.toUpperCase()) : "") : "");
+                var dio_supported_lang = [];
+                $.each(LANG, function (a, b) {
+                    dio_supported_lang.push(a);
+                });
+
                 $('.settings-container').append(
                     '<div id="dio_settings" class="player_settings section"><div id="dio_bg_medusa"></div><div id="dio_bg_david1327"></div>' +
                     '<div class="game_header bold"><a href="' + getTexts("link", "update") + '" target="_blank" style="color:white">DIO-TOOLS-David1327 (v' + dio_version + ')</a>' +
-                    '<div style="float: right; margin-right: 90px;" id="tuto2"><a target="_blank" style="color:white">BUG</a></div>' +
-                    '<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com/TutoDeDavid1327/;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21" scrolling="no" frameborder="0" style="border:none; height:21px; position: absolute; right:-216px;" allowTransparency="true"></iframe></div>' +
+
+                    '<div style="float: right; margin-top: -2px; margin-right: -5px">' + dio.grepo_dropdown_flag("dio_langdiv", dio_supported_lang, trans, null, getTexts("translations", "language"))[0].outerHTML + '</div>' +
+                    '<div style="float: right; margin-right: 90px;" id="tuto2"><a target="_blank" style="color:white">BUG</a></div></div>' +
+
+                    //'<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com/TutoDeDavid1327/;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21" scrolling="no" frameborder="0" style="border:none; height:21px; position: absolute; right:-216px;" allowTransparency="true"></iframe></div>' +
 
                     // Check latest version
                     '<div id="dio_version_info"><img src="https://www.tuto-de-david1327.com/medias/images/restricted.gif" /></div>' +
@@ -4978,112 +4994,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         '<p>' + getTexts("Options", "Rep")[1] + '</p><br></td>') : "") +
                     '</tr></table>' +
 
-                    // =Tuto Troupes Grepolis= tab
-                    /*'<div id="dio_hall" class="content_category">'+
-                    '<div align="center"><img src="https://www.tuto-de-david1327.com/medias/site/logos/coollogo-com-63481423.png" style="max-height:none; max-width:350px !important;" /></div></td>' +
-                    '<div>' + getTexts("tutoriel", "reme") + '</div>'+
-                    '<div>' + getTexts("tutoriel", "reme")[1] + '</div>'+
-                    '<p></p></td>' +
-                    '<table style="float:left;margin-right: 18px;">'+
-                    '<tr><th colspan="3">' + getTexts("labels", "donat") + '</th></tr>'+
-                    (function(){
-                        var donations = [
-                            ["Christiane G", 60],
-                            ["Nepomuk P", 50],
-                            ["Kanokwan S", 20],
-                            ["Ines L", 20],
-                            ["Artur Z", 20],
-                            ["etienne1306", 10],
-                            ["Doris H", 10],
-                            ["Andreas A", 10],
-                            ["Andreas S", 10],
-                            ["Eric A", 10],
-                            ["Ulla R", 10],
-                            ["Christian P", 10],
-                        ];
-                        var donation_table = "";
-
-                        for(var d = 0; d < donations.length; d++){
-
-                            var donation_class = "";
-
-                            switch(donations[d][1]){
-                                case 60: donation_class = "gold"; break;
-                                case 50: donation_class = "silver"; break;
-                                case 20: donation_class = "bronze"; break;
-                                default: donation_class = "green2"; break;
-                            }
-
-                            donation_table += '<tr class="donation"><td class="laurel '+ donation_class +'"></td><td>' + donations[d][0] + '</td><td class="value">' + donations[d][1] + '€</td></tr>';
-                        }
-
-                        return donation_table;
-                    })() +
-                    '</table>'+
-                    '<table style="float:left;margin-right: 18px;">'+
-                    '<tr><th style="color: #00800000;" colspan="3">.</th></tr>'+
-                    (function(){
-                        var donations = [
-                            ["Jean-Paul B", 10],
-                            ["Rabello", 5.55],
-                            ["Susi K", 5.55],
-                            ["Kornelia M", 5],
-                            ["Max P", 5],
-                            ["Antonio AB", 5],
-                            ["Swen A", 5],
-                            ["Raul GC", 5],
-                            ["Mateusz O", 5],
-                            ["Kallerberg", 5],
-                            ["Martin G", 2.5],
-                            ["Marie-laure D", 2],
-                        ];
-                        var donation_table = "";
-
-                        for(var d = 0; d < donations.length; d++){
-
-                            var donation_class = "";
-
-                            switch(donations[d][1]){
-                                case 60: donation_class = "gold"; break;
-                                case 50: donation_class = "silver"; break;
-                                case 20: donation_class = "bronze"; break;
-                                default: donation_class = "green2"; break;
-                            }
-
-                            donation_table += '<tr class="donation"><td class="laurel '+ donation_class +'"></td><td>' + donations[d][0] + '</td><td class="value">' + donations[d][1] + '€</td></tr>';
-                        }
-
-                        return donation_table;
-                    })() +
-                    '</table>'+
-                    '<table>'+
-                    '<tr><th colspan="3">' + getTexts("labels", "Tran") + '</th></tr>'+
-                    (function(){
-                        var translations = [
-                            ["Diony", "DE"],
-                            ["eclat49 / David1327", "FR"],
-                            ["MrBobr", "RU"],
-                            ["anpu", "PL"],
-                            ["Juana de Castilla", "ES"],
-                            ["HELL", "BR"],
-                            ["Piwus", "CZ"],
-                            ["amliam / Pyrux", "IT"],
-                            ["Nicolae01", "RO"],
-                            ["Firebloem ", "NL"],
-                        ];
-
-                        var translation_table = "";
-
-                        for(var d = 0; d < translations.length; d++){
-                            translation_table += '<tr class="translation"><td class="laurel blue"></td><td >' + translations[d][0] + '</td><td class="value">' + translations[d][1] + '</td></tr>';
-                        }
-                        return translation_table;
-                    })() +
-                    '</table>' +
-                    '<br></br><p>' + getTexts("labels", "ingame_name")[0] + '</p>' +
-                    '<p>' + getTexts("labels", "ingame_name")[1] + '</p><br></br></td>' +
-                    '</div>' +*/
-
                     '</DIV>' +
 
                     // Links (Forum, PM, ...)
@@ -5103,6 +5013,38 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</div></div>');
 
                 getLatestVersion();
+
+                $("#dio_langdiv").change(function () {
+                    let lang = $(this).val().toLowerCase();
+                        //console.log($(this));
+
+                    if ($(this).val() === (DATA.test.lang ? (DATA.test.lang).toUpperCase() : getTexts("translations", "translations"))) {
+                        return;
+                    }
+                    else if ($(this).val() === "Local " + Navigator.toUpperCase()) {
+                        DATA.test.lang = Navigator;
+                        saveValue("test", JSON.stringify(DATA.test));
+                        uw.HumanMessage.success(getTexts("translations", "translations") + " " + "Local " + Navigator.toUpperCase());
+                        uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS).close();
+                        openSettings();
+                        return;
+                    }
+                    else if ($(this).val() === getTexts("buttons", "res") + " (" + (MID).toUpperCase() + ")") {
+                        DATA.test.lang = "";
+                        deleteValue("test", JSON.stringify(DATA.test));
+                        uw.HumanMessage.success(getTexts("translations", "translations") + " " + getTexts("buttons", "res") + " (" + MID + ")");
+                        uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS).close();
+                        openSettings();
+                        return;
+                    } else {
+                        DATA.test.lang = lang;
+                        saveValue("test", JSON.stringify(DATA.test));
+                        uw.HumanMessage.success(getTexts("translations", "translations") + " " + lang);
+                        uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS).close();
+                        openSettings();
+                        return;
+                    }
+                });
 
                 // Tab event handler
                 $('#dio_settings .dio_settings_tabs .submenu_link').click(function () {
@@ -5744,60 +5686,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }, 100);
                     }
 
-                    // Comptabilité flask-tools ?
+                    // compatibility flask-tools ?
                     if (typeof (uw.FLASK_GAME) !== "undefined") {
                         setTimeout(function () {
-                            uw.HumanMessage.error(dio_icon + "flask");
-                            //Units overview
-                            $('#available_units_bullseye').remove();
-                            $('#available_units_bullseye_addition').remove();
-                            $('#flask_available_units_style').remove();
-                            $('#flask_available_units_style_addition').remove();
-
-                            //Unit Comparison
-                            $('#btn_available_units').remove();
-
-                            if (uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_FLASK_UNITS)) {
-                                uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_FLASK_UNITS).close();
-                            }
-
-                            //Unit strength
-                            $('#strength').remove();
-                            $('#flask_strength_style').remove();
-
-                            //Simulator
-                            $('#flask_simulator_strength_style').remove();
-                            $('#flask_simulator_strength').remove();
-
-                            //Recruiting trade
-                            $('#flask_style_recruiting_trade').remove();
-
-                            //Transport capacity
-                            $('#transporter').remove();
-
-                            //Map
-                            $("#flask_game_list_header_style").remove();
-                            $("#flask_town_popup_style").remove();
-
-                            //
-
-
-                            //style
-                            $('<style>' +
-                                '#ui_box .btn_settings.flask_settings { top: 52px; right: 110px; } ' +
-                                '#flask_townbb { left: 182px; } ' +
-                                '#flask_simulator_strength {display: none; } ' +
-                                //
-                                '.btn.btn_trade {display: none!important; } ' +
-                                //Recruiting trade
-                                '.rec_trade {display: none!important; } ' +
-                                //Defense form
-                                '.flask_bbcode_option {display: none!important; } ' +
-                                //
-                                '#pop_baracks, #strength_baracks {display: none!important; } ' +
-
-                                '</style>').appendTo('head');
-                        }, 600);
+                            compatibility.flask_tools();
+                        }, 900);
                     };
 
                     /*setTimeout(function () {
@@ -6207,9 +6100,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         grepo_btn: function (ID, Text) {
             return $('<a id="' + ID + '" href="#" class="button"><span class="left"><span class="right"><span class="middle"><small>' + Text + '</small></span></span></span></a>');
         },
-        grepo_dropdown_flag: function (ID, Options) {
-            var str = '<span class="grepo_input"><span class="left"><span class="right"><select name="' + ID + '" id="' + ID + '" type="text">';
+        grepo_dropdown_flag: function (ID, Options, label, group, group2) {
+            var str = '<span class="grepo_input"><span class="left"><span class="right"><select name="' + ID + '" id="' + ID + '" type="text">' + (group = null == group ? "" : '<optgroup label="' + group + '">');
             var option_image = "";
+            if (label != null) {
+                $.each(label, function (a, b) {
+                    str += '<option value="' + b + '">' + b + '</option>'
+                });
+            };
+            str += (group = null == group ? "" : '</optgroup>') + (group2 = null == group2 ? "" : '<optgroup label="' + group2 + '">');
             $.each(Options, function (a, b) {
                 if (LANG[b]) {
                     option_image = 'https://www.tuto-de-david1327.com/medias/images/flag.16.' + b + '.png';
@@ -6219,7 +6118,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var option_name = (LANG[b]) ? b.toUpperCase() : b;
                 str += '<option style="background: url(' + option_image + ') no-repeat scroll left center #EEDDBB; padding-left: 22px" value="' + b + '">' + option_name + '</option>'
             });
-            str += '</select></span></span></span>';
+            str += ((group = null == group) || (group2 = null == group2) ? "" : '</optgroup>') + '</select></span></span></span>';
             return $(str);
         },
         grepo_submenu: function (ID, Title) {
@@ -6255,6 +6154,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             a.each(function (index) {
                 $(this).off('mouseenter mouseleave');
+            });
+        },
+        clipboard: function (IDbutton, input, error, Text) {
+            var clipboard = new uw.ClipboardJS(IDbutton);
+
+            clipboard.on("success", function () {
+                setTimeout(function () {
+                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                    if (input !== null) {
+                        $(IDbutton).css({ "display": "none" })
+                        $(input).css({ "display": "none" })
+                    }
+                    if (Text!== null) {
+                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
+                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
+                        }
+                    }
+                }, 50)
+            });
+            clipboard.on('error', function(e) {
+                uw.HumanMessage.error(dio_icon + getTexts("messages", "copybb"))
+                errorHandling(e, "clipboard" + error)
             });
         },
     };
@@ -6312,8 +6233,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             uw.HumanMessage.error(dio_icon + "DIO-TOOLS(" + dio_version + ")-ERROR: " + e.message);
             console.log("DIO-TOOLS | Error-Stack | " + [fn] + " | ", e.stack);
             //console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.name + ": " + e.toString());
-            //DATA.errorDio[version][fn] = true;
-            //saveValue("errorDio", JSON.stringify(uw.MM.DIO.errorDio));
+            //DATA.error[version][fn] = true;
+            //saveValue("error", JSON.stringify(uw.MM.DIO.error));
         } else {
             //if (!DATA.error[dio_version]) {
             //    DATA.error[dio_version] = {};
@@ -6351,7 +6272,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 browser: getBrowser(),
                 system: ((system()) ? "Mac" : "Windows"),
                 nb: nb,
-                date: date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear(),
+                date: date.toLocaleString("fr-FR", { timeZone: 'UTC' }),
             };
 
             $.each(errordio, function (name) {
@@ -6360,6 +6281,35 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
                 errordio.nb = nb2;
             });
+
+            if (!DATA.error[dio_version]) {
+                DATA.error[dio_version] = {};
+            }
+            if (typeof (DATA.error[dio_version][fn]) !== "undefined") {
+                DATA.error[dio_version][fn].nb = DATA.error[dio_version][fn].nb + 1;
+                DATA.error[dio_version][fn].date_fin = date.toLocaleString("fr-FR", { timeZone: 'UTC' });
+            }
+            if (!DATA.error[dio_version][fn]) {
+                DATA.error[dio_version][fn] = {
+                    "function": fn,
+                    message: e.toString(),
+                    //error: JSON.stringify(e.stack),
+                    version: dio_version,
+                    browser: getBrowser(),
+                    system: ((system()) ? "Mac" : "Windows"),
+                    nb: 1,
+                    date: date.toLocaleString("fr-FR", { timeZone: 'UTC' }),
+                    date_fin: "",
+                };
+            };
+            nb = 0;
+            $.each(DATA.error[dio_version], function (name) {
+                if (name !== "nb") {
+                    nb++;
+                }
+                DATA.error[dio_version].nb = nb;
+            });
+            saveValue("error", JSON.stringify(DATA.error));
         } catch (e) { }
     }
     var dio_bug = true;
@@ -6482,7 +6432,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
         },
         activate: function () {
-            this.addCopyListener()
 
             var grepoGameBorder = '<div class="game_border"><div class="game_border_top"></div><div class="game_border_bottom"></div><div class="game_border_left"></div>' +
                 '<div class="game_border_right"></div><div class="game_border_corner corner1"></div>' +
@@ -6733,7 +6682,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 484px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
-                HTML_tab3 += grepoGameBorder + getTexts("labels", "Tran") + '<div style="float: right; margin-top: -2px; margin-right: -5px">' + dio.grepo_dropdown_flag("langdiv", supported_lang)[0].outerHTML + '</div></div>';
+                HTML_tab3 += grepoGameBorder + getTexts("labels", "Tran") + '<div style="float: right; margin-top: -2px; margin-right: -5px">' + dio.grepo_dropdown_flag("langdiv", supported_lang, null, null, null)[0].outerHTML + '</div></div>';
 
                 //var lngFlags = "";
 
@@ -6814,18 +6763,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 HTML_tab4 += grepoGameBorder + 'BUG</div>';
 
-                var name_a = "", errordio = uw.MM.DIO.errorDio;
+                var name_a = "", errordio = DATA.error[dio_version], script = uw.MM.DIO.info_dio.script, errorr = uw.MM.DIO.errorDio;
+
+                HTML_tab4 += '<p>' +
+                    (script.grcrt ? '<b>Grcrt:</b> true; ' : "") +
+                    (script.HMole ? '<b>HMole:</b> true; ' : "") +
+                    (script.Gt ? '<b>Gt:</b> true; ' : "") +
+                    (script.FLASK ? '<b>FLASK:</b> true; ' : "") +
+                    (script.Quack ? '<b>Quack:</b> true; ' : "") +
+                    (script.GrepoData ? '<b>GrepoData:</b> true; ' : "") + '</p>';
+
                 $.each(errordio, function (name) {
                     if (name !== "nb") {
                         name_a += '<p><b>Function:</b> ' + errordio[name].function + '<br />' +
                             '<b>Message:</b> ' + errordio[name].message + '<br />' +
-                            '<b>Error:</b> ' + errordio[name].error + '<br />' +
+                            (typeof (errorr[name]) !== "undefined" ? ('<b>Error:</b> ' + errorr[name].error + '<br />') : "") +
                             '<b>Version:</b> ' + errordio[name].version + '<br />' +
                             '<b>latest_version:</b> ' + uw.MM.DIO.info_dio.latest_version + '<br />' +
                             '<b>Browser:</b> ' + errordio[name].browser + '<br />' +
                             '<b>System:</b> ' + errordio[name].system + '<br />' +
                             '<b>Nb:</b> ' + errordio[name].nb + '<br />' +
-                            '<b>Date:</b> ' + errordio[name].date + '</p>';
+                            '<b>Date:</b> ' + errordio[name].date + '<br />' +
+                            '<b>Date fin:</b> ' + errordio[name].date_fin + '</p>';
                     }
                 });
 
@@ -6839,19 +6798,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             function handle_and_style() {
 
+                dio.clipboard ("#dio-copy-Traductions-quote", null, "handle_and_style", true)
+
                 $("#dioerrordio").click(function () {
-                    var name_a = "", errordio = uw.MM.DIO.errorDio;
+                    var name_a = "", errordio = DATA.error[dio_version], script = uw.MM.DIO.info_dio.script, errorr = uw.MM.DIO.errorDio;
+                    var name_b = '' +
+                    'Grcrt: ' + (script.grcrt ? true : false) + "; " +
+                    'HMole: ' + (script.HMole ?  true : false) + "; " +
+                    'Gt: ' + (script.Gt ?  true : false) + "; " +
+                    'FLASK: ' + (script.FLASK ?  true : false) + "; " +
+                    'Quack: ' + (script.Quack ?  true : false) + "; " +
+                    'GrepoData: ' + (script.GrepoData ?  true : false);
+
+
                     $.each(errordio, function (name) {
                         if (name !== "nb") {
                             name_a += 'Function: ' + errordio[name].function + "\n" +
                                 'Message: ' + errordio[name].message + "\n" +
-                                'Error: ' + errordio[name].error + "\n" +
+                                (typeof (errorr[name]) !== "undefined" ? ('Error: ' + errorr[name].error + "\n") : "") +
                                 'Version: ' + errordio[name].version + "\n" +
                                 'latest_version ' + uw.MM.DIO.info_dio.latest_version + "\n" +
                                 'Browser: ' + errordio[name].browser + "\n" +
                                 'System: ' + errordio[name].system + "\n" +
                                 'Nb: ' + errordio[name].nb + "\n" +
-                                'Date: ' + errordio[name].date + "\n\n";
+                                'Date: ' + errordio[name].date + "\n" +
+                                'Date fin: ' + errordio[name].date_fin + "\n\n";
                         }
                     });
                     if (name_a === "") {
@@ -6861,8 +6832,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     uw.hOpenWindow.showConfirmDialog('', getTexts("translations", "send"), function () {
                         var trans_HTML_send = pName + '<br/>' + PID + '<br/>' + WID + '<p/>';
 
-                        var trans_BBcode_send = pName + '\n' + WID + '\n\n';
-                        trans_BBcode_send += "`" + name_a + "`\n";
+                        var trans_BBcode_send = pName + "\n" + WID + "\n\n";
+                        trans_BBcode_send += "`" + name_b + "\n" + name_a + "`\n";
 
                         createWindowType("DIO_BBCODEE", getTexts("messages", "bbmessages"), 700, 350, true, ["center", "center", 100, 100]);
                         var expRahmen_a = "<div class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
@@ -7123,14 +7094,65 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 "<span style='color:rgb(8, 207, 0)'><b><u>" + getTexts("Settings", "Feature2" /*"Feature"*/) + "!</u></b></span>" + feature + "<span class='small notification_date'>DIO-Tools-david1327: v" + dio_version + "</span>");
         },
         addCopyListener: function () {
-            new uw.ClipboardJS("#dio-copy-Traductions-quote").on("success", function () {
-                setTimeout(function () {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                }, 50)
-                if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
-                    uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
+            dio.clipboard ("#dio-copy-Traductions-quote", null, "handle_and_style", true)
+        },
+    };
+
+    /*******************************************************************************************************************************
+        * compatibility Script
+        *******************************************************************************************************************************/
+    var compatibility = {
+        flask_tools: function () {
+            // compatibility flask-tools
+            if (typeof (uw.FLASK_GAME) !== "undefined") {
+                uw.HumanMessage.error(dio_icon + "flask");
+                //Units overview
+                $('#available_units_bullseye').remove();
+                $('#available_units_bullseye_addition').remove();
+                $('#flask_available_units_style').remove();
+                $('#flask_available_units_style_addition').remove();
+
+                //Unit Comparison
+                $('#btn_available_units').remove();
+
+                if (uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_FLASK_UNITS)) {
+                    uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_FLASK_UNITS).close();
                 }
-            })
+
+                //Unit strength
+                $('#strength').remove();
+                $('#flask_strength_style').remove();
+
+                //Simulator
+                $('#flask_simulator_strength_style').remove();
+                $('#flask_simulator_strength').remove();
+
+                //Recruiting trade
+                $('#flask_style_recruiting_trade').remove();
+
+                //Transport capacity
+                $('#transporter').remove();
+
+                //Map
+                $("#flask_game_list_header_style").remove();
+                $("#flask_town_popup_style").remove();
+
+                //style
+                $('<style>' +
+                  '#ui_box .btn_settings.flask_settings { top: 52px; right: 110px; } ' +
+                  '#flask_townbb { left: 182px; } ' +
+                  '#flask_simulator_strength {display: none; } ' +
+                  //
+                  '.btn.btn_trade {display: none!important; } ' +
+                  //Recruiting trade
+                  '.rec_trade {display: none!important; } ' +
+                  //Defense form
+                  '.flask_bbcode_option {display: none!important; } ' +
+                  //
+                  '#pop_baracks, #strength_baracks {display: none!important; } ' +
+
+                  '</style>').appendTo('head');
+            };
         },
     };
 
@@ -8230,11 +8252,29 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     name: "DIO-TOOLS-David1327",
                     version: dio_version,
                     latest_version: version_latest,
+                    script: {
+                        grcrt: "",
+                        HMole: "",
+                        Gt: "",
+                        FLASK: "",
+                        Quack: "",
+                        GrepoData: "",
+                    },
                 },
                 errorDio: { nb: 0 },
                 lang: uw.Game.market_id,
                 land: uw.Game.world_id.substring(0, 2),
             };
+
+            var script = uw.MM.DIO.info_dio.script;
+            setTimeout(function () {
+                script.grcrt = (typeof (uw.GRCRT_Notifications) !== "undefined" ? true : false);
+                script.HMole = (typeof (uw.MH) !== "undefined" ? true : false);
+                script.Gt = (typeof (uw.GtkAbout) !== "undefined" ? true : false);
+                script.FLASK = (typeof (uw.FLASK_GAME) !== "undefined" ? true : false);
+                script.Quack = (typeof (uw.main_script) !== "undefined" ? true : false);
+                script.GrepoData = (typeof (uw.gd_version) !== "undefined" ? true : false);
+            }, 10000);
 
             uw.MM.DIO.getPlayer.Groups = function () {
                 var town_groups_towns, town_groups, groups = {};
@@ -13131,7 +13171,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         addButton: function () {
             try {
                 $('<a id="dio_townbb"></a><input id="input_townbb" type="text" onfocus="this.select();" onclick="this.select();"><div id="dio_townbb_logo"></div>').appendTo('.town_name_area');
-                $('<a id="dio_townbb-clipboard" data-clipboard-target="#input_townbb"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));
+                if (typeof uw.ClipboardJS.isSupported()) { $('<a id="dio_townbb-clipboard" data-clipboard-action="cut" data-clipboard-target="#input_townbb"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));};
                 $("#dio_townbb").click(function () {
                     $('#dio_townbb-clipboard').toggle();
                     $("#input_townbb").toggle();
@@ -13140,13 +13180,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 // clipboard
                 setTimeout(function () {
-                    new uw.ClipboardJS("#dio_townbb-clipboard").on("success", function () {
-                        setTimeout(function () {
-                            uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                            $('#dio_townbb-clipboard').css({ "display": "none" })
-                            $("#input_townbb").css({ "display": "none" })
-                        }, 50)
-                    })
+                dio.clipboard ('#dio_townbb-clipboard', '#input_townbb', "Townbb (addButton clipboard)", null);
                 }, 2000)
 
                 // Tooltip
@@ -13199,7 +13233,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     // BBCode player
                     $('<a id="dio_gpwnd_' + c + '_BBplayer" class="dio_BBplayer" style="float: left; margin-right: 2px;"></a><input id="input_gpwnd_' + c + '_BBplayer" class="input_BBplayer" style="top:25px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" type="text" onfocus="this.select();" onclick="this.select();"></div>').appendTo("div#gpwnd_" + c + " div#player_info h3");
-                    $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:27px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo("div#gpwnd_" + c + " div#player_info h3").tooltip(dio_icon + getTexts("messages", "copy"));
+                    if (typeof uw.ClipboardJS.isSupported()) { $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:27px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo("div#gpwnd_" + c + " div#player_info h3").tooltip(dio_icon + getTexts("messages", "copy"));}
                     $('#dio_gpwnd_' + c + '_BBplayer').click(function () {
                         $('#dio_gpwnd_' + c + '_clipboard-player').toggle();
                         $('#input_gpwnd_' + c + '_BBplayer').toggle();
@@ -13209,7 +13243,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     // BBCode alliance
                     if ($("div#gpwnd_" + c + " div#player_info a").text().trim() !== "") {
                         $("div#gpwnd_" + c + " div#player_info div#player_points").before('<a id="dio_gpwnd_' + c + '_BBalliance" class="dio_BBalliance" style="position: relative; top: -2px; float: left; margin-right: 1px; left: -1px;"></a><input id="input_gpwnd_' + c + '_BBalliance" class="input_BBalliance" style="top:50px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" onclick="this.select();" onfocus="this.select();"></div>');
-                        $("div#gpwnd_" + c + " div#player_info div#player_points").after('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:51px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>');
+                        if (typeof uw.ClipboardJS.isSupported()) { $("div#gpwnd_" + c + " div#player_info div#player_points").after('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:51px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>');}
                         $('#dio_gpwnd_' + c + '_BBalliance').click(function () {
                             $('#dio_gpwnd_' + c + '_clipboard-alliance').toggle();
                             //alliance name ?
@@ -13247,7 +13281,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     // BBCode player
                     if ($("div#gpwnd_" + c + " div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even div.list_item_left a.gp_player_link").is(':visible')) {
                         $('<a id="dio_gpwnd_' + c + '_BBplayer" class="dio_BBplayer" style="top:1px ;left: 0px; position:absolute;"></a><input id="input_gpwnd_' + c + '_BBplayer" class="input_BBplayer" style="left: 20px; top: 3px;" onfocus="this.select();" onclick="this.select();"></div>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.even div.list_item_left');
-                        $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.even div.list_item_left').tooltip(dio_icon + getTexts("messages", "copy"));
+                        if (typeof uw.ClipboardJS.isSupported()) { $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.even div.list_item_left').tooltip(dio_icon + getTexts("messages", "copy"));}
                         $('#dio_gpwnd_' + c + '_BBplayer').click(function () {
                             $('#dio_gpwnd_' + c + '_clipboard-player').toggle();
                             $('#input_gpwnd_' + c + '_BBplayer').toggle();
@@ -13256,7 +13290,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         // BBCode alliance
                         $('<a id="dio_gpwnd_' + c + '_BBalliance" class="dio_BBalliance" style="top: 1px; left: 0px; position: absolute;"></a><input id="input_gpwnd_' + c + '_BBalliance" class="input_BBalliance" style="left: 20px; top: 3px;" onclick="this.select();" onfocus="this.select();"></div>').appendTo('div#gpwnd_' + c + ' ul.game_list li.odd.clearfix');
-                        $('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.odd.clearfix').tooltip(dio_icon + getTexts("messages", "copy"));
+                        if (typeof uw.ClipboardJS.isSupported()) { $('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.odd.clearfix').tooltip(dio_icon + getTexts("messages", "copy"));}
                         $('#dio_gpwnd_' + c + '_BBalliance').click(function () {
                             $('#dio_gpwnd_' + c + '_clipboard-alliance').toggle();
                             $('#input_gpwnd_' + c + '_BBalliance').toggle();
@@ -13265,7 +13299,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     } else { $('div#gpwnd_' + c + ' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img').css({ "padding-left": "0px" }); }
 
                     // clipboard town
-                    $('div#gpwnd_' + c + ' #town_bbcode_link').append('<a id="dio_gpwnd_' + c + '_clipboard-town" class="dio_clipboard-town" style="top:3px; ' + (MH ? "left: 171px;" : "right: 169px;") + '" data-clipboard-text="' + $('div#gpwnd_' + c + ' #town_bbcode_id')[0].value + '"></a>');
+                    $('div#gpwnd_' + c + ' #town_bbcode_link').append('<a id="dio_gpwnd_' + c + '_clipboard-town" class="dio_clipboard-town" style="top:3px; ' + (MH ? "left: 171px;" : "right: 169px;") + '" data-clipboard-text="' + $('div#gpwnd_' + c + ' #town_bbcode_id').val() + '"></a>');
                     $('div#gpwnd_' + c + ' #town_bbcode_link').click(function () {
                         $('#dio_gpwnd_' + c + '_clipboard-town').toggle();
                     });
@@ -13280,28 +13314,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         add: function (c) {
             try {
-                // Clipboard success
-                new uw.ClipboardJS('#dio_gpwnd_' + c + '_clipboard-player').on("success", function () {
-                    setTimeout(function () {
-                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                        $('#dio_gpwnd_' + c + '_clipboard-player').css({ "display": "none" })
-                        $('#input_gpwnd_' + c + '_BBplayer').css({ "display": "none" })
-                    }, 50)
-                })
-                new uw.ClipboardJS('#dio_gpwnd_' + c + '_clipboard-alliance').on("success", function () {
-                    setTimeout(function () {
-                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                        $('#dio_gpwnd_' + c + '_clipboard-alliance').css({ "display": "none" })
-                        $('#input_gpwnd_' + c + '_BBalliance').css({ "display": "none" })
-                    }, 50)
-                })
-                new uw.ClipboardJS('#dio_gpwnd_' + c + '_clipboard-town').on("success", function () {
-                    setTimeout(function () {
-                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                        $('#dio_gpwnd_' + c + '_clipboard-town').css({ "display": "none" })
-                        $('#div#gpwnd_' + c + ' #town_bbcode_id').css({ "display": "none" })
-                    }, 50)
-                })
+                // Clipboard
+                dio.clipboard ('#dio_gpwnd_' + c + '_clipboard-player', '#input_gpwnd_' + c + '_BBplayer', "BBtowninfo (add)", null);
+                dio.clipboard ('#dio_gpwnd_' + c + '_clipboard-alliance', '#input_gpwnd_' + c + '_BBalliance', "BBtowninfo (add)", null);
+                dio.clipboard ('#dio_gpwnd_' + c + '_clipboard-town', '#div#gpwnd_' + c + ' #town_bbcode_id', "BBtowninfo (add)"), null;
             } catch (error) {
                 errorHandling(error, "BBtowninfo (add)");
                 uw.HumanMessage.error(dio_icon + "Error");
@@ -15144,15 +15160,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
         },
         addCopyListener: function () {
-            new uw.ClipboardJS("#dio-copy-townslist").on("success", function () {
-                setTimeout(function () {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                }, 50)
-                if ($('#town_groups_list').length) {
-                    $('.button.js-button-caption').click();
-                }
-                townslist.groups = -2;
-            })
+            dio.clipboard ("#dio-copy-townslist", null, "townslist", null)
+            if ($('#town_groups_list').length) {
+                $('.button.js-button-caption').click();
+            }
+            townslist.groups = -2;
         },
         deactivate: function () {
             $('#dio_town_list_bb_style').remove();
@@ -15425,14 +15437,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             return ret
         },
         addCopyListener: function () {
-            new uw.ClipboardJS("#dio-copy-message-quote").on("success", function () {
-                setTimeout(function () {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                    if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
-                        uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
-                    }
-                }, 50)
-            })
+            dio.clipboard ("#dio-copy-message-quote", null, "MessageExport", true)
         },
         replaceTownNameById: function (t, e) {
             const n = t.attr("href")
