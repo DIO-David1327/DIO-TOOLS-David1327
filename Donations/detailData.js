@@ -1,6 +1,4 @@
 var data_month = ([
-    ['2021/03', 15, 51.15],
-    ['2021/04', 15, 0],
     ['2021/05', 15, 19.07],
     ['2021/06', 15, 4.5],
     ['2021/07', 15, 0],
@@ -10,7 +8,9 @@ var data_month = ([
     ['2021/11', 15, 66.85],
     ['2021/12', 15, 9.36],
     ['2022/01', 15, 15.8],
-    ['2022/02', 15, 4.5],
+    ['2022/02', 15, 13.86],
+    ['2022/03', 15, 0],
+    ['2022/04', 15, 0],
 ]);
 
 var detailData = {
@@ -78,7 +78,7 @@ var detailData = {
         { 'dat': '2021-10-18', 'inc': 4.5, 'who': 'Petr M', 'pays': ['CZ', 'Tchéquie', 'Czechia'] },
         { 'dat': '2021-10-31', 'inc': 4.5, 'who': 'Detlef Z', 'pays': ['DE', 'Allemagne', 'Germany'] },
     ], '2021/11': [
-        { 'dat': '2021-11-02', 'inc': 4.5, 'who': 'Societatea-de-Salvare B', 'pays': ['RO', 'Roumanie', 'Romania'] },
+        { 'dat': '2021-11-02', 'inc': 4.5, 'who': 'Societatea-d-S B', 'pays': ['RO', 'Roumanie', 'Romania'] },
         { 'dat': '2021-11-03', 'inc': 14.21, 'who': 'Attila', 'pays': ['DE', 'Allemagne', 'Germany'] },
         { 'dat': '2021-11-05', 'inc': 0.38, 'who': 'Francesco L', 'pays': ['IT', 'Italie', 'Italy'] },
         { 'dat': '2021-11-05', 'inc': 28.78, 'who': 'glaglatoulle', 'pays': ['FR', 'France', 'France'] },
@@ -93,5 +93,8 @@ var detailData = {
         { 'dat': '2022-01-11', 'inc': 11.3, 'who': 'Ulla R', 'pays': ['SE', 'Suède', 'Sweden'] },
     ], '2022/02': [
         { 'dat': '2022-02-22', 'inc': 4.5, 'who': 'José-Miguel A', 'pays': ['ES', 'Espagne', 'Spain'] },
+        { 'dat': '2022-02-28', 'inc': 9.36, 'who': 'benoit A', 'pays': ['FR', 'France', 'France'] },
+    ], '2022/03': [
+    ], '2022/04': [
     ],
 };
