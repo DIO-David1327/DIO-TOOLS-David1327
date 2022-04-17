@@ -2,17 +2,16 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url
-// @version		4.26
+// @version		4.27
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2021. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2021. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
 // @include		https://*.grepolis.com/game/*
 // @include		https://*.forum.grepolis.com/*
 // @include		https://*tuto-de-david1327.com/*
-// @updateURL   https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html
-// @downloadURL	https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html
-// @resource    Version_dio https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-versions-js.html
+// @updateURL   https://raw.githubusercontent.com/DIO-David1327/DIO-TOOLS-David1327/main/code.user.js
+// @downloadURL	https://raw.githubusercontent.com/DIO-David1327/DIO-TOOLS-David1327/main/code.user.js
+// @resource    Version_dio https://raw.githubusercontent.com/DIO-David1327/DIO-TOOLS-David1327/main/Version.js
 // @require		https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js
 // @icon		https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-bussi2.gif
 // @icon64		https://www.tuto-de-david1327.com/medias/images/dio-tools-david1327.jpg
@@ -25,7 +24,7 @@
 // @grant       GM_getResourceText
 // @license     GPL-3.0
 // ==/UserScript==
-var dio_version = '4.26';
+var dio_version = '4.27';
 
 /*******************************************************************************************************************************
  * Global stuff
@@ -38,92 +37,92 @@ GM = (typeof GM_info === 'object');
 
 console.log('%c|= DIO-Tools-David1327 is active =|', 'color: green; font-size: 1em; font-weight: bolder; ');
 
-function loadValue(name, default_val){
+function loadValue(name, default_val) {
     var value;
-    if(GM){
+    if (GM) {
         value = GM_getValue(name, default_val);
     } else {
         value = localStorage.getItem(name) || default_val;
     }
 
-    if(typeof(value) === "string"){
+    if (typeof (value) === "string") {
         value = JSON.parse(value)
     }
     return value;
 }
 
 // LOAD DATA
-if(GM && (uw.location.pathname.indexOf("game") >= 0)){
+if (GM && (uw.location.pathname.indexOf("game") >= 0)) {
     var WID = uw.Game.world_id, MID = uw.Game.market_id, AID = uw.Game.alliance_id;
-
-    //GM_deleteValue(WID + "_bullseyeUnit");
 
     DATA = {
         // GLOBAL
-        options : loadValue("options", "{}"),
+        options: loadValue("options", "{}"),
 
-        user : loadValue("dio_user", "{}"),
+        test: loadValue("test", "{}"),
+
+        user: loadValue("dio_user", "{}"),
         count: loadValue("dio_count", "[]"),
 
-        notification : loadValue('notif', '0'),
+        notification: loadValue('notif', '0'),
 
-        errorDio: loadValue('errorDio', '{}'),
+        error: loadValue('error', '{}'),
 
-        spellbox  :	loadValue("spellbox", '{ "top":"23%", "left": "-150%", "show": false }'),
-        commandbox: loadValue("commandbox" , '{ "top":55, "left": 250 }'),
-        tradebox  :	loadValue("tradebox", '{ "top":55, "left": 450 }'),
+        spellbox: loadValue("spellbox", '{ "top":"23%", "left": "-150%", "show": false }'),
+        commandbox: loadValue("commandbox", '{ "top":55, "left": 250 }'),
+        tradebox: loadValue("tradebox", '{ "top":55, "left": 450 }'),
 
         // WORLD
-        townTypes : loadValue(WID + "_townTypes", "{}"),
-        sentUnits : loadValue(WID + "_sentUnits", '{ "attack": {}, "support": {} }'),
+        townTypes: loadValue(WID + "_townTypes", "{}"),
+        sentUnits: loadValue(WID + "_sentUnits", '{ "attack": {}, "support": {} }'),
 
-        biremes   : loadValue(WID + "_biremes", "{}"), //old
-        bullseyeUnit : loadValue(WID + "_bullseyeUnit", '{ "current_group" : -1 }'), // new
+        biremes: loadValue(WID + "_biremes", "{}"), //old
+        bullseyeUnit: loadValue(WID + "_bullseyeUnit", '{ "current_group" : -1 }'), // new
 
-        worldWonder : loadValue(WID + "_wonder", '{ "ratio": {}, "storage": {}, "map": {} }'),
+        worldWonder: loadValue(WID + "_wonder", '{ "ratio": {}, "storage": {}, "map": {} }'),
 
-        clickCount : loadValue(WID + "_click_count", '{}'), // old
-        statistic : loadValue(WID + "_statistic", '{}'), // new
+        clickCount: loadValue(WID + "_click_count", '{}'), // old
+        statistic: loadValue(WID + "_statistic", '{}'), // new
 
         // MARKET
-        worldWonderTypes : loadValue(MID + "_wonderTypes", '{}')
+        worldWonderTypes: loadValue(MID + "_wonderTypes", '{}')
     };
 
-    if(!DATA.worldWonder.map) {
+    if (!DATA.worldWonder.map) {
         DATA.worldWonder.map = {};
     }
 
     // Temporary:
-    if(typeof DATA.options.dio_trd == 'boolean') {
+    if (typeof DATA.options.dio_trd == 'boolean') {
         DATA.options.dio_per = DATA.options.dio_rec = DATA.options.dio_trd; delete DATA.options.dio_trd;
     }
-    if(typeof DATA.options.dio_mov == 'boolean') {
+    if (typeof DATA.options.dio_mov == 'boolean') {
         DATA.options.dio_act = DATA.options.dio_mov; delete DATA.options.dio_mov;
     }
-    if(typeof DATA.options.dio_twn == 'boolean') {
+    if (typeof DATA.options.dio_twn == 'boolean') {
         DATA.options.dio_tic = DATA.options.dio_til = DATA.options.dio_tim = DATA.options.dio_twn; delete DATA.options.dio_twn;
     }
-    if(GM) GM_deleteValue("notification");
+    if (GM) GM_deleteValue("notification");
 }
 
 // GM: EXPORT FUNCTIONS
-uw.saveValueGM = function(name, val){
-    setTimeout(function(){
+uw.saveValueGM = function (name, val) {
+    setTimeout(function () {
         GM_setValue(name, val);
     }, 0);
 };
 
-uw.deleteValueGM = function(name){
-    setTimeout(function(){
+uw.deleteValueGM = function (name) {
+    setTimeout(function () {
         GM_deleteValue(name);
-    },0);
+    }, 0);
 };
 
-uw.getImageDataFromCanvas = function(x, y){
+uw.getImageDataFromCanvas = function (x, y) {
 
     // console.debug("HEY", document.getElementById('canvas_picker').getContext('2d').getImageData(x, y, 1, 1));
 };
-uw.calculateConcaveHull = function() {
+uw.calculateConcaveHull = function () {
     var contour = [
         new poly2tri.Point(100, 100),
         new poly2tri.Point(100, 300),
@@ -141,13 +140,13 @@ uw.calculateConcaveHull = function() {
     return triangles;
 };
 
-if(typeof exportFunction == 'function'){
+if (typeof exportFunction == 'function') {
     // Firefox > 30
     //uw.DATA = cloneInto(DATA, unsafeWindow);
-    exportFunction(uw.saveValueGM, unsafeWindow, {defineAs: "saveValueGM"});
-    exportFunction(uw.deleteValueGM, unsafeWindow, {defineAs: "deleteValueGM"});
-    exportFunction(uw.calculateConcaveHull, unsafeWindow, {defineAs: "calculateConcaveHull"});
-    exportFunction(uw.getImageDataFromCanvas, unsafeWindow, {defineAs: "getImageDataFromCanvas"});
+    exportFunction(uw.saveValueGM, unsafeWindow, { defineAs: "saveValueGM" });
+    exportFunction(uw.deleteValueGM, unsafeWindow, { defineAs: "deleteValueGM" });
+    exportFunction(uw.calculateConcaveHull, unsafeWindow, { defineAs: "calculateConcaveHull" });
+    exportFunction(uw.getImageDataFromCanvas, unsafeWindow, { defineAs: "getImageDataFromCanvas" });
 } else {
     // Firefox < 30, Chrome, Opera, ...
     //uw.DATA = DATA;
@@ -156,15 +155,15 @@ if(typeof exportFunction == 'function'){
 var time_a, time_b;
 
 // APPEND SCRIPT
-function appendScript(){
+function appendScript() {
     //console.log("GM-API: " + gm_bool);
-    if(document.getElementsByTagName('body')[0]){
+    if (document.getElementsByTagName('body')[0]) {
         var dioscript = document.createElement('script');
-        dioscript.type ='text/javascript';
+        dioscript.type = 'text/javascript';
         dioscript.id = 'diotools';
 
         time_a = uw.Timestamp.client();
-        dioscript.textContent = DIO_GAME.toString().replace(/uw\./g, "") + "\n DIO_GAME('"+ dio_version +"', "+ GM +", '" + JSON.stringify(DATA).replace(/'/g, "##") + "', "+ time_a +");";
+        dioscript.textContent = DIO_GAME.toString().replace(/uw\./g, "") + "\n DIO_GAME('" + dio_version + "', " + GM + ", '" + JSON.stringify(DATA).replace(/'/g, "##") + "', " + time_a + ");";
         document.body.appendChild(dioscript);
 
         var DIO_Version = document.createElement('script');
@@ -172,18 +171,18 @@ function appendScript(){
         DIO_Version.innerHTML = GM_getResourceText('Version_dio');
         document.getElementsByTagName('head')[0].appendChild(DIO_Version);
     } else {
-        setTimeout(function(){
+        setTimeout(function () {
             appendScript();
         }, 500);
     }
 }
 
-if(location.host === "www.tuto-de-david1327.com"){
+if (location.host === "www.tuto-de-david1327.com") {
     // PAGE
     DIO_PAGE();
 
 }
-else if((uw.location.pathname.indexOf("game") >= 0) && GM){
+else if ((uw.location.pathname.indexOf("game") >= 0) && GM) {
     // GAME
     appendScript();
 }
@@ -191,62 +190,62 @@ else {
     DIO_FORUM();
 }
 
-function DIO_PAGE(){
+function DIO_PAGE() {
 
     document.getElementById("pied-de-page-pub-2").innerHTML = "";
 }
-function DIO_FORUM(){
+function DIO_FORUM() {
 
 
     var Emots = {
         button: ["rollsmiliey", "smile"],
 
-        standard : [
+        standard: [
             "smilenew", "lol", "neutral-new", "afraid", "freddus-pacman", "auslachen2", "kolobok-sanduhr", "bussi2", "winken4", "flucht2", "panik4", "ins-auge-stechen",
             "seb-zunge", "fluch4-GREEN", "baby-junge2", "blush-reloaded6", "frown", "verlegen", "blush-pfeif", "stevieh-rolleyes", "daumendreh2", "baby-taptap",
             "sadnew", "hust", "confusednew", "idea2", "irre", "irre4", "sleep", "candle", "nicken", "no-sad", "thumbs-up-new", "kciuki", "thumbs-down-new",
             "bravo2", "oh-no2", "kaffee2", "drunk", "saufen", "freu-dance", "hecheln", "headstand", "rollsmiliey", "eazy-cool01", "motz", "cuinlove", "biggrin"
         ],
-        nature : [
+        nature: [
             "dinosaurier07", "flu-super-gau", "ben-cat", "schwein", "hundeleine01", "blume", "ben-sharky", "ben-cow", "charly-bissig", "gehirnschnecke-confused", "mttao-fische", "mttao-angler",
             "insel", "fliegeschnappen", "plapperhase", "ben-dumbo", "twitter", "elefant", "schildkroete", "elektroschocker", "spiderschwein", "oma-sessel-katze", "fred-elefant",
             "palmoel", "stevieh-teddy", "fips-aufsmaul", "marienkaefer", "mrkaktus", "kleeblatt2", "fred-blumenstauss", "hurra-fruehling1-lila", "fred-rasenmaeher", "fred-blumenbeet"
         ],
-        grepolis : [
+        grepolis: [
             "grepolis", "mttao-wassermann", "i-lovo-grepolis", "silvester-cuinlove", "mttao-schuetze", "kleeblatt2", "wallbash", /* "glaskugel4", */ "musketiere-fechtend", "palka", /* "krone-hoch",*/
             "lol-1", "mttao-waage2", "steckenpferd", /* "kinggrin-anbeten2", /* Grepo Love */ "skullhaufen", "pferdehaufen", "pirat5", "seb-cowboy", "gw-ranger001",
             "barbar", "datz", "waffe01", "sarazene-bogen", "waffe02", "waffe14", "hoplit-sword1", "pfeildurchkopf02", "saladin", "hoplit-sword3"
         ],
-        people : [
+        people: [
             "greenistan", "mttao-usa", "schal-usa", "mttao-grossbritannien", "seb-hut5", "opa-boese2", "star-wars-yoda1-gruen", "hexefliegend", "snob", "seb-detektiv-ani", "devil", "segen", "borg", "hexe3b",
             "eazy-polizei", "stars-elvis", "mttao-chefkoch", "nikolaus", "pirate3-biggrin", "batman-skeptisch", "tubbie1", "tubbie2", "tubbie3", "kosmita", "tubbie4"
         ],
-        Party : [
+        Party: [
             "torte1", "torte3", "bier", "party", "party2", "fans", "band", "klokotzen", "laola", "prost", "rave", "mcdonalds", "margarita",
             "geschenk", "sauf", "el", "trommler", "ozboss-gitarre2", "kaffee", "kaffee3", "caipirinha", "whiskey", "drunk", "fressen",
             "popcorn-essen", "saufen", "energydrink1", "leckerer", "prost2", "birthday"
         ],
-        other : [
+        other: [
             "steinwerfen", "herzen02", "scream-if-you-can", "kolobok", "headbash", "liebeskummer", "bussi", "brautpaar-reis", "grab-schaufler2", "boxen2", "aufsmaul",
             "mttao-kehren", "sm", "weckruf", "klugscheisser2", "karte2-rot", "dagegen", "party", "dafuer", "outofthebox", "pokal-gold", "koepfler", "transformer", "eazy-senseo1"
         ],
-        halloween : [
+        halloween: [
             "zombies-alien", "zombies-lol", "zombies-rolleyes", "zombie01", "zombies-smile", "zombie02", "zombies-skeptisch", "zombies-eek", "zombies-frown",
             "geistani", "scream-if-you-can", "pfeildurchkopf01", "grab-schaufler", "kuerbisleuchten", "mummy3",
             "kuerbishaufen", "halloweenskulljongleur", "fledermausvampir", "frankenstein-lol", "halloween-confused", "zombies-razz",
             "halloweenstars-freddykrueger", "zombies-cool", "geist2", "fledermaus2", "halloweenstars-dracula", "batman", "halloweenstars-lastsummer"
         ],
-        xmas : [
+        xmas: [
             "i-love-grepolis", "santagrin", "xmas1-down", "xmas1-thumbs1", "xmas2-lol", "xmas1-frown", "xmas1-irre", "xmas1-razz", "xmas4-kaffee2", "xmas4-hurra2", "xmas4-aufsmaul",
             "schneeball", "schneeballwerfen", "xmas4-advent4", "nikolaus", "weihnachtsmann-junge", "schneewerfen-wald", "weihnachtsmann-nordpol", "xmas-kilroy-kamin",
             "xmas4-laola", "xmas3-smile", "xmas4-paketliebe", "3hlkoenige", "santa", "weihnachtsgeschenk2", "fred-weihnachten-ostern", "xmas4-wallbash", "xmas4-liebe", "xmas4-skullhaufen"
             //"dafuer", "outofthebox", "pokal_gold", "koepfler", "transformer"
         ],
-        easter : [
+        easter: [
             "eier-bemalen-blau-hase-braun", "osterei-hase05", "osterei-bunt", "ostern-hurra2", "osterhasensmilie", "ostern-thumbs1", "ostern-nosmile", "ostern-lol",
             "ostern-irre", "ostern-frown", "ostern-down", "ostern-cuinlove", "ostern-confused", "ostern-blush", "ostern-biggrin"
         ],
-        love : [
+        love: [
             "b-love2", "brautpaar-kinder", "brautpaar-reis", "cuinlove", "fips-herzen01", "heart", "herzen01", "herzen02", "herzen06", "kiss", "klk-tee", "liebesflagge",
             "love", "lovelove-light", "rose", "send-out-love", "teeglas-fruechtetee", "unknownauthor-knutsch", "valentinstag-biggrin", "valentinstag-confused",
             "valentinstag-down", "valentinstag-irre", "valentinstag-lol", "valentinstag-thumbs1", "wolke7"
@@ -261,115 +260,116 @@ function DIO_FORUM(){
         xfEdit: null,
         xfAvat: "n",
 
-        GetEmotss: function() {
+        GetEmotss: () => {
             FDio.emots || ($.ajax({
                 timeout: 1e4,
-                complete: function() {
+                complete: () => {
                     FDio.emots = !0;
                     var e = $(".fr-element.fr-view:first");
                     function t(e, t, o) {
                         return $("<li/>", {
                             style: "float:left; width:35px; height:25; margin-top:4px; margin-left: 5px;"
-                        }).click(function() {
-                            $("#dio_emot_popup ul li").css("background", 'url("' + FDio.Home + 'medias/images/etabB.gif") no-repeat')
-                            $(this).css("background", 'url("' + FDio.Home + 'medias/images/etabA.gif") no-repeat')
-                            document.getElementById("dio_emots_poup_content").innerHTML = ""
-                            $.each(o, function(e, t) {
-                                (e = FDio.HomeImg + t + ".gif")
+                        }).click(function () {
+                            $("#dio_emot_popup ul li").css("background", 'url("' + FDio.Home + 'medias/images/etabB.gif") no-repeat');
+                            $(this).css("background", 'url("' + FDio.Home + 'medias/images/etabA.gif") no-repeat');
+                            document.getElementById("dio_emots_poup_content").innerHTML = "";
+                            $.each(o, (e, t) => {
+                                (e = FDio.HomeImg + t + ".gif");
                                 $("#dio_emots_poup_content").append($("<img/>", {
                                     src: e,
                                     title: "",
                                     class: ".Smilie",
                                     style: "margin-right: 5px; padding: 2px; border: 1px solid transparent; cursor: pointer;"
-                                }).mouseover(function() {
-                                    this.style.backgroundColor = "#08944d33"
-                                    this.style.border="1px solid #00800080"
-                                }).mouseout(function() {
-                                    this.style.backgroundColor = "transparent"
-                                    this.style.border="1px solid transparent"
-                                }).click(function(e) {
-                                    FDio.xfPasteImage($(this).attr("src"))
-                                }))
-                            })
-                        }).html("<center>" + t + "<center>")
+                                }).mouseover(function () {
+                                    this.style.backgroundColor = "#08944d33";
+                                    this.style.border = "1px solid #00800080";
+                                }).mouseout(function () {
+                                    this.style.backgroundColor = "transparent";
+                                    this.style.border = "1px solid transparent";
+                                }).click(function () {
+                                    FDio.xfPasteImage($(this).attr("src"));
+                                }));
+                            });
+                        }).html("<center>" + t + "<center>");
                     }
-                    var dioEmots,dioEmotsbutton;
+                    var dioEmots, dioEmotsbutton;
                     e.length && (FDio.xfEdit = e.closest("form"),
-                                 FDio.xfEdit.length && (dioEmots = $("<div/>", {
-                        id: "dio_emot_popup",
-                        class: "message",
-                        style: "display:none; z-index:10;" //float: left;  margin: -5px 0 -40px 0;
-                    }).append($("<ul/>", {
-                        class: "emojiList js-emojiList",
-                        style: "max-height: 27px; margin: 0px; background-color: #3f4745;border: .1px solid #f3b344;"
-                    }).append(
-                        t(0, "<img src='" + FDio.HomeImg + "smilenew.gif' style='padding: 2px;'</img>", Emots.standard)).append(
-                        t(0, "<img src='" + FDio.HomeImg + "ben-cat.gif' style='padding: 2px;'</img>", Emots.nature)).append(
-                        t(0, "<img src='" + FDio.HomeImg + "i-lovo-grepolis.gif' style='margin-top: -4px;'</img>", Emots.grepolis)).append(
-                        t(0, "<img src='" + FDio.HomeImg + "stars-elvis.gif' style=''</img>", Emots.people)).append(
-                        t(0, "<img src='" + FDio.HomeImg + "prost2.gif' style='padding: 2px; margin-right: -5px;'</img>", Emots.Party)).append(
-                        t(0, "<img src='" + FDio.HomeImg + "irre.gif' style='padding: 2px; margin-right: -5px;'</img>", Emots.other)).append(
-                        t(0, "<img src='" + FDio.HomeImg + "zombies-lol.gif' style='padding: 2px; margin-right: -5px;'</img>", Emots.halloween)).append(
-                        t(0, "<img src='" + FDio.HomeImg + "santagrin.gif' style='margin-top: -4px;'</img>", Emots.xmas)).append(
-                        t(0, "<img src='" + FDio.HomeImg + "osterhasensmilie.gif' style='margin-top: -4px;'</img>", Emots.easter)).append(
-                        t(0, "<img src='" + FDio.HomeImg + "herzen02-1.gif' style='margin-top: -4px;'</img>", Emots.love))).append(
-                        $("<div/>", {
-                            class: "js-emoji",
-                            style: 'clear:both; height:100px; border-left: .1px solid #f3b344; border-right: .1px solid #f3b344; margin-top: -5px;'
-                        }).append($("<div/>", {
-                            class: "signature",
-                            style: "margin:5px;overflow-y: auto; max-height: 99px;"
-                        }).append($("<div/>", {
-                            id: "dio_emots_poup_content",
-                            //style: "width:378px;"
-                        })))).css({
-                        "text-align": "left",
-                        //width: "413px"
-                    }),
+                        FDio.xfEdit.length && (dioEmots = $("<div/>", {
+                            id: "dio_emot_popup",
+                            class: "message",
+                            style: "display:none; z-index:10;" //float: left;  margin: -5px 0 -40px 0;
+                        }).append($("<ul/>", {
+                            class: "emojiList js-emojiList",
+                            style: "max-height: 27px; margin: 0px; background-color: #3f4745;border: .1px solid #f3b344;"
+                        }).append(
+                            t(0, "<img src='" + FDio.HomeImg + "smilenew.gif' style='padding: 2px;'</img>", Emots.standard)).append(
+                                t(0, "<img src='" + FDio.HomeImg + "ben-cat.gif' style='padding: 2px;'</img>", Emots.nature)).append(
+                                    t(0, "<img src='" + FDio.HomeImg + "i-lovo-grepolis.gif' style='margin-top: -4px;'</img>", Emots.grepolis)).append(
+                                        t(0, "<img src='" + FDio.HomeImg + "stars-elvis.gif' style=''</img>", Emots.people)).append(
+                                            t(0, "<img src='" + FDio.HomeImg + "prost2.gif' style='padding: 2px; margin-right: -5px;'</img>", Emots.Party)).append(
+                                                t(0, "<img src='" + FDio.HomeImg + "irre.gif' style='padding: 2px; margin-right: -5px;'</img>", Emots.other)).append(
+                                                    t(0, "<img src='" + FDio.HomeImg + "zombies-lol.gif' style='padding: 2px; margin-right: -5px;'</img>", Emots.halloween)).append(
+                                                        t(0, "<img src='" + FDio.HomeImg + "santagrin.gif' style='margin-top: -4px;'</img>", Emots.xmas)).append(
+                                                            t(0, "<img src='" + FDio.HomeImg + "osterhasensmilie.gif' style='margin-top: -4px;'</img>", Emots.easter)).append(
+                                                                t(0, "<img src='" + FDio.HomeImg + "herzen02-1.gif' style='margin-top: -4px;'</img>", Emots.love))).append(
+                                                                    $("<div/>", {
+                                                                        class: "js-emoji",
+                                                                        style: 'clear:both; height:100px; border-left: .1px solid #f3b344; border-right: .1px solid #f3b344; margin-top: -5px;'
+                                                                    }).append($("<div/>", {
+                                                                        class: "signature",
+                                                                        style: "margin:5px;overflow-y: auto; max-height: 99px;"
+                                                                    }).append($("<div/>", {
+                                                                        id: "dio_emots_poup_content",
+                                                                        //style: "width:378px;"
+                                                                    })))).css({
+                                                                        "text-align": "left",
+                                                                        //width: "413px"
+                                                                    }),
 
-                                                        $(".fr-toolbar.fr-ltr.fr-desktop.fr-top.fr-basic").before(dioEmots), //'<div class="fr-separator fr-vs" role="separator" aria-orientation="vertical"></div>'+
-                                                        dioEmots.parent().append("<br>"),
-                                                        dioEmotsbutton = $('<button id="dio_smiley_butt" type="button" role="button" class="fr-command fr-btn" style="text-align: center;">' +
-                                                                           '<div id="dio_smiley_button" class="button"></div></button>', {
-                        //id: "dio_smiley_button",
-                        //class: "far fa-smile button",
-                        //style: "z-index:2; height: 18px; margin: 0 3px -9px 3px; border: transparent; background:url('" + FDio.HomeImg + "smile.gif') no-repeat 0px 0px"
-                    }).click(function() {
-                        //$("#dio_emot_popup.content").height() < 80 ? $("#dio_emot_popup.content").css("overflow", "auto") : $("#dio_emot_popup.content").css("overflow-y", "scroll"),
-                        $("#dio_emot_popup").toggle()
-                    }),
+                            $(".fr-toolbar.fr-ltr.fr-desktop.fr-top.fr-basic").before(dioEmots), //'<div class="fr-separator fr-vs" role="separator" aria-orientation="vertical"></div>'+
+                            dioEmots.parent().append("<br>"),
+                            dioEmotsbutton = $('<button id="dio_smiley_butt" type="button" role="button" class="fr-command fr-btn" style="text-align: center;">' +
+                                '<div id="dio_smiley_button" class="button"></div></button>', {
+                                //id: "dio_smiley_button",
+                                //class: "far fa-smile button",
+                                //style: "z-index:2; height: 18px; margin: 0 3px -9px 3px; border: transparent; background:url('" + FDio.HomeImg + "smile.gif') no-repeat 0px 0px"
+                            }).click(() => {
+                                //$("#dio_emot_popup.content").height() < 80 ? $("#dio_emot_popup.content").css("overflow", "auto") : $("#dio_emot_popup.content").css("overflow-y", "scroll"),
+                                $("#dio_emot_popup").toggle();
+                            }),
 
-                                                        ((!$('#dio_smiley_button').length) ? (
-                        $(".fr-toolbar").length && ($("#xfSmilie-1").after(dioEmotsbutton))) : ""),
-                                                        $("#dio_emot_popup ul li:first").click()))
+                            ((!$('#dio_smiley_button').length) ? (
+                                $(".fr-toolbar").length && ($("#xfSmilie-1").after(dioEmotsbutton))) : ""),
+                            $("#dio_emot_popup ul li:first").click()));
 
                     $('<style id="dio_emot_popup_style">' +
-                      // Chrome Scroollbar Style
-                      '#dio_smiley_button { z-index:2; height: 18px; border: transparent; background:url("' + FDio.HomeImg + 'smile.gif") no-repeat 0px 0px } ' +
-                      '#dio_emot_popup ::-webkit-scrollbar { width: 13px; } ' +
-                      '#dio_emot_popup ::-webkit-scrollbar-track { background-color: rgba(130, 186, 135, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                      '#dio_emot_popup ::-webkit-scrollbar-thumb { background-color: rgba(87, 121, 45, 0.5); border-radius: 3px; } ' +
-                      '#dio_emot_popup ::-webkit-scrollbar-thumb:hover { background-color: rgba(87, 121, 45, 0.8); } ' +
-                      '#dio_smiley_butt.fr-command.fr-btn.fr-disabled div#dio_smiley_button { filter: opacity(0.2); cursor: default;} ' +
-                      '</style>').appendTo('head');
+                        // Chrome Scroollbar Style
+                        '#dio_smiley_button { z-index:2; height: 18px; border: transparent; background:url("' + FDio.HomeImg + 'smile.gif") no-repeat 0px 0px } ' +
+                        '#dio_emot_popup ::-webkit-scrollbar { width: 13px; } ' +
+                        '#dio_emot_popup ::-webkit-scrollbar-track { background-color: rgba(130, 186, 135, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                        '#dio_emot_popup ::-webkit-scrollbar-thumb { background-color: rgba(87, 121, 45, 0.5); border-radius: 3px; } ' +
+                        '#dio_emot_popup ::-webkit-scrollbar-thumb:hover { background-color: rgba(87, 121, 45, 0.8); } ' +
+                        '#dio_smiley_butt.fr-command.fr-btn.fr-disabled div#dio_smiley_button { filter: opacity(0.2); cursor: default;} ' +
+                        '</style>').appendTo('head');
 
                 },
-                error: function() {
+                error: () => {
                     FDio.emots = !1,
                         //setTimeout(FDio.GetEmotss(), 1e4)
-                        setTimeout(function () {
-                        FDio.GetEmotss();
-                    }, 1e4);
+                        setTimeout(() => {
+                            FDio.GetEmotss();
+                        }, 1e4);
                 }
             }),
-                           FDio.emots = !1,
-                           setTimeout(function () {
-                FDio.GetEmotss();
-            }, 1e4))//,
+                FDio.emots = !1,
+                setTimeout(() => {
+                    FDio.GetEmotss();
+                }, 1e4)); //,
+
             //setTimeout(FDio.GetEmotss(), 1e4))
         },
 
-        xfPasteImage: function(e) {
+        xfPasteImage: function (e) {
             var t;
             if (!(t = XF.getEditorInContainer(FDio.xfEdit)))
                 return !1;
@@ -379,24 +379,26 @@ function DIO_FORUM(){
         },
     };
     FDio.GetEmotss();
-    setInterval(function () {
+    setInterval(() => {
         FDio.GetEmotss();
     }, 10000);
 }
 
 
 function DIO_GAME(dio_version, gm, DATA, time_a) {
+
     var MutationObserver = uw.MutationObserver || window.MutationObserver,
 
         WID, MID, AID, PID, LID, Points, pName, tName;
-
+    var Home = "https://www.tuto-de-david1327.com/";
+    var Home_img = "https://www.tuto-de-david1327.com/medias/images/";
     var updateversion = dio_version.replace(/\./g, "-");
-    var dio_sprite = "https://www.tuto-de-david1327.com/medias/images/dio-sprite-5.png"; // http://abload.de/img/dio_spritejmqxp.png, -> Forbidden!?
-    /*dio_sprite = "https://www.tuto-de-david1327.com/medias/images/d9xuhtcctx5fdi8i.2.png"; // http://abload.de/img/dio_spritejmqxp.png, -> Forbidden!?*/
+    var dio_sprite = Home_img + "dio-sprite-5.png"; // http://abload.de/img/dio_spritejmqxp.png, -> Forbidden!?
+    /*dio_sprite = Home_img + "d9xuhtcctx5fdi8i.2.png"; // http://abload.de/img/dio_spritejmqxp.png, -> Forbidden!?*/
 
     //dio_icon
-    var dio_img = "https://www.tuto-de-david1327.com/medias/images/icon.gif"; //https://www.tuto-de-david1327.com/medias/images/icon.gif
-    var daystamp = 1000*60*60*24, today = new Date((new Date())%(daystamp*(365+1/4))), // without year
+    var dio_img = Home_img + "icon.gif"; //Home_img + "icon.gif"
+    var daystamp = 1000 * 60 * 60 * 24, today = new Date((new Date()) % (daystamp * (365 + 1 / 4))), // without year
         // Xmas -> 28 days
         xmas_start = daystamp * 334, // 1. Dezember (334)
         xmas_end = daystamp * 361, // 28. Dezember (361)
@@ -413,15 +415,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_img_Halloween = (today >= halloween_start) ? (today <= halloween_end) : false;
 
     if (dio_img_Xmas) {
-        dio_img = "https://www.tuto-de-david1327.com/medias/images/icon-xmas.gif";}
+        dio_img = Home_img + "icon-xmas.gif";
+    }
     if (dio_img_Easter) {
-        dio_img = "https://www.tuto-de-david1327.com/medias/images/icon-paques.png";}
+        dio_img = Home_img + "icon-paques.png";
+    }
     /*if (dio_img_Halloween) {
-        dio_img = "https://www.tuto-de-david1327.com/medias/images/icon-paques.png";}*/
+        dio_img = Home_img + "icon-paques.png";}*/
     $('<style id="dio_BBplayer_style"> ' +
-      '.dio_icon { background:url(' + dio_img + ') no-repeat 0px 0px; background-size: 100%;} ' +
-      '.dio_icon.b { width: 26px; height: 22px; float: left; margin: -2px 5px 0 0;} ' +
-      '</style>').appendTo("head");
+        '.dio_icon { background:url(' + dio_img + ') no-repeat 0px 0px; background-size: 100%;} ' +
+        '.dio_icon.b { width: 26px; height: 22px; float: left; margin: -2px 5px 0 0;} ' +
+        '</style>').appendTo("head");
 
     var dio_icon = '<div class="dio_icon b"></div>';
 
@@ -487,60 +491,402 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
     if (uw.location.pathname.indexOf("game") >= 0) {
         $('<svg width="0%" height="0%">' +
-          // GREYSCALE
-          '<filter id="GrayScale">' +
-          '<feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0">' +
-          '</filter>' +
-          // SEPIA
-          '<filter id="Sepia">' +
-          '<feColorMatrix type="matrix" values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0.000 0.000 0.000 1 0">' +
-          '</filter>' +
-          // SATURATION
-          '<filter id="Saturation"><feColorMatrix type="saturate" values="0.2"></filter>' +
-          '<filter id="Saturation1"><feColorMatrix type="saturate" values="1"></filter>' +
-          '<filter id="Saturation2"><feColorMatrix type="saturate" values="2"></filter>' +
-          // HUE
-          '<filter id="Hue1"><feColorMatrix type="hueRotate" values= "65"></filter>' +
-          '<filter id="Hue2"><feColorMatrix type="hueRotate" values="150"></filter>' +
-          '<filter id="Hue3"><feColorMatrix type="hueRotate" values="-65"></filter>' +
-          // BRIGHTNESS
-          '<filter id="Brightness15">' +
-          '<feComponentTransfer><feFuncR type="linear" slope="1.5"/><feFuncG type="linear" slope="1.5"/><feFuncB type="linear" slope="1.5"/></feComponentTransfer>' +
-          '</filter>' +
-          '<filter id="Brightness12">' +
-          '<feComponentTransfer><feFuncR type="linear" slope="1.2"/><feFuncG type="linear" slope="1.2"/><feFuncB type="linear" slope="1.2"/></feComponentTransfer>' +
-          '</filter>' +
-          '<filter id="Brightness11">' +
-          '<feComponentTransfer><feFuncR type="linear" slope="1.1"/><feFuncG type="linear" slope="1.1"/><feFuncB type="linear" slope="1.1"/></feComponentTransfer>' +
-          '</filter>' +
-          '<filter id="Brightness10">' +
-          '<feComponentTransfer><feFuncR type="linear" slope="1.0"/><feFuncG type="linear" slope="1.0"/><feFuncB type="linear" slope="1.0"/></feComponentTransfer>' +
-          '</filter>' +
-          '<filter id="Brightness07">' +
-          '<feComponentTransfer><feFuncR type="linear" slope="0.7"/><feFuncG type="linear" slope="0.7"/><feFuncB type="linear" slope="0.7"/></feComponentTransfer>' +
-          '</filter>' +
-          '</svg>').appendTo('#ui_box');
+            // GREYSCALE
+            '<filter id="GrayScale">' +
+            '<feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0">' +
+            '</filter>' +
+            // SEPIA
+            '<filter id="Sepia">' +
+            '<feColorMatrix type="matrix" values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0.000 0.000 0.000 1 0">' +
+            '</filter>' +
+            // SATURATION
+            '<filter id="Saturation"><feColorMatrix type="saturate" values="0.2"></filter>' +
+            '<filter id="Saturation1"><feColorMatrix type="saturate" values="1"></filter>' +
+            '<filter id="Saturation2"><feColorMatrix type="saturate" values="2"></filter>' +
+            // HUE
+            '<filter id="Hue1"><feColorMatrix type="hueRotate" values= "65"></filter>' +
+            '<filter id="Hue2"><feColorMatrix type="hueRotate" values="150"></filter>' +
+            '<filter id="Hue3"><feColorMatrix type="hueRotate" values="-65"></filter>' +
+            // BRIGHTNESS
+            '<filter id="Brightness15">' +
+            '<feComponentTransfer><feFuncR type="linear" slope="1.5"/><feFuncG type="linear" slope="1.5"/><feFuncB type="linear" slope="1.5"/></feComponentTransfer>' +
+            '</filter>' +
+            '<filter id="Brightness12">' +
+            '<feComponentTransfer><feFuncR type="linear" slope="1.2"/><feFuncG type="linear" slope="1.2"/><feFuncB type="linear" slope="1.2"/></feComponentTransfer>' +
+            '</filter>' +
+            '<filter id="Brightness11">' +
+            '<feComponentTransfer><feFuncR type="linear" slope="1.1"/><feFuncG type="linear" slope="1.1"/><feFuncB type="linear" slope="1.1"/></feComponentTransfer>' +
+            '</filter>' +
+            '<filter id="Brightness10">' +
+            '<feComponentTransfer><feFuncR type="linear" slope="1.0"/><feFuncG type="linear" slope="1.0"/><feFuncB type="linear" slope="1.0"/></feComponentTransfer>' +
+            '</filter>' +
+            '<filter id="Brightness07">' +
+            '<feComponentTransfer><feFuncR type="linear" slope="0.7"/><feFuncG type="linear" slope="0.7"/><feFuncB type="linear" slope="0.7"/></feComponentTransfer>' +
+            '</filter>' +
+            '</svg>').appendTo('#ui_box');
     }
 
     /*******************************************************************************************************************************
      * Language versions: German, Italian, English, French, Russian, Polish, Spanish, Romanian
      *******************************************************************************************************************************/
-    let daaaa="";
-    if (system()){
-        daaaa= "Mac"
-    }else daaaa= "Windows"
     var LANG = {
+        //////////////////////////////////////////////
+        //            Translation AUTO              //
+        //////////////////////////////////////////////
+        AUTO: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
+            link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
+                //forum: "",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
+            },
+            Settings: {
+                //dsc: "DIO-Tools offres certains écrans, une boîte de smiley, les options <br>commerciales, des changements à la mise en page et d'autres choses.",
+                //act: "Activation/Désactivation des fonctions:",
+                //prv: "Aperçu des fonctions séparées:",
+
+                //version_old: "La version n'est pas à jour",
+                //version_new: "La version est à jour",
+                //version_dev: "Version développeur",
+
+                //version_update: "Mettre à jour",
+                //Donate: "Faire un don",
+
+                //forum: "",
+                //Update: "Mise à jour " + dio_version,
+                //Feature: "Nouvelle fonctionnalité",
+                //Feature2: "Nouvelle version",
+                //Learn_more: "En savoir plus",
+
+                cat_units: uw.DM.getl10n("context_menu").titles.units_info, //"Unités"
+                //cat_icons: "Icônes de la ville",
+                cat_forum: uw.DM.getl10n("layout").main_menu.items.forum, //"Forum"
+                cat_trade: uw.DM.getl10n("layout").premium_button.premium_menu.trade_overview, //"Commerce"
+                //cat_wonders: "Merveille",
+                //cat_layout: "Disposition",
+                cat_other: uw.DM.getl10n("report").inbox.filter_types.misc, //"Divers"
+                cat_Premium: uw.DM.getl10n("premium").common.window_title, //"Premium"
+                //cat_Quack: "Quack",
+            },
+            Options: {
+                //bir: ["Compteur de birèmes ", "Totalise l'ensemble des birèmes présentent en villes et les résume. (Remplace la mini carte dans le cadran)"],
+                //ava: ["L'aperçu des unites", "Indique les unités de toutes les villes."],
+                //ava2: ["Numéro de Mer", "Extension unité"], //uw.DM.getl10n("COMMON").ocean_number_tooltip
+                //sml: ["Smileys", "Rajoutes une boite de smilies à la boite de bbcode"],
+                //str: ["Force unitaire", "Ajoutes des tableaux de force unitaire dans les différentes armes"],
+                //trd: [ "Commerce",				"Ajout d'une option par pourcentage, par troupes pour le commerce, ainsi qu'un affichage des limites pour les festivals" ],
+                //tra: ["Capacité de transport", "Affiche la capacité de transport occupée et disponible dans le menu des l'unités"], //uw.DM.getl10n("barracks").tooltips.ship_transport.title
+                //per: ["Commerce de pourcentage", "Prolonge la fenêtre du commerce par un commerce de pourcentage"],
+                //rec: ["Commerce de recrutement", "Prolonge la fenêtre du commerce par un commerce de recrutement"],
+                //cnt: ["Compteur conquête", "Comptabilise le nombre d'attaque et de soutien dans la fenêtre de conquête"],
+                //way: ["Vitesse des troupes ", "Rajoutes le temps de trajet avec le bonus accélération"],
+                //sim: ["Simulateur", "Modification de la présentation du simulateur et affichage permanent des options premium"],
+                //act: ["Boîte d'activité", "Présentation améliorée du commerce et du recrutement (mémoire de position)"],
+                //pop: ["Popup de faveur", 'Change la popup de faveur'],
+                //tsk: ["Barre de tâches", "La barre de tâches augmente"],
+                //rew: ["Récompenses journalières", "Minimise la fenêtre de récompense quotidienne au démarrage"], //uw.DM.getl10n("grepolis_score").categories.daily_awards
+                //bbc: ["Formulaire de défense", "Ajout d'un bouton dans la barre BBCode pour un formulaire de défense automatique"],
+                //com: ["Comparaison des unités", "Ajoutes des tableaux de comparaison des unités"],
+                //tic: ["Icônes des villes", "Chaque ville reçoit une icône pour le type de ville (détection automatique)", "Des icônes supplémentaires sont disponibles pour la sélection manuelle"],
+                //til: ["Liste de ville", "Ajoute les icônes de la ville à la liste de la ville"],
+                //tim: ["Carte", "Définit les icônes de la ville sur la carte stratégique"],
+                //tiw: ["Icônes Popup", ""],
+                //wwc: ["Merveille du monde", "Compteur de ressource et calcul d'envoi + bouton précédent et suivant sur les merveilles finies"],
+                //wwr: ["Classement", "Nouveau classement mondial des merveilles"],
+                //wwi: ["Icônes", 'Ajoute des icônes de merveilles du monde sur la carte stratégique'],
+                //con: ["Menu contextuel", 'Échangée "Sélectionner ville" et "Aperçu de la ville" dans le menu contextuel'],
+                //sen: ["Unités envoyées", 'Affiche unités envoyées dans la fenêtre attaque/support'],
+                //tov: ["Aperçu de ville", "Remplace la nouvelle aperçu de la ville avec l'ancien style de fenêtre"],
+                //scr: ["Molette de la souris", 'Avec la molette de la souris vous pouvez changer les vues'],
+                //Scr: ["Barre de défilement", 'Modifier le style de la barre de défilement (Non disponible sur Firefox)'],
+                //tow: ["BBcode de la ville", "Ajoute le bbcode de la ville à la tab de la ville. Fonction Quack"],
+                //Fdm: ["Sélectionner et supprimer plusieur messages", "Vous pouvez supprimer plus de un commentaire. Fonction Quack"],
+                //Sel: ["Rajouter (Sans surcharge / Effacer)", "Amélioration de nouveaux outils sur la fenêtre d'attaque et de support. Fonction Quack"],
+                //Cul: ["Aperçu de culture (Administrateur)", "Ajouter un compteur pour les fêtes dans la vue de la culture. Fonction Quack"],
+                //Hot: ["Raccourcis clavier pour Windows", "Ça change votre vie"],
+                //Isl: ["Visualisation de l'île", "Agrandir la hauteur de la liste des villes et des villages"],
+                //Ish: ["L'aperçu des villages de paysans (Capitaine)", "Masquer automatiquement la ville. Fonction Quack"],
+                //Hio: ["Aperçu des grottes (Administrateur)", "Permettre le tri des villes. Fonction Quack"],
+                //Hid: ["Grotte", "Entrer l'argent au-dessus de 15.000 automatiquement dans le champ de saisie. Fonction Quack"], //uw.DM.getl10n("layout").premium_button.premium_menu.hides_overview
+                //Tol: ["Liste des villes en BB-Code", "Copier & colle. Fonction Quack"],
+                //Cib: ["Bouton vue sur la ville", "Ajouter un bouton pour ouvrir la vue sur la ville au menu de côté sur Grepolis. Fonction Quack"],
+                //Ciw: ["Vue de la ville", "Afficher la ville dans une fenêtre. Fonction Quack"],
+                //Tti: ["Commerce de ressources pour les festival", "Cliquer dessus et il ne s'échange que vers un festival. Fonction Quack"],
+                //Mse: ["BB-Code messages", "Convertir les message en BB-Code. Fonction Quack"],
+                //Rep: ["Rapports", "Rajout d'un filtre de couleur. Fonction Quack"], //uw.DM.getl10n("bbcodes").report.name
+                //BBt: ["Bouton BBcode Infos joueur", "Ajout d'un bouton BBcode (joueur et alliance)"],
+                //Rtt: ["Suppression des info-bulles de l'unité", ""],
+                //Cup: ["Avancement de la culture (Administrateur)", "Modification de la présentation de la barre de progression et ajout d'une barre de progression pour les cultures. Fonction d'Akiway"],
+                //Cuo: ["Points de Culture (Administrateur)", "Ajoutez un compteur pour les points de culture. Fonction Quack"],
+                //Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"],
+                //FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""],
+                //Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""],
+
+                //err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
+            },
+            movement: {
+                //off: 'Attaque entrante',
+                offs: uw.DM.getl10n("layout").toolbar_activities.incomming_attacks, //'Attaques entrantes'
+                //def: 'Soutien entrant', //uw.DM.getl10n("context_menu").titles.support + ...
+                //defs: 'Soutiens entrants',
+            },
+            Town_icons: {
+                //LandOff: "Off terrestre",
+                //LandDef: "Déf terrestre",
+                //NavyOff: "Off naval",
+                //NavyDef: "Déf naval",
+                //FlyOff: "Unités Mythiques Off",
+                //FlyDef: "Unités Mythiques Def",
+                //Out: "À l'extérieur",
+                //Emp: "Vide",
+            },
+            Color: {
+                //Blue: 'Bleu',
+                //Red: 'Rouge',
+                //Green: 'Vert',
+                //Pink: 'Rose',
+                //White: "Blanc",
+            },
+            labels: {
+                //uni: "Présentation des unités",
+                //total: "Total",
+                available: uw.DM.getl10n("hercules2014", "available"), //"Disponible"
+                //outer: "Extérieur",
+                con: uw.DM.getl10n("context_menu").titles.select_town, //"Sélectionner"
+                sup: uw.DM.getl10n("context_menu").titles.support, //"Soutien"
+                her: uw.DM.getl10n("heroes").collection.heroes, //"Héros"
+                /// Smileys
+                //std: "Standard",
+                //gre: "Grepo",
+                //nat: "Nature",
+                //ppl: "Gens",
+                //Par: "Fête",
+                //oth: "Autres",
+                //hal: "Halloween",
+                //xma: "Noël",
+                //eas: "Pâques",
+                //lov: "Amour",
+                /// Defense form
+                //ttl: "Aperçu: Défense de ville",
+                //inf: "Renseignements sur la ville:",
+                //dev: "Différence",
+                //det: "Unités terrestres détaillées",
+                //prm: "Bonus premium",
+                //sil: "Remplissage de la grotte",
+                //mov: "Mouvements de troupes:",
+                /// WW
+                //leg: "Participation",
+                //stg: "Niveau",
+                //tot: "Total",
+                /// Simulator
+                //str: "Force unitaire",
+                //los: "Pertes",
+                //mod: "sans influence de modificateur",
+                /// Comparison box
+                //dsc: "Comparaison des unités",
+                //hck: "Contond.",
+                //prc: "Blanche",
+                //dst: "Jet",
+                //sea: "Navale",
+                att: uw.DM.getl10n("context_menu", "titles").attack, //"Attaque"
+                def: uw.DM.getl10n("place").tabs[0], //"Défense"
+                //spd: "Vitesse",
+                //bty: "Butin",
+                //cap: "Capacité de transport",
+                //res: "Coût de construction",
+                //fav: "Faveur",
+                //tim: "Temps de construction (s)",
+                /// Trade
+                //rat: "Ratio des ressources d'un type d'unité",
+                //shr: "Part de la capacité de stockage de la ville cible",
+                //per: "Commerce de pourcentage",
+                /// Sent units box
+                //lab: "Envoyée",
+                //rec: "Ressources",
+                //improved_movement: "Mouvement des troupes amélioré",
+                //Tran: "Traductions",
+                //donat: "Contribution (Dons)",
+                //Happy: "Bonne année!",
+                //Merry: "Ho! Ho! Ho! Joyeux Noël!",
+                //tow: "BBCode ville",
+                //ingame_name: ["N'hésitez pas à me contacter si vous préférez être appeler par votre pseudo.", "Comme il y a beaucoup à faire, et que cela peut demander beaucoup de temps, je suis toujours très reconnaissant pour tout type d'aide. De ce fait, j'aimerai remercier tous ceux qui sont offert de l'aide sur ce projet, que ce soit par des donations, en partageant des connaissances, des conseils créatifs, en rapportant des problèmes, ou simplement par des messages d'encouragement."],
+            },
+            tutoriel: {
+                //tuto: "Informations utiles",
+                //reme: ["", ""],
+
+                //Trou: ["", ""],
+                //util: ["", ""]
+            },
+            Quack: {
+                /// delete multiple forum
+                //delete_mul: "Supprimer plusieurs messages",
+                //delete_sure: "Voulez vous réellement effacer ces messages?",
+                //no_selection: "Aucun message sélectionnés",
+                //mark_All: "Tout marquer",
+                ///select unit shelper
+                //no_overload: 'Sans surcharge',
+                delete: uw.DM.getl10n("market").delete_all_market_offers, //"Effacer"
+                ///culture Overview
+                //cityfestivals: 'Festivals',
+                //olympicgames: 'Jeux Olympiques',
+                //triumph: 'Marche triomphales',
+                //theater: 'Pièces de théâtre'
+            },
+            hotkeys: {
+                //hotkeys: 'Raccourci',
+                //Senate: 'Sénat',
+                //city_select: 'Sélection ville',
+                //last_city: 'Ville précédente',
+                //next_city: 'Ville suivante',
+                //jump_city: 'Attendre la ville actuelle',
+                //administrator: 'Administrateur',
+                //captain: 'Capitaine',
+                //trade_ov: 'Aperçu du commerce',
+                //command_ov: 'Aperçu des ordres',
+                //recruitment_ov: 'Aperçu du recrutement',
+                //troop_ov: 'Aperçu des troupes',
+                //troops_outside: 'Troupes en dehors',
+                //building_ov: 'Aperçu des bâtiments',
+                //culture_ov: 'Aperçu culturel',
+                //gods_ov: 'Aperçu des divinités',
+                //cave_ov: 'Aperçu des grottes',
+                //city_groups_ov: 'Aperçu des groupes de villes',
+                //city_list: 'Liste des villes',
+                //attack_planner: 'Planificateur',
+                //farming_villages: 'Villages de paysans',
+                //menu: 'Menu',
+                city_view: uw.DM.getl10n("town_index").window_title, //'Vue de la ville'
+                messages: uw.DM.getl10n("layout").main_menu.items.messages, //'Messages'
+                reports: uw.DM.getl10n("layout").main_menu.items.reports, //'Rapports'
+                alliance: uw.DM.getl10n("layout").main_menu.items.alliance, //'Alliance'
+                alliance_forum: uw.DM.getl10n("layout").main_menu.items.allianceforum, //'Forum d\'alliance'
+                settings: uw.DM.getl10n("layout").config_buttons.settings, //'Réglages'
+                profile: uw.DM.getl10n("layout").main_menu.items.profile, //'Profil'
+                //ranking: 'Classement',
+                //notes: 'Notes',
+                //chat: 'Chat',
+                //council: 'Concile des héros'
+            },
+            messages: {
+                ghosttown: uw.DM.getl10n("common").ghost_town, //'Ville fantôme'
+                //no_cities: 'Aucune ville sur cette île',
+                //all: 'Tous',
+                //export: 'Convertir le message en BB-Code',
+                //Tol: 'Copier & colle (Fonction Quack)',
+                //copy: 'Copier',
+                //bbmessages: 'BB-Code messages',
+                //copybb: 'Le BBCode a été copié',
+                //écrit: 'a écrit ce qui suit :',
+            },
+            caves: {
+                //stored_silver: 'Capacité de stockage des pièces d\'argent',
+                //silver_to_store: "Pièces d'argent stockables",
+                //name: 'Nom',
+                wood: uw.DM.getl10n("barracks").cost_details.wood, //'Bois'
+                stone: uw.DM.getl10n("barracks").cost_details.stone, //'Pierre'
+                silver: uw.DM.getl10n("barracks").cost_details.iron, //'Pièces d\'argent'
+                search_for: uw.DM.getl10n("place").simulator.configuration.technologies //'Rechercher'
+            },
+            grepo_mainmenu: {
+                city_view: uw.DM.getl10n("town_index").window_title, //'Vue de la ville'
+                //island_view: "Vue île",
+            },
+            transport_calc: {
+                //recruits: 'Nombre d\'unités dans la queue de recrutement',
+                //slowtrans: 'Nombre de transporteurs lents',
+                //fasttrans: 'Nombre de transporteurs rapides',
+                //Lack: "Manque",
+                //Still: "Encore",
+                //pop: "de population disponible. Pour les",
+                //Optipop: "Population optimale pour les",
+                //army: "Tu n'as pas d'armée.",
+            },
+            reports: {
+                //choose_folder: 'Choisissez un dossier',
+                //enacted: 'lancé',
+                //conquered: 'conquis',
+                //spying: 'espionne',
+                //spy: 'Espion',
+                support: uw.DM.getl10n("context_menu").titles.support, //'soutien'
+                //support2: 'ne peut pas soutenir',
+                //supporting: 'stationnées',
+                attacking: uw.DM.getl10n("context_menu", "titles").attack, //'attaque'
+                //farming_village: 'village agricole',
+                //gold: 'Vous avez reçu',
+                //Quests: 'a expiré',
+                //Reservations: 'Votre réservation pour',
+            },
+            translations: {
+                //info: 'Info',
+                //trans: 'Traduction pour la langue',
+                //translations: 'Traductions',
+                //trans_sure: 'Etes vous sur que votre traduction est prête à être générer ?',
+                //trans_success: 'La traduction a été envoyée avec succès',
+                //trans_fail: 'La traduction ne peut pas être envoyée',
+                //trans_infotext1: 'Traduction disponible',
+                //trans_infotext2: 'Pour modifier ou créer une nouvelle langue, choisissez la langue dans le menu déroulant',
+                //trans_infotext3: 'Quand du texte contient des balises HTML (tout ce qui est entouré par des <> ) je vous demande de les laisser au même endroit où vous les avez trouvé',
+                //trans_infotext4: 'Quand vous avez fini de traduire appuyer sur',
+                //trans_infotext5: 'Afin de pouvoir vous ajouter aux crédits, votre pseudo sera générée',
+                //trans_infotext6: 'Copier le message généré, et coller le dans un commentaire',
+                //please_note: 'Notez',
+                //credits: 'Credits',
+                //no_translation: 'Traduction non trouvée',
+                //choose_lang: 'Sélectionner la langue',
+                //add_lang: 'Ajouter une langue',
+                //language: 'Langue',
+                //enter_lang_name: 'Entrer un nom de langue',
+                //send: 'Générer message',
+                //name: 'Nom',
+            },
+            buttons: {
+                sav: uw.DM.getl10n("notes").btn_save/*"sauvegarder"*/, /*ins: "Insérer",*/ res: uw.DM.getl10n("academy").tabs[1]/*"Réinitialiser"*/,
+            }
+        },
         //////////////////////////////////////////////
         //      German Translation by Diony         //
         //////////////////////////////////////////////
         de: {
             Notification: {
                 //A: "",
-                B: "Wichtige Informationen Benutzerdefinierte Optionen wurden zurückgesetzt ",
-                C: 'Die Optionen "Tastaturkürzel für Windows" und "Stadtansicht" sind in den Einstellungen aktiv',
+                //B: "",
+                //C: "",
             },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://de.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.36671/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools bietet unter anderem einige Anzeigen, eine Smileyauswahlbox,<br>Handelsoptionen und einige Veränderungen des Layouts.",
@@ -554,8 +900,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version_update: "Aktualisieren",
                 Donate: "Spenden",
 
-                forum: "Tuto de david1327",
-                Update: "Aktualisieren "+ dio_version,
+                //forum: "",
+                Update: "Aktualisieren " + dio_version,
                 Feature: "Neue Funktion",
                 Feature2: "Neue Version",
                 Learn_more: "Mehr erfahren",
@@ -566,7 +912,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_trade: "Handel",
                 cat_wonders: "Weltwunder",
                 cat_layout: "Layout",
-                cat_other: "Sonstiges"
+                cat_other: "Sonstiges",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Biremenzähler", "Zählt die jeweiligen Biremen einer Stadt und summiert diese.<br><br>Anzeige im Minimap-Bullauge oben links"],
@@ -584,7 +932,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 pop: ["Gunst-Popup", 'Ändert das Aussehen des Gunst-Popups'],
                 tsk: ["Taskleiste", 'Vergrößert die Taskleiste'],
                 rew: ["Tägliche Belohnung", 'Minimiert das "Tägliche Belohnung"-Fenster beim Start'],
-                cha: ["Chat", "Ersetzt den Allianzchat durch einen Welten-Chat"],
                 bbc: ["DEF-Formular", "Erweitert die BBCode-Leiste um ein automatisches DEF-Formular"],
                 com: ["Einheitenvergleich", "Fügt Einheitenvergleichstabellen hinzu"],
                 tic: ["Stadticons", "Jede Stadt erhält ein Icon für den Stadttyp (Automatische Erkennung)", "Zusätzliche Icons stehen bei der manuellen Auswahl zur Verfügung"],
@@ -619,45 +966,47 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Cup: ["Advancement of Culture (Administrator)", "Die Darstellung des Fortschrittsbalkens wurde geändert und ein Fortschrittsbalken für Ernten hinzugefügt. Funktion von Akiway"],
                 Cuo: ["Kulturpunkte (Administrator)", "Fügen Sie einen Zähler für die Kulturpunkte hinzu. Quack funktion"],
                 Rct: ["Handel -> Ressourcenzähler (Administrator)", "Eine Zählung aller Ressourcen in deiner Stadt"],
-                FLASK : ["Nicht kompatibel zur Aktivierung in den Parametern von FLASK-TOOLS",""],
-                Mole : ["Nicht kompatibel zur Aktivierung in den Parametern von Mole Hole",""],
+                FLASK: ["Nicht kompatibel zur Aktivierung in den Parametern von FLASK-TOOLS", ""],
+                Mole: ["Nicht kompatibel zur Aktivierung in den Parametern von Mole Hole", ""],
 
                 err: ["Automatische Fehlerberichte senden", "Wenn du diese Option aktivierst, kannst du dabei helfen Fehler zu identifizieren."],
                 her: ["Thrakische Eroberung", "Verkleinerung der Karte der Thrakischen Eroberung."],
             },
             Town_icons: {
-                LandOff : "Landeinheit Angriff",
-                LandDef : "Landeinheit Verteidigung",
-                NavyOff : "Seeeinheit Angriff",
-                NavyDef : "Seeeinheit Verteidigung",
-                FlyOff : "Mythischen Angriffseinheiten",
-                FlyDef : "Mythischen Verteidigungseinheiten",
+                LandOff: "Landeinheit Angriff",
+                LandDef: "Landeinheit Verteidigung",
+                NavyOff: "Seeeinheit Angriff",
+                NavyDef: "Seeeinheit Verteidigung",
+                FlyOff: "Mythischen Angriffseinheiten",
+                FlyDef: "Mythischen Verteidigungseinheiten",
                 Out: "Draußen",
                 Emp: "Leer",
             },
             Color: {
-                Blue : 'Blau',
-                Red : 'rot',
-                Green : 'Grün',
-                Pink : 'Rosa',
-                White : "Weiß",
+                Blue: 'Blau',
+                Red: 'rot',
+                Green: 'Grün',
+                Pink: 'Rosa',
+                White: "Weiß",
             },
             labels: {
                 uni: "Einheitenübersicht",
                 total: "Gesamt",
                 available: "Verfügbar",
                 outer: "Außerhalb",
-                con : "Selektierte Stadt",
-                // Smileys
+                con: "Selektierte Stadt",
+                /// Smileys
                 std: "Standard",
                 gre: "Grepo",
                 nat: "Natur",
                 ppl: "Leute",
+                //Par: "",
                 oth: "Sonstige",
+                //hal: "",
                 xma: "Weihnachten",
                 eas: "Ostern",
                 lov: "Liebe",
-                // Defense form
+                /// Defense form
                 ttl: "Übersicht: Stadtverteidigung",
                 inf: "Informationen zur Stadt:",
                 dev: "Abweichung",
@@ -665,15 +1014,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Premiumboni",
                 sil: "Silberstand",
                 mov: "Truppenbewegungen:",
-                // WW
+                /// WW
                 leg: "WW-Anteil",
                 stg: "Stufe",
                 tot: "Gesamt",
-                // Simulator
+                /// Simulator
                 str: "Einheitenstärke",
                 los: "Verluste",
                 mod: "ohne Modifikatoreinfluss",
-                // Comparison box
+                /// Comparison box
                 dsc: "Einheitenvergleich",
                 hck: "Schlag",
                 prc: "Stich",
@@ -687,11 +1036,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Baukosten (Rohstoffe)",
                 fav: "Gunst",
                 tim: "Bauzeit (s)",
-                // Trade
+                /// Trade
                 rat: "Ressourcenverhältnis eines Einheitentyps",
                 shr: "Anteil an der Lagerkapazität der Zielstadt",
                 per: "Prozentualer Handel",
-                // Sent units box
+                /// Sent units box
                 lab: "Abgeschickt",
                 rec: "Ressourcen",
                 improved_movement: "Verbesserte Truppenbewegung",
@@ -700,7 +1049,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Happy: "Frohes neues Jahr!",
                 Merry: "Ho Ho Ho frohe Weihnachten!",
                 tow: "BBCode Stadt",
-                ingame_name : ["Wer lieber via ingame Name genannt werden möchte, kann sich gerne bei mir melden","Da dies mitunter viel Aufwand und Zeit beansprucht, freue ich mich immer sehr über jede Form von Unterstützung. Deshalb ein großes Danke an alle die dieses Projekt schon solange unterstützen - sei es durch eine Spende, Wissen, Kreativität, Bugberichte oder aufmunternde Worte."]
+                ingame_name: ["Wer lieber via ingame Name genannt werden möchte, kann sich gerne bei mir melden", "Da dies mitunter viel Aufwand und Zeit beansprucht, freue ich mich immer sehr über jede Form von Unterstützung. Deshalb ein großes Danke an alle die dieses Projekt schon solange unterstützen - sei es durch eine Spende, Wissen, Kreativität, Bugberichte oder aufmunternde Worte."]
             },
             tutoriel: {
                 tuto: "Nützliche Info",
@@ -711,123 +1060,125 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Löschen Sie mehrere Nachrichten",
-                delete_sure : "Ausgewählte Beiträge wirklich löschen?",
-                no_selection : "Es sind keine Beiträge markiert",
+                delete_mul: "Löschen Sie mehrere Nachrichten",
+                delete_sure: "Ausgewählte Beiträge wirklich löschen?",
+                no_selection: "Es sind keine Beiträge markiert",
                 mark_All: "Alles markieren",
                 //select unit shelper
-                no_overload : 'Kein überladen',
-                delete : 'Löschen',
+                no_overload: 'Kein überladen',
+                delete: 'Löschen',
                 //culture Overview
-                cityfestivals : 'Stadtfeste',
-                olympicgames : 'Olympische Spiele',
-                triumph : 'Triumphzüge',
-                theater : 'Theaterspiele'
+                cityfestivals: 'Stadtfeste',
+                olympicgames: 'Olympische Spiele',
+                triumph: 'Triumphzüge',
+                theater: 'Theaterspiele'
             },
-            hotkeys : {
-                hotkeys : 'Hotkeys',
-                Senate : 'Senat',
-                city_select : 'Stadtauswahl',
-                last_city : 'Letzte Stadt',
-                next_city : 'Nächste Stadt',
-                jump_city : 'Sprung zur aktuellen Stadt',
-                administrator : 'Verwalter',
-                captain : 'Kapitän',
-                trade_ov : 'Handelsübersicht',
-                command_ov : 'Befehlsübersicht',
-                recruitment_ov : 'Rekrutierungsübersicht',
-                troop_ov : 'Truppenübersicht',
-                troops_outside : 'Truppen außerhalb',
-                building_ov : 'Gebäudeübersicht',
-                culture_ov : 'Kulturübersicht',
-                gods_ov : 'Götterübersicht',
-                cave_ov : 'Höhlenübersicht',
-                city_groups_ov : 'Stadtgruppenübersicht',
-                city_list : 'Städteliste',
-                attack_planner : 'Angriffsplaner',
-                farming_villages : 'Bauerndörfer',
-                menu : 'Menü',
-                city_view : 'Stadtansicht',
-                messages : 'Nachrichten',
-                reports : 'Berichte',
-                alliance : 'Allianz',
-                alliance_forum : 'Allianz-Forum',
-                settings : 'Einstellungen',
-                profile : 'Profil',
-                ranking : 'Rangliste',
-                notes : 'Notizen',
-                council : 'Konzil der Helden'
+            hotkeys: {
+                hotkeys: 'Hotkeys',
+                Senate: 'Senat',
+                city_select: 'Stadtauswahl',
+                last_city: 'Letzte Stadt',
+                next_city: 'Nächste Stadt',
+                jump_city: 'Sprung zur aktuellen Stadt',
+                administrator: 'Verwalter',
+                captain: 'Kapitän',
+                trade_ov: 'Handelsübersicht',
+                command_ov: 'Befehlsübersicht',
+                recruitment_ov: 'Rekrutierungsübersicht',
+                troop_ov: 'Truppenübersicht',
+                troops_outside: 'Truppen außerhalb',
+                building_ov: 'Gebäudeübersicht',
+                culture_ov: 'Kulturübersicht',
+                gods_ov: 'Götterübersicht',
+                cave_ov: 'Höhlenübersicht',
+                city_groups_ov: 'Stadtgruppenübersicht',
+                city_list: 'Städteliste',
+                attack_planner: 'Angriffsplaner',
+                farming_villages: 'Bauerndörfer',
+                menu: 'Menü',
+                city_view: 'Stadtansicht',
+                messages: 'Nachrichten',
+                reports: 'Berichte',
+                alliance: 'Allianz',
+                alliance_forum: 'Allianz-Forum',
+                settings: 'Einstellungen',
+                profile: 'Profil',
+                ranking: 'Rangliste',
+                notes: 'Notizen',
+                //chat: '',
+                council: 'Konzil der Helden'
             },
-            messages : {
-                ghosttown : 'Geisterstadt',
-                no_cities : 'Keine Städte auf dieser Insel',
-                all : 'Alle',
-                export : 'Nachricht als BB-Code für das Forum',
-                Tol : 'Kopieren & Einfügen (Quack funktion)',
-                copy : 'Kopieren',
-                bbmessages : 'BB-Code Nachrichten',
-                copybb : 'BBCode wurde kopiert',
-                écrit : 'hat folgendes geschrieben:',
+            messages: {
+                ghosttown: 'Geisterstadt',
+                no_cities: 'Keine Städte auf dieser Insel',
+                all: 'Alle',
+                export: 'Nachricht als BB-Code für das Forum',
+                Tol: 'Kopieren & Einfügen (Quack funktion)',
+                copy: 'Kopieren',
+                bbmessages: 'BB-Code Nachrichten',
+                copybb: 'BBCode wurde kopiert',
+                écrit: 'hat folgendes geschrieben:',
             },
-            caves : {
-                stored_silver : 'Eingelagerte Silbermünzen',
+            caves: {
+                stored_silver: 'Eingelagerte Silbermünzen',
                 silver_to_store: 'Lagerbare Silbermünzen',
-                name : 'Name',
-                wood : 'Holz',
-                stone : 'Stein',
-                silver : 'Silbermünzen',
-                search_for : 'Suchen nach'
+                name: 'Name',
+                wood: 'Holz',
+                stone: 'Stein',
+                silver: 'Silbermünzen',
+                search_for: 'Suchen nach'
             },
-            grepo_mainmenu : {
-                city_view : 'Stadtansicht',
-                island_view : 'Inselansicht'
+            grepo_mainmenu: {
+                city_view: 'Stadtansicht',
+                island_view: 'Inselansicht'
             },
-            transport_calc : {
-                recruits : 'Truppen in der Bauschleife',
-                slowtrans : "Langsame Transportschiffe zählen",
-                fasttrans : "Schnelle Transportschiffe zählen",
+            transport_calc: {
+                recruits: 'Truppen in der Bauschleife',
+                slowtrans: "Langsame Transportschiffe zählen",
+                fasttrans: "Schnelle Transportschiffe zählen",
                 Lack: "Mangel",
                 Still: "Immer",
                 pop: "verfügbare Bevölkerung. Für die",
-                Optipop : "Optimale Bevölkerung für",
-                army : "Du hast keine Armee.",
+                Optipop: "Optimale Bevölkerung für",
+                army: "Du hast keine Armee.",
             },
-            reports : {
-                choose_folder : 'Ordner wählen',
-                enacted : 'gewirkt',
-                conquered : 'erobert',
-                spying : 'spioniert',
-                spy : 'Spion',
-                support : 'stationierte',
-                supporting : 'unterstützt',
-                attacking : 'greift',
-                farming_village : 'Bauerndorf',
-                gold : "Du hast erhalten",
-                Quests : '',
-                Reservations : 'Reservierungen',
+            reports: {
+                choose_folder: 'Ordner wählen',
+                enacted: 'gewirkt',
+                conquered: 'erobert',
+                spying: 'spioniert',
+                spy: 'Spion',
+                support: 'stationierte',
+                //support2: '',
+                supporting: 'unterstützt',
+                attacking: 'greift',
+                farming_village: 'Bauerndorf',
+                gold: "Du hast erhalten",
+                Quests: '',
+                Reservations: 'Reservierungen',
             },
             translations: {
-                info : 'Info',
-                trans : 'Übersetzung für Sprache',
-                translations : 'Übersetzungen',
-                trans_sure : 'Sind Sie sicher, dass Ihre Übersetzung zur Generierung bereit ist?',
-                trans_success : 'Die Übersetzung wurde erfolgreich gesendet',
-                trans_fail : 'Die Übersetzung konnte nicht gesendet werden',
-                trans_infotext1 : 'Übersetzung verfügbar',
-                trans_infotext2 : 'Um eine neue Sprache zu ändern oder zu erstellen, wählen Sie die Sprache im Dropdown-Menü',
-                trans_infotext3 : 'Wenn ein Text HTML-Tags enthält (also alles, was in <> Klammern steht), bitte ich Sie, sie dort zu belassen, wo Sie sie gefunden haben',
-                trans_infotext4 : 'Wenn Sie mit der Übersetzung fertig sind, drücken Sie',
-                trans_infotext5 : 'Um dich zu den Credits hinzufügen zu können, wird dein Spitzname generiert',
-                trans_infotext6 : 'Kopiere die generierte Nachricht und füge sie in einen Kommentar ein',
-                please_note : 'Bitte beachten',
-                credits : 'Credits',
-                no_translation : 'Keine Übersetzung gefunden',
-                choose_lang : 'Sprache wählen',
-                add_lang : 'Neue Sprache hinzufügen',
-                language : 'Sprache',
-                enter_lang_name : 'Bitte geben Sie einen Sprachnamen ein',
-                send : 'Nachricht generieren',
-                name : 'Name',
+                info: 'Info',
+                trans: 'Übersetzung für Sprache',
+                translations: 'Übersetzungen',
+                trans_sure: 'Sind Sie sicher, dass Ihre Übersetzung zur Generierung bereit ist?',
+                trans_success: 'Die Übersetzung wurde erfolgreich gesendet',
+                trans_fail: 'Die Übersetzung konnte nicht gesendet werden',
+                trans_infotext1: 'Übersetzung verfügbar',
+                trans_infotext2: 'Um eine neue Sprache zu ändern oder zu erstellen, wählen Sie die Sprache im Dropdown-Menü',
+                trans_infotext3: 'Wenn ein Text HTML-Tags enthält (also alles, was in <> Klammern steht), bitte ich Sie, sie dort zu belassen, wo Sie sie gefunden haben',
+                trans_infotext4: 'Wenn Sie mit der Übersetzung fertig sind, drücken Sie',
+                trans_infotext5: 'Um dich zu den Credits hinzufügen zu können, wird dein Spitzname generiert',
+                trans_infotext6: 'Kopiere die generierte Nachricht und füge sie in einen Kommentar ein',
+                please_note: 'Bitte beachten',
+                credits: 'Credits',
+                no_translation: 'Keine Übersetzung gefunden',
+                choose_lang: 'Sprache wählen',
+                add_lang: 'Neue Sprache hinzufügen',
+                language: 'Sprache',
+                enter_lang_name: 'Bitte geben Sie einen Sprachnamen ein',
+                send: 'Nachricht generieren',
+                name: 'Name',
             },
             buttons: {
                 sav: "Speichern", ins: "Einfügen", res: "Zurücksetzen"
@@ -839,22 +1190,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         en: {
             Notification: {
                 //A: "",
-                B: "Important information Custom options have been reset",
-                C: 'The "Keyboard shortcuts for Windows" and "City view" options are active in the settings',
+                //B: "",
+                //C: "",
             },
             link: {
-                //update
+                ///update
                 update: "https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327.html",
                 update_direct: "https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html",
-                //donate:
+                ///donate:
                 Donate: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url",
-                //autre
-                Update: "https://www.tuto-de-david1327.com/en/annonces/dio-tools-david1327/update-to-version-"+ updateversion +".html",
+                ///autre
+                Update: "https://www.tuto-de-david1327.com/en/annonces/dio-tools-david1327/update-to-version-" + updateversion + ".html",
                 contact: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/",
                 forum: "https://en.forum.grepolis.com/index.php?threads/dio-tools-david1327.62408/",
                 link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html",
                 link_utile: "https://www.tuto-de-david1327.com/en/pages/info/utility-sites.html",
-                //help
+                ///help
                 available_units: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/units-overview.html",
                 UnitComparison: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/unit-comparison.html",
                 MessageExport: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/bb-code-messages.html",
@@ -873,7 +1224,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Donate: "Donate",
 
                 forum: "Tuto de david1327",
-                Update: "Update "+ dio_version,
+                Update: "Update " + dio_version,
                 Feature: "New Feature",
                 Feature2: "New version",
                 Learn_more: "Learn more",
@@ -938,12 +1289,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Cup: ["Advancement of Culture (Administrator)", "Changed the presentation of the progress bar and added a progress bar for crops. Function of Akiway"],
                 Cuo: ["Points of Culture (Administrator)", "Add a counter for the Points of Culture. Quack function"],
                 Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
-                FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS",""],
-                Mole: ["Not compatible to activate in the parameters of Mole Hole",""],
-
+                FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""],
+                Mole: ["Not compatible to activate in the parameters of Mole Hole", ""],
 
                 err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."],
                 //her: ["Thracian Conquest", "Downsizing of the map of the Thracian conquest."],
+            },
+            movement: {
+                off: 'Incoming attack',
+                offs: 'Incoming attacks',
+                def: 'Incoming support',
+                defs: 'Incoming support',
             },
             Town_icons: {
                 LandOff: "Land Offensive",
@@ -956,11 +1312,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Emp: "Empty",
             },
             Color: {
-                Blue : 'Blue',
-                Red : 'Red',
-                Green : 'Green',
-                Pink : 'Pink',
-                White : "White",
+                Blue: 'Blue',
+                Red: 'Red',
+                Green: 'Green',
+                Pink: 'Pink',
+                White: "White",
             },
             labels: {
                 uni: "Units overview",
@@ -968,7 +1324,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Available",
                 outer: "Outside",
                 con: "Select town",
-                // Smileys
+                /// Smileys
                 std: "Standard",
                 gre: "Grepo",
                 nat: "Nature",
@@ -979,7 +1335,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Xmas",
                 eas: "Easter",
                 lov: "Love",
-                // Defense form
+                /// Defense form
                 ttl: "Overview: Town defense",
                 inf: "Town information:",
                 dev: "Deviation",
@@ -987,15 +1343,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Premium bonuses",
                 sil: "Silver volume",
                 mov: "Troop movements:",
-                // WW
+                /// WW
                 leg: "WW Share",
                 stg: "Stage",
                 tot: "Total",
-                // Simulator
+                /// Simulator
                 str: "Unit strength",
                 los: "Loss",
                 mod: "without modificator influence",
-                // Comparison box
+                /// Comparison box
                 dsc: "Unit comparison",
                 hck: "Blunt",
                 prc: "Sharp",
@@ -1009,11 +1365,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Costs (resources)",
                 fav: "Favor",
                 tim: "Recruiting time (s)",
-                // Trade
+                /// Trade
                 rat: "Resource ratio of an unit type",
                 shr: "Share of the storage capacity of the target city",
                 per: "Percentage trade",
-                // Sent units box
+                /// Sent units box
                 lab: "Sent units",
                 rec: "Resources",
                 improved_movement: "Improved troop movement",
@@ -1022,7 +1378,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Happy: "Happy new year!",
                 Merry: "Ho Ho Ho, Merry Christmas!",
                 tow: "BBCode city",
-                ingame_name : ["Do not hesitate to contact me if you prefer to be called by your ingame name","Since this is a great deal of work that can be very time-consuming I am always very grateful for any type of support. Therefore I would like to thank everyone who has offered support for this project - whether through donations, knowledge, creativity, bug reports or just some encouraging words."]
+                loc: "Local",
+                ingame_name: ["Do not hesitate to contact me if you prefer to be called by your ingame name", "Since this is a great deal of work that can be very time-consuming I am always very grateful for any type of support. Therefore I would like to thank everyone who has offered support for this project - whether through donations, knowledge, creativity, bug reports or just some encouraging words."],
+                raf: "By confirming the page will refresh",
             },
             tutoriel: {
                 tuto: "Useful info",
@@ -1033,125 +1391,126 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Delete multiple messages",
-                delete_sure : "Do you really want to delete these posts?",
-                no_selection : "No posts selected",
+                delete_mul: "Delete multiple messages",
+                delete_sure: "Do you really want to delete these posts?",
+                no_selection: "No posts selected",
                 mark_All: "Mark All",
                 //select unit shelper
-                no_overload : 'No overloading',
-                delete : 'Delete',
+                no_overload: 'No overloading',
+                delete: 'Delete',
                 //culture Overview
-                cityfestivals : 'City festivals',
-                olympicgames : 'Olympic Games',
-                triumph : 'Victory processions',
-                theater : 'Theater plays'
+                cityfestivals: 'City festivals',
+                olympicgames: 'Olympic Games',
+                triumph: 'Victory processions',
+                theater: 'Theater plays'
             },
-            hotkeys : {
-                hotkeys : 'Hotkeys',
-                Senate : 'Senate',
-                city_select : 'City selection',
-                last_city : 'Last city',
-                next_city : 'Next city',
-                jump_city : 'Jump to current city',
-                administrator : 'Administrator',
-                captain : 'Captain',
-                trade_ov : 'Trade',
-                command_ov : 'Commands',
-                recruitment_ov : 'Recruiting',
-                troop_ov : 'Troop overview',
-                troops_outside : 'Troops outside',
-                building_ov : 'Buildings',
-                culture_ov : 'Culture',
-                gods_ov : 'Gods',
-                cave_ov : 'hidesOverview',
-                city_groups_ov : 'City groups',
-                city_list : 'City list',
-                attack_planner : 'Attack planner',
-                farming_villages : 'Farming villages',
-                menu : 'Menu',
-                city_view : 'City view',
-                messages : 'Messages',
-                reports : 'Reports',
-                alliance : 'Alliance',
-                alliance_forum : 'Alliance forum',
-                settings : 'Settings',
-                profile : 'Profile',
-                ranking : 'Ranking',
-                notes : 'Notes',
-                chat : 'Chat',
-                council : 'Council of Heroes'
+            hotkeys: {
+                hotkeys: 'Hotkeys',
+                Senate: 'Senate',
+                city_select: 'City selection',
+                last_city: 'Last city',
+                next_city: 'Next city',
+                jump_city: 'Jump to current city',
+                administrator: 'Administrator',
+                captain: 'Captain',
+                trade_ov: 'Trade',
+                command_ov: 'Commands',
+                recruitment_ov: 'Recruiting',
+                troop_ov: 'Troop overview',
+                troops_outside: 'Troops outside',
+                building_ov: 'Buildings',
+                culture_ov: 'Culture',
+                gods_ov: 'Gods',
+                cave_ov: 'hidesOverview',
+                city_groups_ov: 'City groups',
+                city_list: 'City list',
+                attack_planner: 'Attack planner',
+                farming_villages: 'Farming villages',
+                menu: 'Menu',
+                city_view: 'City view',
+                messages: 'Messages',
+                reports: 'Reports',
+                alliance: 'Alliance',
+                alliance_forum: 'Alliance forum',
+                settings: 'Settings',
+                profile: 'Profile',
+                ranking: 'Ranking',
+                notes: 'Notes',
+                chat: 'Chat',
+                council: 'Council of Heroes'
             },
-            messages : {
-                ghosttown : 'Ghost town',
-                no_cities : 'No cities on this island',
-                all : 'all',
-                export : 'Convert message into BB-Code',
-                Tol : 'Copy & Paste (Quack function)',
-                copy : 'Copy',
-                bbmessages : 'BB-Code messages',
-                copybb : 'BBCode has been copied',
-                écrit : 'has written the following:',
+            messages: {
+                ghosttown: "Ghost town",
+                no_cities: "No cities on this island",
+                all: "all",
+                export: "Convert message into BB-Code",
+                Tol: "Copy & Paste (Quack function)",
+                copy: "Copy",
+                bbmessages: "BB-Code messages",
+                copybb: "BBCode has been copied",
+                écrit: "has written the following:",
+                cli: "The message was not copied",
             },
-            caves : {
-                stored_silver : 'Stored silver coins',
+            caves: {
+                stored_silver: 'Stored silver coins',
                 silver_to_store: 'Storable silver coins',
-                name : 'Name',
-                wood : 'Wood',
-                stone : 'Stone',
-                silver : 'Silver coins',
-                search_for : 'Search for'
+                name: 'Name',
+                wood: 'Wood',
+                stone: 'Stone',
+                silver: 'Silver coins',
+                search_for: 'Search for'
             },
-            grepo_mainmenu : {
-                city_view : "City view",
-                island_view : "Island view"
+            grepo_mainmenu: {
+                city_view: "City view",
+                island_view: "Island view"
             },
-            transport_calc : {
-                recruits : "Count units in recruitment queue",
-                slowtrans : "Count slow transport ships",
-                fasttrans : "Count fast transport ships",
+            transport_calc: {
+                recruits: "Count units in recruitment queue",
+                slowtrans: "Count slow transport ships",
+                fasttrans: "Count fast transport ships",
                 Lack: "Lack",
                 Still: "Still",
                 pop: "available population. For the",
-                Optipop : "Optimal population for",
-                army : "You don't have an army.",
+                Optipop: "Optimal population for",
+                army: "You don't have an army.",
             },
-            reports : {
-                choose_folder : 'Choose folder',
-                enacted : 'enacted',
-                conquered : 'conquered',
-                spying : 'spying',
-                spy : 'Spy',
-                support : 'support',
-                support2 : 'ne peut pas soutenir',
-                supporting : 'stationed',
-                attacking : 'attacking',
-                farming_village : 'farming village',
-                gold : 'You have received',
-                Quests : 'Quests',
-                Reservations : 'Reservations',
+            reports: {
+                choose_folder: 'Choose folder',
+                enacted: 'enacted',
+                conquered: 'conquered',
+                spying: 'spying',
+                spy: 'Spy',
+                support: 'support',
+                support2: "can't support", //???
+                supporting: 'stationed',
+                attacking: 'attacking',
+                farming_village: 'farming village',
+                gold: 'You have received',
+                Quests: 'Quests',
+                Reservations: 'Reservations',
             },
             translations: {
-                info : 'Info',
-                trans : 'Translation for language',
-                translations : 'Translations',
-                trans_sure : 'Are you sure that your translation is ready to be generated?',
-                trans_success : 'The translation has been sent successfully',
-                trans_fail : 'The translation could not be sent',
-                trans_infotext1 : 'Translation available',
-                trans_infotext2 : 'To modify or create a new language, choose the language in the drop-down menu',
-                trans_infotext3 : 'When a text contains HTML tags (thus everything which is surrounded by <> brackets) I ask you to keep them where you found them',
-                trans_infotext4 : 'When you have finished translating press',
-                trans_infotext5 : 'In order to be able to add you to the credits, your nickname will be generated',
-                trans_infotext6 : 'Copy the generated message, and paste it in a comment',
-                please_note : 'Please note',
-                credits : 'Credits',
-                no_translation : 'No translation found',
-                choose_lang : 'Choose language',
-                add_lang : 'Add a new language',
-                language : 'Language',
-                enter_lang_name : 'Please enter a language name',
-                send : 'Generate message',
-                name : 'Name',
+                info: 'Info',
+                trans: 'Translation for language',
+                translations: 'Translations',
+                trans_sure: 'Are you sure that your translation is ready to be generated?',
+                trans_success: 'The translation has been sent successfully',
+                trans_fail: 'The translation could not be sent',
+                trans_infotext1: 'Translation available',
+                trans_infotext2: 'To modify or create a new language, choose the language in the drop-down menu',
+                trans_infotext3: 'When a text contains HTML tags (thus everything which is surrounded by <> brackets) I ask you to keep them where you found them',
+                trans_infotext4: 'When you have finished translating press',
+                trans_infotext5: 'In order to be able to add you to the credits, your nickname will be generated',
+                trans_infotext6: 'Copy the generated message, and paste it in a comment',
+                please_note: 'Please note',
+                credits: 'Credits',
+                no_translation: 'No translation found',
+                choose_lang: 'Choose language',
+                add_lang: 'Add a new language',
+                language: 'Language',
+                enter_lang_name: 'Please enter a language name',
+                send: 'Generate message',
+                name: 'Name',
             },
             buttons: {
                 sav: "Save", ins: "Insert", res: "Reset"
@@ -1163,11 +1522,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         it: {
             Notification: {
                 //A: "",
-                B: "Informazioni importanti Le opzioni personalizzate sono state ripristinate ",
-                C: 'Le opzioni "Scorciatoie da tastiera per Windows" e "Vista città" sono attive nelle impostazioni',
+                //B: "",
+                //C: "",
             },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://it.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.22111/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.",
@@ -1181,8 +1555,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version_update: "Aggiornare",
                 Donate: "Donare",
 
-                forum: "Tuto de david1327",
-                Update: "Aggiornare "+ dio_version,
+                //forum: "",
+                Update: "Aggiornare " + dio_version,
                 Feature: "Nuova caratteristica",
                 Feature2: "Nuova versione",
                 Learn_more: "Per saperne di più",
@@ -1193,7 +1567,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_trade: "Commercio",
                 cat_wonders: "Mondo meravigliarsi",
                 cat_layout: "Disposizione",
-                cat_other: "Altro"
+                cat_other: "Altro",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 bir: ["Conta biremi", "Conta le biremi di una città e le somma"],
@@ -1217,6 +1593,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 til: ["Lista città", "Aggiunge le icone delle città alla lista città"],
                 tim: ["Mappa", "Aggiunge le icone città alla mappa strategica"],
                 tiw: ["Popup icona", ""],
+                //wwc: ["", ""],
+                //wwr: ["", ""],
+                //wwi: ["", ""],
                 con: ["Menu selezione", 'Scambia il pulsante "Seleziona città" con "Panoramica città" nel menu selezione'],
                 sen: ["Unità inviate", 'Mostra le unità inviate nella finestre di attacco/supporto'],
                 tov: ["Panoramica città", 'Sostituisce la panoramica città con la vecchia finestra vecchio stile'],
@@ -1242,14 +1621,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Cup: ["Advancement of Culture (Administrator)", "Cambiata la presentazione della barra di avanzamento e aggiunta una barra di avanzamento per le colture. Funzione di Akiway"],
                 Cuo: ["Punti di Cultura (Amministratore)", "Aggiungi un segnalino per i Punti Cultura. Funzione Quack"],
                 Rct: ["Commercio -> Contatore risorse (amministratore)", "Un conteggio di tutte le risorse nella tua città"],
-                FLASK : ["Non compatibile per attivare nei parametri di FLASK-TOOLS",""],
-                Mole : ["Non compatibile per attivare nei parametri di Mole Hole",""],
+                FLASK: ["Non compatibile per attivare nei parametri di FLASK-TOOLS", ""],
+                Mole: ["Non compatibile per attivare nei parametri di Mole Hole", ""],
 
                 err: ["Invia automaticamente il report dei bug", "Se attivi questa opzione, puoi aiutare a identificare i bug."],
                 her: ["Conquista della Tracia", "Ridimensiona la mappa della conquista della Tracia"],
             },
             Town_icons: {
-                // Town icons
                 //LandOff: "",
                 //LandDef: "",
                 //NavyOff: "",
@@ -1260,11 +1638,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Emp: "",
             },
             Color: {
-                Blue : 'Blu',
-                Red : 'Rosso',
-                Green : 'verde',
-                Pink : 'Rosa',
-                White : "bianca",
+                Blue: 'Blu',
+                Red: 'Rosso',
+                Green: 'verde',
+                Pink: 'Rosa',
+                White: "bianca",
             },
             labels: {
                 uni: "Panoramica unità",
@@ -1272,17 +1650,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Disponibili",
                 outer: "Fuori",
                 con: "Seleziona città",
-                // Smileys
+                /// Smileys
                 std: "Standard",
                 gre: "Grepo",
                 nat: "Natura",
                 ppl: "Persone",
+                //Par: "",
                 oth: "Altro",
                 hal: "Halloween",
                 xma: "Natale",
                 eas: "Pasqua",
                 lov: "Amore",
-                // Defense form
+                /// Defense form
                 ttl: "Panoramica: difesa della città",
                 inf: "Informazioni città:",
                 dev: "Errore",
@@ -1290,11 +1669,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Bonus premium",
                 sil: "Argento in caverna",
                 mov: "Movimenti truppi:",
-                // Simulator
+                /// WW
+                //leg: "",
+                //stg: "",
+                //tot: "",
+                /// Simulator
                 str: "Forza delle unità",
                 los: "Perse",
                 mod: "Senza influenza dei modificatori",
-                // Comparison box
+                /// Comparison box
                 dsc: "Paragone unità",
                 hck: "Contundente",
                 prc: "Arma bianca",
@@ -1308,20 +1691,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Costi (risorse)",
                 fav: "Favori",
                 tim: "Tempo di reclutamento",
-                // Trade
+                /// Trade
                 rat: "Quantità di risorse per tipo unità",
                 shr: "Quantità della capacità del magazzino della città bersaglio",
                 per: "Commercio percentuale",
-                // Sent units box
+                /// Sent units box
                 lab: "Unità inviate",
                 rec: "Risorse",
                 improved_movement: "Movimento accelerato unità",
-                donat: "donare",
                 Tran: "Traduzioni",
+                donat: "donare",
                 Happy: "Felice anno nuovo!",
                 Merry: "Ho Ho Ho, buon Natale!",
                 tow: "BBCode città",
-                ingame_name : ["Non esitare a contattarmi se preferisci essere chiamato con il tuo nickname","Dato che si tratta di una grande quantità di lavoro che può richiedere molto tempo, sono sempre molto grato per qualsiasi tipo di supporto. Pertanto, vorrei ringraziare tutti coloro che hanno offerto supporto per questo progetto, sia attraverso donazioni, conoscenze, creatività, segnalazioni di errori o solo alcune parole incoraggianti."]
+                ingame_name: ["Non esitare a contattarmi se preferisci essere chiamato con il tuo nickname", "Dato che si tratta di una grande quantità di lavoro che può richiedere molto tempo, sono sempre molto grato per qualsiasi tipo di supporto. Pertanto, vorrei ringraziare tutti coloro che hanno offerto supporto per questo progetto, sia attraverso donazioni, conoscenze, creatività, segnalazioni di errori o solo alcune parole incoraggianti."]
             },
             tutoriel: {
                 tuto: "Informazioni Utili",
@@ -1332,108 +1715,125 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Cancella più messaggi",
-                delete_sure : "Vuoi davvero cancellare questo post?",
-                no_selection : "Nessun post selezionato",
+                delete_mul: "Cancella più messaggi",
+                delete_sure: "Vuoi davvero cancellare questo post?",
+                no_selection: "Nessun post selezionato",
                 mark_All: "Segna tutto",
                 //select unit shelper
-                no_overload : 'Nessun sovraccarico',
-                delete : 'Cancella',
+                no_overload: 'Nessun sovraccarico',
+                delete: 'Cancella',
                 //culture Overview
-                cityfestivals : 'Festa cittadina',
-                olympicgames : 'Giochi Olimpici',
-                triumph : 'Corteo trionfale',
-                theater : 'Opere teatrali'
+                cityfestivals: 'Festa cittadina',
+                olympicgames: 'Giochi Olimpici',
+                triumph: 'Corteo trionfale',
+                theater: 'Opere teatrali'
             },
-            hotkeys : {
-                hotkeys : 'Tasti di scelta rapida',
-                Senate : 'Senato',
-                city_select : 'Selezione città',
-                last_city : 'Precedente città',
-                next_city : 'Prossima città',
-                jump_city : 'Salta alla città attuale',
-                administrator : 'Amministratore',
-                captain : 'Capitano',
-                trade_ov : 'Panoramica commercio',
-                command_ov : 'Panoramica ordini',
-                recruitment_ov : 'Panoramica reclutamento',
-                troop_ov : 'Panoramica truppe',
-                troops_outside : 'Truppe esterne',
-                building_ov : 'Panoramica edifici',
-                culture_ov : 'Panoramica cultura',
-                gods_ov : 'Panoramica dei',
-                cave_ov : 'Panoramica caverne',
-                city_groups_ov : 'Panoramica gruppi di città',
-                city_list : 'Elenco città',
-                attack_planner : 'Pianificatore attacchi',
-                farming_villages : 'Villaggi rurali',
-                city_view : 'Panoramica città',
-                messages : 'Messaggi',
-                reports : 'Rapporti',
-                alliance : 'Alleanza',
-                alliance_forum : 'Forum-Alleanza',
-                settings : 'Impostazioni',
-                profile : 'Profilo',
-                ranking : 'Classifica',
-                notes : 'Note',
-                council : 'Concilio degli eroi'
+            hotkeys: {
+                hotkeys: 'Tasti di scelta rapida',
+                Senate: 'Senato',
+                city_select: 'Selezione città',
+                last_city: 'Precedente città',
+                next_city: 'Prossima città',
+                jump_city: 'Salta alla città attuale',
+                administrator: 'Amministratore',
+                captain: 'Capitano',
+                trade_ov: 'Panoramica commercio',
+                command_ov: 'Panoramica ordini',
+                recruitment_ov: 'Panoramica reclutamento',
+                troop_ov: 'Panoramica truppe',
+                troops_outside: 'Truppe esterne',
+                building_ov: 'Panoramica edifici',
+                culture_ov: 'Panoramica cultura',
+                gods_ov: 'Panoramica dei',
+                cave_ov: 'Panoramica caverne',
+                city_groups_ov: 'Panoramica gruppi di città',
+                city_list: 'Elenco città',
+                attack_planner: 'Pianificatore attacchi',
+                farming_villages: 'Villaggi rurali',
+                menu: "",
+                city_view: 'Panoramica città',
+                messages: 'Messaggi',
+                reports: 'Rapporti',
+                alliance: 'Alleanza',
+                alliance_forum: 'Forum-Alleanza',
+                settings: 'Impostazioni',
+                profile: 'Profilo',
+                ranking: 'Classifica',
+                notes: 'Note',
+                //chat: "",
+                council: 'Concilio degli eroi'
             },
-            messages : {
-                ghosttown : 'Città fantasma',
-                no_cities : 'Nessuna città su quest\'isola',
-                all : 'tutti',
-                export : 'Converti messagi in BB-Code',
-                Tol : 'Copia e incolla (Quack function)',
-                copy : 'copia',
-                bbmessages : 'Messaggi BB-Code',
-                copybb : 'BBCode è stato copiato',
-                écrit : 'ha scritto:',
+            messages: {
+                ghosttown: 'Città fantasma',
+                no_cities: 'Nessuna città su quest\'isola',
+                all: 'tutti',
+                export: 'Converti messagi in BB-Code',
+                Tol: 'Copia e incolla (Quack function)',
+                copy: 'copia',
+                bbmessages: 'Messaggi BB-Code',
+                copybb: 'BBCode è stato copiato',
+                écrit: 'ha scritto:',
             },
-            caves : {
-                stored_silver : 'Monete d\'argento incorporate',
-                silver_to_store : 'Monete d\'argento immagazinabili',
-                name : 'Nome',
-                wood : 'Legname',
-                stone : 'Pietre',
-                silver : 'Monete d\'argento',
-                search_for : 'Cerca per'
+            caves: {
+                stored_silver: 'Monete d\'argento incorporate',
+                silver_to_store: 'Monete d\'argento immagazinabili',
+                name: 'Nome',
+                wood: 'Legname',
+                stone: 'Pietre',
+                silver: 'Monete d\'argento',
+                search_for: 'Cerca per'
             },
-            grepo_mainmenu : {
-                city_view : 'Panoramica città',
-                island_view : 'Visuale isola'
+            grepo_mainmenu: {
+                city_view: 'Panoramica città',
+                island_view: 'Visuale isola'
             },
-            transport_calc : {
-                recruits : 'Calcola le truppe in reclutamento',
-                slowtrans : "Conta navi da trasporto lento",
-                fasttrans : "Conta navi da trasporto veloce",
+            transport_calc: {
+                recruits: 'Calcola le truppe in reclutamento',
+                slowtrans: "Conta navi da trasporto lento",
+                fasttrans: "Conta navi da trasporto veloce",
                 Lack: "Mancanza",
                 Still: "Ancora",
                 pop: "popolazione disponibile. Per il",
-                Optipop : "Popolazione ottimale per",
-                army : "Non hai un esercito.",
+                Optipop: "Popolazione ottimale per",
+                army: "Non hai un esercito.",
+            },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
             },
             translations: {
-                info : 'Info',
-                trans : 'Traduzione per lingua',
-                translations : 'Traduzioni',
-                trans_sure : 'Sei sicuro che la tua traduzione sia pronta per essere generata?',
-                trans_success : 'La traduzione è stata inviata con successo',
-                trans_fail : 'Impossibile inviare la traduzione',
-                trans_infotext1 : 'Traduzione disponibile',
-                trans_infotext2 : 'Per modificare o creare una nuova lingua, scegli la lingua nel menu a discesa',
-                trans_infotext3 : 'Quando un testo contiene tag HTML (quindi tutto ciò che è racchiuso tra parentesi <>) ti chiedo di tenerli dove li hai trovati',
-                trans_infotext4 : 'Quando hai finito di tradurre, premi',
-                trans_infotext5 : 'Per poterti aggiungere ai crediti, verrà generato il tuo nickname',
-                trans_infotext6 : 'Copia il messaggio generato e incollalo in un commento',
-                please_note : 'Nota',
-                credits : 'Crediti',
-                no_translation : 'Nessuna traduzione trovata',
-                choose_lang : 'Scegli la lingua',
-                add_lang : 'Aggiungi una nuova lingua',
-                language : 'Lingua',
-                enter_lang_name : 'Inserisci un nome per la lingua',
-                send : 'Genera messaggio',
-                name : 'Nome',
+                info: 'Info',
+                trans: 'Traduzione per lingua',
+                translations: 'Traduzioni',
+                trans_sure: 'Sei sicuro che la tua traduzione sia pronta per essere generata?',
+                trans_success: 'La traduzione è stata inviata con successo',
+                trans_fail: 'Impossibile inviare la traduzione',
+                trans_infotext1: 'Traduzione disponibile',
+                trans_infotext2: 'Per modificare o creare una nuova lingua, scegli la lingua nel menu a discesa',
+                trans_infotext3: 'Quando un testo contiene tag HTML (quindi tutto ciò che è racchiuso tra parentesi <>) ti chiedo di tenerli dove li hai trovati',
+                trans_infotext4: 'Quando hai finito di tradurre, premi',
+                trans_infotext5: 'Per poterti aggiungere ai crediti, verrà generato il tuo nickname',
+                trans_infotext6: 'Copia il messaggio generato e incollalo in un commento',
+                please_note: 'Nota',
+                credits: 'Crediti',
+                no_translation: 'Nessuna traduzione trovata',
+                choose_lang: 'Scegli la lingua',
+                add_lang: 'Aggiungi una nuova lingua',
+                language: 'Lingua',
+                enter_lang_name: 'Inserisci un nome per la lingua',
+                send: 'Genera messaggio',
+                name: 'Nome',
             },
             buttons: {
                 sav: "Salva", ins: "Inserisci", res: "Reset"
@@ -1444,17 +1844,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //////////////////////////////////////////////
         fr: {
             Notification: {
-                A: daaaa,
-                B: "Information important Les options personnalisées ont été réinitialisé",
-                C: 'Les option "Raccourcis clavier pour Windows" et "Vue de la ville" sont à active dans les paramètres',
+                //A: "",
+                //B: "",
+                //C: "",
             },
             link: {
-                Update: "https://www.tuto-de-david1327.com/annonces/dio-tools-david1327/mise-a-jour-"+ updateversion +".html",
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                Update: "https://www.tuto-de-david1327.com/annonces/dio-tools-david1327/mise-a-jour-" + updateversion + ".html",
                 contact: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/",
                 forum: "https://fr.forum.grepolis.com/index.php?threads/dio-tools-david1327.79567/",
                 link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html",
                 link_utile: "https://www.tuto-de-david1327.com/pages/info/sites-utilitaires.html",
-                //help
+                ///help
                 available_units: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/apercu-des-unites.html",
                 UnitComparison: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/comparaison-des-unites.html",
                 MessageExport: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/bb-code-messages.html",
@@ -1472,31 +1878,30 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version_update: "Mettre à jour",
                 Donate: "Faire un don",
 
-
-                forum: "Tuto de david1327",
-                Update: "Mise à jour "+ dio_version,
+                //forum: "",
+                Update: "Mise à jour " + dio_version,
                 Feature: "Nouvelle fonctionnalité",
                 Feature2: "Nouvelle version",
                 Learn_more: "En savoir plus",
 
-                cat_units: "Unités",
+                cat_units: "Unités", //uw.DM.getl10n("context_menu").titles.units_info
                 cat_icons: "Icônes de la ville",
-                cat_forum: "Forum",
-                cat_trade: "Commerce",
-                cat_wonders: "Merveille",
+                cat_forum: "Forum", //uw.DM.getl10n("layout").main_menu.items.forum
+                cat_trade: "Commerce", //uw.DM.getl10n("layout").premium_button.premium_menu.trade_overview
+                //cat_wonders: "Merveille",
                 cat_layout: "Disposition",
-                cat_other: "Divers",
-                cat_Premium: "Premium",
+                cat_other: "Divers", //uw.DM.getl10n("report").inbox.filter_types.misc
+                cat_Premium: "Premium", //uw.DM.getl10n("premium").common.window_title
                 cat_Quack: "Quack",
             },
             Options: {
                 bir: ["Compteur de birèmes ", "Totalise l'ensemble des birèmes présentent en villes et les résume. (Remplace la mini carte dans le cadran)"],
                 ava: ["L'aperçu des unites", "Indique les unités de toutes les villes."],
-                ava2: ["Numéro de Mer", "Extension unité"],
+                ava2: ["Numéro de Mer", "Extension unité"], //uw.DM.getl10n("COMMON").ocean_number_tooltip
                 sml: ["Smileys", "Rajoutes une boite de smilies à la boite de bbcode"],
                 str: ["Force unitaire", "Ajoutes des tableaux de force unitaire dans les différentes armes"],
                 //trd: [ "Commerce",				"Ajout d'une option par pourcentage, par troupes pour le commerce, ainsi qu'un affichage des limites pour les festivals" ],
-                tra: ["Capacité de transport", "Affiche la capacité de transport occupée et disponible dans le menu des l'unités"],
+                tra: ["Capacité de transport", "Affiche la capacité de transport occupée et disponible dans le menu des l'unités"], //uw.DM.getl10n("barracks").tooltips.ship_transport.title
                 per: ["Commerce de pourcentage", "Prolonge la fenêtre du commerce par un commerce de pourcentage"],
                 rec: ["Commerce de recrutement", "Prolonge la fenêtre du commerce par un commerce de recrutement"],
                 cnt: ["Compteur conquête", "Comptabilise le nombre d'attaque et de soutien dans la fenêtre de conquête"],
@@ -1505,7 +1910,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 act: ["Boîte d'activité", "Présentation améliorée du commerce et du recrutement (mémoire de position)"],
                 pop: ["Popup de faveur", 'Change la popup de faveur'],
                 tsk: ["Barre de tâches", "La barre de tâches augmente"],
-                rew: ["Récompenses quotidiennes", "Minimise la fenêtre de récompense quotidienne au démarrage"],
+                rew: ["Récompenses journalières", "Minimise la fenêtre de récompense quotidienne au démarrage"], //uw.DM.getl10n("grepolis_score").categories.daily_awards
                 bbc: ["Formulaire de défense", "Ajout d'un bouton dans la barre BBCode pour un formulaire de défense automatique"],
                 com: ["Comparaison des unités", "Ajoutes des tableaux de comparaison des unités"],
                 tic: ["Icônes des villes", "Chaque ville reçoit une icône pour le type de ville (détection automatique)", "Des icônes supplémentaires sont disponibles pour la sélection manuelle"],
@@ -1514,7 +1919,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 tiw: ["Icônes Popup", ""],
                 wwc: ["Merveille du monde", "Compteur de ressource et calcul d'envoi + bouton précédent et suivant sur les merveilles finies"],
                 wwr: ["Classement", "Nouveau classement mondial des merveilles"],
-                wwi: ["Icônes",'Ajoute des icônes de merveilles du monde sur la carte stratégique' ],
+                wwi: ["Icônes", 'Ajoute des icônes de merveilles du monde sur la carte stratégique'],
                 con: ["Menu contextuel", 'Échangée "Sélectionner ville" et "Aperçu de la ville" dans le menu contextuel'],
                 sen: ["Unités envoyées", 'Affiche unités envoyées dans la fenêtre attaque/support'],
                 tov: ["Aperçu de ville", "Remplace la nouvelle aperçu de la ville avec l'ancien style de fenêtre"],
@@ -1528,22 +1933,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Isl: ["Visualisation de l'île", "Agrandir la hauteur de la liste des villes et des villages"],
                 Ish: ["L'aperçu des villages de paysans (Capitaine)", "Masquer automatiquement la ville. Fonction Quack"],
                 Hio: ["Aperçu des grottes (Administrateur)", "Permettre le tri des villes. Fonction Quack"],
-                Hid: ["Grotte", "Entrer l'argent au-dessus de 15.000 automatiquement dans le champ de saisie. Fonction Quack"],
+                Hid: ["Grotte", "Entrer l'argent au-dessus de 15.000 automatiquement dans le champ de saisie. Fonction Quack"], //uw.DM.getl10n("layout").premium_button.premium_menu.hides_overview
                 Tol: ["Liste des villes en BB-Code", "Copier & colle. Fonction Quack"],
                 Cib: ["Bouton vue sur la ville", "Ajouter un bouton pour ouvrir la vue sur la ville au menu de côté sur Grepolis. Fonction Quack"],
                 Ciw: ["Vue de la ville", "Afficher la ville dans une fenêtre. Fonction Quack"],
                 Tti: ["Commerce de ressources pour les festival", "Cliquer dessus et il ne s'échange que vers un festival. Fonction Quack"],
                 Mse: ["BB-Code messages", "Convertir les message en BB-Code. Fonction Quack"],
-                Rep: ["Rapports", "Rajout d'un filtre de couleur. Fonction Quack"],
+                Rep: ["Rapports", "Rajout d'un filtre de couleur. Fonction Quack"], //uw.DM.getl10n("bbcodes").report.name
                 BBt: ["Bouton BBcode Infos joueur", "Ajout d'un bouton BBcode (joueur et alliance)"],
                 Rtt: ["Suppression des info-bulles de l'unité", ""],
                 Cup: ["Avancement de la culture (Administrateur)", "Modification de la présentation de la barre de progression et ajout d'une barre de progression pour les cultures. Fonction d'Akiway"],
                 Cuo: ["Points de Culture (Administrateur)", "Ajoutez un compteur pour les points de culture. Fonction Quack"],
                 Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"],
-                FLASK : ["Non compatible à activer dans les paramètres de FLASK-TOOLS",""],
-                Mole : ["Non compatible à activer dans les paramètres de Mole Hole",""],
+                FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""],
+                Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""],
 
                 err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
+            },
+            movement: {
+                off: 'Attaque entrante',
+                offs: 'Attaques entrantes', //uw.DM.getl10n("layout").toolbar_activities.incomming_attacks
+                def: 'Soutien entrant', //uw.DM.getl10n("context_menu").titles.support + ...
+                defs: 'Soutiens entrants',
             },
             Town_icons: {
                 LandOff: "Off terrestre",
@@ -1556,29 +1967,32 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Emp: "Vide",
             },
             Color: {
-                Blue : 'Bleu',
-                Red : 'Rouge',
-                Green : 'Vert',
-                Pink : 'Rose',
-                White : "Blanc",
+                Blue: 'Bleu',
+                Red: 'Rouge',
+                Green: 'Vert',
+                Pink: 'Rose',
+                White: "Blanc",
             },
             labels: {
                 uni: "Présentation des unités",
                 total: "Total",
-                available: "Disponible",
+                available: "Disponible", //uw.DM.getl10n("hercules2014", "available")
                 outer: "Extérieur",
                 con: "Sélectionner",
-                // Smileys
+                sup: "Soutien",//uw.DM.getl10n("context_menu").titles.support
+                her: "Héros", //uw.DM.getl10n("heroes").collection.heroes
+                /// Smileys
                 std: "Standard",
                 gre: "Grepo",
                 nat: "Nature",
                 ppl: "Gens",
                 Par: "Fête",
                 oth: "Autres",
+                hal: "Halloween",
                 xma: "Noël",
                 eas: "Pâques",
                 lov: "Amour",
-                // Defense form
+                /// Defense form
                 ttl: "Aperçu: Défense de ville",
                 inf: "Renseignements sur la ville:",
                 dev: "Différence",
@@ -1586,15 +2000,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Bonus premium",
                 sil: "Remplissage de la grotte",
                 mov: "Mouvements de troupes:",
-                // WW
+                /// WW
                 leg: "Participation",
                 stg: "Niveau",
                 tot: "Total",
-                // Simulator
+                /// Simulator
                 str: "Force unitaire",
                 los: "Pertes",
                 mod: "sans influence de modificateur",
-                // Comparison box
+                /// Comparison box
                 dsc: "Comparaison des unités",
                 hck: "Contond.",
                 prc: "Blanche",
@@ -1608,21 +2022,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Coût de construction",
                 fav: "Faveur",
                 tim: "Temps de construction (s)",
-                // Trade
+                /// Trade
                 rat: "Ratio des ressources d'un type d'unité",
                 shr: "Part de la capacité de stockage de la ville cible",
                 per: "Commerce de pourcentage",
-                // Sent units box
+                /// Sent units box
                 lab: "Envoyée",
                 rec: "Ressources",
                 improved_movement: "Mouvement des troupes amélioré",
-                Thanks_generator: "Générateur de remerciements",
-                donat: "Contribution (Dons)",
                 Tran: "Traductions",
+                donat: "Contribution (Dons)",
                 Happy: "Bonne année!",
                 Merry: "Ho! Ho! Ho! Joyeux Noël!",
                 tow: "BBCode ville",
-                ingame_name : ["N'hésitez pas à me contacter si vous préférez être appeler par votre pseudo.","Comme il y a beaucoup à faire, et que cela peut demander beaucoup de temps, je suis toujours très reconnaissant pour tout type d'aide. De ce fait, j'aimerai remercier tous ceux qui sont offert de l'aide sur ce projet, que ce soit par des donations, en partageant des connaissances, des conseils créatifs, en rapportant des problèmes, ou simplement par des messages d'encouragement."],
+                ingame_name: ["N'hésitez pas à me contacter si vous préférez être appeler par votre pseudo.", "Comme il y a beaucoup à faire, et que cela peut demander beaucoup de temps, je suis toujours très reconnaissant pour tout type d'aide. De ce fait, j'aimerai remercier tous ceux qui sont offert de l'aide sur ce projet, que ce soit par des donations, en partageant des connaissances, des conseils créatifs, en rapportant des problèmes, ou simplement par des messages d'encouragement."],
+                raf: "En confirmant la page sera rafraîchir",
             },
             tutoriel: {
                 tuto: "Informations utiles",
@@ -1633,125 +2047,126 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Supprimer plusieurs messages",
-                delete_sure : "Voulez vous réellement effacer ces messages?",
-                no_selection : "Aucun message sélectionnés",
+                delete_mul: "Supprimer plusieurs messages",
+                delete_sure: "Voulez vous réellement effacer ces messages?",
+                no_selection: "Aucun message sélectionnés",
                 mark_All: "Tout marquer",
                 //select unit shelper
-                no_overload : 'Sans surcharge',
-                delete : 'Effacer', //uw.DM.getl10n("market").delete_all_market_offers
+                no_overload: 'Sans surcharge',
+                delete: 'Effacer', //uw.DM.getl10n("market").delete_all_market_offers
                 //culture Overview
-                cityfestivals : 'Festivals',
-                olympicgames : 'Jeux Olympiques',
-                triumph : 'Marche triomphales',
-                theater : 'Pièces de théâtre'
+                cityfestivals: 'Festivals',
+                olympicgames: 'Jeux Olympiques',
+                triumph: 'Marche triomphales',
+                theater: 'Pièces de théâtre'
             },
-            hotkeys : {
-                hotkeys : 'Raccourci',
-                Senate : 'Sénat',
-                city_select : 'Sélection ville',
-                last_city : 'Ville précédente',
-                next_city : 'Ville suivante',
-                jump_city : 'Attendre la ville actuelle',
-                administrator : 'Administrateur',
-                captain : 'Capitaine',
-                trade_ov : 'Aperçu du commerce',
-                command_ov : 'Aperçu des ordres',
-                recruitment_ov : 'Aperçu du recrutement',
-                troop_ov : 'Aperçu des troupes',
-                troops_outside : 'Troupes en dehors',
-                building_ov : 'Aperçu des bâtiments',
-                culture_ov : 'Aperçu culturel',
-                gods_ov : 'Aperçu des divinités',
-                cave_ov : 'Aperçu des grottes',
-                city_groups_ov : 'Aperçu des groupes de villes',
-                city_list : 'Liste des villes',
-                attack_planner : 'Planificateur',
-                farming_villages : 'Villages de paysans',
-                menu : 'Menu',
-                city_view : 'Vue de la ville',
-                messages : 'Messages',
-                reports : 'Rapports',
-                alliance : 'Alliance',
-                alliance_forum : 'Forum d\'alliance',
-                settings : 'Réglages',
-                profile : 'Profil',
-                ranking : 'Classement',
-                notes : 'Notes',
-                chat : 'Chat',
-                council : 'Concile des héros'
+            hotkeys: {
+                hotkeys: 'Raccourci',
+                Senate: 'Sénat',
+                city_select: 'Sélection ville',
+                last_city: 'Ville précédente',
+                next_city: 'Ville suivante',
+                jump_city: 'Attendre la ville actuelle',
+                administrator: 'Administrateur',
+                captain: 'Capitaine',
+                trade_ov: 'Aperçu du commerce',
+                command_ov: 'Aperçu des ordres',
+                recruitment_ov: 'Aperçu du recrutement',
+                troop_ov: 'Aperçu des troupes',
+                troops_outside: 'Troupes en dehors',
+                building_ov: 'Aperçu des bâtiments',
+                culture_ov: 'Aperçu culturel',
+                gods_ov: 'Aperçu des divinités',
+                cave_ov: 'Aperçu des grottes',
+                city_groups_ov: 'Aperçu des groupes de villes',
+                city_list: 'Liste des villes',
+                attack_planner: 'Planificateur',
+                farming_villages: 'Villages de paysans',
+                menu: 'Menu',
+                city_view: 'Vue de la ville',
+                messages: 'Messages',
+                reports: 'Rapports',
+                alliance: 'Alliance',
+                alliance_forum: 'Forum d\'alliance',
+                settings: 'Réglages',
+                profile: 'Profil',
+                ranking: 'Classement',
+                notes: 'Notes',
+                chat: 'Chat',
+                council: 'Concile des héros'
             },
-            messages : {
-                ghosttown : 'Ville fantôme',
-                no_cities : 'Aucune ville sur cette île',
-                all : 'Tous',
-                export : 'Convertir le message en BB-Code',
-                Tol : 'Copier & colle (Fonction Quack)',
-                copy : 'Copier',
-                bbmessages : 'BB-Code messages',
-                copybb : 'Le BBCode a été copié',
-                écrit : 'a écrit ce qui suit :',
+            messages: {
+                ghosttown: 'Ville fantôme',
+                no_cities: 'Aucune ville sur cette île',
+                all: 'Tous',
+                export: 'Convertir le message en BB-Code',
+                Tol: 'Copier & colle (Fonction Quack)',
+                copy: 'Copier',
+                bbmessages: 'BB-Code messages',
+                copybb: 'Le BBCode a été copié',
+                écrit: 'a écrit ce qui suit :',
+                cli: "Le message n'a pas été copié",
             },
-            caves : {
-                stored_silver : 'Capacité de stockage des pièces d\'argent',
-                name : 'Nom',
-                wood : 'Bois', //uw.DM.getl10n("barracks").cost_details.wood
-                stone : 'Pierre', //uw.DM.getl10n("barracks").cost_details.stone
-                silver : 'Pièces d\'argent', //uw.DM.getl10n("barracks").cost_details.iron
-                search_for : 'Rechercher',
+            caves: {
+                stored_silver: 'Capacité de stockage des pièces d\'argent',
+                silver_to_store: "Pièces d'argent stockables",
+                name: 'Nom',
+                wood: 'Bois', //uw.DM.getl10n("barracks").cost_details.wood
+                stone: 'Pierre', //uw.DM.getl10n("barracks").cost_details.stone
+                silver: 'Pièces d\'argent', //uw.DM.getl10n("barracks").cost_details.iron
+                search_for: 'Rechercher',
             },
-            grepo_mainmenu : {
-                city_view : 'Vue de la ville',
-                island_view : "Vue île",
-                delete : 'Supprimer'  //uw.DM.getl10n("notes").btn_delete
+            grepo_mainmenu: {
+                city_view: 'Vue de la ville',
+                island_view: "Vue île",
             },
-            transport_calc : {
-                recruits : 'Nombre d\'unités dans la queue de recrutement',
-                slowtrans : 'Nombre de transporteurs lents',
-                fasttrans : 'Nombre de transporteurs rapides',
+            transport_calc: {
+                recruits: 'Nombre d\'unités dans la queue de recrutement',
+                slowtrans: 'Nombre de transporteurs lents',
+                fasttrans: 'Nombre de transporteurs rapides',
                 Lack: "Manque",
                 Still: "Encore",
                 pop: "de population disponible. Pour les",
-                Optipop : "Population optimale pour les",
-                army : "Tu n'as pas d'armée.",
+                Optipop: "Population optimale pour les",
+                army: "Tu n'as pas d'armée.",
             },
-            reports : {
-                choose_folder : 'Choisissez un dossier',
-                enacted : 'lancé',
-                conquered : 'conquis',
-                spying : 'espionne',
-                spy : 'Espion',
-                support : 'soutien',
-                support2 : 'ne peut pas soutenir',
-                supporting : 'stationnées',
-                attacking : 'attaque', //uw.DM.getl10n("context_menu", "titles").attack
-                farming_village : 'village agricole',
-                gold : 'Vous avez reçu',
-                Quests : 'a expiré',
-                Reservations : 'Votre réservation pour',
+            reports: {
+                choose_folder: 'Choisissez un dossier',
+                enacted: 'lancé',
+                conquered: 'conquis',
+                spying: 'espionne',
+                spy: 'Espion',
+                support: 'soutien', ////uw.DM.getl10n("context_menu").titles.support
+                support2: 'ne peut pas soutenir',
+                supporting: 'stationnées',
+                attacking: 'attaque', //uw.DM.getl10n("context_menu", "titles").attack
+                farming_village: 'village agricole',
+                gold: 'Vous avez reçu',
+                Quests: 'a expiré',
+                Reservations: 'Votre réservation pour',
             },
             translations: {
-                info : 'Info',
-                trans : 'Traduction pour la langue',
-                translations : 'Traductions',
-                trans_sure : 'Etes vous sur que votre traduction est prête à être générer ?',
-                trans_success : 'La traduction a été envoyée avec succès',
-                trans_fail : 'La traduction ne peut pas être envoyée',
-                trans_infotext1 : 'Traduction disponible',
-                trans_infotext2 : 'Pour modifier ou créer une nouvelle langue, choisissez la langue dans le menu déroulant',
-                trans_infotext3 : 'Quand du texte contient des balises HTML (tout ce qui est entouré par des <> ) je vous demande de les laisser au même endroit où vous les avez trouvé',
-                trans_infotext4 : 'Quand vous avez fini de traduire appuyer sur',
-                trans_infotext5 : 'Afin de pouvoir vous ajouter aux crédits, votre pseudo sera générée',
-                trans_infotext6 : 'Copier le message généré, et coller le dans un commentaire',
-                please_note : 'Notez',
-                credits : 'Credits',
-                no_translation : 'Traduction non trouvée',
-                choose_lang : 'Sélectionner la langue',
-                add_lang : 'Ajouter une langue',
-                language : 'Langue',
-                enter_lang_name : 'Entrer un nom de langue',
-                send : 'Générer message',
-                name : 'Nom',
+                info: 'Info',
+                trans: 'Traduction pour la langue',
+                translations: 'Traductions',
+                trans_sure: 'Etes vous sur que votre traduction est prête à être générer ?',
+                trans_success: 'La traduction a été envoyée avec succès',
+                trans_fail: 'La traduction ne peut pas être envoyée',
+                trans_infotext1: 'Traduction disponible',
+                trans_infotext2: 'Pour modifier ou créer une nouvelle langue, choisissez la langue dans le menu déroulant',
+                trans_infotext3: 'Quand du texte contient des balises HTML (tout ce qui est entouré par des <> ) je vous demande de les laisser au même endroit où vous les avez trouvé',
+                trans_infotext4: 'Quand vous avez fini de traduire appuyer sur',
+                trans_infotext5: 'Afin de pouvoir vous ajouter aux crédits, votre pseudo sera générée',
+                trans_infotext6: 'Copier le message généré, et coller le dans un commentaire',
+                please_note: 'Notez',
+                credits: 'Credits',
+                no_translation: 'Traduction non trouvée',
+                choose_lang: 'Sélectionner la langue',
+                add_lang: 'Ajouter une langue',
+                language: 'Langue',
+                enter_lang_name: 'Entrer un nom de langue',
+                send: 'Générer message',
+                name: 'Nom',
             },
             buttons: {
                 sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser"   //uw.DM.getl10n("notes").btn_save
@@ -1761,6 +2176,29 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //      Russian Translation by MrBobr       //
         //////////////////////////////////////////////
         ru: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
+            link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
+                //forum: "",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
+            },
             Settings: {
                 dsc: "DIO-Tools изменяет некоторые окна, добавляет новые смайлы, отчёты,<br>улучшеные варианты торговли и другие функции.",
                 act: "Включение/выключение функций:",
@@ -1773,6 +2211,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //version_update: "",
                 Donate: "Пожертвовать",
 
+                //forum: "",
                 //Update: " "+ dio_version,
                 //Feature: "",
                 //Feature2: "",
@@ -1784,14 +2223,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //cat_trade: "",
                 //cat_wonders: "",
                 //cat_layout: "",
-                //cat_other: ""
+                //cat_other: "",
+                //cat_Premium: "",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Счётчик бирем", "Показывает число бирем во всех городах"],
-                ava: ["Обзор единиц", "Указывает единицы всех городов"], // ?
+                ava: ["Обзор единиц", "Указывает единицы всех городов"],
+                ava2: ["", ""],
                 sml: ["Смайлы", "Добавляет кнопку для вставки смайлов в сообщения"],
                 str: ["Сила отряда", "Добавляет таблицу общей силы отряда в некоторых окнах"],
-                //trd: [ "Торговля",		"Добавляет маркеры и отправку недостающих ресурсов, необходимых для фестиваля. Инструменты для долевой торговли" ],
+                //tra: [ "", ""],
                 per: ["Процент торговля", ""],
                 rec: ["Рекрутинг торговля", ""],
                 cnt: ["Завоевания", "Отображение общего числа атак/подкреплений в окне завоевания города"],
@@ -1839,9 +2281,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Mole : ["",""],
 
                 err: ["Отправить сообщения об ошибках автоматически", "Если вы включите эту опцию, вы можете помочь идентифицировать ошибки"],
+                //her: ["", ""],
             },
             Town_icons: {
-                // Town icons
                 //LandOff: "",
                 //LandDef: "",
                 //NavyOff: "",
@@ -1852,20 +2294,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Emp: "",
             },
             Color: {
-                Blue : 'Синий',
-                Red : 'Красный',
-                Green : 'Зеленый',
-                Pink : 'Розовый',
-                White : "Белый",
+                Blue: 'Синий',
+                Red: 'Красный',
+                Green: 'Зеленый',
+                Pink: 'Розовый',
+                White: "Белый",
             },
-
             labels: {
                 uni: "Обзор единиц",
                 total: "Oбщий",
                 available: "доступный",
                 outer: "вне",
                 con: "выбирать",
-                // Smileys
+                /// Smileys
                 //std: "",
                 //gre: "",
                 //nat: "",
@@ -1876,7 +2317,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //xma: "",
                 //eas: "",
                 //lov: "",
-                // Defense form
+                /// Defense form
                 ttl: "Обзор: Отчёт о городе",
                 inf: "Информация о войсках и постройках:",
                 dev: "Отклонение",
@@ -1884,15 +2325,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Премиум-бонусы",
                 sil: "Серебро в пещере",
                 mov: "Перемещения",
-                // WW
+                /// WW
                 //leg: "",
                 //stg: "",
                 //tot: "",
-                // Simulator
+                /// Simulator
                 str: "Сила войск",
                 los: "Потери",
                 mod: "без учёта заклинаний, бонусов, исследований",
-                // Comparison box
+                /// Comparison box
                 dsc: "Сравнение юнитов",
                 hck: "Ударное",
                 prc: "Колющее",
@@ -1906,20 +2347,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Стоимость (ресурсы)",
                 fav: "Благосклонность",
                 tim: "Время найма (с)",
-                // Trade
+                /// Trade
                 //rat: "",
                 //shr: "",
                 //per: "",
-                rec: "Ресурсы",
-                // Sent units box
+                /// Sent units box
                 lab: "Отправлено",
+                rec: "Ресурсы",
                 improved_movement: "Улучшенная перемещение войск",
+                Tran: "Переводы",
                 donat: "Пожертвования",
                 //Happy: "",
                 //Merry: "",
-                Tran: "Переводы",
                 tow: "BBCode город",
-                ingame_name : ["Не стесняйтесь обращаться ко мне, если вы предпочитаете, чтобы вас назвали в честь названия игры","Я благодарен игрокам за советы и идеи, они дают мне силы работать дальше. К сожалению, проект отнимает очень много времени, поэтому я буду рад любой поддержке. Я хочу поблагодарить всех, кто помогал проекту, будь то Пожертвования, советы, отчеты с ошибками или просто добрые слова в мой адрес."]
+                ingame_name: ["Не стесняйтесь обращаться ко мне, если вы предпочитаете, чтобы вас назвали в честь названия игры", "Я благодарен игрокам за советы и идеи, они дают мне силы работать дальше. К сожалению, проект отнимает очень много времени, поэтому я буду рад любой поддержке. Я хочу поблагодарить всех, кто помогал проекту, будь то Пожертвования, советы, отчеты с ошибками или просто добрые слова в мой адрес."]
             },
             tutoriel: {
                 tuto: "Полезная информация",
@@ -1930,78 +2371,80 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Удалить несколько сообщений",
-                delete_sure : "Вы действительно хотите удалить эти сообщения?",
-                no_selection : "Сообщения не выбраны",
+                delete_mul: "Удалить несколько сообщений",
+                delete_sure: "Вы действительно хотите удалить эти сообщения?",
+                no_selection: "Сообщения не выбраны",
                 mark_All: "Пометить все",
                 //select unit shelper
-                no_overload : 'Нет перезагрузки',
-                delete : 'Удалить',
+                no_overload: 'Нет перезагрузки',
+                delete: 'Удалить',
                 //culture Overview
-                cityfestivals : 'Фестиваль',
-                olympicgames : 'Олимпийские игры',
-                triumph : 'Шествие',
-                theater : 'Представление'
+                cityfestivals: 'Фестиваль',
+                olympicgames: 'Олимпийские игры',
+                triumph: 'Шествие',
+                theater: 'Представление'
             },
-            hotkeys : {
-                hotkeys : 'Горячие клавиши',
-                Senate : 'Senate',
-                city_select : 'Выбор города',
-                last_city : 'Последний город',
-                next_city : 'Следующий город',
-                jump_city : 'Переход к текущему городу',
-                administrator : 'Администратор',
-                captain : 'Капитан',
-                trade_ov : 'Обзор торговли',
-                command_ov : 'Обзор приказов',
-                recruitment_ov : 'Обзор вербовок',
-                troop_ov : 'Обзор войск',
-                troops_outside : 'Войска вне города',
-                building_ov : 'Обзор зданий',
-                culture_ov : 'Обзор культуры',
-                gods_ov : 'Обзор богов',
-                cave_ov : 'Обзор пещер',
-                city_groups_ov : 'Обзор групп городов',
-                city_list : 'Список городов',
-                attack_planner : 'Планировщик',
-                farming_villages : 'Селения земледельцев',
-                menu : 'Меню',
-                city_view : 'Обзор города',
-                messages : 'Сообщения',
-                reports : 'Отчеты',
-                alliance : 'Союз',
-                alliance_forum : 'Форум Союза',
-                settings : 'Настройки',
-                profile : 'Профиль',
-                ranking : 'Рейтинг',
-                notes : 'Заметки',
-                chat : 'Чат',
-                council : 'Совет героев'
+            hotkeys: {
+                hotkeys: 'Горячие клавиши',
+                Senate: 'Senate',
+                city_select: 'Выбор города',
+                last_city: 'Последний город',
+                next_city: 'Следующий город',
+                jump_city: 'Переход к текущему городу',
+                administrator: 'Администратор',
+                captain: 'Капитан',
+                trade_ov: 'Обзор торговли',
+                command_ov: 'Обзор приказов',
+                recruitment_ov: 'Обзор вербовок',
+                troop_ov: 'Обзор войск',
+                troops_outside: 'Войска вне города',
+                building_ov: 'Обзор зданий',
+                culture_ov: 'Обзор культуры',
+                gods_ov: 'Обзор богов',
+                cave_ov: 'Обзор пещер',
+                city_groups_ov: 'Обзор групп городов',
+                city_list: 'Список городов',
+                attack_planner: 'Планировщик',
+                farming_villages: 'Селения земледельцев',
+                menu: 'Меню',
+                city_view: 'Обзор города',
+                messages: 'Сообщения',
+                reports: 'Отчеты',
+                alliance: 'Союз',
+                alliance_forum: 'Форум Союза',
+                settings: 'Настройки',
+                profile: 'Профиль',
+                ranking: 'Рейтинг',
+                notes: 'Заметки',
+                chat: 'Чат',
+                council: 'Совет героев'
             },
-            messages : {
-                ghosttown : 'Город-призрак',
-                no_cities : 'На этом острове нет городов',
-                all : 'Все',
-                export : 'Конвертировать сообщение в BB-Код',
-                Tol : 'Копировать и вставить (Функция Quack)',
-                copy : 'копия',
-                bbmessages : 'Сообщения BB-Код',
-                copybb : 'BB-Код был скопирован',
-                écrit : 'написал:',
+            messages: {
+                ghosttown: 'Город-призрак',
+                no_cities: 'На этом острове нет городов',
+                all: 'Все',
+                export: 'Конвертировать сообщение в BB-Код',
+                Tol: 'Копировать и вставить (Функция Quack)',
+                copy: 'копия',
+                bbmessages: 'Сообщения BB-Код',
+                copybb: 'BB-Код был скопирован',
+                écrit: 'написал:',
             },
-            caves : {
-                stored_silver : 'Встроенные cереб. монеты',
-                name : 'название',
-                wood : 'древесина',
-                stone : 'камень',
-                silver : 'Сереб. монеты'
+            caves: {
+                stored_silver: 'Встроенные cереб. монеты',
+                silver_to_store: "",
+                name: 'название',
+                wood: 'древесина',
+                stone: 'камень',
+                silver: 'Сереб. монеты',
+                search_for: ""
             },
-            grepo_mainmenu : {
-                city_view : 'Обзор города',
-                island_view : 'Обзор острова'
+            grepo_mainmenu: {
+                city_view: 'Обзор города',
+                island_view: 'Обзор острова'
             },
-            transport_calc : {
-                recruits : 'Подсчитать юнитов в очереди обучения',
+            transport_calc: {
+                recruits: 'Подсчитать юнитов в очереди обучения',
                 //slowtrans : "",
                 //fasttrans : "",
                 //Lack: "",
@@ -2010,28 +2453,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Optipop : "",
                 //army : "",
             },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
+            },
             translations: {
-                info : 'информация',
-                trans : 'Перевод для языка',
-                translations : 'Переводы',
-                trans_sure : 'Вы уверены, что ваш перевод готов к созданию?',
-                trans_success : 'Перевод успешно отправлен',
-                trans_fail : 'Перевод не может быть отправлен',
-                trans_infotext1 : 'Доступен перевод',
-                trans_infotext2 : 'Чтобы изменить или создать новый язык, выберите язык в раскрывающемся меню',
-                trans_infotext3 : 'Когда текст содержит теги HTML (то есть все, что заключено в скобки <>), я прошу вас сохранить их там, где вы их нашли.',
-                trans_infotext4 : 'Когда вы закончите перевод, нажмите',
-                trans_infotext5 : 'Для того, чтобы иметь возможность добавить вас к кредитам, ваш ник будет сгенерирован',
-                trans_infotext6 : 'Скопируйте сгенерированное сообщение и вставьте его в комментарий',
-                please_note : 'Обратите внимание',
-                credits : 'Кредиты',
-                no_translation : 'Перевод не найден',
-                choose_lang : 'Выбрать язык',
-                add_lang : 'Добавить новый язык',
-                language : 'Язык',
-                enter_lang_name : 'Пожалуйста, введите название языка',
-                send : 'Создать сообщение',
-                name : 'Имя',
+                info: 'информация',
+                trans: 'Перевод для языка',
+                translations: 'Переводы',
+                trans_sure: 'Вы уверены, что ваш перевод готов к созданию?',
+                trans_success: 'Перевод успешно отправлен',
+                trans_fail: 'Перевод не может быть отправлен',
+                trans_infotext1: 'Доступен перевод',
+                trans_infotext2: 'Чтобы изменить или создать новый язык, выберите язык в раскрывающемся меню',
+                trans_infotext3: 'Когда текст содержит теги HTML (то есть все, что заключено в скобки <>), я прошу вас сохранить их там, где вы их нашли.',
+                trans_infotext4: 'Когда вы закончите перевод, нажмите',
+                trans_infotext5: 'Для того, чтобы иметь возможность добавить вас к кредитам, ваш ник будет сгенерирован',
+                trans_infotext6: 'Скопируйте сгенерированное сообщение и вставьте его в комментарий',
+                please_note: 'Обратите внимание',
+                credits: 'Кредиты',
+                no_translation: 'Перевод не найден',
+                choose_lang: 'Выбрать язык',
+                add_lang: 'Добавить новый язык',
+                language: 'Язык',
+                enter_lang_name: 'Пожалуйста, введите название языка',
+                send: 'Создать сообщение',
+                name: 'Имя',
             },
             buttons: {
                 sav: "Сохраниить", ins: "Вставка", res: "Сброс"
@@ -2041,8 +2499,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //       Polish Translation by anpu         //
         //////////////////////////////////////////////
         pl: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
-                forum: "https://pl.forum.grepolis.com/index.php?threads/dio-tools-david1327.30016/"
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
+                forum: "https://pl.forum.grepolis.com/index.php?threads/dio-tools-david1327.30016/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools oferuje (między innymi) poprawione widoki, nowe uśmieszki,<br>opcje handlu i zmiany w wyglądzie.",
@@ -2056,7 +2534,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version_update: "aktualizacja",
                 Donate: "Podarować",
 
-                Update: "Aktualizacja "+ dio_version,
+                //forum: "",
+                Update: "Aktualizacja " + dio_version,
                 Feature: "Nowa cecha",
                 Feature2: "Nowa wersja",
                 Learn_more: "Ucz się więcej",
@@ -2067,14 +2546,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //cat_trade: "",
                 //cat_wonders: "",
                 //cat_layout: "",
-                //cat_other: ""
+                //cat_other: "",
+                //cat_Premium: "",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Licznik birem", "Zlicza i sumuje biremy z miast"],
                 ava: ["Przegląd jednostek", "Wskazuje jednostki wszystkich miast"], // ?
+                //ava2: ["", ""],
                 sml: ["Emotki", "Dodaje dodatkowe (zielone) emotikonki"],
                 str: ["Siła jednostek", "dodaje tabelki z siłą jednostek w różnych miejscach gry"],
-                //trd: [ "Handel",			"Rozszerza okno handlu o handel procentowy, proporcje surowców wg jednostek, dodaje znaczniki dla festynów" ],
+                //tra: [ "", ""],
                 per: ["Handel procentowy", ""],
                 rec: ["Handel rekrutacyjne", ""],
                 cnt: ["Podboje", "Zlicza wsparcia/ataki w oknie podboju (tylko własne podboje)"],
@@ -2122,6 +2604,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Mole : ["",""],
 
                 err: ["Automatycznie wysyłać raporty o błędach", "Jeśli włączysz tę opcję, możesz pomóc zidentyfikować błędy"],
+                //her: ["", ""],
             },
             Town_icons: {
                 //LandOff: "",
@@ -2134,11 +2617,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Emp: "",
             },
             Color: {
-                Blue : 'niebieski',
-                Red : 'Czerwony',
-                Green : 'Zielony',
-                Pink : 'Różowy',
-                White : "Biały",
+                Blue: 'niebieski',
+                Red: 'Czerwony',
+                Green: 'Zielony',
+                Pink: 'Różowy',
+                White: "Biały",
             },
             labels: {
                 uni: "Przegląd jednostek",
@@ -2146,7 +2629,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Dostępny",
                 outer: "Na zewnątrz",
                 con: "Wybierz miasto",
-                // Smileys
+                /// Smileys
                 std: "Standard" /* "Standardowe" */,
                 gre: "Grepo",
                 nat: "Przyroda",
@@ -2157,7 +2640,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //xma: "",
                 //eas: "",
                 //lov: "",
-                // Defense form
+                /// Defense form
                 ttl: "Podgląd: Obrona miasta",
                 inf: "Informacje o mieście:",
                 dev: "Ochyłka",
@@ -2165,15 +2648,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "opcje Premium",
                 sil: "Ilość srebra",
                 mov: "Ruchy wojsk",
-                // WW
+                /// WW
                 leg: "Udział w Cudzie",
                 stg: "Poziom",
                 tot: "Łącznie",
-                // Simulator
+                /// Simulator
                 str: "Siła jednostek",
                 los: "Straty",
                 mod: "bez modyfikatorów",
-                // Comparison box
+                /// Comparison box
                 dsc: "Porównianie jednostek",
                 hck: "Obuchowa",
                 prc: "Tnąca",
@@ -2187,11 +2670,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Koszta (surowce)",
                 fav: "Łaski",
                 tim: "Czas rekrutacji (s)",
-                // Trade
+                /// Trade
                 rat: "Stosunek surowców dla wybranej jednostki",
                 shr: "procent zapełnienia magazynu w docelowym mieście",
                 per: "Handel procentowy",
-                // Sent units box
+                /// Sent units box
                 lab: "Wysłane jednostki",
                 rec: "Zasoby",
                 improved_movement: "Przyspieszone ruchy wojsk",
@@ -2200,7 +2683,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Happy: "Szczęśliwego Nowego Roku!",
                 Merry: "Ho ho ho wesołych świąt!",
                 tow: "Miasto BBCode",
-                ingame_name : ["Nie wahaj się ze mną skontaktować, jeśli wolisz być nazywany tak jak w grze","Ponieważ jest to bardzo dużo pracy, która może być bardzo czasochłonna, zawsze jestem bardzo wdzięczny za wszelkiego rodzaju wsparcie. Dlatego chciałbym podziękować wszystkim, którzy zaoferowali wsparcie dla tego projektu - czy to poprzez darowizny, wiedzę, kreatywność, raporty o błędach lub po prostu zachęcające słowa."]
+                ingame_name: ["Nie wahaj się ze mną skontaktować, jeśli wolisz być nazywany tak jak w grze", "Ponieważ jest to bardzo dużo pracy, która może być bardzo czasochłonna, zawsze jestem bardzo wdzięczny za wszelkiego rodzaju wsparcie. Dlatego chciałbym podziękować wszystkim, którzy zaoferowali wsparcie dla tego projektu - czy to poprzez darowizny, wiedzę, kreatywność, raporty o błędach lub po prostu zachęcające słowa."]
             },
             tutoriel: {
                 tuto: "Przydatna informacja",
@@ -2211,78 +2694,80 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Usuń wiele wiadomości",
-                delete_sure : "Czy na pewno chcesz usunąć te posty?",
-                no_selection : "Brak zaznaczonych Postów",
+                delete_mul: "Usuń wiele wiadomości",
+                delete_sure: "Czy na pewno chcesz usunąć te posty?",
+                no_selection: "Brak zaznaczonych Postów",
                 mark_All: "Zaznacz wszystko",
                 //select unit shelper
-                no_overload : 'Wybierz i napełnij łódki',
-                delete : 'Wyczyść',
+                no_overload: 'Wybierz i napełnij łódki',
+                delete: 'Wyczyść',
                 //culture Overview
-                cityfestivals : 'Festyn miejski',
-                olympicgames : 'Igrzyska Olimpijskie',
-                triumph : 'Pochód triumfalny',
-                theater : 'Występy teatralne'
+                cityfestivals: 'Festyn miejski',
+                olympicgames: 'Igrzyska Olimpijskie',
+                triumph: 'Pochód triumfalny',
+                theater: 'Występy teatralne'
             },
-            hotkeys : {
-                hotkeys : 'Skróty',
-                Senate : 'Senat',
-                city_select : 'Wybór miasta',
-                last_city : 'Poprzednie miasto',
-                next_city : 'Następne miasto',
-                jump_city : 'Przejdź do obecnego miasta',
-                administrator : 'Zarządca',
-                captain : 'Kapitan',
-                trade_ov : 'Podgląd handlu',
-                command_ov : 'Podgląd poleceń',
-                recruitment_ov : 'Podgląd rekrutacji',
-                troop_ov : 'Podgląd wojsk',
-                troops_outside : 'Wojska poza miastem',
-                building_ov : 'Podgląd budynków',
-                culture_ov : 'Podgląd kultury',
-                gods_ov : 'Podgląd bogów',
-                cave_ov : 'Podgląd jaskini',
-                city_groups_ov : 'Podglad grupy miast',
-                city_list : 'Lista miast',
-                attack_planner : 'Planer ataków',
-                farming_villages : 'Wioski',
-                menu : 'Menu',
-                city_view : 'Podgląd miasta',
-                messages : 'Wiadomości',
-                reports : 'Raporty',
-                alliance : 'Sojusz',
-                alliance_forum : 'Forum sojuszu',
-                settings : 'Ustawienia',
-                profile : 'Profil',
-                ranking : 'Ranking',
-                notes : 'Notatnik',
-                chat : 'Czat',
-                council : 'Rada Bohaterów'
+            hotkeys: {
+                hotkeys: 'Skróty',
+                Senate: 'Senat',
+                city_select: 'Wybór miasta',
+                last_city: 'Poprzednie miasto',
+                next_city: 'Następne miasto',
+                jump_city: 'Przejdź do obecnego miasta',
+                administrator: 'Zarządca',
+                captain: 'Kapitan',
+                trade_ov: 'Podgląd handlu',
+                command_ov: 'Podgląd poleceń',
+                recruitment_ov: 'Podgląd rekrutacji',
+                troop_ov: 'Podgląd wojsk',
+                troops_outside: 'Wojska poza miastem',
+                building_ov: 'Podgląd budynków',
+                culture_ov: 'Podgląd kultury',
+                gods_ov: 'Podgląd bogów',
+                cave_ov: 'Podgląd jaskini',
+                city_groups_ov: 'Podglad grupy miast',
+                city_list: 'Lista miast',
+                attack_planner: 'Planer ataków',
+                farming_villages: 'Wioski',
+                menu: 'Menu',
+                city_view: 'Podgląd miasta',
+                messages: 'Wiadomości',
+                reports: 'Raporty',
+                alliance: 'Sojusz',
+                alliance_forum: 'Forum sojuszu',
+                settings: 'Ustawienia',
+                profile: 'Profil',
+                ranking: 'Ranking',
+                notes: 'Notatnik',
+                chat: 'Czat',
+                council: 'Rada Bohaterów'
             },
-            messages : {
-                ghosttown : 'Opuszczone miasto',
-                no_cities : 'Brak miast na tej wyspie',
-                all : 'Całość',
-                export : 'Zmień wiadomość na BB-Code',
-                Tol : 'Kopiuj i wklej (Funkcja Quack)',
-                copy : 'kopiuj',
-                bbmessages : 'Wiadomości z BB-Code',
-                copybb : 'BBCode został skopiowany',
-                écrit : 'napisał(a):',
+            messages: {
+                ghosttown: 'Opuszczone miasto',
+                no_cities: 'Brak miast na tej wyspie',
+                all: 'Całość',
+                export: 'Zmień wiadomość na BB-Code',
+                Tol: 'Kopiuj i wklej (Funkcja Quack)',
+                copy: 'kopiuj',
+                bbmessages: 'Wiadomości z BB-Code',
+                copybb: 'BBCode został skopiowany',
+                écrit: 'napisał(a):',
             },
-            caves : {
-                stored_silver : 'Przechowywane srebrne monety',
-                name : 'Nazwa',
-                wood : 'Drewno',
-                stone : 'Kamień',
-                silver : 'Srebrne monety'
+            caves: {
+                stored_silver: 'Przechowywane srebrne monety',
+                //silver_to_store: "",
+                name: 'Nazwa',
+                wood: 'Drewno',
+                stone: 'Kamień',
+                silver: 'Srebrne monety',
+                //search_for: ""
             },
-            grepo_mainmenu : {
-                city_view : 'Podgląd miasta',
-                island_view : 'Podgląd wyspy'
+            grepo_mainmenu: {
+                city_view: 'Podgląd miasta',
+                island_view: 'Podgląd wyspy'
             },
-            transport_calc : {
-                recruits : 'Uwzględniaj jednostki w kolejce rekrutacji',
+            transport_calc: {
+                recruits: 'Uwzględniaj jednostki w kolejce rekrutacji',
                 //slowtrans : "",
                 //fasttrans : "",
                 //Lack: "",
@@ -2291,28 +2776,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Optipop : "",
                 //army : "",
             },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
+            },
             translations: {
-                info : 'информация',
-                trans : 'Tłumaczenie na język',
-                translations : 'Tłumaczenia',
-                trans_sure : 'Czy jesteś pewien, że twoje tłumaczenie jest gotowe do wygenerowania?',
-                trans_success : 'Tłumaczenie zostało wysłane pomyślnie',
-                trans_fail : 'Nie można wysłać tłumaczenia',
-                trans_infotext1 : 'Dostępne tłumaczenie',
-                trans_infotext2 : 'Aby zmodyfikować lub utworzyć nowy język, wybierz język z menu rozwijanego',
-                trans_infotext3 : 'Kiedy tekst zawiera znaczniki HTML (a więc wszystko, co jest otoczone nawiasami <>), proszę o zachowanie ich tam, gdzie je znalazłeś',
-                trans_infotext4 : 'Po zakończeniu tłumaczenia naciśnij',
-                trans_infotext5 : 'Aby móc dodać cię do kredytów, zostanie wygenerowany twój pseudonim',
-                trans_infotext6 : 'Skopiuj wygenerowaną wiadomość i wklej ją w komentarzu',
-                please_note : 'Uwaga',
-                credits : 'Kredyty',
-                no_translation : 'Nie znaleziono tłumaczenia',
-                choose_lang : 'Wybierz język',
-                add_lang : 'Dodaj nowy język',
-                language : 'Język',
-                enter_lang_name : 'Proszę podać nazwę języka',
-                send : 'Generuj wiadomość',
-                name : 'Nazwa',
+                info: 'информация',
+                trans: 'Tłumaczenie na język',
+                translations: 'Tłumaczenia',
+                trans_sure: 'Czy jesteś pewien, że twoje tłumaczenie jest gotowe do wygenerowania?',
+                trans_success: 'Tłumaczenie zostało wysłane pomyślnie',
+                trans_fail: 'Nie można wysłać tłumaczenia',
+                trans_infotext1: 'Dostępne tłumaczenie',
+                trans_infotext2: 'Aby zmodyfikować lub utworzyć nowy język, wybierz język z menu rozwijanego',
+                trans_infotext3: 'Kiedy tekst zawiera znaczniki HTML (a więc wszystko, co jest otoczone nawiasami <>), proszę o zachowanie ich tam, gdzie je znalazłeś',
+                trans_infotext4: 'Po zakończeniu tłumaczenia naciśnij',
+                trans_infotext5: 'Aby móc dodać cię do kredytów, zostanie wygenerowany twój pseudonim',
+                trans_infotext6: 'Skopiuj wygenerowaną wiadomość i wklej ją w komentarzu',
+                please_note: 'Uwaga',
+                credits: 'Kredyty',
+                no_translation: 'Nie znaleziono tłumaczenia',
+                choose_lang: 'Wybierz język',
+                add_lang: 'Dodaj nowy język',
+                language: 'Język',
+                enter_lang_name: 'Proszę podać nazwę języka',
+                send: 'Generuj wiadomość',
+                name: 'Nazwa',
             },
             buttons: {
                 sav: "Zapisz", ins: "Wstaw", res: "Anuluj"
@@ -2322,8 +2822,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         // Spanish Translation by Juana de Castilla //
         //////////////////////////////////////////////
         es: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://es.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.45017/"
+                //link_troupes: Home + "pages/troupes-grepolis.html",
+                //link_utile: Home + "en/pages/info/utility-sites.html",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools ofrece, entre otras cosas, varias pantallas, ventana de <br>emoticones, opciones de comercio y algunos cambios en el diseño.",
@@ -2337,7 +2857,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version_update: "poner al día",
                 Donate: "Donar",
 
-                Update: "Actualizar "+ dio_version,
+                //forum: "",
+                Update: "Actualizar " + dio_version,
                 Feature: "Nueva caracteristica",
                 Feature2: "Nueva versión",
                 Learn_more: "Aprende más",
@@ -2348,11 +2869,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //cat_trade: "",
                 //cat_wonders: "",
                 //cat_layout: "",
-                //cat_other: ""
+                //cat_other: "",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Contador de birremes", "Cuenta los birremes de una ciudad y los suma"],
                 ava: ["Información general unidades", "Indica las unidades de todas las ciudades"], // ?
+                //ava2: ["", ""],
                 sml: ["Emoticones", "Código BB para emoticones"],
                 str: ["Fortaleza de la Unidad", "Añade tabla de fortalezas de cada unidad en varias zonas"],
                 trd: ["Comercio", "Añade en la pestaña de comercio un porcentaje de comercio y reclutamiento y limitadores de Mercado por cada ciudad"],
@@ -2396,13 +2920,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rep: ["Informes", "Agregar un filtro de color. Función Quack"],
                 BBt: ["Información del jugador del botón BBcode", "Adición de un botón BBcode (jugador y alianza)"],
                 Rtt: ["Eliminación de la información sobre herramientas de la unidad", ""],
-                Cup: ["Avance de la cultura (Administrador) "," Se modificó la presentación de la barra de progreso y se agregó una barra de progreso para los cultivos. Función de Akiway"],
+                Cup: ["Avance de la cultura (Administrador) ", " Se modificó la presentación de la barra de progreso y se agregó una barra de progreso para los cultivos. Función de Akiway"],
                 Cuo: ["Puntos de Cultura (Administrador)", "Agrega un contador para los Puntos de Cultura. Función Quack"],
-                Rct: ["Comercio -> Contador de recursos (Administrador) "," Un recuento de todos los recursos de tu ciudad"],
+                Rct: ["Comercio -> Contador de recursos (Administrador) ", " Un recuento de todos los recursos de tu ciudad"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
 
                 err: ["Enviar informes de errores automáticamente", "Si se activa esta opción, puede ayudar a identificar errores."],
+                //her: ["", ""],
             },
             Town_icons: {
                 //LandOff: "",
@@ -2415,11 +2940,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Emp: "",
             },
             Color: {
-                Blue : 'Azul',
-                Red : 'rojo',
-                Green : 'Verde',
-                Pink : 'Rosado',
-                White : "Blanco",
+                Blue: 'Azul',
+                Red: 'rojo',
+                Green: 'Verde',
+                Pink: 'Rosado',
+                White: "Blanco",
             },
             labels: {
                 uni: "Información general unidades",
@@ -2481,7 +3006,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Happy: "Feliz año nuevo!",
                 Merry: "Ho ho ho Feliz Navidad!",
                 tow: "código BB ciudad",
-                ingame_name : ["No dudes en ponerte en contacto conmigo si prefieres que te llamen por tu nombre en el juego","Dado que se trata de mucho trabajo y puede ser muy lento siempre estoy muy agradecido por cualquier tipo de soporte. Por lo tanto me gustaría dar las gracias a todos los que ofreció su apoyo para este proyecto -. Sea a través de donaciones, el conocimiento, la creatividad, los informes de error o sólo algunas palabras alentadoras bbcode"]
+                ingame_name: ["No dudes en ponerte en contacto conmigo si prefieres que te llamen por tu nombre en el juego", "Dado que se trata de mucho trabajo y puede ser muy lento siempre estoy muy agradecido por cualquier tipo de soporte. Por lo tanto me gustaría dar las gracias a todos los que ofreció su apoyo para este proyecto -. Sea a través de donaciones, el conocimiento, la creatividad, los informes de error o sólo algunas palabras alentadoras bbcode"]
             },
             tutoriel: {
                 tuto: "Información útil",
@@ -2492,79 +3017,80 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Eliminar múltiples mensajes",
-                delete_sure : "¿Realmente desea eliminar estos mensajes?",
-                no_selection : "No hay posts seleccionados",
+                delete_mul: "Eliminar múltiples mensajes",
+                delete_sure: "¿Realmente desea eliminar estos mensajes?",
+                no_selection: "No hay posts seleccionados",
                 mark_All: "Marca todas",
                 //select unit shelper
-                no_overload : 'No cargar',
-                delete : 'Borrar',
+                no_overload: 'No cargar',
+                delete: 'Borrar',
                 //culture Overview
-                cityfestivals : 'Festival de la ciudad',
-                olympicgames : 'Juegos Olímpicos',
-                triumph : 'Marcha triunfal',
-                theater : 'Obras de teatro'
+                cityfestivals: 'Festival de la ciudad',
+                olympicgames: 'Juegos Olímpicos',
+                triumph: 'Marcha triunfal',
+                theater: 'Obras de teatro'
             },
-            hotkeys : {
-                hotkeys : 'Atajos de teclado',
-                Senate : 'Senado',
-                city_select : 'Selección de la ciudad',
-                last_city : 'Última ciudad',
-                next_city : 'Próxima ciudad',
-                jump_city : 'Saltar a la ciudad actual',
-                administrator : 'Administrador',
-                captain : 'Capitán',
-                trade_ov : 'Vista general de comercio',
-                command_ov : 'Vista general de órdenes',
-                recruitment_ov : 'Vista general de reclutamiento',
-                troop_ov : 'Vista de tropas',
-                troops_outside : 'Tropas fuera',
-                building_ov : 'Vista general de edificios',
-                culture_ov : 'Vista de cultura',
-                gods_ov : 'Vista general de dioses',
-                cave_ov : 'Vista general de la cueva',
-                city_groups_ov : 'Vista general de grupos de ciudades',
-                city_list : 'Lista de ciudades',
-                attack_planner : 'Programador de ataque',
-                farming_villages : 'Aldeas',
-                menu : 'Menú',
-                city_view : 'Vista de la ciudad',
-                messages : 'Mensajes',
-                reports : 'Informes',
-                alliance : 'Alianza',
-                alliance_forum : 'Foro de la alianza',
-                settings : 'Ajustes',
-                profile : 'Perfil',
-                ranking : 'Clasificación',
-                notes : 'Notas',
-                chat : 'Chat',
-                council : 'Consejo de héroes'
+            hotkeys: {
+                hotkeys: 'Atajos de teclado',
+                Senate: 'Senado',
+                city_select: 'Selección de la ciudad',
+                last_city: 'Última ciudad',
+                next_city: 'Próxima ciudad',
+                jump_city: 'Saltar a la ciudad actual',
+                administrator: 'Administrador',
+                captain: 'Capitán',
+                trade_ov: 'Vista general de comercio',
+                command_ov: 'Vista general de órdenes',
+                recruitment_ov: 'Vista general de reclutamiento',
+                troop_ov: 'Vista de tropas',
+                troops_outside: 'Tropas fuera',
+                building_ov: 'Vista general de edificios',
+                culture_ov: 'Vista de cultura',
+                gods_ov: 'Vista general de dioses',
+                cave_ov: 'Vista general de la cueva',
+                city_groups_ov: 'Vista general de grupos de ciudades',
+                city_list: 'Lista de ciudades',
+                attack_planner: 'Programador de ataque',
+                farming_villages: 'Aldeas',
+                menu: 'Menú',
+                city_view: 'Vista de la ciudad',
+                messages: 'Mensajes',
+                reports: 'Informes',
+                alliance: 'Alianza',
+                alliance_forum: 'Foro de la alianza',
+                settings: 'Ajustes',
+                profile: 'Perfil',
+                ranking: 'Clasificación',
+                notes: 'Notas',
+                chat: 'Chat',
+                council: 'Consejo de héroes'
             },
-            messages : {
-                ghosttown : 'Ciudad fantasma',
-                no_cities : 'No hay ciudades en esta isla',
-                all : 'Todo',
-                export : 'Convertir mensaje en códigos BB',
-                Tol : 'Copiar y pegar (Función Quack)',
-                copy : 'copia',
-                bbmessages : 'Mensajes de código BB',
-                copybb : 'código BB ha sido copiado',
-                écrit : 'ha escrito:',
+            messages: {
+                ghosttown: 'Ciudad fantasma',
+                no_cities: 'No hay ciudades en esta isla',
+                all: 'Todo',
+                export: 'Convertir mensaje en códigos BB',
+                Tol: 'Copiar y pegar (Función Quack)',
+                copy: 'copia',
+                bbmessages: 'Mensajes de código BB',
+                copybb: 'código BB ha sido copiado',
+                écrit: 'ha escrito:',
             },
-            caves : {
-                stored_silver : 'Monedas de plata almacenables',
-                silver_to_store : 'Monedas de plata Almacenadas',
-                name : 'Nombre',
-                wood : 'Madera',
-                stone : 'Piedra',
-                silver : 'Monedas de plata'
+            caves: {
+                stored_silver: 'Monedas de plata almacenables',
+                silver_to_store: 'Monedas de plata Almacenadas',
+                name: 'Nombre',
+                wood: 'Madera',
+                stone: 'Piedra',
+                silver: 'Monedas de plata',
+                //search_for: ''
             },
-            grepo_mainmenu : {
-                city_view : 'Vista de la ciudad',
-                island_view : 'Vista de la isla'
+            grepo_mainmenu: {
+                city_view: 'Vista de la ciudad',
+                island_view: 'Vista de la isla'
             },
-            transport_calc : {
-                recruits : 'Contar unidades en cola de reclutamiento',
+            transport_calc: {
+                recruits: 'Contar unidades en cola de reclutamiento',
                 //slowtrans : "",
                 //fasttrans : "",
                 //Lack: "",
@@ -2573,28 +3099,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Optipop : "",
                 //army : "",
             },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
+            },
             translations: {
-                info : 'информация',
-                trans : 'Traducción para el idioma',
-                translations : 'Traducciones',
-                trans_sure : '¿Está seguro de que su traducción está lista para ser generada?',
-                trans_success : 'La traducción se ha enviado correctamente',
-                trans_fail : 'No se pudo enviar la traducción',
-                trans_infotext1 : 'Traducción disponible',
-                trans_infotext2 : 'Para modificar o crear un nuevo idioma, elija el idioma en el menú desplegable',
-                trans_infotext3 : 'Cuando un texto contiene etiquetas HTML (por lo tanto, todo lo que está entre <> corchetes) te pido que los guardes donde los encontraste',
-                trans_infotext4 : 'Cuando hayas terminado de traducir, presiona',
-                trans_infotext5 : 'Para poder agregarte a los créditos, se generará tu apodo',
-                trans_infotext6 : 'Copia el mensaje generado y pégalo en un comentario',
-                please_note : 'Tenga en cuenta',
-                credits : 'Créditos',
-                no_translation : 'No se encontró traducción',
-                choose_lang : 'Elegir idioma',
-                add_lang : 'Agregar un nuevo idioma',
-                language : 'Idioma',
-                enter_lang_name : 'Por favor ingrese un nombre de idioma',
-                send : 'Generar mensaje',
-                name : 'nombre',
+                info: 'информация',
+                trans: 'Traducción para el idioma',
+                translations: 'Traducciones',
+                trans_sure: '¿Está seguro de que su traducción está lista para ser generada?',
+                trans_success: 'La traducción se ha enviado correctamente',
+                trans_fail: 'No se pudo enviar la traducción',
+                trans_infotext1: 'Traducción disponible',
+                trans_infotext2: 'Para modificar o crear un nuevo idioma, elija el idioma en el menú desplegable',
+                trans_infotext3: 'Cuando un texto contiene etiquetas HTML (por lo tanto, todo lo que está entre <> corchetes) te pido que los guardes donde los encontraste',
+                trans_infotext4: 'Cuando hayas terminado de traducir, presiona',
+                trans_infotext5: 'Para poder agregarte a los créditos, se generará tu apodo',
+                trans_infotext6: 'Copia el mensaje generado y pégalo en un comentario',
+                please_note: 'Tenga en cuenta',
+                credits: 'Créditos',
+                no_translation: 'No se encontró traducción',
+                choose_lang: 'Elegir idioma',
+                add_lang: 'Agregar un nuevo idioma',
+                language: 'Idioma',
+                enter_lang_name: 'Por favor ingrese un nombre de idioma',
+                send: 'Generar mensaje',
+                name: 'nombre',
             },
             buttons: {
                 sav: "Guardar", ins: "Insertar", res: "Reinicio"
@@ -2605,8 +3146,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //   Portuguese (BR) Translation by  HELL   //
         //////////////////////////////////////////////
         br: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://br.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.23781/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools oferece, entre outras coisas, algumas telas, uma caixa de smiley, opções de comércio <br> e algumas alterações no layout.",
@@ -2620,7 +3181,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version_update: "Atualização",
                 Donate: "Doar",
 
-                Update: "Atualizar "+ dio_version,
+                //forum: "",
+                Update: "Atualizar " + dio_version,
                 Feature: "Novo Recurso",
                 Feature2: "Nova versão",
                 Learn_more: "Saber mais",
@@ -2631,11 +3193,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_trade: "Comércio",
                 cat_wonders: "Maravilhas do Mundo",
                 cat_layout: "Layout",
-                cat_other: "Outros"
+                cat_other: "Outros",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 // bir: ["Contador de Birremes", "Conta as biremes da cidade na cidade"],
                 ava: ["Visão Geral da unidade", "Indica as unidades de todas as cidades"], // ?
+                //ava2: ["", ""],
                 sml: ["Smilies", "Estende o bbcode com uma caixa de smiley"],
                 str: ["Força das Tropas", "Adiciona quadros de força das tropas em diversas áreas"],
                 tra: ["Capacidade de Transporte", "Mostra a capacidade de transporte ocupado e disponível no menu de unidades"],
@@ -2650,7 +3215,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 rew: ["Recompensa diária", "Minimiza a janela recompensa diária no inicio"],
                 bbc: ["Pedido de Apoio", "Estende a barra de bbcode com uma forma de Pedido de Apoio Automática"],
                 com: ["Comparação de Unidades", "Adiciona tabelas de comparação de unidade"],
-                tic: ["Ícones nas Cidades", "Cada cidade recebe um ícone para o tipo de tropas na cidade (detecção automática) "," Ícones adicionais estão disponíveis para seleção manual"],
+                tic: ["Ícones nas Cidades", "Cada cidade recebe um ícone para o tipo de tropas na cidade (detecção automática) ", " Ícones adicionais estão disponíveis para seleção manual"],
                 til: ["Lista das Cidades", "Adiciona os ícones da cidade na lista de cidades"],
                 tim: ["Mapa", "Mostra os ícones das cidades no mapa estratégico"],
                 tiw: ["Pop-up de ícone", ""],
@@ -2679,14 +3244,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rep: ["Reports", "Adicionando um filtro de cores. Função Quack"],
                 BBt: ["Κουμπί BBcode Πληροφορίες προγράμματος αναπαραγωγής", "Προσθήκη κουμπιού BBcode (player και alliance)"],
                 Rtt: ["Remoção das dicas da unidade", ""],
-                Cup: ["Avanço da Cultura (Administrador)","Alterada a apresentação da barra de progresso e adicionada uma barra de progresso para as colheitas. Função de Akiway"],
+                Cup: ["Avanço da Cultura (Administrador)", "Alterada a apresentação da barra de progresso e adicionada uma barra de progresso para as colheitas. Função de Akiway"],
                 Cuo: ["Pontos de Cultura (Administrador)", "Adicione um contador para os Pontos de Cultura. Função Quack"],
-                Rct: ["Comércio -> Contador de recursos (Administrador) "," Uma contagem de todos os recursos em sua cidade"],
+                Rct: ["Comércio -> Contador de recursos (Administrador) ", " Uma contagem de todos os recursos em sua cidade"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
 
                 err: ["Enviar automaticamente relatórios de erros", "Se você ativar essa opção, você pode ajudar a identificar erros."],
-                her: ["Conquista Thracian", "Redução de tamanho do mapa da conquista Thracian."],
+                //her: ["Conquista Thracian", "Redução de tamanho do mapa da conquista Thracian."],
             },
             Town_icons: {
                 //LandOff: "",
@@ -2699,11 +3264,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Emp: "",
             },
             Color: {
-                Blue : 'Azul',
-                Red : 'Vermelho',
-                Green : 'Verde',
-                Pink : 'Rosa',
-                White : "Blanco",
+                Blue: 'Azul',
+                Red: 'Vermelho',
+                Green: 'Verde',
+                Pink: 'Rosa',
+                White: "Blanco",
             },
             labels: {
                 uni: "Visão Geral da unidade",
@@ -2711,7 +3276,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Disponível",
                 outer: "Fora",
                 con: "Selecionar cidade",
-                // Smileys
+                /// Smileys
                 std: "Padrão",
                 gre: "Grepo",
                 nat: "Natural",
@@ -2722,7 +3287,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Natal",
                 //eas: "",
                 //lov: "",
-                // Defense form
+                /// Defense form
                 ttl: "Pedido de Apoio",
                 inf: "Informação da cidade:",
                 dev: "Desvio",
@@ -2730,15 +3295,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Bônus Premium",
                 sil: "Prata na Gruta",
                 mov: "Movimentação de Tropas:",
-                // WW
+                /// WW
                 leg: "WW Maravilhas",
                 stg: "Level",
                 tot: "Total",
-                // Simulator
+                /// Simulator
                 str: "Força das Unidades",
                 los: "Perdas",
                 mod: "Sem modificador de influência",
-                // Comparison box
+                /// Comparison box
                 dsc: "Comparação de unidades",
                 hck: "Impacto",
                 prc: "Corte",
@@ -2752,20 +3317,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Custo (recursos)",
                 fav: "Favor",
                 tim: "Tempo de recrutamento (s)",
-                // Trade
+                /// Trade
                 rat: "Proporção de recursos de um tipo de unidade",
                 shr: "A partir do armazenamento sobre a cidade de destino",
                 per: "Percentual de comércio",
-                // Sent units box
+                /// Sent units box
                 lab: "Unidades enviadas",
                 rec: "Recursos",
                 improved_movement: "Movimentação de tropas com ajuste de bônus",
-                donat: "Doações",
                 Tran: "Traduções",
+                donat: "Doações",
                 Happy: "Feliz Ano Novo!",
                 Merry: "Ho ho ho feliz Natal!",
                 //tow: "",
-                ingame_name : ["Não hesite em me contatar se você prefere ser chamado pelo seu nick de jogo","Como se trata de muito trabalho e pode ser muito Eu sou sempre muito grato por qualquer tipo de apoio demorado. Portanto, eu gostaria de agradecer a todos que ofereceram apoio para este projecto - seja através de doações , o conhecimento, a criatividade, relatórios de bugs ou apenas algumas palavras de incentivo."]
+                ingame_name: ["Não hesite em me contatar se você prefere ser chamado pelo seu nick de jogo", "Como se trata de muito trabalho e pode ser muito Eu sou sempre muito grato por qualquer tipo de apoio demorado. Portanto, eu gostaria de agradecer a todos que ofereceram apoio para este projecto - seja através de doações , o conhecimento, a criatividade, relatórios de bugs ou apenas algumas palavras de incentivo."]
             },
             tutoriel: {
                 tuto: "Informações úteis",
@@ -2776,121 +3341,157 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Excluir várias mensagens",
-                delete_sure : "Você realmente quer apagar essas mensagens?",
-                no_selection : "Nenhuma mensagem selecionada",
+                delete_mul: "Excluir várias mensagens",
+                delete_sure: "Você realmente quer apagar essas mensagens?",
+                no_selection: "Nenhuma mensagem selecionada",
                 mark_All: "Marcar todos",
                 //select unit shelper
-                no_overload : 'Sem sobrecarga',
-                delete : 'Excluir',
+                no_overload: 'Sem sobrecarga',
+                delete: 'Excluir',
                 //culture Overview
-                cityfestivals : 'Festival Urbano',
-                olympicgames : 'Jogos Olímpicos',
-                triumph : 'Desfile da Vitória',
-                theater : 'Peças de Teatro'
+                cityfestivals: 'Festival Urbano',
+                olympicgames: 'Jogos Olímpicos',
+                triumph: 'Desfile da Vitória',
+                theater: 'Peças de Teatro'
             },
-            hotkeys : {
-                hotkeys : 'Teclas de atalho',
-                Senate : 'Senado',
-                city_select : 'Seleção Cidade',
-                last_city : 'Última cidade',
-                next_city : 'Próxima cidade',
-                jump_city : 'Ir para a cidade atual',
-                administrator : 'Administrador',
-                captain : 'Capitão',
-                trade_ov : 'Troca',
-                command_ov : 'Comandos',
-                recruitment_ov : 'Recrutamento',
-                troop_ov : 'Visão geral das tropasa',
-                troops_outside : 'Tropas no exterior',
-                building_ov : 'Edifícios',
-                culture_ov : 'Cultura',
-                gods_ov : 'Deuses',
-                cave_ov : 'Grutas',
-                city_groups_ov : 'Grupos de cidades',
-                city_list : 'Lista de cidades',
-                attack_planner : 'Planejador de ataques',
-                farming_villages : 'Aldeias bárbaras',
-                menu : 'Menu',
-                city_view : 'Vista da cidade',
-                messages : 'Mensagens',
-                reports : 'Relatórios',
-                alliance : 'Aliança',
-                alliance_forum : 'Fórum da aliança',
-                settings : 'Configurações',
-                profile : 'Perfil',
-                ranking : 'Posição',
-                notes : 'Notas',
-                chat : 'Chat',
-                council : 'Conselho de Heróis'
+            hotkeys: {
+                hotkeys: 'Teclas de atalho',
+                Senate: 'Senado',
+                city_select: 'Seleção Cidade',
+                last_city: 'Última cidade',
+                next_city: 'Próxima cidade',
+                jump_city: 'Ir para a cidade atual',
+                administrator: 'Administrador',
+                captain: 'Capitão',
+                trade_ov: 'Troca',
+                command_ov: 'Comandos',
+                recruitment_ov: 'Recrutamento',
+                troop_ov: 'Visão geral das tropasa',
+                troops_outside: 'Tropas no exterior',
+                building_ov: 'Edifícios',
+                culture_ov: 'Cultura',
+                gods_ov: 'Deuses',
+                cave_ov: 'Grutas',
+                city_groups_ov: 'Grupos de cidades',
+                city_list: 'Lista de cidades',
+                attack_planner: 'Planejador de ataques',
+                farming_villages: 'Aldeias bárbaras',
+                menu: 'Menu',
+                city_view: 'Vista da cidade',
+                messages: 'Mensagens',
+                reports: 'Relatórios',
+                alliance: 'Aliança',
+                alliance_forum: 'Fórum da aliança',
+                settings: 'Configurações',
+                profile: 'Perfil',
+                ranking: 'Posição',
+                notes: 'Notas',
+                chat: 'Chat',
+                council: 'Conselho de Heróis'
             },
-            caves : {
-                stored_silver : 'Moedas de prata armazenadss',
-                silver_to_store : 'Moedas de prata armazenáveis',
-                name : 'Nome',
-                wood : 'Madeira',
-                stone : 'Pedra',
-                silver : 'Moedas de prata'
+            messages: {
+                ghosttown: "Cidade-fantasma",
+                no_cities: "Nenhuma cidade nesta ilha",
+                all: "Tudo",
+                export: "Converter mensagem em BB-Code",
+                Tol: "Copiar e colar (Função Quack)",
+                copy: "Copiar",
+                bbmessages: "Mensagens do BB-Code",
+                copybb: "BBCode foi copiado",
+                écrit: "escreveu o seguinte:",
             },
-            messages : {
-                ghosttown : 'Cidade-fantasma',
-                no_cities : 'Nenhuma cidade nesta ilha',
-                all : 'Tudo',
-                export : 'Converter mensagem em BB-Code',
-                Tol : 'Copiar e colar (Função Quack)',
-                copy : 'Copiar',
-                bbmessages : 'Mensagens do BB-Code',
-                copybb : 'BBCode foi copiado',
-                écrit : 'escreveu o seguinte:',
+            caves: {
+                stored_silver: 'Moedas de prata armazenadss',
+                silver_to_store: 'Moedas de prata armazenáveis',
+                name: 'Nome',
+                wood: 'Madeira',
+                stone: 'Pedra',
+                silver: 'Moedas de prata',
+                //search_for: ""
             },
-            grepo_mainmenu : {
-                city_view : 'Vista da cidade',
-                island_view : 'Vista Ilha'
+            grepo_mainmenu: {
+                city_view: 'Vista da cidade',
+                island_view: 'Vista Ilha'
             },
-            transport_calc : {
-                recruits : 'Contagem das unidades na fila de recrutamento',
+            transport_calc: {
+                recruits: "Contagem das unidades na fila de recrutamento",
                 //slowtrans : "",
                 //fasttrans : "",
                 //Lack: "",
                 //Still: "",
                 //pop: "",
                 //Optipop : "",
-                //army : "",
+                //army: "",
+            },
+            reports: {
+                //choose_folder: "",
+                //enacted: "",
+                //conquered: "",
+                //spying: "",
+                //spy: "",
+                //support: "",
+                //support2: "",
+                //supporting: "",
+                //attacking: "",
+                //farming_village: "",
+                //gold: "",
+                //Quests: "",
+                //Reservations: "",
             },
             translations: {
-                info : 'Info',
-                trans : 'tradução para o idioma',
-                translations : 'Traduções',
-                trans_sure : 'Tem certeza de que sua tradução está pronta para ser gerada?',
-                trans_success : 'A tradução foi enviada com sucesso',
-                trans_fail : 'A tradução não pôde ser enviada',
-                trans_infotext1 : 'Tradução disponível',
-                trans_infotext2 : 'Para modificar ou criar um novo idioma, escolha o idioma no menu suspenso',
-                trans_infotext3 : 'Quando um texto contém tags HTML (portanto, tudo que está entre <> colchetes) eu peço que você os mantenha onde os encontrou',
-                trans_infotext4 : 'Quando você terminar de traduzir, pressione',
-                trans_infotext5 : 'Para poder adicionar você aos créditos, seu apelido será gerado',
-                trans_infotext6 : 'Copie a mensagem gerada e cole-a em um comentário',
-                please_note : 'Por favor, note',
-                credits : 'Créditos',
-                no_translation : 'Nenhuma tradução encontrada',
-                choose_lang : 'Escolha o idioma',
-                add_lang : 'Adicionar um novo idioma',
-                language : 'Idioma',
-                enter_lang_name : 'Por favor, digite um nome de idioma',
-                send : 'Gerar mensagem',
-                name : 'Nome',
+                info: 'Info',
+                trans: 'tradução para o idioma',
+                translations: 'Traduções',
+                trans_sure: 'Tem certeza de que sua tradução está pronta para ser gerada?',
+                trans_success: 'A tradução foi enviada com sucesso',
+                trans_fail: 'A tradução não pôde ser enviada',
+                trans_infotext1: 'Tradução disponível',
+                trans_infotext2: 'Para modificar ou criar um novo idioma, escolha o idioma no menu suspenso',
+                trans_infotext3: 'Quando um texto contém tags HTML (portanto, tudo que está entre <> colchetes) eu peço que você os mantenha onde os encontrou',
+                trans_infotext4: 'Quando você terminar de traduzir, pressione',
+                trans_infotext5: 'Para poder adicionar você aos créditos, seu apelido será gerado',
+                trans_infotext6: 'Copie a mensagem gerada e cole-a em um comentário',
+                please_note: 'Por favor, note',
+                credits: 'Créditos',
+                no_translation: 'Nenhuma tradução encontrada',
+                choose_lang: 'Escolha o idioma',
+                add_lang: 'Adicionar um novo idioma',
+                language: 'Idioma',
+                enter_lang_name: 'Por favor, digite um nome de idioma',
+                send: 'Gerar mensagem',
+                name: 'Nome',
             },
             buttons: {
                 sav: "Salvar", ins: "Inserir", res: "Resetar"
             }
         },
-        pt : {},
+        pt: {},
         //////////////////////////////////////////////
         //       Czech Translation by Piwus         //
         //////////////////////////////////////////////
         cz: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://cz.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.8478/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools nabízí,mimo jiné,některá nová zobrazení,okénko smajlíků,<br>obchodní možnosti a některé změny v rozložení panelů.",
@@ -2904,7 +3505,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version_update: "Aktualizovat",
                 Donate: "Darovat",
 
-                Update: "Aktualizace "+ dio_version,
+                //forum: "",
+                Update: "Aktualizace " + dio_version,
                 Feature: "Nová vlastnost",
                 Feature2: "Nová verze",
                 Learn_more: "Zjistit více",
@@ -2915,11 +3517,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_trade: "Obchod",
                 cat_wonders: "Div světa",
                 cat_layout: "Okna",
-                cat_other: "Ostatní"
+                cat_other: "Ostatní",
+                cat_Premium: "Premium",
+                cat_Quack: "Quack",
             },
             Options: {
                 // bir: ["Počítadlo birém", "Spočítá každé birémy ve městech a sečte je."],
                 ava: ["Jednotky Přehled", "Označuje jednotky všemi městy"], // ?
+                //ava2: ["", ""],
                 sml: ["Smajlíci", "Rozšiřuje panel BBkodů okénkem smajlíků"],
                 str: ["Síla jednotek", "Přidává tabulku sil jednotek v různých  oblastech"],
                 tra: ["Transportní kapacita", "Zobrazuje obsazenou a dostupnou transportní kapacitu v nabídce jednotek"],
@@ -2963,9 +3568,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rep: ["Reports", "Přidání barevného filtru. Quack funkce"],
                 BBt: ["Tlačítko BBcode Player Info", "Přidání tlačítka BBcode (hráč a spojenectví)"],
                 Rtt: ["Odstranění popisů jednotky", ""],
-                Cup: ["Rozvoj kultury (správce)","Změnilo se zobrazení pruhu postupu a přidal se ukazatel průběhu pro plodiny. Funkce Akiway"],
+                Cup: ["Rozvoj kultury (správce)", "Změnilo se zobrazení pruhu postupu a přidal se ukazatel průběhu pro plodiny. Funkce Akiway"],
                 Cuo: ["Body kultury (správce)", "Přidejte počítadlo pro body kultury. Quack funkce"],
-                Rct: ["Obchod -> Počítadlo zdrojů (správce)","Počet všech zdrojů ve vašem městě"],
+                Rct: ["Obchod -> Počítadlo zdrojů (správce)", "Počet všech zdrojů ve vašem městě"],
                 //FLASK : ["",""],
                 //Mole : ["",""],
 
@@ -2983,11 +3588,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Emp: "",
             },
             Color: {
-                Blue : 'Modrý',
-                Red : 'Červené',
-                Green : 'Zelený',
-                Pink : 'Růžový',
-                White : "Bílý",
+                Blue: 'Modrý',
+                Red: 'Červené',
+                Green: 'Zelený',
+                Pink: 'Růžový',
+                White: "Bílý",
             },
             labels: {
                 uni: "Jednotky Přehled",
@@ -2995,7 +3600,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "K dispozici",
                 outer: "Vně",
                 con: "Zvolit město",
-                // Smileys
+                /// Smileys
                 std: "Standartní",
                 gre: "Grepo",
                 nat: "Příroda",
@@ -3006,7 +3611,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Vánoce",
                 //eas: "",
                 //lov: "",
-                // Defense form
+                /// Defense form
                 ttl: "Přehled: Obrana města",
                 inf: "Informace o městě:",
                 dev: "Odchylka",
@@ -3014,15 +3619,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Prémiové bonusy",
                 sil: "Objem stříbra",
                 mov: "Pohyby vojsk:",
-                // WW
+                /// WW
                 leg: "Podíl divu světa",
                 stg: "Stupeň",
                 tot: "Celkem",
-                // Simulator
+                /// Simulator
                 str: "Síla jednotek",
                 los: "Ztráta",
                 mod: "bez vlivu modifikátoru",
-                // Comparison box
+                /// Comparison box
                 dsc: "Porovnání jednotek",
                 hck: "Sečné",
                 prc: "Bodné",
@@ -3036,11 +3641,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Náklady (suroviny)",
                 fav: "Přízeň",
                 tim: "Doba rekrutování (s)",
-                // Trade
+                /// Trade
                 rat: "Poměr surovin typu jednotky",
                 shr: "Podíl na úložné kapacitě cílového města",
                 per: "Procentuální obchod",
-                // Sent units box
+                /// Sent units box
                 lab: "Odeslané jednotky",
                 rec: "Zdroje",
                 improved_movement: "Vylepšený pohyb jednotek",
@@ -3049,7 +3654,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Happy: "Šťastný nový rok!",
                 Merry: "Ho Ho Ho, Veselé Vánoce!",
                 tow: "BBCode město",
-                ingame_name : ["Neváhejte mě kontaktovat, pokud chcete být volán svým herním jménem","Protože je tato práce náročná, a to i časově, jsem vždy vděčný za jakoukoliv Vaši podporu. Proto chci poděkovat každému, kdo tomuto projektu jakkoliv pomohl - buďto skrze dary nebo, znalostí, kreativitou, hlášením chyb nebo pouze povzbudivými slovy."]
+                ingame_name: ["Neváhejte mě kontaktovat, pokud chcete být volán svým herním jménem", "Protože je tato práce náročná, a to i časově, jsem vždy vděčný za jakoukoliv Vaši podporu. Proto chci poděkovat každému, kdo tomuto projektu jakkoliv pomohl - buďto skrze dary nebo, znalostí, kreativitou, hlášením chyb nebo pouze povzbudivými slovy."]
             },
             tutoriel: {
                 tuto: "Užitečné informace",
@@ -3060,76 +3665,80 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Odstraňte více zpráv",
-                delete_sure : "Opravdu chcete smazat tyto příspěvky?",
-                no_selection : "Nebyly vybrány žádné příspěvky",
+                delete_mul: "Odstraňte více zpráv",
+                delete_sure: "Opravdu chcete smazat tyto příspěvky?",
+                no_selection: "Nebyly vybrány žádné příspěvky",
                 mark_All: "Označit vše",
                 //select unit shelper
-                no_overload : 'Bez přeložení',
-                delete : 'Smazat',
+                no_overload: 'Bez přeložení',
+                delete: 'Smazat',
                 //culture Overview
-                cityfestivals : 'Městské slavnosti',
-                olympicgames : 'Olympijské hry',
-                triumph : 'Slavnostní pochody',
-                theater : 'Divadelní hry'
+                cityfestivals: 'Městské slavnosti',
+                olympicgames: 'Olympijské hry',
+                triumph: 'Slavnostní pochody',
+                theater: 'Divadelní hry'
             },
-            hotkeys : {
-                hotkeys : 'Horké klávesy',
-                Senate : 'Senát',
-                city_select : 'Výběr města',
-                last_city : 'Předchozí město',
-                next_city : 'Následující město',
-                jump_city : 'Přejít na aktuální město',
-                administrator : 'Správce',
-                captain : 'Kapitán',
-                trade_ov : 'Obchod',
-                command_ov : 'Rozkazy',
-                recruitment_ov : 'Rekrutování',
-                troop_ov : 'Přehled vojsk',
-                troops_outside : 'Vojsko mimo',
-                building_ov : 'Budovy',
-                culture_ov : 'Kultura',
-                gods_ov : 'Bohové',
-                cave_ov : 'Jeskyně',
-                city_groups_ov : 'Skupiny měst',
-                city_list : 'Seznam měst',
-                attack_planner : 'Plánovač útoků',
-                farming_villages : 'Zemědělské vesnice',
-                city_view : 'Přehled města',
-                messages : 'Zprávy',
-                reports : 'Hlášení',
-                alliance : 'Aliance',
-                alliance_forum : 'Fórum aliance',
-                settings : 'Nastavení',
-                profile : 'Profil',
-                ranking : 'Žebříček',
-                notes : 'Poznámky',
-                council : 'Shromáždění hrdinů'
+            hotkeys: {
+                hotkeys: 'Horké klávesy',
+                Senate: 'Senát',
+                city_select: 'Výběr města',
+                last_city: 'Předchozí město',
+                next_city: 'Následující město',
+                jump_city: 'Přejít na aktuální město',
+                administrator: 'Správce',
+                captain: 'Kapitán',
+                trade_ov: 'Obchod',
+                command_ov: 'Rozkazy',
+                recruitment_ov: 'Rekrutování',
+                troop_ov: 'Přehled vojsk',
+                troops_outside: 'Vojsko mimo',
+                building_ov: 'Budovy',
+                culture_ov: 'Kultura',
+                gods_ov: 'Bohové',
+                cave_ov: 'Jeskyně',
+                city_groups_ov: 'Skupiny měst',
+                city_list: 'Seznam měst',
+                attack_planner: 'Plánovač útoků',
+                farming_villages: 'Zemědělské vesnice',
+                //menu: '',
+                city_view: 'Přehled města',
+                messages: 'Zprávy',
+                reports: 'Hlášení',
+                alliance: 'Aliance',
+                alliance_forum: 'Fórum aliance',
+                settings: 'Nastavení',
+                profile: 'Profil',
+                ranking: 'Žebříček',
+                notes: 'Poznámky',
+                //chat: '',
+                council: 'Shromáždění hrdinů'
             },
-            messages : {
-                ghosttown : 'Město duchů',
-                no_cities : 'Na tomto ostrově nejsou žádná města',
-                all : 'vše',
-                export : 'Zkonvertuj zprávu do BB-kódu',
-                Tol : 'Kopírovat a vložit (Quack funkce)',
-                copy : 'Pro kopírování',
-                bbmessages : 'BB-kódu messages',
-                copybb : 'BB-kódu byl zkopírován',
-                écrit : 'napsal toto:',
+            messages: {
+                ghosttown: 'Město duchů',
+                no_cities: 'Na tomto ostrově nejsou žádná města',
+                all: 'vše',
+                export: 'Zkonvertuj zprávu do BB-kódu',
+                Tol: 'Kopírovat a vložit (Quack funkce)',
+                copy: 'Pro kopírování',
+                bbmessages: 'BB-kódu messages',
+                copybb: 'BB-kódu byl zkopírován',
+                écrit: 'napsal toto:',
             },
-            caves : {
-                stored_silver : 'Uložené stříbrné mince',
-                name : 'Jméno',
-                wood : 'Dřevo',
-                stone : 'Kámen',
-                silver : 'Stříbrné mince',
+            caves: {
+                stored_silver: 'Uložené stříbrné mince',
+                //silver_to_store: '',
+                name: 'Jméno',
+                wood: 'Dřevo',
+                stone: 'Kámen',
+                silver: 'Stříbrné mince',
+                //search_for: ''
             },
-            grepo_mainmenu : {
-                city_view : 'Přehled města',
-                island_view : 'Ostrovní pohled'
+            grepo_mainmenu: {
+                city_view: 'Přehled města',
+                island_view: 'Ostrovní pohled'
             },
-            transport_calc : {
-                recruits : 'Započítej jednotky ve výstavbě',
+            transport_calc: {
+                recruits: 'Započítej jednotky ve výstavbě',
                 //slowtrans : "",
                 //fasttrans : "",
                 //Lack: "",
@@ -3138,28 +3747,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Optipop : "",
                 //army : "",
             },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
+            },
             translations: {
-                info : 'Info',
-                trans : 'Překlad pro jazyk',
-                translations : 'Překlady',
-                trans_sure : 'Jste si jisti, že je váš překlad připraven k vygenerování?',
-                trans_success : 'Překlad byl úspěšně odeslán',
-                trans_fail : 'Překlad nelze odeslat',
-                trans_infotext1 : 'Překlad k dispozici',
-                trans_infotext2 : 'Chcete-li upravit nebo vytvořit nový jazyk, vyberte jazyk v rozevírací nabídce',
-                trans_infotext3 : 'Pokud text obsahuje značky HTML (tedy vše, co je obklopeno <> závorkami), požádám vás, abyste je ponechali tam, kde jste je našli.',
-                trans_infotext4 : 'Po dokončení překladu stiskněte',
-                trans_infotext5 : 'Abychom vás mohli přidat do kreditů, bude vygenerována vaše přezdívka',
-                trans_infotext6 : 'Zkopírujte vygenerovanou zprávu a vložte ji do komentáře',
-                please_note : 'Vezměte prosím na vědomí',
-                credits : 'Kredity',
-                no_translation : 'Nebyl nalezen žádný překlad',
-                choose_lang : 'Vyber jazyk',
-                add_lang : 'Přidat nový jazyk',
-                language : 'Jazyk',
-                enter_lang_name : 'Zadejte prosím název jazyka',
-                send : 'Generovat zprávu',
-                name : 'Jméno',
+                info: 'Info',
+                trans: 'Překlad pro jazyk',
+                translations: 'Překlady',
+                trans_sure: 'Jste si jisti, že je váš překlad připraven k vygenerování?',
+                trans_success: 'Překlad byl úspěšně odeslán',
+                trans_fail: 'Překlad nelze odeslat',
+                trans_infotext1: 'Překlad k dispozici',
+                trans_infotext2: 'Chcete-li upravit nebo vytvořit nový jazyk, vyberte jazyk v rozevírací nabídce',
+                trans_infotext3: 'Pokud text obsahuje značky HTML (tedy vše, co je obklopeno <> závorkami), požádám vás, abyste je ponechali tam, kde jste je našli.',
+                trans_infotext4: 'Po dokončení překladu stiskněte',
+                trans_infotext5: 'Abychom vás mohli přidat do kreditů, bude vygenerována vaše přezdívka',
+                trans_infotext6: 'Zkopírujte vygenerovanou zprávu a vložte ji do komentáře',
+                please_note: 'Vezměte prosím na vědomí',
+                credits: 'Kredity',
+                no_translation: 'Nebyl nalezen žádný překlad',
+                choose_lang: 'Vyber jazyk',
+                add_lang: 'Přidat nový jazyk',
+                language: 'Jazyk',
+                enter_lang_name: 'Zadejte prosím název jazyka',
+                send: 'Generovat zprávu',
+                name: 'Jméno',
             },
             buttons: {
                 sav: "Uložit", ins: "Vložit", res: "Resetovat"
@@ -3169,8 +3793,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //     Romanian Translation by Nicolae01    //
         //////////////////////////////////////////////
         ro: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://ro.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.12961/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools oferă, printre altele, câteva afișaje, emoticoane, opțiuni de tranzacționare și unele modificări ale aspectului.",
@@ -3184,7 +3828,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version_update: "Versiune la zi",
                 Donate: "Donează",
 
-                Update: "Actualizați "+ dio_version,
+                //forum: "",
+                Update: "Actualizați " + dio_version,
                 Feature: "Optiune noua",
                 Feature2: "Versiune noua",
                 Learn_more: "Aflați mai multe",
@@ -3195,7 +3840,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_trade: "Magazin",
                 cat_wonders: "Minunile Lumii",
                 cat_layout: "Schemă",
-                cat_other: "Diverse"
+                cat_other: "Diverse",
+                //cat_Premium: "",
+                cat_Quack: "Quack",
             },
             Options: {
                 bir: ["Contor de bireme", "Numără câte bireme sunt în orașe și face suma lor"],
@@ -3244,9 +3891,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rep: ["Rapoarte", "Adăugarea unui filtru de culori. Funcția Quack"],
                 BBt: ["Butonul BBcode Informații jucător", "Adăugarea unui buton BBcode (jucător și alianță)"],
                 Rtt: ["Îndepărtarea sfaturilor de instrumente ale unității", ""],
-                Cup: ["Avansarea culturii (Administrator)","A modificat prezentarea barei de progres și a adăugat o bară de progres pentru culturi. Funcția Akiway"],
+                Cup: ["Avansarea culturii (Administrator)", "A modificat prezentarea barei de progres și a adăugat o bară de progres pentru culturi. Funcția Akiway"],
                 Cuo: ["Puncte de cultură (Administrator)", "Adăugați un contor pentru punctele de cultură. Funcția Quack"],
-                Rct: ["Comerț -> Contor de resurse (Administrator)","Un număr al tuturor resurselor din orașul dvs."],
+                Rct: ["Comerț -> Contor de resurse (Administrator)", "Un număr al tuturor resurselor din orașul dvs."],
                 //FLASK : ["",""],
                 //Mole : ["",""],
 
@@ -3264,11 +3911,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Emp: "Gol",
             },
             Color: {
-                Blue : 'Albastru',
-                Red : 'Roșu',
-                Green : 'Verde',
-                Pink : 'Roz',
-                White : "alb",
+                Blue: 'Albastru',
+                Red: 'Roșu',
+                Green: 'Verde',
+                Pink: 'Roz',
+                White: "alb",
             },
             labels: {
                 uni: "Vedere de ansamblu unități",
@@ -3276,7 +3923,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Disponibile",
                 outer: "Afară",
                 con: "Alege orașul",
-                // Smileys
+                /// Smileys
                 std: "Standard",
                 gre: "Grepolis",
                 nat: "Natură",
@@ -3287,7 +3934,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Crăciun",
                 eas: "Paște",
                 lov: "Dragoste",
-                // Defense form
+                /// Defense form
                 ttl: "Vedere de ansamblu: Apărarea orașului",
                 inf: "Informațiile orașului:",
                 dev: "Deviere",
@@ -3295,15 +3942,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Bonusurile premium",
                 sil: "Volumul argintului",
                 mov: "Mișcările trupelor:",
-                // WW
+                /// WW
                 leg: "ML Participare",
                 stg: "Stagiu",
                 tot: "Total",
-                // Simulator
+                /// Simulator
                 str: "Puterea unităților",
                 los: "Pierderi",
                 mod: "fără modificator de influență",
-                // Comparison box
+                /// Comparison box
                 dsc: "Comparare unități",
                 hck: "Neascuțit",
                 prc: "Ascuțit",
@@ -3317,11 +3964,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Cost (resurse)",
                 fav: "Favoruri",
                 tim: "Timp de recrutare (s)",
-                // Trade
+                /// Trade
                 rat: "Raportul resurselor față de tipul de unitate",
                 shr: "Ponderarea capacității de stocare a orașului țintă",
                 per: "Procent resurse",
-                // Sent units box
+                /// Sent units box
                 lab: "Unități trimise",
                 rec: "Resurse",
                 improved_movement: "Mișcare îmbunătățită a trupelor",
@@ -3330,7 +3977,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Happy: "An Nou Fericit!",
                 Merry: "Ho Ho Ho, Crăciun fericit!",
                 tow: "Orașul BBCode",
-                ingame_name : ["Nu ezita sa ma contactezi daca preferi sa fi numit dupa numele de joc",""]
+                ingame_name: ["Nu ezita sa ma contactezi daca preferi sa fi numit dupa numele de joc", ""]
             },
             tutoriel: {
                 tuto: "Informații utile",
@@ -3341,77 +3988,80 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Ștergeți mai multe mesaje",
-                delete_sure : "Esti sigur ca vrei sa stergi acest post?",
-                no_selection : "Nici un post selectat",
+                delete_mul: "Ștergeți mai multe mesaje",
+                delete_sure: "Esti sigur ca vrei sa stergi acest post?",
+                no_selection: "Nici un post selectat",
                 mark_All: "Marchează-le pe toate",
                 //select unit shelper
-                no_overload : 'Nu supraincarcati',
-                delete : 'Sterge',
+                no_overload: 'Nu supraincarcati',
+                delete: 'Sterge',
                 //culture Overview
-                cityfestivals : 'Festival oras',
-                olympicgames : 'Jocuri olimpice',
-                triumph : 'Parada triumfala',
-                theater : 'Piese de teatru'
+                cityfestivals: 'Festival oras',
+                olympicgames: 'Jocuri olimpice',
+                triumph: 'Parada triumfala',
+                theater: 'Piese de teatru'
             },
-            hotkeys : {
-                hotkeys : 'Taste',
-                Senate : 'Senat',
-                city_select : 'Selectare oras',
-                last_city : 'Ultimul oras',
-                next_city : 'Urmatorul oras',
-                jump_city : 'Salt la orasul curent',
-                captain : 'Capitan',
-                trade_ov : 'Negot',
-                command_ov : 'Comenzi',
-                recruitment_ov : 'Recrutare',
-                troop_ov : 'Privire de ansamblu a trupelor',
-                troops_outside : 'Trupe din afara orasului',
-                building_ov : 'Constructii',
-                culture_ov : 'Cultura',
-                gods_ov : 'Zei',
-                cave_ov : 'Pesteri',
-                city_groups_ov : 'Grupe orase',
-                city_list : 'Lista orase',
-                attack_planner : 'Planificator atacuri',
-                farming_villages : 'Sate de farmat',
-                menu : 'Meniu',
-                city_view : 'Vezi oras ',
-                messages : 'Mesaje',
-                reports : 'Rapoarte',
-                alliance : 'Alianta',
-                alliance_forum : 'Forum Alianta',
-                settings : 'Setari',
-                profile : 'Profil',
-                ranking : 'Clasament',
-                notes : 'Notite',
-                council : 'Consiliul eroilor'
+            hotkeys: {
+                hotkeys: 'Taste',
+                Senate: 'Senat',
+                city_select: 'Selectare oras',
+                last_city: 'Ultimul oras',
+                next_city: 'Urmatorul oras',
+                jump_city: 'Salt la orasul curent',
+                //administrator: "",
+                captain: 'Capitan',
+                trade_ov: 'Negot',
+                command_ov: 'Comenzi',
+                recruitment_ov: 'Recrutare',
+                troop_ov: 'Privire de ansamblu a trupelor',
+                troops_outside: 'Trupe din afara orasului',
+                building_ov: 'Constructii',
+                culture_ov: 'Cultura',
+                gods_ov: 'Zei',
+                cave_ov: 'Pesteri',
+                city_groups_ov: 'Grupe orase',
+                city_list: 'Lista orase',
+                attack_planner: 'Planificator atacuri',
+                farming_villages: 'Sate de farmat',
+                menu: 'Meniu',
+                city_view: 'Vezi oras ',
+                messages: 'Mesaje',
+                reports: 'Rapoarte',
+                alliance: 'Alianta',
+                alliance_forum: 'Forum Alianta',
+                settings: 'Setari',
+                profile: 'Profil',
+                ranking: 'Clasament',
+                notes: 'Notite',
+                //chat: "",
+                council: 'Consiliul eroilor'
             },
-            messages : {
-                ghosttown : 'Oras fantoma',
-                no_cities : 'Nici un oras pe aceasta insula',
-                all : 'toate',
-                export : 'Converteste mesajul in BB-Code',
-                Tol : 'Copiaza & lipeste (Funcția Quack)',
-                copy : 'A copia',
-                bbmessages : 'Mesaje ale BB-Code',
-                copybb : 'BB-Code a fost copiat',
-                écrit : 'a scris următoarele:',
+            messages: {
+                ghosttown: 'Oras fantoma',
+                no_cities: 'Nici un oras pe aceasta insula',
+                all: 'toate',
+                export: 'Converteste mesajul in BB-Code',
+                Tol: 'Copiaza & lipeste (Funcția Quack)',
+                copy: 'A copia',
+                bbmessages: 'Mesaje ale BB-Code',
+                copybb: 'BB-Code a fost copiat',
+                écrit: 'a scris următoarele:',
             },
-            caves : {
-                stored_silver : 'Monede de argint stocate',
-                silver_to_store : 'Monede de argint ce pot fi stocate',
-                name : 'Nume',
-                wood : 'Lemn',
-                stone : 'Piatra',
-                silver : 'Monede de argint '
+            caves: {
+                stored_silver: 'Monede de argint stocate',
+                silver_to_store: 'Monede de argint ce pot fi stocate',
+                name: 'Nume',
+                wood: 'Lemn',
+                stone: 'Piatra',
+                silver: 'Monede de argint ',
+                //search_for: ""
             },
-            grepo_mainmenu : {
-                city_view : 'Vezi Oras',
-                island_view : 'Vezi Insula'
+            grepo_mainmenu: {
+                city_view: 'Vezi Oras',
+                island_view: 'Vezi Insula'
             },
-            transport_calc : {
-                recruits : 'Numar unitati in asteptare de recrutare',
+            transport_calc: {
+                recruits: 'Numar unitati in asteptare de recrutare',
                 //slowtrans : "",
                 //fasttrans : "",
                 //Lack: "",
@@ -3420,28 +4070,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Optipop : "",
                 //army : "",
             },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
+            },
             translations: {
-                info : 'Info',
-                trans : 'Traducere pentru limbă',
-                translations : 'Traduceri',
-                trans_sure : 'Sunteți sigur că traducerea dvs. este gata să fie generată?',
-                trans_success : 'Traducerea a fost trimisă cu succes',
-                trans_fail : 'Traducerea nu a putut fi trimisă',
-                trans_infotext1 : 'Traducere disponibilă',
-                trans_infotext2 : 'Pentru a modifica sau a crea o nouă limbă, alegeți limba din meniul derulant',
-                trans_infotext3 : 'Când un text conține etichete HTML (deci tot ce este înconjurat de paranteze <>) vă rog să le păstrați acolo unde le-ați găsit',
-                trans_infotext4 : 'Când ați terminat traducerea, apăsați',
-                trans_infotext5 : 'Pentru a vă putea adăuga la credite, va fi generat porecla dvs.',
-                trans_infotext6 : 'Copiați mesajul generat și lipiți-l într-un comentariu',
-                please_note : 'Vă rugăm să rețineți',
-                credits : 'Credite',
-                no_translation : 'Nu s-a găsit nicio traducere',
-                choose_lang : 'Alege limba',
-                add_lang : 'Adăugați o nouă limbă',
-                language : 'Limba',
-                enter_lang_name : 'Vă rugăm să introduceți un nume de limbă',
-                send : 'Generați mesaj',
-                name : 'Nume',
+                info: 'Info',
+                trans: 'Traducere pentru limbă',
+                translations: 'Traduceri',
+                trans_sure: 'Sunteți sigur că traducerea dvs. este gata să fie generată?',
+                trans_success: 'Traducerea a fost trimisă cu succes',
+                trans_fail: 'Traducerea nu a putut fi trimisă',
+                trans_infotext1: 'Traducere disponibilă',
+                trans_infotext2: 'Pentru a modifica sau a crea o nouă limbă, alegeți limba din meniul derulant',
+                trans_infotext3: 'Când un text conține etichete HTML (deci tot ce este înconjurat de paranteze <>) vă rog să le păstrați acolo unde le-ați găsit',
+                trans_infotext4: 'Când ați terminat traducerea, apăsați',
+                trans_infotext5: 'Pentru a vă putea adăuga la credite, va fi generat porecla dvs.',
+                trans_infotext6: 'Copiați mesajul generat și lipiți-l într-un comentariu',
+                please_note: 'Vă rugăm să rețineți',
+                credits: 'Credite',
+                no_translation: 'Nu s-a găsit nicio traducere',
+                choose_lang: 'Alege limba',
+                add_lang: 'Adăugați o nouă limbă',
+                language: 'Limba',
+                enter_lang_name: 'Vă rugăm să introduceți un nume de limbă',
+                send: 'Generați mesaj',
+                name: 'Nume',
             },
             buttons: {
                 sav: "Salvați", ins: "Introduceți", res: "Resetați"
@@ -3451,8 +4116,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //   Néerlandais Translation by Firebloem   //
         //////////////////////////////////////////////
         nl: {
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
+            },
             link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
                 forum: "https://nl.forum.grepolis.com/index.php?threads/dio-tools-david1327.39609/",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
             Settings: {
                 dsc: "DIO-Tools biedt onder andere, enkele displays, een smileybox,<br> handelsopties en enkele wijzigingen in de lay-out.",
@@ -3466,7 +4151,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 version_update: "Update",
                 Donate: "Doneer",
 
-                Update: "Bijwerken "+ dio_version,
+                //forum: "",
+                Update: "Bijwerken " + dio_version,
                 Feature: "Nieuwe functie",
                 Feature2: "Nieuwe versie",
                 Learn_more: "Kom meer te weten",
@@ -3477,7 +4163,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_trade: "Handel",
                 cat_wonders: "Wereld Wonder",
                 cat_layout: "Lay-out",
-                cat_other: "Diversen"
+                cat_other: "Diversen",
+                //cat_Premium: "",
+                cat_Quack: "Quack",
             },
             Options: {
                 //bir: ["Biremen teller", "Telt de biremen van een stad en somt deze op"],
@@ -3497,7 +4185,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 rew: ["Beloning venster", 'Minimaliseert het dagelijkse belonings venster bij het opstarten'],
                 bbc: ["Verdedigingsformulier", "Verlengt de bbcode-balk met een automatisch verdedigingsformulier"],
                 com: ["Eenheidsvergelijking", "Voegt eenheid vergelijkingstabellen toe"],
-                tic: ["Stad pictogrammen", "Elke stad ontvangt een pictogram voor het stadstype (automatische detectie)"," Extra pictogrammen zijn beschikbaar voor handmatige selectie"],
+                tic: ["Stad pictogrammen", "Elke stad ontvangt een pictogram voor het stadstype (automatische detectie)", " Extra pictogrammen zijn beschikbaar voor handmatige selectie"],
                 til: ["Stedenlijst", "Voegt de stadspictogrammen toe aan de stedenlijst"],
                 tim: ["Kaart", "Stelt de stadspictogrammen in op de strategische kaart"],
                 tiw: ["Pictogram popup", ""],
@@ -3546,11 +4234,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Emp: "Leeg",
             },
             Color: {
-                Blue : 'Blauw',
-                Red : 'Rood',
-                Green : 'Groen',
-                Pink : 'Roze',
-                White : "Wit",
+                Blue: 'Blauw',
+                Red: 'Rood',
+                Green: 'Groen',
+                Pink: 'Roze',
+                White: "Wit",
             },
             labels: {
                 uni: "Eenheden overzicht",
@@ -3558,7 +4246,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 available: "Beschikbaar",
                 outer: "Buiten",
                 con: "Stad selecteren",
-                // Smileys
+                /// Smileys
                 std: "Standaard",
                 gre: "Grepolis",
                 nat: "Natuur",
@@ -3569,7 +4257,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 xma: "Kerstmis",
                 eas: "Pasen",
                 lov: "Liefde",
-                // Verdedigingsformulier
+                /// Defense form
                 ttl: "Overzicht: Stadsverdediging",
                 inf: "Stadsinformatie:",
                 dev: "Afwijking",
@@ -3577,15 +4265,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 prm: "Premium bonussen",
                 sil: "Zilver volume",
                 mov: "Troepenbewegingen:",
-                // WW
+                /// WW
                 leg: "WW Aandeel",
                 stg: "Stadium",
                 tot: "Totaal",
-                // Simulator
+                /// Simulator
                 str: "Eenheidssterkte",
                 los: "Verloren",
                 mod: "zonder invloed van modificator",
-                // vergelijkingstabel
+                /// Comparison box
                 dsc: "Eenheidsvergelijking",
                 hck: "Slag",
                 prc: "Steek",
@@ -3599,20 +4287,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 res: "Kosten (grondstoffen)",
                 fav: "Gunst",
                 tim: "Bouwtijd (s)",
-                // Handel
+                /// Trade
                 rat: "Grondstoffenverhouding van een eenheidstype",
                 shr: "Deel van de opslagcapaciteit van de doelstad",
                 per: "Procentuele handel",
-                // Verzonden eenhedentabel
+                /// Sent units box
                 lab: "Verzonden eenheden",
                 rec: "Middelen",
                 improved_movement: "Verbeterde troepbeweging",
-                donat: "Doneren",
                 Tran: "Vertalingen",
+                donat: "Doneren",
                 Happy: "Gelukkig nieuwjaar!",
                 Merry: "Ho Ho Ho, Merry Christmas!",
                 tow: "BBCode stad",
-                ingame_name : ["Aarzel niet om contact met me op te nemen als je liever gebeld wordt met je bijnaam "," Omdat het een grote hoeveelheid werk is die lang kan duren, ben ik altijd erg dankbaar voor elke vorm van ondersteuning. Daarom wil ik iedereen bedanken die ondersteuning heeft geboden voor dit project, hetzij door donaties, kennis, creativiteit, foutmeldingen of slechts enkele bemoedigende woorden."]
+                ingame_name: ["Aarzel niet om contact met me op te nemen als je liever gebeld wordt met je bijnaam ", " Omdat het een grote hoeveelheid werk is die lang kan duren, ben ik altijd erg dankbaar voor elke vorm van ondersteuning. Daarom wil ik iedereen bedanken die ondersteuning heeft geboden voor dit project, hetzij door donaties, kennis, creativiteit, foutmeldingen of slechts enkele bemoedigende woorden."]
             },
             tutoriel: {
                 tuto: "=Grepolis Gidsen=",
@@ -3623,77 +4311,80 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             },
             Quack: {
                 // delete multiple forum
-                delete_mul : "Verwijder meerdere berichten",
-                delete_sure : "Wil je deze berichten echt verwijderen?",
-                no_selection : "Geen berichten geselecteerd",
+                delete_mul: "Verwijder meerdere berichten",
+                delete_sure: "Wil je deze berichten echt verwijderen?",
+                no_selection: "Geen berichten geselecteerd",
                 mark_All: "Markeer alles",
                 //select unit shelper
-                no_overload : 'niet overbelasten',
-                delete : 'Verwijderen',
+                no_overload: 'niet overbelasten',
+                delete: 'Verwijderen',
                 //culture Overview
-                cityfestivals : 'Stadsfeest',
-                olympicgames : 'Olympische Spelen',
-                triumph : 'Zegetocht',
-                theater : 'Theatervoorstellingen'
+                cityfestivals: 'Stadsfeest',
+                olympicgames: 'Olympische Spelen',
+                triumph: 'Zegetocht',
+                theater: 'Theatervoorstellingen'
             },
-            hotkeys : {
-                hotkeys : 'Sneltoetsen',
-                Senate : 'Senaat',
-                city_select : 'Stedenkeuze',
-                last_city : 'Vorige stad',
-                next_city : 'Volgende stad',
-                jump_city : 'Spring naar de huidige stad',
-                administrator : 'Bestuurder',
-                captain : 'Kapitein',
-                trade_ov : 'Handel',
-                command_ov : 'Bevelen',
-                recruitment_ov : 'Rekrutering',
-                troop_ov : 'Troepenoverzicht',
-                troops_outside : 'Troepen buiten',
-                building_ov : 'Gebouwen',
-                culture_ov : 'Cultuur',
-                gods_ov : 'Goden',
-                cave_ov : 'Grotten',
-                city_groups_ov : 'Stadsgroepen',
-                city_list : 'Stedenlijst',
-                attack_planner : 'Aanvalsplanner',
-                farming_villages : 'Boerendorpen',
-                city_view : 'Stadsoverzicht',
-                messages : 'Berichten',
-                reports : 'Rapporten',
-                alliance : 'Alliantie',
-                alliance_forum : 'Alliantieforum',
-                settings : 'Instellingen',
-                profile : 'Profiel',
-                ranking : 'Ranglijst',
-                notes : 'Notities',
-                council : 'Raad van Helden'
+            hotkeys: {
+                hotkeys: 'Sneltoetsen',
+                Senate: 'Senaat',
+                city_select: 'Stedenkeuze',
+                last_city: 'Vorige stad',
+                next_city: 'Volgende stad',
+                jump_city: 'Spring naar de huidige stad',
+                administrator: 'Bestuurder',
+                captain: 'Kapitein',
+                trade_ov: 'Handel',
+                command_ov: 'Bevelen',
+                recruitment_ov: 'Rekrutering',
+                troop_ov: 'Troepenoverzicht',
+                troops_outside: 'Troepen buiten',
+                building_ov: 'Gebouwen',
+                culture_ov: 'Cultuur',
+                gods_ov: 'Goden',
+                cave_ov: 'Grotten',
+                city_groups_ov: 'Stadsgroepen',
+                city_list: 'Stedenlijst',
+                attack_planner: 'Aanvalsplanner',
+                farming_villages: 'Boerendorpen',
+                //menu: "",
+                city_view: 'Stadsoverzicht',
+                messages: 'Berichten',
+                reports: 'Rapporten',
+                alliance: 'Alliantie',
+                alliance_forum: 'Alliantieforum',
+                settings: 'Instellingen',
+                profile: 'Profiel',
+                ranking: 'Ranglijst',
+                notes: 'Notities',
+                //chat: "",
+                council: 'Raad van Helden'
             },
-            messages : {
-                ghosttown : 'Spookstad',
-                no_cities : 'Geen steden op dit eiland',
-                all : 'alle',
-                export : 'Converteer bericht in BB-code',
-                Tol : 'Kopiëren & plakken (Quack-functie)',
-                copy : 'kopiëren',
-                bbmessages : 'BB-Code-berichten',
-                copybb : 'BBCode is gekopieerd',
-                écrit : 'heeft het volgende geschreven:',
+            messages: {
+                ghosttown: 'Spookstad',
+                no_cities: 'Geen steden op dit eiland',
+                all: 'alle',
+                export: 'Converteer bericht in BB-code',
+                Tol: 'Kopiëren & plakken (Quack-functie)',
+                copy: 'kopiëren',
+                bbmessages: 'BB-Code-berichten',
+                copybb: 'BBCode is gekopieerd',
+                écrit: 'heeft het volgende geschreven:',
             },
-            caves : {
-                stored_silver : 'Opgeslagen zilverstukken',
-                silver_to_store : 'Maximaal op te slaan zilverstukken',
-                name : 'Naam',
-                wood : 'Hout',
-                stone : 'Steen',
-                silver : 'Zilverstukken'
+            caves: {
+                stored_silver: 'Opgeslagen zilverstukken',
+                silver_to_store: 'Maximaal op te slaan zilverstukken',
+                name: 'Naam',
+                wood: 'Hout',
+                stone: 'Steen',
+                silver: 'Zilverstukken',
+                //search_for: ""
             },
-            grepo_mainmenu : {
-                city_view : 'Stadsoverzicht',
-                island_view : 'Eilandoverzicht'
+            grepo_mainmenu: {
+                city_view: 'Stadsoverzicht',
+                island_view: 'Eilandoverzicht'
             },
-            transport_calc : {
-                recruits : 'Eenheden in de rekruteringsrij meetellen',
+            transport_calc: {
+                recruits: 'Eenheden in de rekruteringsrij meetellen',
                 //slowtrans : "",
                 //fasttrans : "",
                 //Lack: "",
@@ -3702,28 +4393,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Optipop : "",
                 //army : "",
             },
+            reports: {
+                choose_folder: "",
+                enacted: "",
+                conquered: "",
+                spying: "",
+                spy: "",
+                support: "",
+                support2: "",
+                supporting: "",
+                attacking: "",
+                farming_village: "",
+                gold: "",
+                Quests: "",
+                Reservations: "",
+            },
             translations: {
-                info : 'Info',
-                trans : 'Vertaling voor taal',
-                translations : 'Vertalingen',
-                trans_sure : 'Weet u zeker dat uw vertaling klaar is om gegenereerd te worden?',
-                trans_success : 'De vertaling is succesvol verzonden',
-                trans_fail : 'De vertaling kon niet verzonden worden',
-                trans_infotext1 : 'Vertaling beschikbaar',
-                trans_infotext2 : 'Om een nieuwe taal te wijzigen of aan te maken, kiest u de taal in het drop-down menu',
-                trans_infotext3 : 'Als een tekst HTML-tags bevat (dus alles wat tussen <> haakjes staat), vraag ik je om ze te bewaren waar je ze hebt gevonden',
-                trans_infotext4 : 'Als je klaar bent met vertalen, druk dan op',
-                trans_infotext5 : 'Om u aan de aftiteling te kunnen toevoegen, wordt uw nickname gegenereerd',
-                trans_infotext6 : 'Kopieer het gegenereerde bericht en plak het in een opmerking',
-                please_note : 'Let op',
-                credits : 'Credits',
-                no_translation : 'Geen vertaling gevonden',
-                choose_lang : 'Kies taal',
-                add_lang : 'Voeg een nieuwe taal toe',
-                language : 'Taal',
-                enter_lang_name : 'Voer een taalnaam in',
-                send : 'Genereer bericht',
-                name : 'naam',
+                info: 'Info',
+                trans: 'Vertaling voor taal',
+                translations: 'Vertalingen',
+                trans_sure: 'Weet u zeker dat uw vertaling klaar is om gegenereerd te worden?',
+                trans_success: 'De vertaling is succesvol verzonden',
+                trans_fail: 'De vertaling kon niet verzonden worden',
+                trans_infotext1: 'Vertaling beschikbaar',
+                trans_infotext2: 'Om een nieuwe taal te wijzigen of aan te maken, kiest u de taal in het drop-down menu',
+                trans_infotext3: 'Als een tekst HTML-tags bevat (dus alles wat tussen <> haakjes staat), vraag ik je om ze te bewaren waar je ze hebt gevonden',
+                trans_infotext4: 'Als je klaar bent met vertalen, druk dan op',
+                trans_infotext5: 'Om u aan de aftiteling te kunnen toevoegen, wordt uw nickname gegenereerd',
+                trans_infotext6: 'Kopieer het gegenereerde bericht en plak het in een opmerking',
+                please_note: 'Let op',
+                credits: 'Credits',
+                no_translation: 'Geen vertaling gevonden',
+                choose_lang: 'Kies taal',
+                add_lang: 'Voeg een nieuwe taal toe',
+                language: 'Taal',
+                enter_lang_name: 'Voer een taalnaam in',
+                send: 'Genereer bericht',
+                name: 'naam',
             },
             buttons: {
                 sav: "Opslaan", ins: "Invoegen", res: "Reset"
@@ -3733,298 +4439,324 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //      GREEK Translation by AbstractGR     //
         //////////////////////////////////////////////
         gr: {
-            Settings : {
-                dsc : 'Το DIO-Tools προσφέρει, ανάμεσα σε άλλα πράγματα, κάποιες νέες απεικονίσεις, μενού με smiley, επιλογές εμπορίου και κάποιες αλλαγές στο σχέδιο του παιχνιδιού.',
-                act : 'Ενεργοποίησε/απενεργοποίησε τα χαρακτηριστικά του συνόλου των εργαλείων:',
-                prv : 'Προεπισκόπηση μερικών χαρακτηριστικών:',
-                version_old : 'Η έκδοση δεν είναι ενημερωμένη',
-                version_new : 'Η έκδοση είναι ενημερωμένη',
-                version_dev : 'Έκδοση προγραμματιστή',
-                version_update : 'Αναβάθμιση',
-                Donate : 'Δωρεά',
-                forum : 'Tuto de david1327',
-                Update : 'Έκδοση' + dio_version,
-                Feature : 'Νέο χαρακτηριστικό',
-                Feature2 : 'Νέα έκδοση',
-                Learn_more : 'Μάθε περισσότερα',
-                cat_units : 'Μονάδες',
-                cat_icons : 'Εικονίδια πόλεων',
-                cat_forum : 'Φόρουμ',
-                cat_trade : 'Εμπόριο',
-                cat_wonders : 'Θαύμα του κόσμου',
-                cat_layout : 'Σχέδιο',
-                cat_other : 'Διάφορα',
+            Notification: {
+                //A: "",
+                //B: "",
+                //C: "",
             },
-
-            Options : {
-                ava : ['Επισκόπηση μονάδων', 'Μετράει όλες τις μονάδες από όλες τις πόλεις'],
-                ava2 : ['Αριθμός ωκεανού', 'Μονάδα επέκτασης'],
-                sml : ['Smilies', 'Επεκτείνει τη μπάρα bbcode ανά μενού με smilies'],
-                str : ['Δύναμη μονάδας', 'Προσθέτει τους πίνακες με τις δυνάμεις των μονάδων σε πολλά σημε'],
-                tra : ['Χωρητικότητα μεταφορικών', 'Δείχνει τα χρησιμοποιούμενη και διαθέσιμη χωρητικότητα των μεταφορικών στο μενού με τις μονάδες'],
-                per : ['Ποσοστιαίο εμπόριο', 'Επεκτείνει το παράθυρο του εμπορίου με μια επιλογή ποσοστιαίου εμπορίου'],
-                rec : ['Κόστος στρατολόγησης', 'Επεκτείνει το παράθυρο εμπορίου με μια επιλογή για το κόστος στρατολόγησης'],
-                cnt : ['Κατακτήσεις', 'Μετράει τις επιθέσεις/υποστηρίξεις στο παράθυρο κατάκτησης'],
-                way : ['Ταχύτητα μονάδας', 'Παρουσιάζει τη βελτιωμένη ταχύτητα μονάδας στο παράθυρο επίθεσης/υποστήριξης'],
-                sim : ['Προσομοιωτής', 'Προσαρμογή του προσομοιωτή & μόνιμη παρουσίαση του μενού τροποποίησης σαν επέκταση'],
-                act : ['Μενού δραστηριότητας', 'Βελτιωμένη παρουσίαση του εμπορίου και της στρατολόγησης(μνήμη θέσης)'],
-                pop : ['Αναδυόμενο μενού εύνοιας', 'Αλλάζει το αναδυόμενο μενού εύνοιας'],
-                tsk : ['Μπάρα έργων', 'Αυξάνει τη μπάρα έργων'],
-                rew : ['Καθημερινή ανταμοιβή', 'Ελαχιστοποιεί το παράθυρο καθημερινής ανταμοιβής κατά την εκκίνηση'],
-                bbc : ['Φόρμα άμυνας', 'Επεκτείνει τη μπάρα κωδικών bb με μια αυτοματοποιημένη φόρμα άμυνας'],
-                com : ['Σύγκριση μονάδων', 'Προσθέτει πίνακες με συγκρίσεις μονάδων'],
-                tic : ['Εικονίδια πόλεων', 'Κάθε πόλη αποκτά ένα εικονίδιο ανάλογα το τύπο πόλης (αυτόματη αναγνώριση),Επιπρόσθετα εικονίδια είναι διαθέσιμα για χειροκίνητη επιλογή'],
-                til : ['Λίστα πόλεων', 'Προσθέτει τα εικονίδια πόλεων στη λίστα πόλεων'],
-                tim : ['Χάρτης', 'Θέτει τα εικονίδια πόλεων στο στρατηγικό χάρτη'],
-                tiw : ['Αναδυόμενα παράθυρα εικονιδίων', ''],
-                wwc : ['Αριθμομηχανή', 'Κοινοποιεί τους υπολογισμούς & τους μετρητές πόρων + κουμπιά για προηγούμενο & επόμενο σε τελειωμένα θαύματα του κόσμου (προσωρινά δεν μπορεί να απενεργοποιηθεί!)'],
-                wwr : ['Κατάταξη', 'Εκ νέου σχεδιασμός για τις κατατάξεις των θαυμάτων του κόσμου'],
-                wwi : ['Εικονίδια', 'Προσθέτει εικονίδια για θαύμα του κόσμου στο στρατηγικό χάρτη'],
-                con : ['Μενού περιεχομένου', 'Ανταλλάσει την "Επιλογή πόλης" με την "Προεπισκόπηση πόλης" στο μενού περιεχομένου'],
-                sen : ['Σταλμένες μονάδες', 'Δείχνει τις μονάδες που έχουν αποσταλεί στο παράθυρο επίθεσης/υποστήριξης'],
-                tov : ['Επισκόπηση πόλης', 'Αντικαθιστά την νέα επισκόπηση πόλης με το παλιό στύλ παραθύρου'],
-                scr : ['Ροδέλα ποντικιού', 'Μπορείς να αλλάξεις τις όψεις της πόλης με τη ροδέλα του ποντικιού'],
-                Scr : ['Scrollbar', 'Άλλαξε το στυλ του scrollbar (Δεν είναι διαθέσιμο στο firefox)'],
-                tow : ['bbcode πόλης', 'Προσθέτει τον bbcode της πόλης στο παράθυρο επιλογής πόλης'],
-                Fdm : ['Διάλεξε και σβήσε πολλά μηνύματα', 'Μπορείς να σβήσεις περισσότερα από ένα μηνύματα. Λειτουργία Quack'],
-                Sel : ['Πρόσθεσε (Όχι υπερχείλιση/Σβήσιμο)', ' Βελτίωση των νέων εργαλείων στο παράθυρο επίθεσης και άμυνας. Λειτουργία Quack'],
-                Cul : ['Επισκόπηση πολιτιστικού επιπέδου (Διαχειριστής)', 'Προσθέτει μετρητή για την ομάδα στην επισκόπηση πολιτιστικού επιπέδου. Λειτουργία Quack'],
-                Hot : ['Κουμπιά για συντομία ενεργειών για τα Windows', 'Αλλάζει τη ζωή σου'],
-                Isl : ['Απεικόνιση του νησιού', 'Αυξάνει το ύψος της λίστας των πόλεων και των χωριών του νησιού'],
-                Ish : ['Επισκόπηση αγροτικών χωριών (Καπετάνιος)', 'Αυτόματα κρύβει τη πόλη. Λειτουργία Quack'],
-                Hio : ['Επισκόπηση σπηλιών (Διαχειριστής)', 'Επιτρέπει στην ταξινόμηση των πόλεων. Λειτουργία Quack'],
-                Hid : ['Σπηλιά', 'Εισάγει αυτόματα ασήμι στο πεδίο εισαγωγής της σπηλιάς αν είναι πάνω από 15000. Λειτουργία Quack'],
-                Tol : ['Λίστα από πόλεις σε κωδικούς BB', 'Αντιγραφή & επικόλληση. Λειτουργία Quack'],
-                Cib : ['Κουμπί επισκόπησης πόλης', 'Προσθέτει ένα κουμπί για το άνοιγμα της επισκόπησης της πόλης στο πλάγιο μενού του Grepolis. Λειτουργία Quack'],
-                Ciw : ['Επισκόπηση πόλης', 'Παρουσίαση της επισκόπησης της πόλης σε παράθυρο. Λειτουργία Quack'],
-                Tti : ['Εμπόριο πόρων για γιορτές', 'Κλίκαρε πάνω του και θα ανταλλάξει πόρους ώστε να φτάσουν για γιορτή πόλης. Λειτουργία Quack'],
-                Mse : ['Μηνύματα σε bbcode', 'Μετατροπή μηνυμάτων σε bbcode. Λειτουργία Quack'],
-                Rep : ['Αναφορές', 'Πρόσθεση φίλτρου χρώματος. Λειτουργία Quack'],
-                BBt : ['Κουμπί bbcode για πληροφορίες παίχτη', 'Προσθήκη κουμπιού με bbcode (παίχτη και συμμαχίας)'],
-                Rtt : ['Αφαίρεση του μηνύματος επεξήγησης των μονάδων', ''],
-                Cup : ['Προβιβασμός επιπέδου Πολιτισμού (Διαχειριστής)', 'Άλλαξε την παρουσίαση της μπάρας προόδου και πρόσθεσε μια μπάρα προόδου για τους πόρους. Λειτουργία του Akiway'],
-                Cuo : ["Σημεία Πολιτισμού (Διαχειριστής)", "Προσθέστε έναν μετρητή για τα Σημεία Πολιτισμού. Λειτουργία Quack"],
-                Rct : ['Εμπόριο -> Μετρητής πόρων (Διαχειριστής)', 'Μια μέτρηση όλων των πόρων στην πόλη σου'],
-                err : ['Στείλε αναφορές για bug αυτόματα', 'Αν ενεργοποιήσεις αυτή την επιλογή, μπορείς να βοηθήσεις στην εύρεση προβλημάτων του παιχνιδιού.'],
-                //FLASK : ["",""],
-                //Mole : ["",""],
+            link: {
+                ///update
+                //update: "",
+                //update_direct: "",
+                ///donate:
+                //Donate: "",
+                ///autre
+                //Update: "",
+                //contact: "",
+                //forum: "",
+                //link_troupes: "",
+                //link_utile: "",
+                ///help
+                //available_units: "",
+                //UnitComparison: "",
+                //MessageExport: "",
+                //Translations: "",
             },
+            Settings: {
+                dsc: 'Το DIO-Tools προσφέρει, ανάμεσα σε άλλα πράγματα, κάποιες νέες απεικονίσεις, μενού με smiley, επιλογές εμπορίου και κάποιες αλλαγές στο σχέδιο του παιχνιδιού.',
+                act: 'Ενεργοποίησε/απενεργοποίησε τα χαρακτηριστικά του συνόλου των εργαλείων:',
+                prv: 'Προεπισκόπηση μερικών χαρακτηριστικών:',
 
+                version_old: 'Η έκδοση δεν είναι ενημερωμένη',
+                version_new: 'Η έκδοση είναι ενημερωμένη',
+                version_dev: 'Έκδοση προγραμματιστή',
+
+                version_update: 'Αναβάθμιση',
+                Donate: 'Δωρεά',
+
+                //forum: "",
+                Update: 'Έκδοση' + dio_version,
+                Feature: 'Νέο χαρακτηριστικό',
+                Feature2: 'Νέα έκδοση',
+                Learn_more: 'Μάθε περισσότερα',
+
+                cat_units: 'Μονάδες',
+                cat_icons: 'Εικονίδια πόλεων',
+                cat_forum: 'Φόρουμ',
+                cat_trade: 'Εμπόριο',
+                cat_wonders: 'Θαύμα του κόσμου',
+                cat_layout: 'Σχέδιο',
+                cat_other: 'Διάφορα',
+                //cat_Premium: "",
+                cat_Quack: "Quack",
+            },
+            Options: {
+                //bir: ["", ""],
+                ava: ['Επισκόπηση μονάδων', 'Μετράει όλες τις μονάδες από όλες τις πόλεις'],
+                ava2: ['Αριθμός ωκεανού', 'Μονάδα επέκτασης'],
+                sml: ['Smilies', 'Επεκτείνει τη μπάρα bbcode ανά μενού με smilies'],
+                str: ['Δύναμη μονάδας', 'Προσθέτει τους πίνακες με τις δυνάμεις των μονάδων σε πολλά σημε'],
+                tra: ['Χωρητικότητα μεταφορικών', 'Δείχνει τα χρησιμοποιούμενη και διαθέσιμη χωρητικότητα των μεταφορικών στο μενού με τις μονάδες'],
+                per: ['Ποσοστιαίο εμπόριο', 'Επεκτείνει το παράθυρο του εμπορίου με μια επιλογή ποσοστιαίου εμπορίου'],
+                rec: ['Κόστος στρατολόγησης', 'Επεκτείνει το παράθυρο εμπορίου με μια επιλογή για το κόστος στρατολόγησης'],
+                cnt: ['Κατακτήσεις', 'Μετράει τις επιθέσεις/υποστηρίξεις στο παράθυρο κατάκτησης'],
+                way: ['Ταχύτητα μονάδας', 'Παρουσιάζει τη βελτιωμένη ταχύτητα μονάδας στο παράθυρο επίθεσης/υποστήριξης'],
+                sim: ['Προσομοιωτής', 'Προσαρμογή του προσομοιωτή & μόνιμη παρουσίαση του μενού τροποποίησης σαν επέκταση'],
+                act: ['Μενού δραστηριότητας', 'Βελτιωμένη παρουσίαση του εμπορίου και της στρατολόγησης(μνήμη θέσης)'],
+                pop: ['Αναδυόμενο μενού εύνοιας', 'Αλλάζει το αναδυόμενο μενού εύνοιας'],
+                tsk: ['Μπάρα έργων', 'Αυξάνει τη μπάρα έργων'],
+                rew: ['Καθημερινή ανταμοιβή', 'Ελαχιστοποιεί το παράθυρο καθημερινής ανταμοιβής κατά την εκκίνηση'],
+                bbc: ['Φόρμα άμυνας', 'Επεκτείνει τη μπάρα κωδικών bb με μια αυτοματοποιημένη φόρμα άμυνας'],
+                com: ['Σύγκριση μονάδων', 'Προσθέτει πίνακες με συγκρίσεις μονάδων'],
+                tic: ['Εικονίδια πόλεων', 'Κάθε πόλη αποκτά ένα εικονίδιο ανάλογα το τύπο πόλης (αυτόματη αναγνώριση),Επιπρόσθετα εικονίδια είναι διαθέσιμα για χειροκίνητη επιλογή'],
+                til: ['Λίστα πόλεων', 'Προσθέτει τα εικονίδια πόλεων στη λίστα πόλεων'],
+                tim: ['Χάρτης', 'Θέτει τα εικονίδια πόλεων στο στρατηγικό χάρτη'],
+                tiw: ['Αναδυόμενα παράθυρα εικονιδίων', ''],
+                wwc: ['Αριθμομηχανή', 'Κοινοποιεί τους υπολογισμούς & τους μετρητές πόρων + κουμπιά για προηγούμενο & επόμενο σε τελειωμένα θαύματα του κόσμου (προσωρινά δεν μπορεί να απενεργοποιηθεί!)'],
+                wwr: ['Κατάταξη', 'Εκ νέου σχεδιασμός για τις κατατάξεις των θαυμάτων του κόσμου'],
+                wwi: ['Εικονίδια', 'Προσθέτει εικονίδια για θαύμα του κόσμου στο στρατηγικό χάρτη'],
+                con: ['Μενού περιεχομένου', 'Ανταλλάσει την "Επιλογή πόλης" με την "Προεπισκόπηση πόλης" στο μενού περιεχομένου'],
+                sen: ['Σταλμένες μονάδες', 'Δείχνει τις μονάδες που έχουν αποσταλεί στο παράθυρο επίθεσης/υποστήριξης'],
+                tov: ['Επισκόπηση πόλης', 'Αντικαθιστά την νέα επισκόπηση πόλης με το παλιό στύλ παραθύρου'],
+                scr: ['Ροδέλα ποντικιού', 'Μπορείς να αλλάξεις τις όψεις της πόλης με τη ροδέλα του ποντικιού'],
+                Scr: ['Scrollbar', 'Άλλαξε το στυλ του scrollbar (Δεν είναι διαθέσιμο στο firefox)'],
+                tow: ['bbcode πόλης', 'Προσθέτει τον bbcode της πόλης στο παράθυρο επιλογής πόλης'],
+                Fdm: ['Διάλεξε και σβήσε πολλά μηνύματα', 'Μπορείς να σβήσεις περισσότερα από ένα μηνύματα. Λειτουργία Quack'],
+                Sel: ['Πρόσθεσε (Όχι υπερχείλιση/Σβήσιμο)', ' Βελτίωση των νέων εργαλείων στο παράθυρο επίθεσης και άμυνας. Λειτουργία Quack'],
+                Cul: ['Επισκόπηση πολιτιστικού επιπέδου (Διαχειριστής)', 'Προσθέτει μετρητή για την ομάδα στην επισκόπηση πολιτιστικού επιπέδου. Λειτουργία Quack'],
+                Hot: ['Κουμπιά για συντομία ενεργειών για τα Windows', 'Αλλάζει τη ζωή σου'],
+                Isl: ['Απεικόνιση του νησιού', 'Αυξάνει το ύψος της λίστας των πόλεων και των χωριών του νησιού'],
+                Ish: ['Επισκόπηση αγροτικών χωριών (Καπετάνιος)', 'Αυτόματα κρύβει τη πόλη. Λειτουργία Quack'],
+                Hio: ['Επισκόπηση σπηλιών (Διαχειριστής)', 'Επιτρέπει στην ταξινόμηση των πόλεων. Λειτουργία Quack'],
+                Hid: ['Σπηλιά', 'Εισάγει αυτόματα ασήμι στο πεδίο εισαγωγής της σπηλιάς αν είναι πάνω από 15000. Λειτουργία Quack'],
+                Tol: ['Λίστα από πόλεις σε κωδικούς BB', 'Αντιγραφή & επικόλληση. Λειτουργία Quack'],
+                Cib: ['Κουμπί επισκόπησης πόλης', 'Προσθέτει ένα κουμπί για το άνοιγμα της επισκόπησης της πόλης στο πλάγιο μενού του Grepolis. Λειτουργία Quack'],
+                Ciw: ['Επισκόπηση πόλης', 'Παρουσίαση της επισκόπησης της πόλης σε παράθυρο. Λειτουργία Quack'],
+                Tti: ['Εμπόριο πόρων για γιορτές', 'Κλίκαρε πάνω του και θα ανταλλάξει πόρους ώστε να φτάσουν για γιορτή πόλης. Λειτουργία Quack'],
+                Mse: ['Μηνύματα σε bbcode', 'Μετατροπή μηνυμάτων σε bbcode. Λειτουργία Quack'],
+                Rep: ['Αναφορές', 'Πρόσθεση φίλτρου χρώματος. Λειτουργία Quack'],
+                BBt: ['Κουμπί bbcode για πληροφορίες παίχτη', 'Προσθήκη κουμπιού με bbcode (παίχτη και συμμαχίας)'],
+                Rtt: ['Αφαίρεση του μηνύματος επεξήγησης των μονάδων', ''],
+                Cup: ['Προβιβασμός επιπέδου Πολιτισμού (Διαχειριστής)', 'Άλλαξε την παρουσίαση της μπάρας προόδου και πρόσθεσε μια μπάρα προόδου για τους πόρους. Λειτουργία του Akiway'],
+                Cuo: ["Σημεία Πολιτισμού (Διαχειριστής)", "Προσθέστε έναν μετρητή για τα Σημεία Πολιτισμού. Λειτουργία Quack"],
+                Rct: ['Εμπόριο -> Μετρητής πόρων (Διαχειριστής)', 'Μια μέτρηση όλων των πόρων στην πόλη σου'],
+                FLASK: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του FLASK-TOOLS',
+                Mole: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του Mole Hole',
+
+                err: ['Στείλε αναφορές για bug αυτόματα', 'Αν ενεργοποιήσεις αυτή την επιλογή, μπορείς να βοηθήσεις στην εύρεση προβλημάτων του παιχνιδιού.'],
+                //her: ["", ""],
+            },
             Town_icons: {
-                LandOff : 'Επιθετικά ξηράς',
-                LandDef : 'Αμυντικά ξηράς',
-                NavyOff : 'Επιθετικός στόλος',
-                NavyDef : 'Αμυντικός στόλος',
-                FlyOff : 'Ιπτάμενα επιθετικά',
-                FlyDef : 'Ιπτάμενα αμυντικά',
-                Out : 'Εξωτερικά',
-                Emp : 'Άδειο',
+                LandOff: 'Επιθετικά ξηράς',
+                LandDef: 'Αμυντικά ξηράς',
+                NavyOff: 'Επιθετικός στόλος',
+                NavyDef: 'Αμυντικός στόλος',
+                FlyOff: 'Ιπτάμενα επιθετικά',
+                FlyDef: 'Ιπτάμενα αμυντικά',
+                Out: 'Εξωτερικά',
+                Emp: 'Άδειο',
             },
-
             Color: {
-                Blue : 'Μπλε',
-                Red : 'Κόκκινο',
-                Green : 'Πράσινο',
-                Pink : 'Ροζ',
-                White : 'Άσπρο',
-                FLASK : 'Μη συμβατή η ενεργοποίηση των παραμέτρων του FLASK-TOOLS',
-                Mole : 'Μη συμβατή η ενεργοποίηση των παραμέτρων του Mole Hole',
+                Blue: 'Μπλε',
+                Red: 'Κόκκινο',
+                Green: 'Πράσινο',
+                Pink: 'Ροζ',
+                White: 'Άσπρο',
             },
-
-            labels : {
-                uni : 'Προεπισκόπηση μονάδων',
-                total : 'Σύνολο',
-                available : 'Διαθέσιμα',
-                outer : 'Έξω',
-                con : 'Διάλεξε πόλη',
-                std : 'Πρότυπο',
-                nat : 'Φύση',
-                ppl : 'Άνθρωποι',
-                Par : 'Party',
-                oth : 'Άλλα',
-                hal : 'Απόκριες',
-                xma : 'Χριστούγεννα',
-                eas : 'Πάσχα',
-                lov : 'Αγάπη',
-                ttl : 'Προεπισκόπηση: Άμυνα πόλης',
-                inf : 'Πληροφορίες πόλης:',
-                dev : 'Απόκλιση',
-                det : 'Λεπτομερής μονάδες ξηράς',
-                prm : 'Δώρα premium',
-                sil : 'Όγκος ασημιού',
-                mov : 'Κινήσεις στρατευμάτων:',
-                leg : 'Μερίδιο θαύματος του κόσμου',
-                stg : 'Στάδιο',
-                tot : 'Σύνολο',
-                str : 'Δύναμη μονάδας',
-                los : 'Ήττα',
-                mod : 'χωρίς επιρροή τροποποίησης',
-                dsc : 'Σύγκριση μονάδων',
-                hck : 'Κρουστικό',
-                prc : 'Διατρητικό',
-                dst : 'Εκήβολο',
-                sea : 'Θάλασσα',
-                att : 'Επιθετικά',
-                def : 'Αμυντικά',
-                spd : 'Ταχύτητα',
-                bty : 'Λεία (πόροι)',
-                cap : 'Χωρητικότητα μεταφορικών',
-                res : 'Κόστη (πόροι)',
-                fav : 'Εύνοια',
-                tim : 'Χρόνος στρατολόγησης (δ)',
-                rat : 'Αναλογία πόρων ενός τύπου μονάδων',
-                shr : 'Μερίδιο της χωρητικότητας της αποθήκης του στοχευμένης πόλης',
-                per : 'Ποσοστιαίο εμπόριο',
-                lab : 'Σταλμένες μονάδες',
-                rec : 'Πόροι',
-                improved_movement : 'Βελτιωμένη κίνηση στρατευμάτων',
-                Tran : 'Μεταφράσεις',
-                donat : 'Δωρεές',
-                Happy : 'Χαρούμενο το νέο έτος!',
-                Merry : 'Χο χο χο, Καλά Χριστούγεννα!',
-                tow : 'Κωδικός BB πόλης',
-                ingame_name : ['Μη διστάσετε να επικοινωνήσετε μαζί μου αν προτιμάτε να καλείστε με το όνομα του παιχνιδιού που έχετε', 'Καθώς είναι μεγάλο το έργο και μπορεί να είναι αρκετά χρονοβόρο προσπαθώ πάντα να είμαι ευγνώμων με κάθε είδους υποστήριξη. Για αυτό θα ήθελα να ευχαριστήσω όλους που με έχουν υποστηρίξει σε αυτό το έργο- είτε από δωρεές, γνώση, δημιουργηκότητα, αναφορές προβλημάτων ή με λίγα ενθαρρυντικά λόγια.'],
+            labels: {
+                uni: 'Προεπισκόπηση μονάδων',
+                total: 'Σύνολο',
+                available: 'Διαθέσιμα',
+                outer: 'Έξω',
+                con: 'Διάλεξε πόλη',
+                /// Smileys
+                std: 'Πρότυπο',
+                //gre: "",
+                nat: 'Φύση',
+                ppl: 'Άνθρωποι',
+                Par: 'Party',
+                oth: 'Άλλα',
+                hal: 'Απόκριες',
+                xma: 'Χριστούγεννα',
+                eas: 'Πάσχα',
+                lov: 'Αγάπη',
+                /// Defense form
+                ttl: 'Προεπισκόπηση: Άμυνα πόλης',
+                inf: 'Πληροφορίες πόλης:',
+                dev: 'Απόκλιση',
+                det: 'Λεπτομερής μονάδες ξηράς',
+                prm: 'Δώρα premium',
+                sil: 'Όγκος ασημιού',
+                mov: 'Κινήσεις στρατευμάτων:',
+                /// WW
+                leg: 'Μερίδιο θαύματος του κόσμου',
+                stg: 'Στάδιο',
+                tot: 'Σύνολο',
+                /// Simulator
+                str: 'Δύναμη μονάδας',
+                los: 'Ήττα',
+                mod: 'χωρίς επιρροή τροποποίησης',
+                /// Comparison box
+                dsc: 'Σύγκριση μονάδων',
+                hck: 'Κρουστικό',
+                prc: 'Διατρητικό',
+                dst: 'Εκήβολο',
+                sea: 'Θάλασσα',
+                att: 'Επιθετικά',
+                def: 'Αμυντικά',
+                spd: 'Ταχύτητα',
+                bty: 'Λεία (πόροι)',
+                cap: 'Χωρητικότητα μεταφορικών',
+                res: 'Κόστη (πόροι)',
+                fav: 'Εύνοια',
+                tim: 'Χρόνος στρατολόγησης (δ)',
+                /// Trade
+                rat: 'Αναλογία πόρων ενός τύπου μονάδων',
+                shr: 'Μερίδιο της χωρητικότητας της αποθήκης του στοχευμένης πόλης',
+                per: 'Ποσοστιαίο εμπόριο',
+                /// Sent units box
+                lab: 'Σταλμένες μονάδες',
+                rec: 'Πόροι',
+                improved_movement: 'Βελτιωμένη κίνηση στρατευμάτων',
+                Tran: 'Μεταφράσεις',
+                donat: 'Δωρεές',
+                Happy: 'Χαρούμενο το νέο έτος!',
+                Merry: 'Χο χο χο, Καλά Χριστούγεννα!',
+                tow: 'Κωδικός BB πόλης',
+                ingame_name: ['Μη διστάσετε να επικοινωνήσετε μαζί μου αν προτιμάτε να καλείστε με το όνομα του παιχνιδιού που έχετε', 'Καθώς είναι μεγάλο το έργο και μπορεί να είναι αρκετά χρονοβόρο προσπαθώ πάντα να είμαι ευγνώμων με κάθε είδους υποστήριξη. Για αυτό θα ήθελα να ευχαριστήσω όλους που με έχουν υποστηρίξει σε αυτό το έργο- είτε από δωρεές, γνώση, δημιουργηκότητα, αναφορές προβλημάτων ή με λίγα ενθαρρυντικά λόγια.'],
             },
+            tutoriel: {
+                tuto: 'Χρήσιμες πληροφορίες',
+                reme: 'Ευχαριστώ όλους εκείνους που συνείσφεραν στην ανάπτυξη του DIO tools,',
 
-            tutoriel : {
-                tuto : 'Χρήσιμες πληροφορίες',
-                reme : 'Ευχαριστώ όλους εκείνους που συνείσφεραν στην ανάπτυξη του DIO tools,',
-                Trou : ['Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - tuto de david1327', 'Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων'],
-                util : ['Χρήσιμες ιστοσελίδες για το grepolis - tuto de david1327', 'Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.'],
+                Trou: ['Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - tuto de david1327', 'Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων'],
+                util: ['Χρήσιμες ιστοσελίδες για το grepolis - tuto de david1327', 'Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.'],
             },
-
-            Quack : {
-                delete_mul : 'Διαγραφή πολλαπλών μηνυμάτων',
-                delete_sure : 'Θες να διαγράψεις αυτά τα μηνύματα;',
-                no_selection : 'Δεν έχουν επιλεγεί μηνύματα',
-                mark_All : 'Σημείωσε τα όλα',
-                no_overload : 'Χωρίς υπερφόρτωση',
-                delete : 'Διέγραψε',
-                cityfestivals : 'Γιορτές πόλης',
-                olympicgames : 'Ολυμπιακοί αγώνες',
-                triumph : 'Παρελάσεις θριάμβου',
-                theater : 'Θεατρικές παραστάσεις',
+            Quack: {
+                // delete multiple forum
+                delete_mul: 'Διαγραφή πολλαπλών μηνυμάτων',
+                delete_sure: 'Θες να διαγράψεις αυτά τα μηνύματα;',
+                no_selection: 'Δεν έχουν επιλεγεί μηνύματα',
+                mark_All: 'Σημείωσε τα όλα',
+                //select unit shelper
+                no_overload: 'Χωρίς υπερφόρτωση',
+                delete: 'Διέγραψε',
+                //culture Overview
+                cityfestivals: 'Γιορτές πόλης',
+                olympicgames: 'Ολυμπιακοί αγώνες',
+                triumph: 'Παρελάσεις θριάμβου',
+                theater: 'Θεατρικές παραστάσεις',
             },
-
-            hotkeys : {
-                hotkeys : 'Πλήκτρα γρήγορης πρόσβασης',
-                Senate : 'Σύγκλητος',
-                city_select : 'Επιλογή πόλης',
-                last_city : 'Τελευταία πόλη',
-                next_city : 'Επόμενη πόλη',
-                jump_city : 'Πήγαινε στη τρέχουσα πόλη',
-                administrator : 'Διαχειριστής',
-                captain : 'Καπετάνιος',
-                trade_ov : 'Εμπόριο',
-                command_ov : 'Εντολές',
-                recruitment_ov : 'Στρατολόγηση',
-                troop_ov : 'Επισκόπηση στρατευμάτων',
-                troops_outside : 'Εξωτερικά στρατεύματα',
-                building_ov : 'Κτήρια',
-                culture_ov : 'Πολιτισμός',
-                gods_ov : 'Θεοί',
-                cave_ov : 'Κρύψιμο προεπισκόπησης',
-                city_groups_ov : 'Ομάδες πόλεων',
-                city_list : 'Λίστα πόλεων',
-                attack_planner : 'Συντονιστής επίθεσης',
-                farming_villages : 'Αγροτικά χωριά',
-                menu : 'Μενού',
-                city_view : 'Επισκόπηση πόλης',
-                messages : 'Μηνύματα',
-                reports : 'Αναφορές',
-                alliance : 'Συμμαχία',
-                alliance_forum : 'Φόρουμ συμμαχίας',
-                settings : 'Ρυθμίσεις',
-                profile : 'Προφίλ',
-                ranking : 'Κατάταξη',
-                notes : 'Σημειώσεις',
-                chat : 'Συνομιλία',
-                council : 'Συμβούλιο των Ηρώων',
+            hotkeys: {
+                hotkeys: 'Πλήκτρα γρήγορης πρόσβασης',
+                Senate: 'Σύγκλητος',
+                city_select: 'Επιλογή πόλης',
+                last_city: 'Τελευταία πόλη',
+                next_city: 'Επόμενη πόλη',
+                jump_city: 'Πήγαινε στη τρέχουσα πόλη',
+                administrator: 'Διαχειριστής',
+                captain: 'Καπετάνιος',
+                trade_ov: 'Εμπόριο',
+                command_ov: 'Εντολές',
+                recruitment_ov: 'Στρατολόγηση',
+                troop_ov: 'Επισκόπηση στρατευμάτων',
+                troops_outside: 'Εξωτερικά στρατεύματα',
+                building_ov: 'Κτήρια',
+                culture_ov: 'Πολιτισμός',
+                gods_ov: 'Θεοί',
+                cave_ov: 'Κρύψιμο προεπισκόπησης',
+                city_groups_ov: 'Ομάδες πόλεων',
+                city_list: 'Λίστα πόλεων',
+                attack_planner: 'Συντονιστής επίθεσης',
+                farming_villages: 'Αγροτικά χωριά',
+                menu: 'Μενού',
+                city_view: 'Επισκόπηση πόλης',
+                messages: 'Μηνύματα',
+                reports: 'Αναφορές',
+                alliance: 'Συμμαχία',
+                alliance_forum: 'Φόρουμ συμμαχίας',
+                settings: 'Ρυθμίσεις',
+                profile: 'Προφίλ',
+                ranking: 'Κατάταξη',
+                notes: 'Σημειώσεις',
+                chat: 'Συνομιλία',
+                council: 'Συμβούλιο των Ηρώων',
             },
-
-            messages : {
-                ghosttown : 'Πόλη φάντασμα',
-                no_cities : 'Δεν υπάρχουν πόλεις σε αυτό το νησί',
-                all : 'όλα',
-                export : 'Μετατροπή μηνύματα σε κωδικούς BB',
-                Tol : 'Αντιγραφή & Επικόλληση (Λειτουργία Quack)',
-                copy : 'Αντιγραφή',
-                bbmessages : 'Μηνύματα κωδικών BB ',
-                copybb : 'Ο κωδικός BB έχει αντιγραφεί',
-                écrit : 'έχει γράψει τα παρακάτω:',
+            messages: {
+                ghosttown: 'Πόλη φάντασμα',
+                no_cities: 'Δεν υπάρχουν πόλεις σε αυτό το νησί',
+                all: 'όλα',
+                export: 'Μετατροπή μηνύματα σε κωδικούς BB',
+                Tol: 'Αντιγραφή & Επικόλληση (Λειτουργία Quack)',
+                copy: 'Αντιγραφή',
+                bbmessages: 'Μηνύματα κωδικών BB ',
+                copybb: 'Ο κωδικός BB έχει αντιγραφεί',
+                écrit: 'έχει γράψει τα παρακάτω:',
             },
-
-            caves : {
-                stored_silver : 'Αποθηκευμένα ασημένα νομίσματα',
-                silver_to_store : 'Ασημένια νομίσματα που μπορούν να αποθηκευτούν',
-                name : 'Όνομα',
-                wood : 'Ξύλο',
-                stone : 'Πέτρα',
-                silver : 'Ασημένια νομίσματα',
-                search_for : 'Ψάξε για',
+            caves: {
+                stored_silver: 'Αποθηκευμένα ασημένα νομίσματα',
+                silver_to_store: 'Ασημένια νομίσματα που μπορούν να αποθηκευτούν',
+                name: 'Όνομα',
+                wood: 'Ξύλο',
+                stone: 'Πέτρα',
+                silver: 'Ασημένια νομίσματα',
+                search_for: 'Ψάξε για',
             },
-
-            grepo_mainmenu : {
-                city_view : 'Επισκόπηση πόλης',
-                island_view : 'Επισκόπηση νησιού',
+            grepo_mainmenu: {
+                city_view: 'Επισκόπηση πόλης',
+                island_view: 'Επισκόπηση νησιού',
             },
-
-            transport_calc : {
-                recruits : 'Μέτρημα μονάδες στην ουρά στρατολόγησης',
-                slowtrans : 'Μέτρημα αργών μεταφορικών πλοίων',
-                fasttrans : 'Μέτρημα γρήγορων μεταφορικών πλοίων',
-                Lack : 'Έλλειψη',
-                Still : 'Ακίνητος',
-                pop : 'διαθέσιμος πληθυσμός. Για την',
-                Optipop : 'Βέλτιστος πληθυσμός για',
-                army : 'Δεν έχεις στρατό.',
+            transport_calc: {
+                recruits: 'Μέτρημα μονάδες στην ουρά στρατολόγησης',
+                slowtrans: 'Μέτρημα αργών μεταφορικών πλοίων',
+                fasttrans: 'Μέτρημα γρήγορων μεταφορικών πλοίων',
+                Lack: 'Έλλειψη',
+                Still: 'Ακίνητος',
+                pop: 'διαθέσιμος πληθυσμός. Για την',
+                Optipop: 'Βέλτιστος πληθυσμός για',
+                army: 'Δεν έχεις στρατό.',
             },
-
-            reports : {
-                choose_folder : 'Διάλεξε φάκελο',
-                enacted : 'εκτέλεσε',
-                conquered : 'κατάκτησε',
-                spying : 'κατασκοπεύει',
-                spy : 'Κατάσκοπος',
-                support : 'υποστήριξη',
-                supporting : 'υποστηρίζει',
-                attacking : 'επιτίθεται',
-                farming_village : 'αγροτικό χωριό',
-                gold : 'Έχεις λάβει',
-                Quests : 'Αποστολές',
-                Reservations : 'Κρατήσεις',
+            reports: {
+                choose_folder: 'Διάλεξε φάκελο',
+                enacted: 'εκτέλεσε',
+                conquered: 'κατάκτησε',
+                spying: 'κατασκοπεύει',
+                spy: 'Κατάσκοπος',
+                support: 'υποστήριξη',
+                support2: "", //???
+                supporting: 'υποστηρίζει',
+                attacking: 'επιτίθεται',
+                farming_village: 'αγροτικό χωριό',
+                gold: 'Έχεις λάβει',
+                Quests: 'Αποστολές',
+                Reservations: 'Κρατήσεις',
             },
-
-            translations : {
-                info : 'Πληροφορίες',
-                trans : 'Μετάφραση για γλώσσα',
-                translations : 'Μεταφράσεις',
-                trans_sure : 'Είσαι σίγουρος ότι η μετάφραση σου είναι έτοιμη να δημιουργηθεί;',
-                trans_success : 'Η μετάφραση έχει σταλεί επιτυχώς',
-                trans_fail : 'Η μετάφραση δεν μπορούσε να σταλεί',
-                trans_infotext1 : 'Διαθέσιμη μετάφραση',
-                trans_infotext2 : 'Για να τροποποιήσεις ή δημιουργήσεις μια νέα γλώσσα,διάλεξε τη γλώσσα στο αναπτυσσόμενο μενού',
-                trans_infotext3 : 'Όταν ένα κείμενο περιέχει ετικέτες HTML (δηλαδή όλα τα κείμενα που περιέχουν πριν και μετά <> αγκύλες) σου ζητώ να τις αφήσεις όπως τις βρήκες ',
-                trans_infotext4 : 'Όταν έχεις τελειώσει με τη μετάφραση πάτα',
-                trans_infotext5 : 'Για να είναι δυνατόν να προστεθείς στη λίστα συντελεστών,το ψευδώνυμο σου θα παραχθεί',
-                trans_infotext6 : 'Αντέγραψε το παραγμένο μήνυμα, και επικόλλησε το σε ένα σχόλιο',
-                please_note : 'Παρακαλώ λάβε υπόψιν',
-                credits : 'Λίστα συντελεστών',
-                no_translation : 'Δεν βρέθηκε μετάφραση',
-                choose_lang : 'Διάλεξε γλώσσα',
-                add_lang : 'Πρόσθεσε νέα γλώσσα',
-                language : 'Γλώσσα',
-                enter_lang_name : 'Παρακαλώ εισήγαγε το νέο όνομα γλώσσας',
-                send : 'Πάραγε μήνυμα',
-                name : 'Όνομα',
+            translations: {
+                info: 'Πληροφορίες',
+                trans: 'Μετάφραση για γλώσσα',
+                translations: 'Μεταφράσεις',
+                trans_sure: 'Είσαι σίγουρος ότι η μετάφραση σου είναι έτοιμη να δημιουργηθεί;',
+                trans_success: 'Η μετάφραση έχει σταλεί επιτυχώς',
+                trans_fail: 'Η μετάφραση δεν μπορούσε να σταλεί',
+                trans_infotext1: 'Διαθέσιμη μετάφραση',
+                trans_infotext2: 'Για να τροποποιήσεις ή δημιουργήσεις μια νέα γλώσσα,διάλεξε τη γλώσσα στο αναπτυσσόμενο μενού',
+                trans_infotext3: 'Όταν ένα κείμενο περιέχει ετικέτες HTML (δηλαδή όλα τα κείμενα που περιέχουν πριν και μετά <> αγκύλες) σου ζητώ να τις αφήσεις όπως τις βρήκες ',
+                trans_infotext4: 'Όταν έχεις τελειώσει με τη μετάφραση πάτα',
+                trans_infotext5: 'Για να είναι δυνατόν να προστεθείς στη λίστα συντελεστών,το ψευδώνυμο σου θα παραχθεί',
+                trans_infotext6: 'Αντέγραψε το παραγμένο μήνυμα, και επικόλλησε το σε ένα σχόλιο',
+                please_note: 'Παρακαλώ λάβε υπόψιν',
+                credits: 'Λίστα συντελεστών',
+                no_translation: 'Δεν βρέθηκε μετάφραση',
+                choose_lang: 'Διάλεξε γλώσσα',
+                add_lang: 'Πρόσθεσε νέα γλώσσα',
+                language: 'Γλώσσα',
+                enter_lang_name: 'Παρακαλώ εισήγαγε το νέο όνομα γλώσσας',
+                send: 'Πάραγε μήνυμα',
+                name: 'Όνομα',
             },
-
-            buttons : {
-                sav : 'Αποθήκευση',
-                ins : 'Εισαγωγή',
-                res : 'Επαναφορά',
+            buttons: {
+                sav: 'Αποθήκευση', ins: 'Εισαγωγή', res: 'Επαναφορά',
             },
-
         },
     };
 
@@ -4033,29 +4765,40 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     console.debug("SPRACHE", MID);
     // Translation GET
+
     function getTexts(category, name) {
-        var txt = "???";
-        if (LANG[MID]) {
-            if (LANG[MID][category]) {
-                if (LANG[MID][category][name]) {
-                    txt = LANG[MID][category][name];
+        var txt = "???", lang = MID;
+        if (DATA.test.lang) { lang = DATA.test.lang }
+        if (LANG[lang]) {
+            if (LANG[lang][category]) {
+                if (LANG[lang][category][name]) {
+                    txt = LANG[lang][category][name];
                 } else {
                     if (LANG.en[category]) {
-                        if (LANG.en[category][name]) {
+                        if (LANG.AUTO[category][name]) {
+                            txt = LANG.AUTO[category][name];
+                        }
+                        else if (LANG.en[category][name]) {
                             txt = LANG.en[category][name];
                         }
                     }
                 }
             } else {
                 if (LANG.en[category]) {
-                    if (LANG.en[category][name]) {
+                    if (LANG.AUTO[category][name]) {
+                        txt = LANG.AUTO[category][name];
+                    }
+                    else if (LANG.en[category][name]) {
                         txt = LANG.en[category][name];
                     }
                 }
             }
         } else {
             if (LANG.en[category]) {
-                if (LANG.en[category][name]) {
+                if (LANG.AUTO[category][name]) {
+                    txt = LANG.AUTO[category][name];
+                }
+                else if (LANG.en[category][name]) {
                     txt = LANG.en[category][name];
                 }
             }
@@ -4141,11 +4884,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         delete Options_def.dio_wwi;
     }
 
-    if (!typeof(uw.MoleHoleOnBoard) == "undefined") {
+    if (!typeof (uw.MoleHoleOnBoard) == "undefined") {
         delete Options_def.dio_Ciw;
     }
 
-    if (!typeof(uw.FLASK_GAME) == "undefined") {
+    if (!typeof (uw.FLASK_GAME) == "undefined") {
         delete Options_def.dio_til;
         delete Options_def.dio_Sel;
     }
@@ -4159,9 +4902,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
         }
     }
-    var Messageversion = '';
     var version_text = '', version_color = 'black';
-
+    $('<style id="dio_version">' +
+        '#dio_version_info .version_icon { background: url(' + dio_sprite + ') -50px -50px no-repeat; width:25px; height:25px; float:left; z-index: 5; } ' +
+        '#dio_version_info .version_icon.red { filter:hue-rotate(-100deg); -webkit-filter: hue-rotate(-100deg); } ' +
+        '#dio_version_info .version_icon.green { filter:hue-rotate(0deg); -webkit-filter: hue-rotate(0deg); } ' +
+        '#dio_version_info .version_icon.blue { filter:hue-rotate(120deg); -webkit-filter: hue-rotate(120deg); } ' +
+        '#dio_version_info .version_text { line-height: 2; margin: 0px 6px 0px 6px; float: left;} ' +
+        '</style>').appendTo("head");
     function getLatestVersion() {
         var version_latest = "??";
         try {
@@ -4169,44 +4917,42 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         } catch (error) {
             errorHandling(error, "dio_latest_version");
         }
-        $('<style id="dio_version">' +
-          '#dio_version_info .version_icon { background: url(' + dio_sprite + ') -50px -50px no-repeat; width:25px; height:25px; float:left; z-index: 5; } ' +
-          '#dio_version_info .version_icon.red { filter:hue-rotate(-100deg); -webkit-filter: hue-rotate(-100deg); } ' +
-          '#dio_version_info .version_icon.green { filter:hue-rotate(0deg); -webkit-filter: hue-rotate(0deg); } ' +
-          '#dio_version_info .version_icon.blue { filter:hue-rotate(120deg); -webkit-filter: hue-rotate(120deg); } ' +
-          '#dio_version_info .version_text { line-height: 2; margin: 0px 6px 0px 6px; float: left;} ' +
-          '</style>').appendTo("head");
         var v_info = $('#dio_version_info');
         try {
             if (version_text === '') {
                 if (dio_version > version_latest) {
-                    version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts("Settings", 'version_dev') + "</div><div class='version_icon blue'></div></a>";
+                    version_text = "<a href='" + getTexts('link', 'update') + "' target='_blank' style='color:darkblue'><div class='version_icon blue'></div><div class='version_text'>" + getTexts("Settings", 'version_dev') + "</div><div class='version_icon blue'></div></a>";
                     version_color = 'darkblue';
-                    Messageversion = uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_dev'));
+                    uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_dev'));
+                    $('.dio_settings .dio_icon').css({ filter: "hue-rotate(100deg)" });
+                    tooltip_settings();
                 } else if (dio_version == version_latest) {
-                    version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts("Settings", 'version_new') + "</div><div class='version_icon green'></div></a>";
+                    version_text = "<a href='" + getTexts('link', 'update') + "' target='_blank' style='color:darkgreen'><div class='version_icon green'></div><div class='version_text'>" + getTexts("Settings", 'version_new') + "</div><div class='version_icon green'></div></a>";
                 } else {
-                    version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts("Settings", 'version_old') + "</div><div class='version_icon red'></div></a>" +
-                        "<a class='version_text' href='"+ getTexts('link', 'update_direct') +"' target='_blank'>--> " + getTexts("Settings", 'version_update') + "</a>";
+                    version_text = "<a href='" + getTexts('link', 'update') + "' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts("Settings", 'version_old') + "</div><div class='version_icon red'></div></a>" +
+                        "<a class='version_text' href='" + getTexts('link', 'update_direct') + "' target='_blank'>--> " + getTexts("Settings", 'version_update') + "</a>";
                     version_color = 'crimson';
-                    Messageversion = uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_old'));
+                    uw.HumanMessage.error(dio_icon + "DIO-TOOLS " + getTexts("Settings", 'version_old'));
+                    $('.dio_settings .dio_icon').css({ filter: "hue-rotate(260deg)" });
+                    tooltip_settings();
                 }
-                v_info.html(version_text).css({color: version_color});
+                v_info.html(version_text).css({ color: version_color });
             }
             else {
-                v_info.html(version_text).css({color: version_color});
+                v_info.html(version_text).css({ color: version_color });
             }
 
         } catch (error) {
             errorHandling(error, "getLatestVersion");
             if (version_text === '') {
-                version_text = "<a href='"+ getTexts('link', 'update') +"' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts("Settings", 'version_old') + "</div><div class='version_icon red'></div></a>" +
-                    "<a class='version_text' href='"+ getTexts('link', 'update_direct') +"' target='_blank'>--> " + getTexts("Settings", 'version_update') + "</a>";
+                version_text = "<a href='" + getTexts('link', 'update') + "' target='_blank' style='color:crimson'><div class='version_icon red'></div><div class='version_text'>" + getTexts("Settings", 'version_old') + "</div><div class='version_icon red'></div></a>" +
+                    "<a class='version_text' href='" + getTexts('link', 'update_direct') + "' target='_blank'>--> " + getTexts("Settings", 'version_update') + "</a>";
                 version_color = 'crimson';
-                v_info.html(version_text).css({color: version_color});
+                $('.dio_settings .dio_icon').css({ filter: "hue-rotate(260deg)" });
+                v_info.html(version_text).css({ color: version_color });
             }
             else {
-                v_info.html(version_text).css({color: version_color});
+                v_info.html(version_text).css({ color: version_color });
             }
         }
     }
@@ -4217,74 +4963,75 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     // Styles
     $('<style id="dio_settings_style">' +
-      // Chrome Scroollbar Style
-      '#dio_settings ::-webkit-scrollbar { width: 13px; } ' +
-      '#dio_settings ::-webkit-scrollbar-track { background-color: rgba(130, 186, 135, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-      '#dio_settings ::-webkit-scrollbar-thumb { background-color: rgba(87, 121, 45, 0.5); border-radius: 3px; } ' +
-      '#dio_settings ::-webkit-scrollbar-thumb:hover { background-color: rgba(87, 121, 45, 0.8); } ' +
-      /* Button Up */
-      '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-up-green.png);} ' +
-      '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-up-green-hover.png);} ' +
-      /* Button Down */
-      '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-down-green.png);} ' +
-      '#dio_settings ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-down-green-hover.png);} ' +
+        // Chrome Scroollbar Style
+        '#dio_settings ::-webkit-scrollbar { width: 13px; } ' +
+        '#dio_settings ::-webkit-scrollbar-track { background-color: rgba(130, 186, 135, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+        '#dio_settings ::-webkit-scrollbar-thumb { background-color: rgba(87, 121, 45, 0.5); border-radius: 3px; } ' +
+        '#dio_settings ::-webkit-scrollbar-thumb:hover { background-color: rgba(87, 121, 45, 0.8); } ' +
+        /* Button Up */
+        '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url(' + Home_img + 'scroll-up-green.png);} ' +
+        '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url(' + Home_img + 'scroll-up-green-hover.png);} ' +
+        /* Button Down */
+        '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url(' + Home_img + 'scroll-down-green.png);} ' +
+        '#dio_settings ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url(' + Home_img + 'scroll-down-green-hover.png);} ' +
 
-      '#dio_settings table tr :first-child { text-align:center; vertical-align:top; } ' +
+        '#dio_settings table tr :first-child { text-align:center; vertical-align:top; } ' +
 
-      '#dio_settings #dio_version_info { font-weight:bold;height: 35px;margin-top:-5px; } ' +
-      '#dio_settings #dio_version_info img { margin:-1px 2px -8px 0px; } ' +
-
-      '#dio_settings .icon_types_table { font-size:0.7em; line-height:2.5; border:1px solid green; border-spacing:10px 2px; border-radius:5px; } ' +
-      '#dio_settings .icon_types_table td { text-align:left; } ' +
-
-      '#dio_settings table p { margin:0.1em 0em; } ' +
-
-      '#dio_settings .checkbox_new .cbx_caption { white-space:nowrap; margin-right:10px; font-weight:bold; } ' +
-
-      '#dio_settings .dio_settings_tabs {width:auto; border:2px solid darkgreen; background:#2B241A; padding:1px 1px 0px 1px; right:auto; border-top-left-radius:5px; border-top-right-radius:5px; border-bottom:0px;} ' +
-
-      '#dio_settings .submenu_link {color: #000;} ' +
+        '#dio_settings #dio_version_info { font-weight:bold; height: 35px; margin: -10px 0px -6px 10px; } ' +
+        '#dio_settings #dio_version_info img { margin:-1px 2px -8px 0px; } ' +
 
 
-      '#dio_settings .dio_settings_tabs li { float:left; } ' +
+        '#dio_settings .icon_types_table { font-size:0.7em; line-height:2.5; border:1px solid green; border-spacing:10px 2px; border-radius:5px; } ' +
+        '#dio_settings .icon_types_table td { text-align:left; } ' +
 
-      '#dio_settings .dio_icon_small { margin:0px; } ' +
+        '#dio_settings table p { margin:0.1em 0em; } ' +
 
-      '#dio_settings img { max-width:90px; max-height:90px; margin-right:10px; } ' +
+        '#dio_settings .checkbox_new .cbx_caption { white-space:nowrap; margin-right:10px; font-weight:bold; } ' +
 
-      '#dio_settings .content { border:2px solid darkgreen; border-radius:5px; border-top-left-radius:0px; background:rgba(31, 25, 12, 0.1); top:23px; position:relative; padding:10px; height:350px; overflow-y:auto; } ' +
-      '#dio_settings .content .content_category { display:none; } ' +
+        '#dio_settings .dio_settings_tabs {width:auto; border:2px solid darkgreen; background:#2B241A; padding:1px 1px 0px 1px; right:auto; border-top-left-radius:5px; border-top-right-radius:5px; border-bottom:0px; margin-right:12px;} ' +
 
-      '#dio_settings .dio_options_table legend { font-weight:bold; } ' +
-      '#dio_settings .dio_options_table p { margin:0px; } ' +
-      '#dio_settings #dio_donate_btn { filter: hue-rotate(45deg); -webkit-filter: hue-rotate(45deg); } ' +
-      /*'#dio_settings #dio_donate_btn:hover { filter: hue-rotate(70deg); -webkit-filter: hue-rotate(70deg); } ' +
+        '#dio_settings .submenu_link {color: #000;} ' +
 
-                  '#dio_donate_btn { background: url(' + dio_sprite + '); width:92px; height:26px; background-position: 0px -228px; } ' +
-                  '#dio_donate_btn.de { background-position: 0px -264px; width:98px; } ' +
-                  '#dio_donate_btn.fr { background-position: 0px -300px; width:124px; } ' +
-                  '#dio_donate_btn.it { background-position: -96px -228px; width:109px; } ' +
-                  '#dio_donate_btn.pt { background-position: -128px -300px; width:71px; } ' +
-                  '#dio_donate_btn.es { background-position: -102px -264px; width:79px; } ' +*/
 
-      '#dio_hall table { border-spacing: 9px 3px; } ' +
-      '#dio_hall table th { text-align:left !important;color:green;text-decoration:underline;padding-bottom:10px; } ' +
-      '#dio_hall table td.value { text-align: right; } ' +
+        '#dio_settings .dio_settings_tabs li { float:left; } ' +
 
-      '#dio_hall table td.laurel.green { background: url("/images/game/ally/founder.png") no-repeat; height:18px; width:18px; background-size:100%; } ' +
-      '#dio_hall table td.laurel.green2 { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 0%; height:18px; width:18px; } ' +
-      '#dio_hall table td.laurel.bronze { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 25%; height:18px; width:18px; } ' +
-      '#dio_hall table td.laurel.silver { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 50%; height:18px; width:18px; } ' +
-      '#dio_hall table td.laurel.gold { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 75%; height:18px; width:18px; } ' +
-      '#dio_hall table td.laurel.blue { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 100%; height:18px; width:18px; } ' +
-      '#dio_settings .radiobutton .disabled { color: #000000; } ' +
-      '</style>').appendTo('head');
+        '#dio_settings .dio_icon_small { margin:0px; } ' +
+
+        '#dio_settings img { max-width:90px; max-height:90px; margin-right:10px; } ' +
+
+        '#dio_settings .content { border:2px solid darkgreen; border-radius:5px; border-top-left-radius:0px; background:rgba(31, 25, 12, 0.1); top:23px; position:relative; padding:10px 5px 10px 10px; height:330px; overflow-y:auto; margin-right:12px;} ' +
+        '#dio_settings .content .content_category { display:none; } ' +
+
+        '#dio_settings .dio_options_table legend { font-weight:bold; } ' +
+        '#dio_settings .dio_options_table p { margin:0px; } ' +
+        '#dio_settings #dio_donate_btn { filter: hue-rotate(45deg); -webkit-filter: hue-rotate(45deg); } ' +
+        /*'#dio_settings #dio_donate_btn:hover { filter: hue-rotate(70deg); -webkit-filter: hue-rotate(70deg); } ' +
+
+                    '#dio_donate_btn { background: url(' + dio_sprite + '); width:92px; height:26px; background-position: 0px -228px; } ' +
+                    '#dio_donate_btn.de { background-position: 0px -264px; width:98px; } ' +
+                    '#dio_donate_btn.fr { background-position: 0px -300px; width:124px; } ' +
+                    '#dio_donate_btn.it { background-position: -96px -228px; width:109px; } ' +
+                    '#dio_donate_btn.pt { background-position: -128px -300px; width:71px; } ' +
+                    '#dio_donate_btn.es { background-position: -102px -264px; width:79px; } ' +*/
+
+        '#dio_hall table { border-spacing: 9px 3px; } ' +
+        '#dio_hall table th { text-align:left !important;color:green;text-decoration:underline;padding-bottom:10px; } ' +
+        '#dio_hall table td.value { text-align: right; } ' +
+
+        '#dio_hall table td.laurel.green { background: url("/images/game/ally/founder.png") no-repeat; height:18px; width:18px; background-size:100%; } ' +
+        '#dio_hall table td.laurel.green2 { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 0%; height:18px; width:18px; } ' +
+        '#dio_hall table td.laurel.bronze { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 25%; height:18px; width:18px; } ' +
+        '#dio_hall table td.laurel.silver { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 50%; height:18px; width:18px; } ' +
+        '#dio_hall table td.laurel.gold { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 75%; height:18px; width:18px; } ' +
+        '#dio_hall table td.laurel.blue { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 100%; height:18px; width:18px; } ' +
+        '#dio_settings .radiobutton .disabled { color: #000000; } ' +
+        '</style>').appendTo('head');
 
     function settings() {
         var wid = $(".settings-menu").get(0).parentNode.id;
 
         if (!$("#dio_tools").get(0)) {
-            $(".settings-menu ul:last").append('<li id="dio_li"><img id="dio_icon" src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif"></div> <a id="dio_tools"> DIO-Tools-David1327</a></li>');
+            $(".settings-menu ul:last").append('<li id="dio_li"><img id="dio_icon" src="' + Home_img + 'smiley-emoticons-smile.gif"></div> <a id="dio_tools"> DIO-Tools-David1327</a></li>');
         }
 
         $(".settings-link").click(function () {
@@ -4293,7 +5040,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
             $('.settings-container').removeClass("dio_overflow");
 
-            $('#dio_bg_medusa').css({display: "none"});
+            $('#dio_bg_medusa').css({ display: "none" });
 
             if ($('#dio_settings').get(0)) {
                 $('#dio_settings').get(0).style.display = "none";
@@ -4307,37 +5054,50 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             $('.settings-container').addClass("dio_overflow");
 
-            $('#dio_bg_medusa').css({display: "block"});
+            $('#dio_bg_medusa').css({ display: "block" });
 
             if (!$('#dio_settings').get(0)) {
 
                 var Browser = getBrowser().replace(/(1|2|3|4|5|6|7|8|9|\ )/gm, "");
+                var Navigator = navigator.language[0] + navigator.language[1];
+                var trans = [(DATA.test.lang ? "Actuel " + (DATA.test.lang).toUpperCase() : getTexts("translations", "translations")), getTexts("buttons", "res") + " (" + (MID).toUpperCase() + ")"];
+                (typeof (navigator) ? (LANG[Navigator] ? trans.push(getTexts("labels", "loc") + " " + Navigator.toUpperCase()) : "") : "");
+                var dio_supported_lang = [getTexts("translations", "add_lang")];
+                $.each(LANG, function (a, b) {
+                    if (a != "AUTO") {
+                        dio_supported_lang.push(a);
+                    }
+                });
+
                 $('.settings-container').append(
                     '<div id="dio_settings" class="player_settings section"><div id="dio_bg_medusa"></div><div id="dio_bg_david1327"></div>' +
-                    '<div class="game_header bold"><a href="'+ getTexts("link", "update") +'" target="_blank" style="color:white">DIO-TOOLS-David1327 (v' + dio_version + ')</a>' +
-                    '<div style="float: right; margin-right: 90px;" id="tuto2"><a target="_blank" style="color:white">BUG</a></div>' +
-                    '<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com/TutoDeDavid1327/;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21" scrolling="no" frameborder="0" style="border:none; height:21px; position: absolute; right:-216px;" allowTransparency="true"></iframe></div>' +
+                    '<div class="game_header bold"><a href="' + getTexts("link", "update") + '" target="_blank" style="color:white">DIO-TOOLS-David1327 (v' + dio_version + ')</a>' +
+
+                    '<div style="float: right; margin-top: -2px; margin-right: -5px">' + dio.grepo_dropdown_flag("dio_langdiv", dio_supported_lang, trans, null, getTexts("translations", "language"))[0].outerHTML + '</div>' +
+                    '<div style="float: right; margin-right: 90px;" id="tuto2"><a target="_blank" style="color:white">BUG</a></div></div>' +
+
+                    //'<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com/TutoDeDavid1327/;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21" scrolling="no" frameborder="0" style="border:none; height:21px; position: absolute; right:-216px;" allowTransparency="true"></iframe></div>' +
 
                     // Check latest version
-                    '<div id="dio_version_info"><img src="https://www.tuto-de-david1327.com/medias/images/restricted.gif" /></div>' +
+                    '<div id="dio_version_info"><img src="' + Home_img + 'restricted.gif" /></div>' +
 
                     // Donate button
-                    '<div id="dio_donate_btn" style="position:absolute; right: 0;top: 32px;">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
+                    '<div id="dio_donate_btn" style="position:absolute; right: 50px;top: 25px;">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     /*<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url" target="_blank">' +
                     '<div id="dio_donate_btn" class="' + LID + '" alt="Donate"></div></a></div>' +*/
 
                     // Settings navigation
                     '<ul class="menu_inner dio_settings_tabs">' +
-                    '<li><a class="submenu_link active" id="dio_units"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("context_menu").titles.units_info + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link active" id="dio_units"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_units") + '</span></span></span></a></li>' +
                     '<li><a class="submenu_link" id="dio_icons"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_icons") + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_forum"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("layout").main_menu.items.forum + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_trade"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("layout").premium_button.premium_menu.trade_overview + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_forum"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_forum") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_trade"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_trade") + '</span></span></span></a></li>' +
                     //((!$('.temple_commands').is(':visible')) ? (
                     //    '<li><a class="submenu_link" id="dio_wonder"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_wonders") + '</span></span></span></a></li>' ) : "") +
                     '<li><a class="submenu_link" id="dio_layout"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_layout") + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_reports"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("context_menu").titles.attack + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_other"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("report").inbox.filter_types.misc + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_Premium"><span class="left"><span class="right"><span class="middle">' + uw.DM.getl10n("premium").common.window_title + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_reports"><span class="left"><span class="right"><span class="middle">' + getTexts("labels", "att") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_other"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_other") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_Premium"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_Premium") + '</span></span></span></a></li>' +
                     '<li><a class="submenu_link" id="dio_Quack"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_Quack") + '</span></span></span></a></li>' +
                     '</ul>' +
 
@@ -4345,24 +5105,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<DIV class="content">' +
                     // Units tab
                     '<table id="dio_units_table" class="content_category visible"><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/available-units.png" alt="available_units" /></td>' +
+                    '<td><img src="' + Home_img + 'available-units.png" alt="available_units" /></td>' +
                     '<td><div id="dio_ava" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "ava")[0] + '</div></div><br>' +
-                    '<div id="dio_ava2" style="display:none; margin-top: 5px;" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + uw.DM.getl10n("COMMON").ocean_number_tooltip + '</div></div>' +
+                    '<div id="dio_ava2" style="display:none; margin-top: 5px;" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "ava2")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "ava")[1] + '</p>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/unites-envoyees.png" alt="sent_units" /></td>' +
+                    '<td><img src="' + Home_img + 'unites-envoyees.png" alt="sent_units" /></td>' +
                     '<td><div id="dio_sen" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sen")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "sen")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/force-unitaire.png" alt="unit_strength" /></td>' +
+                    '<td><img src="' + Home_img + 'force-unitaire.png" alt="unit_strength" /></td>' +
                     '<td><div id="dio_str" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "str")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "str")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/transport-capacity.png" alt="transport_capacity" /></td>' +
-                    '<td><div id="dio_tra" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + uw.DM.getl10n("barracks").tooltips.ship_transport.title + '</div></div>' +
+                    '<td><img src="' + Home_img + 'transport-capacity.png" alt="transport_capacity" /></td>' +
+                    '<td><div id="dio_tra" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tra")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tra")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/comparaison-des-unites.png" alt="unit_comparison" /></td>' +
+                    '<td><img src="' + Home_img + 'comparaison-des-unites.png" alt="unit_comparison" /></td>' +
                     '<td><div id="dio_com" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "com")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "com")[1] + '  ' +
                     '<a href=' + getTexts("link", "UnitComparison") + ' target="_blank">' + getTexts("Settings", "Learn_more") + '</a></p></td>' +
@@ -4370,11 +5130,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<td><img src="" alt="" /></td>' +
                     '<td><div id="dio_Rtt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Rtt")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Rtt")[1] + '</p></td>' +
-                    '</tr></table>'+
+                    '</tr></table>' +
 
                     // Icons tab
                     '<table id="dio_icons_table" class="content_category"><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/icones-des-villes.gif" alt="townicons" style="transform: scale(1.25); margin-top: 10px;" /></td>' +
+                    '<td><img src="' + Home_img + 'icones-des-villes.gif" alt="townicons" style="transform: scale(1.25); margin-top: 10px;" /></td>' +
                     '<td><div id="dio_tic" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tic")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tic")[1] + '</p>' +
                     '<table class="icon_types_table">' +
@@ -4395,183 +5155,181 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="dio_icon_small townicon_wo"></div>' +
                     '</td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/liste-de-ville-1.png" alt="townlist" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
-                    '<td>'+(typeof(uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "til")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "FLASK")[0] + '</p>' ) : (
+                    '<td><img src="' + Home_img + 'liste-de-ville-1.png" alt="townlist" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
+                    '<td>' + (typeof (uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "til")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "FLASK")[0] + '</p>') : (
                         '<div id="dio_til" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "til")[0] + '</div></div>')) +
                     '<p>' + getTexts("Options", "til")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/map-1.png" alt="map" /></td>' +
+                    '<td><img src="' + Home_img + 'map-1.png" alt="map" /></td>' +
                     '<td><div id="dio_tim" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tim")[0] + '</div></div><div id="dio_tiw" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tiw")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tim")[1] + '</p>' +
-                    '<table id="Town_Popup" width="60%" style="display:none;"><tr>'+
-                    '<td width="20%"><div id="dio_tpt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">'+ uw.DM.getl10n("context_menu").titles.units_info +'</div></div></td>'+
-                    '<td width="20%"><div id="dio_tis" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">'+ uw.DM.getl10n("context_menu").titles.support +'</div></div></td>'+
-                    '<td width="20%"><div id="dio_tih" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">'+ uw.DM.getl10n("heroes").collection.heroes +'</div></div></td>'+
-                    '<td width="20%"><div id="dio_tir" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">'+ getTexts("labels", "rec") +'</div></div></td>'+
-                    //'<td width="20%"><div id="tiz" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Pink") + '</div></div></td>'+
-                    //'<td width="20%"><div id="tiz" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "White") + '</div></div></td>'+
-                    '</tr></table></td>'+
+                    '<table id="Town_Popup" width="60%" style="display:none;"><tr>' +
+                    '<td width="20%"><div id="dio_tpt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Settings", "cat_units") + '</div></div></td>' +
+                    '<td width="20%"><div id="dio_tis" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "sup") + '</div></div></td>' +
+                    '<td width="20%"><div id="dio_tih" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "her") + '</div></div></td>' +
+                    '<td width="20%"><div id="dio_tir" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "rec") + '</div></div></td>' +
+                    '</tr></table></td>' +
                     '</td></tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/bbcode-ville.jpg" alt="map" style="transform: scale(1.25); margin: 10px 12px 16px 2px;" /></td>' +
+                    '<td><img src="' + Home_img + 'bbcode-ville.jpg" alt="map" style="transform: scale(1.25); margin: 10px 12px 16px 2px;" /></td>' +
                     '<td><div id="dio_Tow" class="checkbox_new"><div class="cbx_icon" style="top: -1px;"></div><div class="cbx_caption">' + getTexts("Options", "tow")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tow")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
                     '<td><div id="dio_Tol" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Tol")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "Tol")[1] + '</p><br></br></td>' +
+                    '<p>' + getTexts("Options", "Tol")[1] + '</p></td>' +
                     '</tr></table>' +
 
                     // Forum tab
                     '<table id="dio_forum_table" class="content_category"><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/smiley-box.1.png" alt="dio_smiley_box" style="max-width:120px !important;"/></td>' +
+                    '<td><img src="' + Home_img + 'smiley-box.1.png" alt="dio_smiley_box" style="max-width:120px !important;"/></td>' +
                     '<td><div id="dio_sml" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sml")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "sml")[1] + '</p>' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-mttao-wassermann.gif" /> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigrqlp2odi2kqo24.gif" /> ' +
-                    '<div class="dio_icon"></div> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigmv8wnffb3v0ifg.gif" /> ' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj2byjendffymp88t.gif" alt="" /> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj1l9gndtu3nduyvi.gif" /> ' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigrmpfofys5xtiks.gif" alt="" />' + //'<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-i-lovo-grepolis.gif" />'+
+                    '<img src="' + Home_img + 'smiley-emoticons-mttao-wassermann.gif" /> <img src="' + Home_img + 'smiley-emoticons-cigrqlp2odi2kqo24.gif" /> ' +
+                    '<img src="' + Home_img + 'smiley-emoticons-cigmv8wnffb3v0ifg.gif" /> ' +
+                    '<img src="' + Home_img + 'smiley-emoticons-cj2byjendffymp88t.gif" alt="" /> <img src="' + Home_img + 'smiley-emoticons-cj1l9gndtu3nduyvi.gif" /> ' +
+                    '<img src="' + Home_img + 'smiley-emoticons-cigrmpfofys5xtiks.gif" alt="" />' + //'<img src="' + Home_img + 'smiley-emoticons-i-lovo-grepolis.gif" />'+
                     '<br><br><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/formulaire-de-defense.png" alt="def_formular" style="max-height:none; max-width:120px !important; "/></td>' +
+                    '<td><img src="' + Home_img + 'formulaire-de-defense.png" alt="def_formular" style="max-height:none; max-width:120px !important; "/></td>' +
                     '<td><div id="dio_bbc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "bbc")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "bbc")[1] + '</p><br><img src="https://www.tuto-de-david1327.com/medias/images/formulaire-de-defense-1.png" alt="" style="max-width:none !important;" /></td>' +
+                    '<p>' + getTexts("Options", "bbc")[1] + '</p><br><img src="' + Home_img + 'formulaire-de-defense-1.png" alt="" style="max-width:none !important;" /></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/deletemultiple.png" alt="def_formular" style="max-height:none; max-width:120px !important; "/></td>' +
+                    '<td><img src="' + Home_img + 'deletemultiple.png" alt="def_formular" style="max-height:none; max-width:120px !important; "/></td>' +
                     '<td><div id="dio_Fdm" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Fdm")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Fdm")[1] + '</p><br></td>' +
                     '</tr></table>' +
 
                     // Trade tab
                     '<table id="dio_trade_table" class="content_category"><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/recruiting-trade.png" alt="recruiting_trade" /></td>' +
+                    '<td><img src="' + Home_img + 'recruiting-trade.png" alt="recruiting_trade" /></td>' +
                     '<td><div id="dio_rec" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "rec")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "rec")[1] + '</p><br><img src="https://www.tuto-de-david1327.com/medias/images/commerce-de-pourcentage.png" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:250px !important;" /></td>' +
+                    '<p>' + getTexts("Options", "rec")[1] + '</p><br><img src="' + Home_img + 'commerce-de-pourcentage.png" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:250px !important;" /></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/percentage-trade.png" alt="percentage_trade" /></td>' +
+                    '<td><img src="' + Home_img + 'percentage-trade.png" alt="percentage_trade" /></td>' +
                     '<td><div id="dio_per" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "per")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "per")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/towntradeimprovement.jpg" alt="" style="border: 2px solid rgb(158, 133, 78);"/></td>' +
+                    '<td><img src="' + Home_img + 'towntradeimprovement.jpg" alt="" style="border: 2px solid rgb(158, 133, 78);"/></td>' +
                     '<td><div id="dio_Tti" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Tti")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "Tti")[1] + '</p><br></br></td>' +
+                    '<p>' + getTexts("Options", "Tti")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '</tr></table>' +
 
                     // Layout tab
                     '<table id="dio_layout_table" class="content_category"><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/simulateur.png" alt="simulator" style="max-width:100px !important;"/></td>' +
+                    '<td><img src="' + Home_img + 'simulateur.png" alt="simulator" style="max-width:100px !important;"/></td>' +
                     '<td><div id="dio_sim" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sim")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "sim")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/barre-de-taches.png" alt="taskbar" style="max-width:100px !important;"/></td>' +
+                    '<td><img src="' + Home_img + 'barre-de-taches.png" alt="taskbar" style="max-width:100px !important;"/></td>' +
                     '<td><div id="dio_tsk" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tsk")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tsk")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/popup-de-faveur-1.png" alt="favor_popup" style="max-width:100px !important;"/></td>' +
+                    '<td><img src="' + Home_img + 'popup-de-faveur-1.png" alt="favor_popup" style="max-width:100px !important;"/></td>' +
                     '<td><div id="dio_pop" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "pop")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "pop")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/contextmenu.png" alt="contextmenu" /></td>' +
+                    '<td><img src="' + Home_img + 'contextmenu.png" alt="contextmenu" /></td>' +
                     '<td><div id="dio_con" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "con")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "con")[1] + '</p></td>' +
                     '</tr>' +
                     ((Browser !== 'Firefox') ? ('<tr>' +
-                                                '<td><img src="https://www.tuto-de-david1327.com/medias/images/scrollbar-2.png" alt="scrollbar" style="border: 1px solid rgb(158, 133, 78);"/></td>' +
-                                                '<td><div id="dio_Scr" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Scr")[0] + '</div></div>' +
-                                                '<p>' + getTexts("Options", "Scr")[1] + '</p>' +
-                                                '<table id="scrollbar" width="90%" class="radiobutton horizontal rbtn_visibility" style="display:none;"><tr>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_aaa"><div class="pointer"></div>'+ getTexts("Color", "Blue") +'</div></td>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_bbb"><div class="pointer"></div>'+ getTexts("Color", "Red") +'</div></td>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_ccc"><div class="pointer"></div>'+ getTexts("Color", "Green") +'</div></td>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_ddd"><div class="pointer"></div>' + getTexts("Color", "Pink") + '</div></td>'+
-                                                '<td width="20%"><div class="option js-option" id="dio_eee"><div class="pointer"></div>' + getTexts("Color", "White") + '</div></td>'+
-                                                '</tr></table></td>'+
-                                                '</tr>' ) : "") +
+                        '<td><img src="' + Home_img + 'scrollbar-2.png" alt="scrollbar" style="border: 1px solid rgb(158, 133, 78);"/></td>' +
+                        '<td><div id="dio_Scr" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Scr")[0] + '</div></div>' +
+                        '<p>' + getTexts("Options", "Scr")[1] + '</p>' +
+                        '<table id="scrollbar" width="90%" class="radiobutton horizontal rbtn_visibility" style="display:none;"><tr>' +
+                        '<td width="20%"><div class="option js-option" id="dio_aaa"><div class="pointer"></div>' + getTexts("Color", "Blue") + '</div></td>' +
+                        '<td width="20%"><div class="option js-option" id="dio_bbb"><div class="pointer"></div>' + getTexts("Color", "Red") + '</div></td>' +
+                        '<td width="20%"><div class="option js-option" id="dio_ccc"><div class="pointer"></div>' + getTexts("Color", "Green") + '</div></td>' +
+                        '<td width="20%"><div class="option js-option" id="dio_ddd"><div class="pointer"></div>' + getTexts("Color", "Pink") + '</div></td>' +
+                        '<td width="20%"><div class="option js-option" id="dio_eee"><div class="pointer"></div>' + getTexts("Color", "White") + '</div></td>' +
+                        '</tr></table></td>' +
+                        '</tr>') : "") +
                     '<tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/boites-d-activites.png" alt="activity_boxes" style="max-width:100px !important;"/></td>' +
+                    '<td><img src="' + Home_img + 'boites-d-activites.png" alt="activity_boxes" style="max-width:100px !important;"/></td>' +
                     '<td><div id="dio_act" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "act")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "act")[1] + '</p></td>' +
                     '</tr></table>' +
 
                     //reports
                     '<table id="dio_reports_table" class="content_category"><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/troop-speed.png" style="border: 1px solid rgb(158, 133, 78);" alt="troop_speed" /></td>' +
+                    '<td><img src="' + Home_img + 'troop-speed.png" style="border: 1px solid rgb(158, 133, 78);" alt="troop_speed" /></td>' +
                     '<td><div id="dio_way" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "way")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "way")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/conquered-counter.png" style="border: 1px solid rgb(158, 133, 78);" alt="conquer_counter" /></td>' +
+                    '<td><img src="' + Home_img + 'conquered-counter.png" style="border: 1px solid rgb(158, 133, 78);" alt="conquer_counter" /></td>' +
                     '<td><div id="dio_cnt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "cnt")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "cnt")[1] + '</p>' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/images/conquests-2.png" style="max-height:none; max-width:300px !important;" /><br></td>' +
+                    '<img src="' + Home_img + 'conquests-2.png" style="max-height:none; max-width:300px !important;" /><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/sans-surcharge.png" alt="" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
+                    '<td><img src="' + Home_img + 'sans-surcharge.png" alt="" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
 
-                    '<td>'+(typeof(uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Sel")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "FLASK")[0] + '</p>' ) : (
+                    '<td>' + (typeof (uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Sel")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "FLASK")[0] + '</p>') : (
                         '<div id="dio_Sel" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Sel")[0] + '</div></div>')) +
                     '<p>' + getTexts("Options", "Sel")[1] + '</p><br></td>' +
                     '</tr></table>' +
 
                     // Other Stuff tab
                     '<table id="dio_other_table" class="content_category"><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/mousewheel-zoom.png" alt="" /></td>' +
+                    '<td><img src="' + Home_img + 'mousewheel-zoom.png" alt="" /></td>' +
                     '<td><div id="dio_scr" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "scr")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "scr")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/bbcode-button.png" alt="" /></td>' +
+                    '<td><img src="' + Home_img + 'bbcode-button.png" alt="" /></td>' +
                     '<td><div id="dio_BBt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "BBt")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "BBt")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-kciuki.gif" alt="" /></td>' +
+                    '<td><img src="' + Home_img + 'smiley-emoticons-kciuki.gif" alt="" /></td>' +
                     '<td><div id="dio_Rew" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "rew")[0] + '</div></div>' +
-                    '<p>' + uw.DM.getl10n("grepolis_score").categories.daily_awards + '</p><br></td>' +
+                    '<p>' + getTexts("Options", "rew")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     /*'<td><img src="" alt="" /></td>' +
                     '<td><div id="dio_err" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "err")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "err")[1] + '</p></td>' +*/
                     //((Game.features.is_domination_active = false) ? (
                     ((uw.Game.features.end_game_type == "end_game_type_world_wonder") ? (
-                        '<td><img src="https://www.tuto-de-david1327.com/medias/images/temple-d-artemiss.gif" alt="share" /></td>' +
+                        '<td><img src="' + Home_img + 'temple-d-artemiss.gif" alt="share" /></td>' +
                         '<td><div id="dio_wwc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Settings", "cat_wonders") + getTexts("Options", "wwc")[0] + '</div></div>' +
                         '<p>' + getTexts("Options", "wwc")[1] + '</p><br/>' +
-                        '<img src="https://www.tuto-de-david1327.com/medias/images/merveille-du-monde.png" alt="share_calculator" style="max-width:600px !important; border: 2px solid rgb(158, 133, 78);" /></td>' +
-                        '</tr><tr>' ) : "") +
+                        '<img src="' + Home_img + 'merveille-du-monde.png" alt="share_calculator" style="max-width:600px !important; border: 2px solid rgb(158, 133, 78);" /></td>' +
+                        '</tr><tr>') : "") +
                     '</tr></table>' +
 
                     // Premium
                     '<table id="dio_Premium_table" class="content_category"><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/culture.png" alt="" style="max-height:none; max-width:100px !important;" /></td>' +
+                    '<td><img src="' + Home_img + 'culture.png" alt="" style="max-height:none; max-width:100px !important;" /></td>' +
                     '<td><div id="dio_Cul" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cul")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cul")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/advancement-of-culture.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
+                    '<td><img src="' + Home_img + 'advancement-of-culture.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
                     '<td><div id="dio_Cup" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cup")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cup")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/culturepoints.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
+                    '<td><img src="' + Home_img + 'culturepoints.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
                     '<td><div id="dio_Cuo" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cuo")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cuo")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/caves.jpg" alt="" /></td>' +
+                    '<td><img src="' + Home_img + 'caves.jpg" alt="" /></td>' +
                     '<td><div id="dio_Hio" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hio")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Hio")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/resource-counter-1.png" alt="resource counter" /></td>' +
+                    '<td><img src="' + Home_img + 'resource-counter-1.png" alt="resource counter" /></td>' +
                     '<td><div id="dio_Rct" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Rct")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Rct")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/overview-of-peasant-villages.jpg" alt="" /></td>' +
+                    '<td><img src="' + Home_img + 'overview-of-peasant-villages.jpg" alt="" /></td>' +
                     '<td><div id="dio_Ish" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ish")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "Ish")[1] + '</p><br></br></td>' +
+                    '<p>' + getTexts("Options", "Ish")[1] + '</p></td>' +
                     '</tr></table>' +
 
                     // Quack
                     '<table id="dio_Quack_table" class="content_category"><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/bb-code-messages.png" alt="" style="" /></td>' +
+                    '<td><img src="' + Home_img + 'bb-code-messages.png" alt="" style="" /></td>' +
                     '<td><div id="dio_Mse" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Mse")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Mse")[1] + '  ' +
                     '<a href=' + getTexts("link", "MessageExport") + ' target="_blank">' + getTexts("Settings", "Learn_more") + '</a></p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/hotkeys.png" alt="" /></td>' +
+                    '<td><img src="' + Home_img + 'hotkeys.png" alt="" /></td>' +
                     '<td><div id="dio_Hot" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hot")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Hot")[1] + '</p><br></td>' +
                     '</tr><tr>' +
@@ -4580,149 +5338,77 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<p>' + getTexts("Options", "Isl")[1] + '</p><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
-                    '<td><div id="dio_Hid" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + uw.DM.getl10n("layout").premium_button.premium_menu.hides_overview + '</div></div>' +
+                    '<td><div id="dio_Hid" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hid")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Hid")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="https://www.tuto-de-david1327.com/medias/images/city-view-button-1.png" alt="" /></td>' +
+                    '<td><img src="' + Home_img + 'city-view-button-1.png" alt="" /></td>' +
                     '<td><div id="dio_Cib" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cib")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cib")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
-                    '<td>'+(typeof(uw.MoleHoleOnBoard) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ciw")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "Mole")[0] + '</p>' ) : (
+                    '<td>' + (typeof (uw.MoleHoleOnBoard) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ciw")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "Mole")[0] + '</p>') : (
                         '<div id="dio_Ciw" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ciw")[0] + '</div></div>')) +
                     '<p>' + getTexts("Options", "Ciw")[1] + '</p></td>' +
                     '</tr><tr>' +
                     ((MID == 'fr' || MID == 'de' || MID == 'en' || MID == 'zz') ? (
                         '<td><img src="" alt="" /></td>' +
-                        '<td><div id="dio_Rep" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + uw.DM.getl10n("bbcodes").report.name + '</div></div>' +
+                        '<td><div id="dio_Rep" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Rep")[0] + '</div></div>' +
                         '<p>' + getTexts("Options", "Rep")[1] + '</p><br></td>') : "") +
-                    '</tr></table>'+
-
-                    // =Tuto Troupes Grepolis= tab
-                    /*'<div id="dio_hall" class="content_category">'+
-                    '<div align="center"><img src="https://www.tuto-de-david1327.com/medias/site/logos/coollogo-com-63481423.png" style="max-height:none; max-width:350px !important;" /></div></td>' +
-                    '<div>' + getTexts("tutoriel", "reme") + '</div>'+
-                    '<div>' + getTexts("tutoriel", "reme")[1] + '</div>'+
-                    '<p></p></td>' +
-                    '<table style="float:left;margin-right: 18px;">'+
-                    '<tr><th colspan="3">' + getTexts("labels", "donat") + '</th></tr>'+
-                    (function(){
-                        var donations = [
-                            ["Christiane G", 60],
-                            ["Nepomuk P", 50],
-                            ["Kanokwan S", 20],
-                            ["Ines L", 20],
-                            ["Artur Z", 20],
-                            ["etienne1306", 10],
-                            ["Doris H", 10],
-                            ["Andreas A", 10],
-                            ["Andreas S", 10],
-                            ["Eric A", 10],
-                            ["Ulla R", 10],
-                            ["Christian P", 10],
-                        ];
-                        var donation_table = "";
-
-                        for(var d = 0; d < donations.length; d++){
-
-                            var donation_class = "";
-
-                            switch(donations[d][1]){
-                                case 60: donation_class = "gold"; break;
-                                case 50: donation_class = "silver"; break;
-                                case 20: donation_class = "bronze"; break;
-                                default: donation_class = "green2"; break;
-                            }
-
-                            donation_table += '<tr class="donation"><td class="laurel '+ donation_class +'"></td><td>' + donations[d][0] + '</td><td class="value">' + donations[d][1] + '€</td></tr>';
-                        }
-
-                        return donation_table;
-                    })() +
-                    '</table>'+
-                    '<table style="float:left;margin-right: 18px;">'+
-                    '<tr><th style="color: #00800000;" colspan="3">.</th></tr>'+
-                    (function(){
-                        var donations = [
-                            ["Jean-Paul B", 10],
-                            ["Rabello", 5.55],
-                            ["Susi K", 5.55],
-                            ["Kornelia M", 5],
-                            ["Max P", 5],
-                            ["Antonio AB", 5],
-                            ["Swen A", 5],
-                            ["Raul GC", 5],
-                            ["Mateusz O", 5],
-                            ["Kallerberg", 5],
-                            ["Martin G", 2.5],
-                            ["Marie-laure D", 2],
-                        ];
-                        var donation_table = "";
-
-                        for(var d = 0; d < donations.length; d++){
-
-                            var donation_class = "";
-
-                            switch(donations[d][1]){
-                                case 60: donation_class = "gold"; break;
-                                case 50: donation_class = "silver"; break;
-                                case 20: donation_class = "bronze"; break;
-                                default: donation_class = "green2"; break;
-                            }
-
-                            donation_table += '<tr class="donation"><td class="laurel '+ donation_class +'"></td><td>' + donations[d][0] + '</td><td class="value">' + donations[d][1] + '€</td></tr>';
-                        }
-
-                        return donation_table;
-                    })() +
-                    '</table>'+
-                    '<table>'+
-                    '<tr><th colspan="3">' + getTexts("labels", "Tran") + '</th></tr>'+
-                    (function(){
-                        var translations = [
-                            ["Diony", "DE"],
-                            ["eclat49 / David1327", "FR"],
-                            ["MrBobr", "RU"],
-                            ["anpu", "PL"],
-                            ["Juana de Castilla", "ES"],
-                            ["HELL", "BR"],
-                            ["Piwus", "CZ"],
-                            ["amliam / Pyrux", "IT"],
-                            ["Nicolae01", "RO"],
-                            ["Firebloem ", "NL"],
-                        ];
-
-                        var translation_table = "";
-
-                        for(var d = 0; d < translations.length; d++){
-                            translation_table += '<tr class="translation"><td class="laurel blue"></td><td >' + translations[d][0] + '</td><td class="value">' + translations[d][1] + '</td></tr>';
-                        }
-                        return translation_table;
-                    })() +
-                    '</table>' +
-                    '<br></br><p>' + getTexts("labels", "ingame_name")[0] + '</p>' +
-                    '<p>' + getTexts("labels", "ingame_name")[1] + '</p><br></br></td>' +
-                    '</div>' +*/
+                    '</tr></table>' +
 
                     '</DIV>' +
 
                     // Links (Forum, PM, ...)
-                    '<div style="bottom: -50px;font-weight: bold;position: absolute;width: 99%;">' +
+                    '<div style="bottom: -42px;font-weight: bold;position: absolute;width: 99%;">' +
 
                     '<a id="tuto" style="font-weight:bold; float:left">' +
-                    '<img src="/images/game/ally/founder.png" alt="" style="float:left;height:19px;margin:0px 5px -3px;"><span>' + getTexts("tutoriel", "tuto") + '</span></a>'+
+                    '<img src="/images/game/ally/founder.png" alt="" style="float:left;height:19px;margin:0px 5px -3px;"><span>' + getTexts("tutoriel", "tuto") + '</span></a>' +
 
                     '<span class="" style="font-weight:bold; float:right; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:right">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '</div>' +
 
                     '</div></div>');
 
                 getLatestVersion();
+
+                $("#dio_langdiv").change(function () {
+                    let lang = $(this).val().toLowerCase();
+                    //console.log($(this));
+
+                    if ($(this).val() === (DATA.test.lang ? (DATA.test.lang).toUpperCase() : getTexts("translations", "translations"))) {
+                        return;
+                    }
+                    else if ($(this).val() === getTexts("translations", "add_lang")) {
+                        dio.add_lang = true;
+                        Notification.activate();
+                        uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS).close();
+                        return;
+                    }
+                    else if ($(this).val() === getTexts("labels", "loc") + " " + Navigator.toUpperCase()) {
+                        DATA.test.lang = Navigator;
+                        saveValue("test", JSON.stringify(DATA.test));
+                        uw.HumanMessage.success(getTexts("translations", "translations") + " " + getTexts("labels", "loc") + " " + Navigator.toUpperCase());
+                    }
+                    else if ($(this).val() === getTexts("buttons", "res") + " (" + (MID).toUpperCase() + ")") {
+                        DATA.test.lang = "";
+                        deleteValue("test", JSON.stringify(DATA.test));
+                        uw.HumanMessage.success(getTexts("translations", "translations") + " " + getTexts("buttons", "res") + " (" + MID + ")");
+                    } else {
+                        DATA.test.lang = lang;
+                        saveValue("test", JSON.stringify(DATA.test));
+                        uw.HumanMessage.success(getTexts("translations", "translations") + " " + lang);
+                    }
+                    uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS).close();
+                    openSettings();
+                    //var tooltip_str = "DIO-Tools-David1327: " + (uw.DM.getl10n("layout", "config_buttons").settings || "Settings") + "<br/> v" + dio_version + " [" + (DATA.test.lang ? (DATA.test.lang === "zz" ? "EN" : (DATA.test.lang).toUpperCase()) : (MID === "zz" ? "EN" : MID)) + "]";
+                    tooltip_settings();
+                    return;
+                });
 
                 // Tab event handler
                 $('#dio_settings .dio_settings_tabs .submenu_link').click(function () {
@@ -4758,7 +5444,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     saveValue("options", JSON.stringify(DATA.options));
                 });
 
-                $('#dio_settings .radiobutton .option').click(function(){
+                $('#dio_settings .radiobutton .option').click(function () {
 
                     //$(this).attr("name");
                     $('#dio_settings .radiobutton .option').removeClass("checked").addClass("disabled").removeClass("green");
@@ -4772,7 +5458,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     DATA.options[this.id] = $(this).hasClass("checked");
                     saveValue("options", JSON.stringify(DATA.options));
-                    if (DATA.options.dio_Scr){
+                    if (DATA.options.dio_Scr) {
                         Scrollbar.deactivate();
                         Scrollbar.activate();
                     };
@@ -4861,8 +5547,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FEATURE = Map;
                 break;
             case "dio_til":
-                if (typeof(uw.FLASK_GAME) == "undefined") {
-                    FEATURE = TownList;}
+                if (typeof (uw.FLASK_GAME) == "undefined") {
+                    FEATURE = TownList;
+                }
                 break;
             case "dio_sen":
                 FEATURE = SentUnits;
@@ -4873,9 +5560,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             case "dio_wwc":
                 FEATURE = WorldWonderCalculator;
                 break;
-                /*case "dio_wwr":
-                FEATURE = WorldWonderRanking;
-                break;*/
+            /*case "dio_wwr":
+            FEATURE = WorldWonderRanking;
+            break;*/
             case "dio_wwi":
                 FEATURE = WorldWonderIcons;
                 break;
@@ -4898,8 +5585,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FEATURE = ForumDeleteMultiple;
                 break;
             case "dio_Sel":
-                if (typeof(uw.FLASK_GAME) == "undefined") {
-                    FEATURE = selectunitshelper;}
+                if (typeof (uw.FLASK_GAME) == "undefined") {
+                    FEATURE = selectunitshelper;
+                }
                 break;
             case "dio_Cul":
                 FEATURE = cultureOverview;
@@ -4932,8 +5620,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FEATURE = city_view_btn;
                 break;
             case "dio_Ciw":
-                if (typeof(uw.MoleHoleOnBoard) == "undefined") {
-                    FEATURE = city_view_window;}
+                if (typeof (uw.MoleHoleOnBoard) == "undefined") {
+                    FEATURE = city_view_window;
+                }
                 break;
             case "dio_Tti":
                 FEATURE = townTradeImprovement;
@@ -4967,21 +5656,32 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         }
     }
 
+    function tooltip_settings() {
+        var tooltip_str = "DIO-Tools-David1327: " + getTexts("hotkeys", "settings") + "<br/> v" + dio_version + " [" + (DATA.test.lang ? (DATA.test.lang === "zz" ? "EN" : (DATA.test.lang).toUpperCase()) : (MID === "zz" ? "EN" : MID)) + "]";
+        if (typeof (uw.MM.DIO) !== "undefined") {
+            if (uw.MM.DIO.info_dio.version == uw.MM.DIO.info_dio.latest_version) {
+                tooltip_str += "<br/>" + getTexts("Settings", 'version_old');
+            } else if (uw.MM.DIO.info_dio.version > uw.MM.DIO.info_dio.latest_version) {
+                tooltip_str += "<br/>" + getTexts("Settings", 'version_dev')
+            }
+        }
+        return $('.dio_settings').tooltip(tooltip_str);
+    }
     function addSettingsButton() {
-        var tooltip_str = "DIO-Tools-David1327: " + (uw.DM.getl10n("layout", "config_buttons").settings || "Settings");
+        //var tooltip_str = "DIO-Tools-David1327: " + (uw.DM.getl10n("layout", "config_buttons").settings || "Settings") + "<br/> v" + dio_version + " [" + (DATA.test.lang ? (DATA.test.lang === "zz" ? "EN" : (DATA.test.lang).toUpperCase()) : (MID === "zz" ? "EN" : MID)) + "]";
 
         $('<div class="btn_settings circle_button dio_settings"><div class="dio_icon js-caption"></div></div><div class="dio_settings_test"></div>').appendTo(".gods_area");
 
         // Style
         $('<style id="dio_settings_button" type="text/css">' +
-          '#ui_box .btn_settings.dio_settings { top:86px!important; right:106px!important; z-index:11; } ' +
-          '#ui_box .dio_settings .dio_icon { margin:7px 0px 0px 4px; width:24px; height:24px; } ' +
-          '#ui_box .dio_settings .dio_icon.click { margin-top:8px; }' +
-          '.dio_settings_test { width:24px; height:24px; } ' +
-          '</style>').appendTo('head');
+            '#ui_box .btn_settings.dio_settings { top:86px!important; right:106px!important; z-index:11; } ' +
+            '#ui_box .dio_settings .dio_icon { margin:7px 0px 0px 4px; width:24px; height:24px; } ' +
+            '#ui_box .dio_settings .dio_icon.click { margin-top:8px; }' +
+            '.dio_settings_test { width:24px; height:24px; } ' +
+            '</style>').appendTo('head');
 
         // Tooltip
-        $('.dio_settings').tooltip(tooltip_str);
+        tooltip_settings();
 
         // Mouse Events
         $('.dio_settings').on('mousedown', function () {
@@ -4998,9 +5698,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     function openSettings() {
         if (!uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_PLAYER_SETTINGS)) {
             diosettings = true;
-        } else {$('#dio_tools').click();}
+        } else { $('#dio_tools').click(); }
 
-        uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS, uw.DM.getl10n("layout", "config_buttons").settings || "Settings");
+        uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS, getTexts("hotkeys", "settings"));
     }
 
     var exc = false, sum = 0, ch = ["IGCCJB"], alpha = 'ABCDEFGHIJ';
@@ -5038,15 +5738,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     function setStyle() {
         // Settings
         $('<style id="dio_settings_style" type="text/css">' +
-          '#dio_bg_david1327{ background: url(' + dio_sprite + '); background-position: -211px -300px; height: 33px; width: 412px; left: 200px; top:433px; z-index: -1; position: absolute;} ' +
-          '#dio_bg_medusa { background:url(https://www.tuto-de-david1327.com/medias/images/medusa-transp.png) no-repeat; height: 510px; width: 380px; right: -10px; top:6px; z-index: -1; position: absolute;} ' +
-          '.dio_overflow  { overflow: hidden; } ' +
-          '#dio_icon  { width:15px; vertical-align:middle; margin-top:-2px; } ' +
-          '#quackicon { width:15px !important; vertical-align:middle !important; margin-top:-2px; height:12px !important; } ' +
-          '#dio_settings .green { color: green; } ' +
-          '#dio_settings .visible { display:block !important; } ' +
-          '.town_name_area .button GMHADD { left: -120px !important; } ' +
-          '</style>').appendTo('head');
+            '#dio_bg_david1327{ background: url(' + dio_sprite + '); background-position: -211px -300px; height: 20px; width: 412px; left: 410px; top: 230px; position: absolute; transform: rotate(90deg);} ' +
+            '#dio_bg_medusa { background:url(' + Home_img + 'medusa-transp.png) no-repeat; height: 510px; width: 380px; right: -10px; top:6px; z-index: -1; position: absolute;} ' +
+            '.dio_overflow  { overflow: hidden; } ' +
+            '#dio_icon  { width:15px; vertical-align:middle; margin-top:-2px; } ' +
+            '#quackicon { width:15px !important; vertical-align:middle !important; margin-top:-2px; height:12px !important; } ' +
+            '#dio_settings .green { color: green; } ' +
+            '#dio_settings .visible { display:block !important; } ' +
+            '.town_name_area .button GMHADD { left: -120px !important; } ' +
+            '</style>').appendTo('head');
 
         // Town Icons
         $('<style id="dio_icons" type="text/css">.dio_icon_small { position:relative; right:-2px; height:20px; width:25px; } </style>').appendTo('head');
@@ -5055,7 +5755,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         $('<style id="dio_quest_container" type="text/css"> #tutorial_quest_container { top: 130px } </style>').appendTo('head');
 
         // Velerios
-        $('<style id="dio_velerios" type="text/css"> #ph_trader_image { background-image: url(https://www.tuto-de-david1327.com/medias/images/marchand-phenicien.jpg); } </style>').appendTo('head');
+        $('<style id="dio_velerios" type="text/css"> #ph_trader_image { background-image: url(' + Home_img + 'marchand-phenicien.jpg); } </style>').appendTo('head');
 
         // Specific player wishes
         if (PID == 1212083) {
@@ -5064,7 +5764,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
 
     function loadFeatures() {
-        if (typeof(ITowns) !== "undefined") {
+        if (typeof (ITowns) !== "undefined") {
 
             autoTownTypes = {};
             manuTownTypes = DATA.townTypes;
@@ -5080,7 +5780,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             wonder = DATA.worldWonder;
             wonderTypes = DATA.worldWonderTypes;
 
-            var DIO_USER = {'name': uw.Game.player_name, 'market': MID};
+            var DIO_USER = { 'name': uw.Game.player_name, 'market': MID };
             saveValue("dio_user", JSON.stringify(DIO_USER));
 
 
@@ -5117,7 +5817,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         // No comment... it's Grepolis... i don't know... *rolleyes*
                         function waitForGrepoLazyLoading() {
-                            if (typeof(uw.ITowns.townGroups.getGroupsDIO()[-1]) !== "undefined" && typeof(uw.ITowns.getTown(uw.Game.townId).getBuildings) !== "undefined") {
+                            if (typeof (uw.ITowns.townGroups.getGroupsDIO()[-1]) !== "undefined" && typeof (uw.ITowns.getTown(uw.Game.townId).getBuildings) !== "undefined") {
 
                                 try {
                                     // Funktion wird manchmal nicht ausgeführt:
@@ -5160,7 +5860,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                             Map.activate();
                                         }, 100);
                                     }
-                                    if (DATA.options.dio_til & (typeof(uw.FLASK_GAME) == "undefined")) {
+                                    if (DATA.options.dio_til & (typeof (uw.FLASK_GAME) == "undefined")) {
                                         setTimeout(function () {
                                             TownList.activate();
                                         }, 0);
@@ -5169,8 +5869,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                     HiddenHighlightWindow.activate();
 
 
-                                } catch(e){
-                                    if(waitCount < 12) {
+                                } catch (e) {
+                                    if (waitCount < 12) {
                                         waitCount++;
 
                                         console.warn("DIO-Tools | Fehler | getAllUnits | units() fehlerhaft ausgeführt?", e);
@@ -5186,9 +5886,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 }
                             }
                             else {
-                                var e = { "stack": "getGroups() = " + typeof(uw.ITowns.townGroups.getGroupsDIO()[-1]) + ", getBuildings() = " + typeof(uw.ITowns.getTown(uw.Game.townId).getBuildings) };
+                                var e = { "stack": "getGroups() = " + typeof (uw.ITowns.townGroups.getGroupsDIO()[-1]) + ", getBuildings() = " + typeof (uw.ITowns.getTown(uw.Game.townId).getBuildings) };
 
-                                if(waitCount < 12) {
+                                if (waitCount < 12) {
                                     waitCount++;
 
                                     console.warn("DIO-Tools | Fehler | getAllUnits | " + e.stack);
@@ -5279,13 +5979,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             }, 0);
                         }
                     }
-                    if(DATA.options.dio_rec) {
+                    if (DATA.options.dio_rec) {
                         setTimeout(function () {
                             RecruitingTrade.activate();
                         }, 0);
                     }
 
-                    if(DATA.options.dio_way) {
+                    if (DATA.options.dio_way) {
                         setTimeout(function () {
                             ShortDuration.activate();
                         }, 0);
@@ -5320,7 +6020,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             city_view_btn.activate();
                         }, 1000);
                     }
-                    if (DATA.options.dio_Ciw & (typeof(uw.MoleHoleOnBoard) == "undefined")) {
+                    if (DATA.options.dio_Ciw & (typeof (uw.MoleHoleOnBoard) == "undefined")) {
                         setTimeout(function () {
                             city_view_window.activate();
                         }, 1000);
@@ -5361,60 +6061,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }, 100);
                     }
 
-                    // Comptabilité flask-tools ?
-                    if (typeof(uw.FLASK_GAME) !== "undefined") {
+                    // compatibility flask-tools ?
+                    if (typeof (uw.FLASK_GAME) !== "undefined") {
                         setTimeout(function () {
-                            uw.HumanMessage.error(dio_icon + "flask");
-                            //Units overview
-                            $('#available_units_bullseye').remove();
-                            $('#available_units_bullseye_addition').remove();
-                            $('#flask_available_units_style').remove();
-                            $('#flask_available_units_style_addition').remove();
-
-                            //Unit Comparison
-                            $('#btn_available_units').remove();
-
-                            if (uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_FLASK_UNITS)) {
-                                uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_FLASK_UNITS).close();
-                            }
-
-                            //Unit strength
-                            $('#strength').remove();
-                            $('#flask_strength_style').remove();
-
-                            //Simulator
-                            $('#flask_simulator_strength_style').remove();
-                            $('#flask_simulator_strength').remove();
-
-                            //Recruiting trade
-                            $('#flask_style_recruiting_trade').remove();
-
-                            //Transport capacity
-                            $('#transporter').remove();
-
-                            //Map
-                            $("#flask_game_list_header_style").remove();
-                            $("#flask_town_popup_style").remove();
-
-                            //
-
-
-                            //style
-                            $('<style>' +
-                              '#ui_box .btn_settings.flask_settings { top: 52px; right: 110px; } ' +
-                              '#flask_townbb { left: 182px; } ' +
-                              '#flask_simulator_strength {display: none; } ' +
-                              //
-                              '.btn.btn_trade {display: none!important; } ' +
-                              //Recruiting trade
-                              '.rec_trade {display: none!important; } ' +
-                              //Defense form
-                              '.flask_bbcode_option {display: none!important; } ' +
-                              //
-                              '#pop_baracks, #strength_baracks {display: none!important; } ' +
-
-                              '</style>').appendTo('head');
-                        }, 600);
+                            compatibility.flask_tools();
+                        }, 2000);
                     };
 
                     /*setTimeout(function () {
@@ -5429,9 +6080,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         Notification.init();
                     }, 0);
 
-                    setTimeout(function(){ HolidaySpecial.activate(); }, 0);
+                    setTimeout(function () { HolidaySpecial.activate(); }, 0);
 
-                    setTimeout(function(){ dio.style(); }, 0);
+                    setTimeout(function () { dio.style(); }, 0);
 
                     // Execute once to get the world wonder types and coordinates
                     /*setTimeout(function () {
@@ -5457,7 +6108,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             setTimeout(function () {
                                 getPointRatioFromAllianceProfile();
                             }, 5000);
-                        }}
+                        }
+                    }
                 }
                 time_b = uw.Timestamp.client();
                 //console.log("Gebrauchte Zeit:" + (time_b - time_a));
@@ -5484,7 +6136,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             //console.debug("0: ", url[0]);
             //console.debug("1: ", url[1]);
 
-            if(typeof(url[1]) !== "undefined" && typeof(url[1].split(/&/)[1]) !== "undefined") {
+            if (typeof (url[1]) !== "undefined" && typeof (url[1].split(/&/)[1]) !== "undefined") {
 
                 action = url[0].substr(5) + "/" + url[1].split(/&/)[1].substr(7);
             }
@@ -5520,7 +6172,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         diosettings = false;
                     }
                     break;
-                    // Ab Grepolis Version 2.114 ist der Ajax-Request: /frontend_bridge/execute
+                // Ab Grepolis Version 2.114 ist der Ajax-Request: /frontend_bridge/execute
                 case "/frontend_bridge/execute":
                 case "/index/switch_town":
                     if (DATA.options.dio_str) {
@@ -5538,7 +6190,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             TownIcons.changeTownIcon();
                         }, 0);
                     }
-                    if (DATA.options.dio_Rtt){
+                    if (DATA.options.dio_Rtt) {
                         dio.removeTooltipps("sidebar");
                     }
                     break;
@@ -5549,13 +6201,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_str) {
                         UnitStrength.Barracks.add();
                     }
-                    if (DATA.options.dio_Rtt){
+                    if (DATA.options.dio_Rtt) {
                         dio.removeTooltipps("barracks");
                         dio.removeTooltipps("hero90x90");
                     }
                     break;
                 case "/building_docks/index":
-                    if (DATA.options.dio_Rtt){
+                    if (DATA.options.dio_Rtt) {
                         dio.removeTooltipps("docks");
                         dio.removeTooltipps("hero90x90");
                     }
@@ -5564,7 +6216,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 case "/building_docks/build":
                 case "/building_docks/cancel":
                 case "/building_barracks/units":
-                    if (DATA.options.dio_Rtt){
+                    if (DATA.options.dio_Rtt) {
                         dio.removeTooltipps("docks");
                         dio.removeTooltipps("barracks");
                         dio.removeTooltipps("hero90x90");
@@ -5572,7 +6224,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     break;
                 case "/building_place/index":
                 case "/building_place/units_beyond":
-                    if (DATA.options.dio_Rtt){
+                    if (DATA.options.dio_Rtt) {
                         dio.removeTooltipps("agora");
                     }
                     //addTransporterBackButtons();
@@ -5581,7 +6233,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_sim) {
                         setStrengthSimulator();
                     }
-                    if (DATA.options.dio_Rtt){
+                    if (DATA.options.dio_Rtt) {
                         dio.removeTooltipps("simulator");
                     }
                     break;
@@ -5713,10 +6365,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 case "/town_info/support":
                     //console.debug(JSON.parse(xhr.responseText));
                     TownTabHandler(action.split("/")[2]);
-                    if (DATA.options.dio_Sel & typeof(uw.FLASK_GAME) == "undefined") {
+                    if (DATA.options.dio_Sel & typeof (uw.FLASK_GAME) == "undefined") {
                         selectunitshelper.activate();
                     }
-                    if (DATA.options.dio_Rtt){
+                    if (DATA.options.dio_Rtt) {
                         dio.removeTooltipps("town_info");
                     }
                     break;
@@ -5806,42 +6458,48 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      * ----------------------------------------------------------------------------------------------------------------------------
      *******************************************************************************************************************************/
     var dio = {
-        style: function() {
+        style: function () {
             $('<style id="createButton">' + //style="color: #fc6;"
-              '.don { height: 26px; display: block; background: url(https://www.tuto-de-david1327.com/medias/images/donate-btn.png) 0 0 no-repeat; position: relative; z-index: -1; } ' +
-              '.don.dio-left { background-position: left 0px; } ' +
-              '.don.dio-right { background-position: right -54px; } ' +
-              '.don.dio-middle { color: #33268a;padding: 0 4px;margin: 0 12px;background-position: 0 -27px;background-repeat: repeat-x;line-height: 25px;min-width: 10px;cursor: pointer;font-style: italic;font-size: 14px; } ' +
-              '</style>').appendTo('head');
+                '.don { height: 26px; display: block; background: url(' + Home_img + 'donate-btn.png) 0 0 no-repeat; position: relative; z-index: -1; } ' +
+                '.don.dio-left { background-position: left 0px; } ' +
+                '.don.dio-right { background-position: right -54px; } ' +
+                '.don.dio-middle { color: #33268a;padding: 0 4px;margin: 0 12px;background-position: 0 -27px;background-repeat: repeat-x;line-height: 25px;min-width: 10px;cursor: pointer;font-style: italic;font-size: 14px; } ' +
+                '</style>').appendTo('head');
         },
-        createButton: function(Text, ID, Class, i) { //dio.createButton(getTexts("messages", "copy"), "dio-copy-message-quote", null, 'data-clipboard-target="#expTextarea"')
+        createButton: function (Text, ID, Class, i) { //dio.createButton(getTexts("messages", "copy"), "dio-copy-message-quote", null, 'data-clipboard-target="#expTextarea"')
             return "<a " + (i = void 0 === i ? "" : i) + ' class="button ' + (Class = null == Class || void 0 === Class ? "" : Class) + '"  ' + (ID = null == ID ? "" : 'id="' + ID + '"') + '><span class="left"><span class="right"><span style="color: #fc6;" class="middle">' + dio_icon + '' + Text + '</span></span></span><span style="clear:both;"></span></a>'
         },
-        createBtnDonate: function(Text, ID, Class, i, h) { //dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate"))
+        createBtnDonate: function (Text, ID, Class, i, h) { //dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate"))
             return "<a " + (i = void 0 === i ? "" : i) + ' class="dio-button button ' + (Class = null == Class || void 0 === Class ? "" : Class) + '" ' + (h = null == h ? "" : 'href="' + h + '"target="_blank"') + (ID = null == ID ? "" : 'id="' + ID + '"') + '><span class="don dio-left"><span class="don dio-right"><span class="don dio-middle">' + Text + '</span></span></span><span style="clear:both;"></span></a>'
         },
-        grepo_btn : function (ID, Text) {
+        grepo_btn: function (ID, Text) {
             return $('<a id="' + ID + '" href="#" class="button"><span class="left"><span class="right"><span class="middle"><small>' + Text + '</small></span></span></span></a>');
         },
-        grepo_dropdown_flag : function (ID, Options) {
-            var str = '<span class="grepo_input"><span class="left"><span class="right"><select name="' + ID + '" id="' + ID + '" type="text">';
+        grepo_dropdown_flag: function (ID, Options, label, group, group2) {
+            var str = '<span class="grepo_input"><span class="left"><span class="right"><select name="' + ID + '" id="' + ID + '" type="text">' + (group = null == group ? "" : '<optgroup label="' + group + '">');
             var option_image = "";
+            if (label != null) {
+                $.each(label, function (a, b) {
+                    str += '<option value="' + b + '">' + b + '</option>'
+                });
+            };
+            str += (group = null == group ? "" : '</optgroup>') + (group2 = null == group2 ? "" : '<optgroup label="' + group2 + '">');
             $.each(Options, function (a, b) {
                 if (LANG[b]) {
-                    option_image = 'https://www.tuto-de-david1327.com/medias/images/flag.16.' + b +'.png';
+                    option_image = '' + Home_img + 'flag.16.' + b + '.png';
                 } else {
                     option_image = "";
                 }
                 var option_name = (LANG[b]) ? b.toUpperCase() : b;
                 str += '<option style="background: url(' + option_image + ') no-repeat scroll left center #EEDDBB; padding-left: 22px" value="' + b + '">' + option_name + '</option>'
             });
-            str += '</select></span></span></span>';
+            str += ((group = null == group) || (group2 = null == group2) ? "" : '</optgroup>') + '</select></span></span></span>';
             return $(str);
         },
-        grepo_submenu : function (ID, Title) {
+        grepo_submenu: function (ID, Title) {
             return $('<li><a id="' + ID + '" class="submenu_link" ><span class="left"><span class="right"><span class="middle" title="' + Title + '" style="color: #000;">' + Title + '</span></span></span></a></li>');
         },
-        removeTooltipps : function (type) {
+        removeTooltipps: function (type) {
             var a;
 
             switch (type) {
@@ -5869,8 +6527,30 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     break;
             }
 
-            a.each(function( index ) {
+            a.each(function (index) {
                 $(this).off('mouseenter mouseleave');
+            });
+        },
+        clipboard: function (IDbutton, input, error, Text) {
+            var clipboard = new uw.ClipboardJS(IDbutton);
+
+            clipboard.on("success", function () {
+                setTimeout(function () {
+                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                    if (input !== null) {
+                        $(IDbutton).css({ "display": "none" })
+                        $(input).css({ "display": "none" })
+                    }
+                    if (Text !== null) {
+                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
+                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
+                        }
+                    }
+                }, 50)
+            });
+            clipboard.on('error', function (e) {
+                uw.HumanMessage.error(dio_icon + getTexts("messages", "cli"))
+                errorHandling(e, "clipboard" + error)
             });
         },
     };
@@ -5879,7 +6559,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     function fixUnitValues() {
         //uw.GameData.units.small_transporter.attack = uw.GameData.units.big_transporter.attack = uw.GameData.units.demolition_ship.attack = uw.GameData.units.militia.attack = 0;
         //uw.GameData.units.small_transporter.defense = uw.GameData.units.big_transporter.defense = uw.GameData.units.demolition_ship.defense = uw.GameData.units.colonize_ship.defense = 0;
-        uw.GameData.units.militia.resources = {wood: 0, stone: 0, iron: 0};
+        uw.GameData.units.militia.resources = { wood: 0, stone: 0, iron: 0 };
     }
 
     function getMaxZIndex() {
@@ -5914,10 +6594,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
 
     function system() {
-        let isMac = navigator.platform.toUpperCase().indexOf('MAC')>=0,
-            isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i)?true:false,
+        let isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0,
+            isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i) ? true : false,
             system = false;
-        if (isMacLike || isMac){system = true}
+        if (isMacLike || isMac) { system = true }
         return system;
     };
 
@@ -5926,15 +6606,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         var error = 1;
         if (PID === 1538932 || PID === 100144) {
             uw.HumanMessage.error(dio_icon + "DIO-TOOLS(" + dio_version + ")-ERROR: " + e.message);
-            console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.stack);
+            console.log("DIO-TOOLS | Error-Stack | " + [fn] + " | ", e.stack);
             //console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.name + ": " + e.toString());
-            //DATA.errorDio[version][fn] = true;
-            //saveValue("errorDio", JSON.stringify(uw.MM.DIO.errorDio));
+            //DATA.error[version][fn] = true;
+            //saveValue("error", JSON.stringify(uw.MM.DIO.error));
         } else {
             //if (!DATA.error[dio_version]) {
             //    DATA.error[dio_version] = {};
             //}
-            console.log("DIO-TOOLS | Error-Stack | "+[fn]+" | ", e.toString());
+            console.log("DIO-TOOLS | Error-Stack | " + [fn] + " | ", e.toString());
 
             //saveValue("error", JSON.stringify(DATA.error));
 
@@ -5954,20 +6634,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             let nb = 1;
             var errordio = uw.MM.DIO.errorDio, nb2 = 0, nb_error = 1;
 
-            if (typeof(errordio[fn]) !== "undefined") {
+            if (typeof (errordio[fn]) !== "undefined") {
                 nb = nb + errordio[fn].nb;
             }
 
             var date = new Date();
             errordio[fn] = {
-                "function" : fn,
-                message : e.toString(),
-                error : e.stack.replace(/'/g, '"'),
-                version : dio_version,
+                "function": fn,
+                message: e.toString(),
+                error: e.stack.replace(/'/g, '"'),
+                version: dio_version,
                 browser: getBrowser(),
-                system : ((system()) ? "Mac" : "Windows"),
-                nb : nb,
-                date : date.getDate() + "/" + (date.getMonth()+1) +"/" + date.getFullYear(),
+                system: ((system()) ? "Mac" : "Windows"),
+                nb: nb,
+                date: date.toLocaleString("fr-FR", { timeZone: 'UTC' }),
             };
 
             $.each(errordio, function (name) {
@@ -5976,13 +6656,42 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
                 errordio.nb = nb2;
             });
-        } catch (e) {}
+
+            if (!DATA.error[dio_version]) {
+                DATA.error[dio_version] = {};
+            }
+            if (typeof (DATA.error[dio_version][fn]) !== "undefined") {
+                DATA.error[dio_version][fn].nb = DATA.error[dio_version][fn].nb + 1;
+                DATA.error[dio_version][fn].date_fin = date.toLocaleString("fr-FR", { timeZone: 'UTC' });
+            }
+            if (!DATA.error[dio_version][fn]) {
+                DATA.error[dio_version][fn] = {
+                    "function": fn,
+                    message: e.toString(),
+                    //error: JSON.stringify(e.stack),
+                    version: dio_version,
+                    browser: getBrowser(),
+                    system: ((system()) ? "Mac" : "Windows"),
+                    nb: 1,
+                    date: date.toLocaleString("fr-FR", { timeZone: 'UTC' }),
+                    date_fin: "",
+                };
+            };
+            nb = 0;
+            $.each(DATA.error[dio_version], function (name) {
+                if (name !== "nb") {
+                    nb++;
+                }
+                DATA.error[dio_version].nb = nb;
+            });
+            saveValue("error", JSON.stringify(DATA.error));
+        } catch (e) { }
     }
     var dio_bug = true;
     $('<style id="dio_window">' +
-      '.dio_title_img { height:18px; float:left; margin-right:3px; } ' +
-      '.dio_title { margin:1px 6px 13px 23px; color:rgb(126,223,126); } ' +
-      '</style>').appendTo('head');
+        '.dio_title_img { height:18px; float:left; margin-right:3px; } ' +
+        '.dio_title { margin:1px 6px 13px 23px; color:rgb(126,223,126); } ' +
+        '</style>').appendTo('head');
     function createWindowType(name, title, width, height, minimizable, position) {
         // Create Window Type
         function WndHandler(wndhandle) {
@@ -6008,7 +6717,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     width: width,
                     height: height,
                     minimizable: minimizable,
-                    title: "<img class='dio_title_img' src='"+ dio_img +"' /><div class='dio_title'>" + title + "</div>"
+                    title: "<img class='dio_title_img' src='" + dio_img + "' /><div class='dio_title'>" + title + "</div>"
                 };
             }
         };
@@ -6041,6 +6750,33 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         return number;
     }
 
+    function pointNumberK(number) {
+        var sep;
+        var test = true;
+        number = number.toString();
+
+        if (number.length > 3 & number.length < 10) {
+            if (number.length > 6) {
+                sep = "M";
+            } else {
+                sep = "K";
+            }
+            var mod = number.length % 3;
+            var output = (mod > 0 ? (number.substring(0, mod)) : '');
+            for (var i = 0; i < Math.floor(number.length / 3); i++) {
+                if ((mod == 0) && (i == 0)) {
+                    output += number.substring(mod + 3 * i, mod + 3 * i + 3) + sep;
+                    test = false;
+                } else if (test) {
+                    test = false;
+                    output += sep;
+                }
+            }
+            number = output;
+        }
+        return number;
+    }
+    console.log(pointNumberK(1000000));
     // Notification
     var Notification = {
         init: function () {
@@ -6050,37 +6786,37 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             // Style
             $('<style id="dio_notification" type="text/css">' +
-              '#notification_area .diotools .icon { background: url('+ dio_img +') 4px 7px no-repeat !important;} ' +
-              '#notification_area .diotools { cursor:pointer; } ' +
-              '#NotifText {overflow-y: auto !important; height: 435px; margin-left: 5px; } ' +
-              '#NotifText img { max-width:780px; text-align: center; margin:5px; } ' +
+                '#notification_area .diotools .icon { background: url(' + dio_img + ') 4px 7px no-repeat !important;} ' +
+                '#notification_area .diotools { cursor:pointer; } ' +
+                '#NotifText {overflow-y: auto !important; height: 435px; margin-left: 5px; } ' +
+                '#NotifText img { max-width:780px; text-align: center; margin:5px; } ' +
 
-              '#NotifText .green { color: green; } ' +
-              '#NotifText table { border-spacing: 9px 3px; } ' +
-              '#NotifText table th { text-align:left !important;color:green;text-decoration:underline;padding-bottom:10px; } ' +
-              '#NotifText table td.value { text-align: right; } ' +
+                '#NotifText .green { color: green; } ' +
+                '#NotifText table { border-spacing: 9px 3px; } ' +
+                '#NotifText table th { text-align:left !important;color:green;text-decoration:underline;padding-bottom:10px; } ' +
+                '#NotifText table td.value { text-align: right; } ' +
 
-              '#NotifText table td.laurel.green { background: url("/images/game/ally/founder.png") no-repeat; height:17px; width:17px; background-size:100%; } ' +
-              '#NotifText table td.laurel.green2 { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 0%; height:17px; width:17px; } ' +
-              '#NotifText table td.laurel.bronze { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 25%; height:17px; width:17px; } ' +
-              '#NotifText table td.laurel.silver { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 50%; height:17px; width:17px; } ' +
-              '#NotifText table td.laurel.gold { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 75%; height:17px; width:17px; } ' +
-              '#NotifText table td.laurel.blue { background: url("https://www.tuto-de-david1327.com/medias/images/laurel-sprite.png") no-repeat 100%; height:17px; width:17px; } ' +
-              '</style>').appendTo('head');
+                '#NotifText table td.laurel.green { background: url("/images/game/ally/founder.png") no-repeat; height:17px; width:17px; background-size:100%; } ' +
+                '#NotifText table td.laurel.green2 { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 0%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.bronze { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 25%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.silver { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 50%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.gold { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 75%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.blue { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 100%; height:17px; width:17px; } ' +
+                '</style>').appendTo('head');
 
             // NotificationType
             uw.NotificationType.DIO_TOOLS = "diotools";
 
-            var notifN = 27;
+            var notifN = 28;
             var titreN =
-                //	0; // nouvelles fonctionnalités
-                //	1; // nouvelles fonctionnalités + titre
-                	2; // ""
+                0; // nouvelles fonctionnalités
+            //	1; // nouvelles fonctionnalités + titre
+            // 2; // ""
 
             var titre = [getTexts("Settings", "Feature"),
-                         getTexts("Settings", "Feature") + ' (' + getTexts("Options", "")[0] + ')',
-                         "",
-                        ];
+            getTexts("Settings", "Feature") + ' (' + getTexts("Options", "")[0] + ')',
+                "",
+            ];
 
             var notif = DATA.notification;
             if (notif <= notifN || david1327) {
@@ -6092,22 +6828,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $(this).parent().find(".close").click();
                 });
 
-                saveValue('notif', notifN+1);}
+                saveValue('notif', notifN + 1);
+            }
 
 
         },
         activate: function () {
-            this.addCopyListener()
 
-            var grepoGameBorder = '<div class="game_border"><div class="game_border_top"></div><div class="game_border_bottom"></div><div class="game_border_left"></div>'+
-                '<div class="game_border_right"></div><div class="game_border_corner corner1"></div>'+
-                '<div class="game_border_corner corner2"></div><div class="game_border_corner corner3">'+
+            var grepoGameBorder = '<div class="game_border"><div class="game_border_top"></div><div class="game_border_bottom"></div><div class="game_border_left"></div>' +
+                '<div class="game_border_right"></div><div class="game_border_corner corner1"></div>' +
+                '<div class="game_border_corner corner2"></div><div class="game_border_corner corner3">' +
                 '</div><div class="game_border_corner corner4"></div><div class="game_header bold" style="height:18px;padding:3px 11px">';
             var inhalte = {
-                dioset_tab1 : tab1(),
-                dioset_tab2 : tab2(),
-                dioset_tab3 : tab3(),
-                dioset_tab4 : tab4()
+                dioset_tab1: tab1(),
+                dioset_tab2: tab2(),
+                dioset_tab3: tab3(),
+                dioset_tab4: tab4()
             };
 
             //Mise à jour
@@ -6121,10 +6857,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
 
                     '</div>' +
 
@@ -6137,43 +6873,48 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 //
                 var version = dio_version[2] += dio_version[3]
-                var beforeversion = dio_version.replace(version, version-1);
+                var beforeversion = dio_version.replace(version, version - 1);
                 HTML_tab1 += '<div id="NotifText">' +
                     //'<p>- '+ getTexts("Notification", "A") +'.</p>' +
 
-                    '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-tip.png) no-repeat;font-weight: bold;">News and changes</div>' +
+                    '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(' + Home_img + 'gpcl-tip.png) no-repeat;font-weight: bold;">News and changes</div>' +
 
-'<p>To see in detail the changes on the code it&#39;s here -&gt;&nbsp;</p>' +
+                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- Translation<span style="font-size:18px;"> :</span></span></span><br />' +
+                    '-&gt; It is now possible to change the language. This function will be used by the Finns to be able to translate the script (even if the merger of the communities is not for now).<br />' +
+                    '-&gt;&nbsp;I also worked on the translation feel free to translate by pressing add a language :)<br />' +
+                    '<img alt="Capture d ecran 2022 04 16 232551" height="434" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-04-16-232551.png" width="200" /></p>' +
 
-'<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- <span style="font-size:18px;">Points of Culture (Administrator) :</span></span></span><br />' +
-'-&gt; The counter and now add in the agora. <strong>[-9]</strong><br />' +
-'&nbsp;<img alt="Capture d ecran 2022 02 25 183746" height="60" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-183746.png" width="698" /></p>' +
+                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- Is the script up to date<span style="font-size:18px;"> ?&nbsp;</span></span></span><br />' +
+                    '-&gt; It is now easy to determine the version of the script -&gt;<br />' +
+                    '<img alt="Capture d ecran 2022 04 16 232925" class="img-circle" height="33" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-04-16-232925.png" width="31" />&nbsp;The version is up to date<br />' +
+                    '<img alt="Capture d ecran 2022 04 16 233005" class="img-circle" height="32" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-04-16-233005.png" width="30" />&nbsp;The version is not up to date<br />' +
+                    '<img alt="Capture d ecran 2022 04 16 233035" class="img-circle" height="31" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-04-16-233035.png" width="29" />&nbsp;Developer version</p>' +
 
-                    '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
+                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- <span style="font-size:18px;">Culture Preview (Admin)&nbsp;:</span></span></span><br />' +
+                    '-&gt; Numbers greater than 1000 are indicated by a K (the exact sum can be found in the tooltip)<br />' +
+                    '-&gt;&nbsp;The 9852 is for the example you understood&nbsp;&nbsp;<img alt="" src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-lol.gif" /><br />' +
+                    '<img alt="Capture d ecran 2022 03 19 211924" height="71" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-03-19-211924.png" width="258" /></p>' +
 
-'<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
+                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;"><span style="font-size:18px;">- Script optimization<span style="font-size:18px;"></span></span></span></p>' +
 
-'<p><span style="font-size:18px;">- </span><span style="font-size:18px;"> Points of Culture (Administrator) :</span><br />' +
-'-&gt; Error correction and optimization.&nbsp;<strong>Thanks to &quot;@Neriss&quot; for reporting the issue</strong><br />' +
-'&nbsp;<img alt="Capture d ecran 2022 02 25 180353" height="38" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-180353.png" width="277" /></p>' +
 
-'<p><span style="font-size:18px;"></span></p>' +
+                    '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(' + Home_img + 'gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
 
-'<p><span style="font-size:18px;">-</span><span style="font-size:18px;"></span><span style="font-size:18px;"> BBcode of the city&nbsp;:</span><br />' +
-'-&gt; Error Fix (Copy button not updating)&nbsp;<strong>Thanks to &quot;@Neriss&quot; and &quot;@SunKing&quot; for reporting the issue</strong><br />' +
-'&nbsp;<img alt="Capture d ecran 2022 02 25 181643" height="53" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-181643.png" width="249" /></p>' +
+                    '<p><span style="font-size:18px;">- </span><span style="font-size:18px;"> Culture Points (Administrator) :</span><br />' +
+                    '-&gt; The layout was broken. <strong>Thanks to &quot;@Buffysara&quot; and &quot;@SunKing&quot; for reporting the issue</strong></p>' +
 
-'<p><span style="font-size:18px;">-</span><span style="font-size:18px;">&nbsp;Activity box :</span><br />' +
-'&nbsp;-&gt; It was difficult to find the area to move it.<br />' +
-'&nbsp;<img alt="Capture d ecran 2022 02 25 181939" height="55" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-181939.png" width="130" /></p>' +
+                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;">-&nbsp;</span><span style="font-size:18px;">Overview of the caves (Administrator) :</span><br />' +
+                    '&nbsp;-&gt;&nbsp;The layout was broken. <strong>Thanks to &quot;@Buffysara&quot; for reporting the issue</strong></p>' +
 
-'<p><span style="font-size:18px;">-&nbsp;</span><span style="font-size:18px;">Keyboard shortcuts for Windows :</span><br />' +
-'&nbsp;-&gt;&nbsp;Just press the HK button to restart the function. <strong>Thanks to &quot;@Neriss&quot; for reporting the issue</strong><br />' +
-'&nbsp;<img alt="Capture d ecran 2022 02 25 183038" height="55" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-02-25-183038.png" width="135" /></p>' +
+                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;">- </span><span style="font-size:18px;">Copy to clipboard button&nbsp;:</span><br />' +
+                    '&nbsp;-&gt; It was not always possible to copy</p>' +
 
-                    '<div style="height: 30px;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
+                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;">- </span><span style="font-size:18px;">Keyboard shortcuts for Windows&nbsp;:</span><br />' +
+                    '&nbsp;-&gt;&nbsp;The shortcut for planning was not the correct one on Firefox. <strong>Thanks to &quot;@Neriss&quot; for reporting the issue</strong></p>' +
 
-                    '<p>Please feel free to report any bugs and <a href="'+ getTexts("link", "Update") +'" target="_blank">comment</a> on this update!</p>' +
+                    '<div style="height: 30px;background: url(' + Home_img + 'gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
+
+                    '<p>Please feel free to report any bugs and <a href="' + getTexts("link", "Update") + '" target="_blank">comment</a> on this update!</p>' +
 
                     '<p><br />' +
                     '<p>To see all the modifications I invite you to go to this link<br />' +
@@ -6196,10 +6937,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
 
                     '</div>' +
 
@@ -6214,92 +6955,92 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     '<p>' + getTexts("labels", "ingame_name")[0] + '</p>' +
                     '<p>' + getTexts("labels", "ingame_name")[1] + '</p>' +
-                    '<table style="float:left;margin-right: 18px;">'+
-                    '<tr><th colspan="3">' + getTexts("labels", "donat") + '</th></tr>'+
-                    (function(){
-                    var donations = [
-                        [1, 5, 60, 56.51, 'Christiane G'],
-                        [2, 1, 50, 47.2, 'Nepomuk P'],
-                        [3, 1, 30, 28.78, 'glaglatoulle'],
-                        [3, 3, 30, 27.48, 'Eli M'],
-                        [4, 2, 22, 20.66, 'Ulla R'],
-                        [5, 1, 20, 19.07, 'kanokwan s'],
-                        [5, 1, 20, 19.07, 'Elwira G'],
-                        [5, 1, 20, 19.07, 'Artur Z'],
-                        [5, 2, 20, 18.32, 'Ines L'],
-                        [5, 1, 20, 19.07, 'Sven K'],
-                        [6, 1, 15, 14.21, 'Attila'],
-                        [7, 1, 10, 9.36, 'Andreas S'],
-                        [7, 1, 10, 9.36, 'SABINE B'],
-                        [7, 1, 10, 9.36, 'Herbert L'],
-                        [7, 1, 10, 9.36, 'Andreas A'],
-                    ];
-                    var donations2 = [
-                        [7, 1, 10, 9.16, 'Eric A'],
-                        [7, 1, 10, 9.36, 'Jean-Paul B'],
-                        [7, 1, 10, 9.36, 'Ocaso'],
-                        [7, 1, 10, 9.36, 'Uwe J'],
-                        [7, 1, 10, 9.36, 'Christian P'],
-                        [7, 1, 10, 9.36, 'Doris H'],
-                        [7, 1, 10, 9.36, 'etienne1306'],
-                        [8, 1, 5.55, 5.04, 'Annette H'],
-                        [8, 1, 5.55, 5.04, 'Susi K'],
-                        [9, 1, 5, 4.5, 'Societatea-de-Salvare B'],
-                        [9, 1, 5, 4.5, 'Diana S'],
-                        [9, 1, 5, 4.4, 'Therese S'],
-                        [9, 1, 5, 4.5, 'Mateusz O'],
-                        [9, 1, 5, 4.5, 'Raul-Garcia C'],
-                        [9, 1, 5, 4.5, 'Kornelia M'],
-                    ];
-                    var donations3 = [
-                        [9, 1, 5, 4.5, 'Sven O'],
-                        [9, 1, 5, 4.5, 'Swen A'],
-                        [9, 1, 5, 5.5, 'Max P'],
-                        [9, 1, 5, 4.5, 'Petr M'],
-                        [9, 1, 5, 4.5, 'Antonio-Acuña B'],
-                        [9, 1, 5, 4.5, 'Detlef Z'],
-                        [9, 1, 5, 4.5, 'Denai'],
-                        [9, 1, 5, 4.5, 'Thomas C'],
-                        [9, 1, 5, 4.5, 'José-Miguel A'],
-                        [9, 1, 5, 4.5, 'Kallerberg'],
-                        [9, 1, 5, 4.5, 'Comte M'],
-                        [10, 1, 2.5, 2.08, 'Martin G'],
-                        [11, 1, 2, 1.59, 'Marie-Laure D'],
-                        [12, 1, 1, 0.38, 'Francesco L'],
-                        [12, 1, 1, 0.62, 'Gyorgy C'],
-                    ];
-                    var donation_table = "";
-                    var donation_table2 = "";
-                    var donation_table3 = "";
+                    '<table style="float:left;margin-right: 18px;">' +
+                    '<tr><th colspan="3">' + getTexts("labels", "donat") + '</th></tr>' +
+                    (function () {
+                        var donations = [
+                            [1, 5, 60, 56.51, 'Christiane G'],
+                            [2, 1, 50, 47.2, 'Nepomuk P'],
+                            [3, 1, 30, 28.78, 'glaglatoulle'],
+                            [3, 3, 30, 27.48, 'Eli M'],
+                            [4, 2, 22, 20.66, 'Ulla R'],
+                            [5, 1, 20, 19.07, 'kanokwan s'],
+                            [5, 1, 20, 19.07, 'Elwira G'],
+                            [5, 1, 20, 19.07, 'Artur Z'],
+                            [5, 2, 20, 18.32, 'Ines L'],
+                            [5, 1, 20, 19.07, 'Sven K'],
+                            [6, 1, 15, 14.21, 'Attila'],
+                            [7, 1, 10, 9.36, 'Andreas S'],
+                            [7, 1, 10, 9.36, 'SABINE B'],
+                            [7, 1, 10, 9.36, 'Herbert L'],
+                            [7, 1, 10, 9.36, 'Andreas A'],
+                        ];
+                        var donations2 = [
+                            [7, 1, 10, 9.16, 'Eric A'],
+                            [7, 1, 10, 9.36, 'Jean-Paul B'],
+                            [7, 1, 10, 9.36, 'Ocaso'],
+                            [7, 1, 10, 9.36, 'Uwe J'],
+                            [7, 1, 10, 9.36, 'Christian P'],
+                            [7, 1, 10, 9.36, 'Doris H'],
+                            [7, 1, 10, 9.36, 'etienne1306'],
+                            [8, 1, 5.55, 5.04, 'Annette H'],
+                            [8, 1, 5.55, 5.04, 'Susi K'],
+                            [9, 1, 5, 4.5, 'Societatea-de-Salvare B'],
+                            [9, 1, 5, 4.5, 'Diana S'],
+                            [9, 1, 5, 4.4, 'Therese S'],
+                            [9, 1, 5, 4.5, 'Mateusz O'],
+                            [9, 1, 5, 4.5, 'Raul-Garcia C'],
+                            [9, 1, 5, 4.5, 'Kornelia M'],
+                        ];
+                        var donations3 = [
+                            [9, 1, 5, 4.5, 'Sven O'],
+                            [9, 1, 5, 4.5, 'Swen A'],
+                            [9, 1, 5, 5.5, 'Max P'],
+                            [9, 1, 5, 4.5, 'Petr M'],
+                            [9, 1, 5, 4.5, 'Antonio-Acuña B'],
+                            [9, 1, 5, 4.5, 'Detlef Z'],
+                            [9, 1, 5, 4.5, 'Denai'],
+                            [9, 1, 5, 4.5, 'Thomas C'],
+                            [9, 1, 5, 4.5, 'José-Miguel A'],
+                            [9, 1, 5, 4.5, 'Kallerberg'],
+                            [9, 1, 5, 4.5, 'Comte M'],
+                            [10, 1, 2.5, 2.08, 'Martin G'],
+                            [11, 1, 2, 1.59, 'Marie-Laure D'],
+                            [12, 1, 1, 0.38, 'Francesco L'],
+                            [12, 1, 1, 0.62, 'Gyorgy C'],
+                        ];
+                        var donation_table = "";
+                        var donation_table2 = "";
+                        var donation_table3 = "";
 
-                    var d = 0;
-                    for(d = 0; d < donations.length; d++){
+                        var d = 0;
+                        for (d = 0; d < donations.length; d++) {
 
-                        var donation_class = "";
+                            var donation_class = "";
 
-                        switch(donations[d][0]){
-                            case 1: donation_class = "gold"; break;
-                            case 2: donation_class = "silver"; break;
-                            case 3: donation_class = "bronze"; break;
-                            default: donation_class = "green2"; break;
+                            switch (donations[d][0]) {
+                                case 1: donation_class = "gold"; break;
+                                case 2: donation_class = "silver"; break;
+                                case 3: donation_class = "bronze"; break;
+                                default: donation_class = "green2"; break;
+                            }
+
+                            donation_table += '<tr class="donation"><td class="laurel ' + donation_class + '"></td><td>' + donations[d][4] + '</td><td class="value">' + donations[d][2] + '€</td></tr>'; //<td class="value">(' + donations[d][3] + '€)</td></tr>';
+                        }
+                        for (d = 0; d < donations2.length; d++) {
+
+                            var donation_class2 = "";
+                            donation_table2 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations2[d][4] + '</td><td class="value">' + donations2[d][2] + '€</td></tr>'; //<td class="value">(' + donations2[d][3] + '€)</td></tr>';
+                        }
+                        for (d = 0; d < donations3.length; d++) {
+
+                            var donation_class3 = "";
+                            donation_table3 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations3[d][4] + '</td><td class="value">' + donations3[d][2] + '€</td></tr>' //<td class="value">(' + donations3[d][3] + '€)</td></tr>';
                         }
 
-                        donation_table += '<tr class="donation"><td class="laurel '+ donation_class +'"></td><td>' + donations[d][4] + '</td><td class="value">' + donations[d][2] + '€</td><td class="value">(' + donations[d][3] + '€)</td></tr>';
-                    }
-                    for(d = 0; d < donations2.length; d++){
-
-                        var donation_class2 = "";
-                        donation_table2 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations2[d][4] + '</td><td class="value">' + donations2[d][2] + '€</td><td class="value">(' + donations2[d][3] + '€)</td></tr>';
-                    }
-                    for(d = 0; d < donations3.length; d++){
-
-                        var donation_class3 = "";
-                        donation_table3 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations3[d][4] + '</td><td class="value">' + donations3[d][2] + '€</td><td class="value">(' + donations3[d][3] + '€)</td></tr>';
-                    }
-
-                    return donation_table + '</table><table style="float:left;margin-right: 18px; margin-top: 30px;">' + donation_table2 + '</table><table style="float:left;margin-right: 18px; margin-top: 30px;">' + donation_table3;
-                })() +
-                    '</table>'+
+                        return donation_table + '</table><table style="float:left;margin-right: 18px; margin-top: 30px;">' + donation_table2 + '</table><table style="float:left;margin-right: 18px; margin-top: 30px;">' + donation_table3;
+                    })() +
+                    '</table>' +
                     '</div>';
                 return HTML_tab2;
             }
@@ -6308,26 +7049,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var HTML_tab3 = "";
                 var supported_lang = [getTexts("translations", "info"), getTexts("translations", "add_lang")];
                 $.each(LANG, function (a, b) {
-                    supported_lang.push(a);
+                    if (a != "AUTO") {
+                        supported_lang.push(a);
+                    }
                 });
-                /*var flag = 'https://www.tuto-de-david1327.com/medias/images/flag.16.' + translations[d][0] +'.png'
-                $('<style id="dio_BBplayer_style"> ' +
-                  '.flag.16 { background:url(https://www.tuto-de-david1327.com/medias/images/flags.16.png); width: 16px; height: 11px; background-position: 0px -290px;} ' +
-                  '.flag.16.de { background-position: 0px -290px;} ' +
-                  '.flag.16.en { } ' +
-                  '.flag.16.it { background-position: 0px -290px;} ' +
-                  '.flag.16.fr { background-position: 224px -44px;} ' +
-                  '.flag.16.ru { background-position: 0px -290px;} ' +
-                  '.flag.16.pl { background-position: 0px -290px;} ' +
-                  '.flag.16.es { background-position: 0px -290px;} ' +
-                  '.flag.16.ar { background-position: 0px -290px;} ' +
-                  '.flag.16.br { background-position: 0px -290px;} ' +
-                  '.flag.16.pt { background-position: 0px -290px;} ' +
-                  '.flag.16.cz { background-position: 0px -290px;} ' +
-                  '.flag.16.ro { background-position: 0px -290px;} ' +
-                  '.flag.16.nl { background-position: 0px -290px;} ' +
-                  '.flag.16.gr { background-position: 0px -290px;} ' +
-                  '</style>').appendTo("head");*/
 
                 HTML_tab3 += '<div style="overflow-x: hidden; padding-left: 5px; position: relative;"></div>' +
                     '</div>' +
@@ -6339,7 +7064,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '</div>' +
 
@@ -6348,7 +7073,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div id="dio_donate_btn" style="position:relative; left: 25px; top: 484px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
-                HTML_tab3 += grepoGameBorder + getTexts("labels", "Tran") + '<div style="float: right; margin-top: -2px; margin-right: -5px">' + dio.grepo_dropdown_flag("langdiv", supported_lang)[0].outerHTML + '</div></div>';
+                HTML_tab3 += grepoGameBorder + getTexts("labels", "Tran") + '<div style="float: right; margin-top: -2px; margin-right: -5px">' + dio.grepo_dropdown_flag("langdiv", supported_lang, null, null, null)[0].outerHTML + '</div></div>';
 
                 //var lngFlags = "";
 
@@ -6358,12 +7083,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div id="langdiv" sel="0">'; // style="opacity:0.30;"
 
                 $.each(LANG, function (a) {
-                    HTML_tab3 += '<img value="'+ a + '" src="https://www.tuto-de-david1327.com/medias/images/flag.16.' + a +'.png" style="margin:0 5px;">';
+                    if (a != "AUTO") {
+                        HTML_tab3 += '<img value="' + a + '" src="' + Home_img + 'flag.16.' + a + '.png" style="margin:0 5px;">';
+                    }
                 });
 
                 HTML_tab3 += '</div>' +
                     '<li>' + getTexts("translations", "trans_infotext2") + '</li>' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/images/translations-tuto-1.png" style="margin:0 5px;">' +
+                    '<img src="' + Home_img + 'translations-tuto-1.png" style="margin:0 5px;">' +
                     '<li>' + getTexts("translations", "trans_infotext3") +
                     '<li>' + getTexts("translations", "trans_infotext4") + '</li>' +
                     '<div>' + dio.createButton(getTexts("translations", "send")) + '</div></li>' +
@@ -6371,35 +7098,35 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<li>' + getTexts("translations", "trans_infotext6") + '</li>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "forum") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "cat_forum") + '</span></a>' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "cat_forum") + '</span></a>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "Translations") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
                     '</ul><div style="margin-top:30px"><b>' + getTexts("translations", "credits") + ':</b><ul style="list-style:square outside;">';
 
-                HTML_tab3 += '<table>'+
-                    (function(){
-                    var translations = [
-                        ["DE", "Diony / Krieger des Lichts"],
-                        ["EN", "Diony"],
-                        ["IT", "amliam / Pyrux"],
-                        ["FR", "eclat49 / David1327"],
-                        ["RU", "MrBobr"],
-                        ["PL", "anpu"],
-                        ["ES", "Juana de Castilla"],
-                        ["BR", "HELL / BUGS"],
-                        ["CZ", "Piwus"],
-                        ["RO", "Nicolae01"],
-                        ["NL", "Firebloem"],
-                        ["GR", "AbstractGR"],
-                    ];
+                HTML_tab3 += '<table>' +
+                    (function () {
+                        var translations = [
+                            ["DE", "Diony / Krieger des Lichts"],
+                            ["EN", "Diony"],
+                            ["IT", "amliam / Pyrux"],
+                            ["FR", "eclat49 / David1327"],
+                            ["RU", "MrBobr"],
+                            ["PL", "anpu"],
+                            ["ES", "Juana de Castilla"],
+                            ["BR", "HELL / BUGS"],
+                            ["CZ", "Piwus"],
+                            ["RO", "Nicolae01"],
+                            ["NL", "Firebloem"],
+                            ["GR", "AbstractGR"],
+                        ];
 
-                    var translation_table = "";
-                    for(var d = 0; d < translations.length; d++){
-                        translation_table += '<tr class="translation"><td style="list-style:square outside;padding-right: 5px"></td><td><img src="https://www.tuto-de-david1327.com/medias/images/flag.16.' + translations[d][0] +'.png" style="margin:0 5px;"></td><td>' + translations[d][0] + ':</td><td class="value">' + translations[d][1] + '</td></tr>';
-                    }
-                    return translation_table;
-                })() +
+                        var translation_table = "";
+                        for (var d = 0; d < translations.length; d++) {
+                            translation_table += '<tr class="translation"><td style="list-style:square outside;padding-right: 5px"></td><td><img src="' + Home_img + 'flag.16.' + translations[d][0] + '.png" style="margin:0 5px;"></td><td>' + translations[d][0] + ':</td><td class="value">' + translations[d][1] + '</td></tr>';
+                        }
+                        return translation_table;
+                    })() +
                     '</table></div>';
                 HTML_tab3 += '</div>';
                 //HTML_tab3 += dio.grepo_btn("diomenu_einstellungen_sendmail", getTexts("Settings", "send"))[0].outerHTML;
@@ -6410,6 +7137,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 var HTML_tab4 = '<div style="overflow-x: hidden; padding-left: 5px; position: relative;"></div>' +
                     '</div>' +
+
+                    '<div id="dio_res" style="position: absolute; right: 3px; top: 3px;">' + dio.createButton(getTexts("buttons", "res")) + '</div>' +
+
                     '<div style="bottom: -1px;position: absolute; font-weight: bold;">' +
 
                     '<div id="dioerrordio" style=" float: left; margin: -5px 0 -5px 10px;">' + dio.createButton(getTexts("translations", "send")) + '</div>' +
@@ -6418,7 +7148,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="https://www.tuto-de-david1327.com/medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '</div>' +
 
@@ -6429,22 +7159,32 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 HTML_tab4 += grepoGameBorder + 'BUG</div>';
 
-                var name_a = "", errordio = uw.MM.DIO.errorDio;
+                var name_a = "", errordio = DATA.error[dio_version], script = uw.MM.DIO.info_dio.script, errorr = uw.MM.DIO.errorDio;
+
+                HTML_tab4 += '<div id="NotifText">' + '<p>' +
+                    (script.grcrt ? '<b>Grcrt:</b> true; ' : "") +
+                    (script.HMole ? '<b>HMole:</b> true; ' : "") +
+                    (script.Gt ? '<b>Gt:</b> true; ' : "") +
+                    (script.FLASK ? '<b>FLASK:</b> true; ' : "") +
+                    (script.Quack ? '<b>Quack:</b> true; ' : "") +
+                    (script.GrepoData ? '<b>GrepoData:</b> true; ' : "") + '</p>';
+
                 $.each(errordio, function (name) {
                     if (name !== "nb") {
                         name_a += '<p><b>Function:</b> ' + errordio[name].function + '<br />' +
                             '<b>Message:</b> ' + errordio[name].message + '<br />' +
-                            '<b>Error:</b> ' + errordio[name].error + '<br />' +
+                            (typeof (errorr[name]) !== "undefined" ? ('<b>Error:</b> ' + errorr[name].error + '<br />') : "") +
                             '<b>Version:</b> ' + errordio[name].version + '<br />' +
                             '<b>latest_version:</b> ' + uw.MM.DIO.info_dio.latest_version + '<br />' +
                             '<b>Browser:</b> ' + errordio[name].browser + '<br />' +
                             '<b>System:</b> ' + errordio[name].system + '<br />' +
                             '<b>Nb:</b> ' + errordio[name].nb + '<br />' +
-                            '<b>Date:</b> ' + errordio[name].date + '</p>';
+                            '<b>Date:</b> ' + errordio[name].date + '<br />' +
+                            '<b>Date fin:</b> ' + errordio[name].date_fin + '</p>';
                     }
                 });
 
-                HTML_tab4 += '<div id="NotifText">' + name_a;
+                HTML_tab4 += name_a;
                 if (name_a === "") {
                     HTML_tab4 += "no bug";
                 }
@@ -6454,19 +7194,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             function handle_and_style() {
 
+                dio.clipboard("#dio-copy-Traductions-quote", null, "handle_and_style", true)
+
                 $("#dioerrordio").click(function () {
-                    var name_a = "", errordio = uw.MM.DIO.errorDio;
+                    var name_a = "", errordio = DATA.error[dio_version], script = uw.MM.DIO.info_dio.script, errorr = uw.MM.DIO.errorDio;
+                    var name_b = '' +
+                        'Grcrt: ' + (script.grcrt ? true : false) + "; " +
+                        'HMole: ' + (script.HMole ? true : false) + "; " +
+                        'Gt: ' + (script.Gt ? true : false) + "; " +
+                        'FLASK: ' + (script.FLASK ? true : false) + "; " +
+                        'Quack: ' + (script.Quack ? true : false) + "; " +
+                        'GrepoData: ' + (script.GrepoData ? true : false);
+
+
                     $.each(errordio, function (name) {
                         if (name !== "nb") {
                             name_a += 'Function: ' + errordio[name].function + "\n" +
                                 'Message: ' + errordio[name].message + "\n" +
-                                'Error: ' + errordio[name].error + "\n" +
+                                (typeof (errorr[name]) !== "undefined" ? ('Error: ' + errorr[name].error + "\n") : "") +
                                 'Version: ' + errordio[name].version + "\n" +
                                 'latest_version ' + uw.MM.DIO.info_dio.latest_version + "\n" +
                                 'Browser: ' + errordio[name].browser + "\n" +
                                 'System: ' + errordio[name].system + "\n" +
                                 'Nb: ' + errordio[name].nb + "\n" +
-                                'Date: ' + errordio[name].date + "\n\n";
+                                'Date: ' + errordio[name].date + "\n" +
+                                'Date fin: ' + errordio[name].date_fin + "\n\n";
                         }
                     });
                     if (name_a === "") {
@@ -6476,8 +7228,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     uw.hOpenWindow.showConfirmDialog('', getTexts("translations", "send"), function () {
                         var trans_HTML_send = pName + '<br/>' + PID + '<br/>' + WID + '<p/>';
 
-                        var trans_BBcode_send = pName + '\n' + WID + '\n\n';
-                        trans_BBcode_send += "`" + name_a + "`\n";
+                        var trans_BBcode_send = pName + "\n" + WID + "\n\n";
+                        trans_BBcode_send += "`" + name_b + "\n" + name_a + "`\n";
 
                         createWindowType("DIO_BBCODEE", getTexts("messages", "bbmessages"), 700, 350, true, ["center", "center", 100, 100]);
                         var expRahmen_a = "<div class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
@@ -6497,12 +7249,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     });
                 });
 
-
-
-
+                $("#dio_res").click(function () {
+                    uw.hOpenWindow.showConfirmDialog('', getTexts("labels", "raf"), function () {
+                        deleteValue("error");
+                        location.reload();
+                    });
+                });
 
                 $("#diomenu_einstellungen_sendmail").css({
-                    "margin-left" : "1px"
+                    "margin-left": "1px"
                     //"top" : "30px"
                 });
 
@@ -6581,24 +7336,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
 
                 /*$("#diomenu_einstellungen_sendmail").click(function () {
-					if ($("#trans_lang").length && !$.trim($("#trans_lang").val())) {
-						uw.HumanMessage.error(dio_icon + getTexts("Settings", "enter_lang_name"));
-						return;
-					} else if ($("#langdiv").val() === getTexts("Settings", "info")) {
-						uw.HumanMessage.error(dio_icon + getTexts("Settings", "choose_lang"));
-						return;
-					} else if ($("#trans_content .toSend").length === 0) {
-						uw.HumanMessage.error(dio_icon + getTexts("Settings", "no_translation"));
-						return;
-					}
-					hOpenWindow.showConfirmDialog('', getTexts("Settings", "trans_sure"), function () {
-						$("#ajax_loader").css({"visibility":"visible"});
-						var trans_HTML_send = pName + "<br/>" + PID + "<br/>" + WID + "<p/>";
-						$("#trans_content > DIV").each(function (i) {
-							if ($(".toSend", this).length != 0) {
-								trans_HTML_send += "<b>" + $("SPAN", this).text() + " : {</b><br/>";
-								$(".toSend", this).each(function (index) {
-									trans_HTML_send += $(this).data("name") + " : '" + $("td:last textarea", this).val() + "',<br/>";
+                    if ($("#trans_lang").length && !$.trim($("#trans_lang").val())) {
+                        uw.HumanMessage.error(dio_icon + getTexts("Settings", "enter_lang_name"));
+                        return;
+                    } else if ($("#langdiv").val() === getTexts("Settings", "info")) {
+                        uw.HumanMessage.error(dio_icon + getTexts("Settings", "choose_lang"));
+                        return;
+                    } else if ($("#trans_content .toSend").length === 0) {
+                        uw.HumanMessage.error(dio_icon + getTexts("Settings", "no_translation"));
+                        return;
+                    }
+                    hOpenWindow.showConfirmDialog('', getTexts("Settings", "trans_sure"), function () {
+                        $("#ajax_loader").css({"visibility":"visible"});
+                        var trans_HTML_send = pName + "<br/>" + PID + "<br/>" + WID + "<p/>";
+                        $("#trans_content > DIV").each(function (i) {
+                            if ($(".toSend", this).length != 0) {
+                                trans_HTML_send += "<b>" + $("SPAN", this).text() + " : {</b><br/>";
+                                $(".toSend", this).each(function (index) {
+                                    trans_HTML_send += $(this).data("name") + " : '" + $("td:last textarea", this).val() + "',<br/>";
                                 });
                                 trans_HTML_send += "},<br/>";
                             }
@@ -6627,15 +7382,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         });
                         xhr.fail(function (jqXHR, textStatus, errorThrown) {
                             $("#dioajaxloader").css({
-								"display" : "none"
-							});
-							uw.HumanMessage.error(dio_icon + getTexts("Settings", "trans_fail"));
-						});
-					});
-				});*/
+                                "display" : "none"
+                            });
+                            uw.HumanMessage.error(dio_icon + getTexts("Settings", "trans_fail"));
+                        });
+                    });
+                });*/
 
                 $(".contentDiv > DIV:last-child").css({
-                    "margin-bottom" : "5px"
+                    "margin-bottom": "5px"
                 });
                 $("#langdiv").change(function () {
                     var lang_tab3 = $(this).val().toLowerCase();
@@ -6643,7 +7398,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     langHTML_tab3 += '<div style="margin-top: 5px; padding: 5px; border: 1px solid #B48F45"><div><b>' + getTexts("translations", "trans") + ': </b><b id="diolang">' + lang_tab3.toUpperCase() + '</b>';
                     if ($(this).val() === getTexts("translations", "add_lang")) {
                         langHTML_tab3 += '</div></div>';
-                    } else langHTML_tab3 += '<img src="https://www.tuto-de-david1327.com/medias/images/flag.48.' + lang_tab3 +'.png" style="margin: 0 5px; position: relative; top: -13px; float: right; right: -13px;"></div></div>';
+                    } else langHTML_tab3 += '<img src="' + Home_img + 'flag.48.' + lang_tab3 + '.png" style="margin: 0 5px; position: relative; top: -13px; float: right; right: -13px;"></div></div>';
 
                     if ($(this).val() === getTexts("translations", "info")) {
                         BBwnd.setContent(inhalte.dioset_tab3);
@@ -6683,47 +7438,52 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $("#trans_content").html(langHTML_tab3);
                     $("#trans_content td").css({
                         //"width" : "50%",
-                        "border-top" : "1px solid grey",
+                        "border-top": "1px solid grey",
                         //"border" : "1px solid transparent",
                     });
                     $("#trans_content textarea").css({
                         //"height" : "18px",
-                        "width" : "99%",
-                        "resize" : "vertical",
-                        "margin" : "0",
-                        "padding" : "0"
+                        "width": "99%",
+                        "resize": "vertical",
+                        "margin": "0",
+                        "padding": "0"
                     });
                     $("#trans_content textarea").on("change", function () {
                         $(this).parent().css({
-                            "border" : "1px solid green"
+                            "border": "1px solid green"
                         });
                         $(this).parent().parent().addClass("toSend");
                         $(this).val($(this).val());
                     });
                     $(".contentDiv div:last-child").css({
-                        "margin-bottom" : "5px"
+                        "margin-bottom": "5px"
                     });
                 });
             }
             var BBwnd = uw.GPWindowMgr.Create(uw.GPWindowMgr.TYPE_DIO_Notification) || uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_Notification);
             //BBwnd.setTitle(getTexts("qtoolbox", "settings"));
             if (dio.bug) {
-            BBwnd.setContent(inhalte.dioset_tab4);
-            }else {
-            BBwnd.setContent(inhalte.dioset_tab1);
+                BBwnd.setContent(inhalte.dioset_tab4);
+            } else if (dio.add_lang) {
+                BBwnd.setContent(inhalte.dioset_tab3);
+            } else {
+                BBwnd.setContent(inhalte.dioset_tab1);
             }
             if ($("#diomenu_settings_tabs").length === 0) {
                 BBwnd.getJQElement().append('<div class="menu_wrapper minimize closable" style="left: 1px; right: 33px"><ul id="diomenu_settings_tabs" class="menu_inner" style="right: 24px;">' +
-                                            dio.grepo_submenu("dioset_tab4", "BUG")[0].outerHTML +
-                                            dio.grepo_submenu("dioset_tab3", getTexts("translations", "translations"))[0].outerHTML +
-                                            dio.grepo_submenu("dioset_tab2", getTexts("labels", "donat"))[0].outerHTML +
-                                            dio.grepo_submenu("dioset_tab1", getTexts("Settings", "Update"))[0].outerHTML + '</ul></div>');
+                    dio.grepo_submenu("dioset_tab4", "BUG")[0].outerHTML +
+                    dio.grepo_submenu("dioset_tab3", getTexts("translations", "translations"))[0].outerHTML +
+                    dio.grepo_submenu("dioset_tab2", getTexts("labels", "donat"))[0].outerHTML +
+                    dio.grepo_submenu("dioset_tab1", getTexts("Settings", "Update"))[0].outerHTML + '</ul></div>');
             }
             $("#diomenu_settings_tabs li a").removeClass("active");
             if (dio.bug) {
                 $("#dioset_tab4").addClass("active");
                 dio.bug = false
-            }else {$("#dioset_tab1").addClass("active");}
+            } else if (dio.add_lang) {
+                $("#dioset_tab3").addClass("active");
+                dio.add_lang = false
+            } else { $("#dioset_tab1").addClass("active"); }
             handle_and_style();
             $("#diomenu_settings_tabs li a").click(function () {
                 $("#diomenu_settings_tabs li a").removeClass("active");
@@ -6735,17 +7495,68 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         create: function (nid, feature) {
             var Notification = new NotificationHandler();
             Notification.notify($('#notification_area>.notification').length + 1, uw.NotificationType.DIO_TOOLS,
-                                "<span style='color:rgb(8, 207, 0)'><b><u>" + getTexts("Settings", "Feature2" /*"Feature"*/) + "!</u></b></span>" + feature + "<span class='small notification_date'>DIO-Tools-david1327: v" + dio_version + "</span>");
+                "<span style='color:rgb(8, 207, 0)'><b><u>" + getTexts("Settings", "Feature2" /*"Feature"*/) + "!</u></b></span>" + feature + "<span class='small notification_date'>DIO-Tools-david1327: v" + dio_version + "</span>");
         },
-        addCopyListener: function() {
-            new uw.ClipboardJS("#dio-copy-Traductions-quote").on("success", function() {
-                setTimeout(function() {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                }, 50)
-                if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
-                    uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
+        addCopyListener: function () {
+            dio.clipboard("#dio-copy-Traductions-quote", null, "handle_and_style", true)
+        },
+    };
+
+    /*******************************************************************************************************************************
+        * compatibility Script
+        *******************************************************************************************************************************/
+    var compatibility = {
+        flask_tools: function () {
+            // compatibility flask-tools
+            if (typeof (uw.FLASK_GAME) !== "undefined") {
+                uw.HumanMessage.error(dio_icon + "flask");
+                //Units overview
+                $('#available_units_bullseye').remove();
+                $('#available_units_bullseye_addition').remove();
+                $('#flask_available_units_style').remove();
+                $('#flask_available_units_style_addition').remove();
+
+                //Unit Comparison
+                $('#btn_available_units').remove();
+
+                if (uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_FLASK_UNITS)) {
+                    uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_FLASK_UNITS).close();
                 }
-            })
+
+                //Unit strength
+                $('#strength').remove();
+                $('#flask_strength_style').remove();
+
+                //Simulator
+                $('#flask_simulator_strength_style').remove();
+                $('#flask_simulator_strength').remove();
+
+                //Recruiting trade
+                $('#flask_style_recruiting_trade').remove();
+
+                //Transport capacity
+                $('#transporter').remove();
+
+                //Map
+                $("#flask_game_list_header_style").remove();
+                $("#flask_town_popup_style").remove();
+
+                //style
+                $('<style>' +
+                    '#ui_box .btn_settings.flask_settings { top: 52px; right: 110px; } ' +
+                    '#flask_townbb { left: 182px; } ' +
+                    '#flask_simulator_strength {display: none; } ' +
+                    //
+                    '.btn.btn_trade {display: none!important; } ' +
+                    //Recruiting trade
+                    '.rec_trade {display: none!important; } ' +
+                    //Defense form
+                    '.flask_bbcode_option {display: none!important; } ' +
+                    //
+                    '#pop_baracks, #strength_baracks {display: none!important; } ' +
+
+                    '</style>').appendTo('head');
+            };
         },
     };
 
@@ -6758,7 +7569,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // Agora
             $('<style id="dio_Agora_style">#dio_Agora {position: absolute; width: 144px; height: 26px; left: 1px; z-index: 5;}</style>').appendTo('head');
             $('<a id="dio_Agora"></a>').appendTo('.nui_battlepoints_container');
-            $("#dio_Agora").click(function () {uw.PlaceWindowFactory.openPlaceWindow();});
+            $("#dio_Agora").click(function () { uw.PlaceWindowFactory.openPlaceWindow(); });
 
             // Scroll trough the views
             $('#main_area, #dio_political_map, .viewport, .sjs-city-overview-viewport').bind('mousewheel', function (e) {
@@ -6845,13 +7656,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     };*/
     // Fix icon update when switching cities
     function updateIcon() {
-        setTimeout(function() {
+        setTimeout(function () {
             var townType = (manuTownTypes[uw.Game.townId] || ((autoTownTypes[uw.Game.townId] || "no")));
             $('#town_icon .icon_big').removeClass().addClass('icon_big townicon_' + townType + " auto");
             $('#town_icon .icon_big').css({
                 backgroundPosition: TownIcons.types[townType] * -25 + 'px 0px'
             });
-        },200);
+        }, 200);
     };
 
     /*$(".btn_next_town").click(function () {
@@ -6922,7 +7733,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     // Context menu on mouseclick
                     $('#minimap_islands_layer').on('click', '.m_island', function (e) {
                         var ww_coords = this.id.split("i")[3].split("_");
-                        uw.Layout.contextMenu(e, 'wonder', {ix: ww_coords[0], iy: ww_coords[1]});
+                        uw.Layout.contextMenu(e, 'wonder', { ix: ww_coords[0], iy: ww_coords[1] });
                     });
 
 
@@ -6986,7 +7797,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }, 800);
 
                 $('<div id="town_icon"><div class="town_icon_bg"><div class="icon_big townicon_' +
-                  (manuTownTypes[uw.Game.townId] || ((autoTownTypes[uw.Game.townId] || "no") + " auto")) + '"></div></div></div>').appendTo('.town_name_area');
+                    (manuTownTypes[uw.Game.townId] || ((autoTownTypes[uw.Game.townId] || "no") + " auto")) + '"></div></div></div>').appendTo('.town_name_area');
 
                 // Town Icon Style
                 $('#town_icon .icon_big').css({
@@ -6994,37 +7805,37 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
                 //console.debug(dio_sprite);
                 $('<style id="dio_townicons_field" type="text/css">' +
-                  '#town_icon { background:url(' + dio_sprite + ') 0 -125px no-repeat; position:absolute; width:69px; height:61px; left:-47px; top:0px; z-index: auto; } ' +
-                  '#town_icon .town_icon_bg { background:url(' + dio_sprite + ') -76px -129px no-repeat; width:43px; height:43px; left:25px; top:4px; cursor:pointer; position: relative; } ' +
-                  '#town_icon .town_icon_bg:hover { filter:url(#Brightness11); -webkit-filter:brightness(1.1); box-shadow: 0px 0px 15px rgb(1, 197, 33); } ' +
-                  '#town_icon .icon_big	{ position:absolute; left:9px; top:9px; height:25px; width:25px; } ' +
+                    '#town_icon { background:url(' + dio_sprite + ') 0 -125px no-repeat; position:absolute; width:69px; height:61px; left:-47px; top:0px; z-index: auto; } ' +
+                    '#town_icon .town_icon_bg { background:url(' + dio_sprite + ') -76px -129px no-repeat; width:43px; height:43px; left:25px; top:4px; cursor:pointer; position: relative; } ' +
+                    '#town_icon .town_icon_bg:hover { filter:url(#Brightness11); -webkit-filter:brightness(1.1); box-shadow: 0px 0px 15px rgb(1, 197, 33); } ' +
+                    '#town_icon .icon_big	{ position:absolute; left:9px; top:9px; height:25px; width:25px; } ' +
 
-                  '#town_icon .select_town_icon {position: absolute; top:47px; left:23px; width:145px; display:none; padding:2px; border:3px inset rgb(7, 99, 12); box-shadow:rgba(0, 0, 0, 0.5) 4px 4px 6px; border-radius:0px 10px 10px 10px;' +
-                  'background:url(https://gpall.innogamescdn.com/images/game/popup/middle_middle.png); } ' +
-                  '#town_icon .item-list {max-height: 180px; max-width: 200px; align: right; overflow: hidden; } ' +
+                    '#town_icon .select_town_icon {position: absolute; top:47px; left:23px; width:145px; display:none; padding:2px; border:3px inset rgb(7, 99, 12); box-shadow:rgba(0, 0, 0, 0.5) 4px 4px 6px; border-radius:0px 10px 10px 10px;' +
+                    'background:url(https://gpall.innogamescdn.com/images/game/popup/middle_middle.png); } ' +
+                    '#town_icon .item-list {max-height: 180px; max-width: 200px; align: right; overflow: hidden; } ' +
 
-                  '#town_icon .option_s { cursor:pointer; width:20px; height:20px; margin:0px; padding:2px 2px 3px 3px; border:2px solid rgba(0,0,0,0); border-radius:5px; background-origin:content-box; background-clip:content-box;} ' +
-                  '#town_icon .option_s:hover { border: 2px solid rgb(59, 121, 81) !important;-webkit-filter: brightness(1.3); } ' +
-                  '#town_icon .sel { border: 2px solid rgb(202, 176, 109); } ' +
-                  '#town_icon hr { width:145px; margin:0px 0px 7px 0px; position:relative; top:3px; border:0px; border-top:2px dotted #000; float:left} ' +
-                  '#town_icon .auto_s { width:136px; height:16px; float:left} ' +
+                    '#town_icon .option_s { cursor:pointer; width:20px; height:20px; margin:0px; padding:2px 2px 3px 3px; border:2px solid rgba(0,0,0,0); border-radius:5px; background-origin:content-box; background-clip:content-box;} ' +
+                    '#town_icon .option_s:hover { border: 2px solid rgb(59, 121, 81) !important;-webkit-filter: brightness(1.3); } ' +
+                    '#town_icon .sel { border: 2px solid rgb(202, 176, 109); } ' +
+                    '#town_icon hr { width:145px; margin:0px 0px 7px 0px; position:relative; top:3px; border:0px; border-top:2px dotted #000; float:left} ' +
+                    '#town_icon .auto_s { width:136px; height:16px; float:left} ' +
 
-                  // Quickbar modification
-                  '.ui_quickbar .left, .ui_quickbar .right { width:46%; } ' +
+                    // Quickbar modification
+                    '.ui_quickbar .left, .ui_quickbar .right { width:46%; } ' +
 
-                  // because of Kapsonfires Script and Beta Worlds bug report bar:
-                  '.town_name_area { z-index:11; left:52%; } ' +
-                  '.town_name_area .left { z-index:20; left:-39px; } ' +
-                  '.town_name_area .button.GMHADD {left: -134px !important; z-index: 100 !important;}' +
-                  '#town_groups_list {margin-left: -27px;}' +
-                  '</style>').appendTo('head');
+                    // because of Kapsonfires Script and Beta Worlds bug report bar:
+                    '.town_name_area { z-index:11; left:52%; } ' +
+                    '.town_name_area .left { z-index:20; left:-39px; } ' +
+                    '.town_name_area .button.GMHADD {left: -134px !important; z-index: 100 !important;}' +
+                    '#town_groups_list {margin-left: -27px;}' +
+                    '</style>').appendTo('head');
 
 
                 var icoArray = ['ld', 'lo', 'sh', 'di', 'un',
-                                'sd', 'so', 'ko', 'ti', 'gr',
-                                'fd', 'fo', 'dp', 'no', 'po',
-                                're', 'wd', 'st', 'si', 'bu',
-                                'he', 'ch', 'bo', 'fa', 'wo'];
+                    'sd', 'so', 'ko', 'ti', 'gr',
+                    'fd', 'fo', 'dp', 'no', 'po',
+                    're', 'wd', 'st', 'si', 'bu',
+                    'he', 'ch', 'bo', 'fa', 'wo'];
 
                 // Fill select box with town icons
                 $('<div class="select_town_icon dropdown-list default active"><div class="item-list"></div></div>').appendTo("#town_icon");
@@ -7064,7 +7875,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 });
 
-                $('#town_icon .select_town_icon [name="' + (manuTownTypes[uw.Game.townId] || (autoTownTypes[uw.Game.townId] ? "auto" : "" )) + '"]').addClass("sel");
+                $('#town_icon .select_town_icon [name="' + (manuTownTypes[uw.Game.townId] || (autoTownTypes[uw.Game.townId] ? "auto" : "")) + '"]').addClass("sel");
 
             } catch (error) {
                 errorHandling(error, "addTownIcon");
@@ -7074,7 +7885,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             var townType = (manuTownTypes[uw.Game.townId] || ((autoTownTypes[uw.Game.townId] || "no")));
             $('#town_icon .icon_big').removeClass().addClass('icon_big townicon_' + townType + " auto");
             $('#town_icon .sel').removeClass("sel");
-            $('#town_icon .select_town_icon [name="' + (manuTownTypes[uw.Game.townId] || (autoTownTypes[uw.Game.townId] ? "auto" : "" )) + '"]').addClass("sel");
+            $('#town_icon .select_town_icon [name="' + (manuTownTypes[uw.Game.townId] || (autoTownTypes[uw.Game.townId] ? "auto" : "")) + '"]').addClass("sel");
 
             $('#town_icon .icon_big').css({
                 backgroundPosition: TownIcons.types[townType] * -25 + 'px 0px'
@@ -7105,12 +7916,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var start = (new Date()).getTime(), end, style_str = "<style id='dio_townicons_map' type='text/css'>";
                 for (var e in autoTownTypes) {
                     if (autoTownTypes.hasOwnProperty(e)) {
-                        style_str += "#mini_t" + e + ", #town_flag_"+ e + " .flagpole {"+
+                        style_str += "#mini_t" + e + ", #town_flag_" + e + " .flagpole {" +
                             "background: rgb(255, 187, 0) url(" + dio_sprite + ") " + (TownIcons.types[(manuTownTypes[e] || autoTownTypes[e])] * -25) + "px -27px repeat !important; } ";
                     }
                 }
 
-                style_str += ".own_town .flagpole, #main_area .m_town.player_"+ PID +" { z-index: 100 !important; width:19px!important; height:19px!important; border-radius: 11px; border: 2px solid rgb(16, 133, 0); margin: -4px !important; font-size: 0em !important; box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5); } ";
+                style_str += ".own_town .flagpole, #main_area .m_town.player_" + PID + " { z-index: 100 !important; width:19px!important; height:19px!important; border-radius: 11px; border: 2px solid rgb(16, 133, 0); margin: -4px !important; font-size: 0em !important; box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5); } ";
 
                 /*$('#minimap_islands_layer').off('click', '.m_town');
                     $('#minimap_islands_layer').on('click', '.m_town', function (z) {
@@ -7130,9 +7941,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     });*/
 
                 $('#minimap_islands_layer').off("mousedown");
-                $('#minimap_islands_layer').on("mousedown", function(){
+                $('#minimap_islands_layer').on("mousedown", function () {
 
-                    if(typeof($('#context_menu').get(0)) !== "undefined"){
+                    if (typeof ($('#context_menu').get(0)) !== "undefined") {
                         $('#context_menu').get(0).remove();
                     }
                 });
@@ -7163,65 +7974,65 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     };
 
     var TownPopup = {
-        activate : function(){
+        activate: function () {
 
             $('<style id="dio_town_popup_style" type="text/css">' +
-              '#Town_Popup { display:block!important;} '+
-              '#dio_town_popup { position:absolute; z-index:6003; max-width: 173px;} ' +
+                '#Town_Popup { display:block!important;} ' +
+                '#dio_town_popup { position:absolute; z-index:6003; max-width: 173px;} ' +
 
-              '#dio_town_popup .title { margin:5px;font-weight: bold; margin-right: 15px;} ' +
+                '#dio_town_popup .title { margin:5px;font-weight: bold; margin-right: 15px;} ' +
 
-              '#dio_town_popup .dio_icon { position:absolute; right:12px; top:8px; height: 22px; width: 25px; filter:sepia(1); -webkit-filter:sepia(1); opacity:0.5; } ' +
+                '#dio_town_popup .dio_icon { position:absolute; right:12px; top:8px; height: 22px; width: 25px; filter:sepia(1); -webkit-filter:sepia(1); opacity:0.5; } ' +
 
-              '#dio_town_popup .unit_content, ' +
-              '#dio_town_popup .move_counter_content, ' +
-              '#dio_town_popup .spy_content, ' +
-              '#dio_town_popup .god_content, ' +
-              '#dio_town_popup .hero_content, ' +
-              '#dio_town_popup .resources_content { background-color: #ffe2a1; border: 1px solid #e1af55; margin-top:2px; padding: 4px; font-family: Arial;font-weight: 700;font-size: 0.8em; } ' +
-              '#dio_town_popup .resources_content { text-align: right; margin-top:3px; } ' +
+                '#dio_town_popup .unit_content, ' +
+                '#dio_town_popup .move_counter_content, ' +
+                '#dio_town_popup .spy_content, ' +
+                '#dio_town_popup .god_content, ' +
+                '#dio_town_popup .hero_content, ' +
+                '#dio_town_popup .resources_content { background-color: #ffe2a1; border: 1px solid #e1af55; margin-top:2px; padding: 4px; font-family: Arial;font-weight: 700;font-size: 0.8em; } ' +
+                '#dio_town_popup .resources_content { text-align: right; margin-top:3px; } ' +
 
-              '#dio_town_popup .resources_content table { min-width:95% } ' +
+                '#dio_town_popup .resources_content table { min-width:95% } ' +
 
-              '#dio_town_popup .footer_content { margin-top:3px;  } ' +
-              '#dio_town_popup .footer_content table { width:100%; } ' +
+                '#dio_town_popup .footer_content { margin-top:3px;  } ' +
+                '#dio_town_popup .footer_content table { width:100%; } ' +
 
-              '#dio_town_popup .spy_content { height:25px; margin-right:3px; } ' +
-              '#dio_town_popup .god_content { width:25px; } ' +
-              '#dio_town_popup .hero_content { width:25px; } ' +
+                '#dio_town_popup .spy_content { height:25px; margin-right:3px; } ' +
+                '#dio_town_popup .god_content { width:25px; } ' +
+                '#dio_town_popup .hero_content { width:25px; } ' +
 
-              '#dio_town_popup .god_mini { transform:scale(0.4); margin: -19px; } ' +
+                '#dio_town_popup .god_mini { transform:scale(0.4); margin: -19px; } ' +
 
-              '#dio_town_popup .count { position: absolute; bottom: -2px; right: 2px; font-size: 10px; font-family: Verdana,Arial,Helvetica,sans-serif; } ' +
-              '#dio_town_popup .four_digit_number .count { font-size:8px !important; } ' +
-              '#dio_town_popup .unit_icon25x25 { border: 1px solid #6e4b0b; margin: 1px; } ' +
-              '#dio_town_popup .wall { width:25px; height:25px; background-image:url(https://gpde.innogamescdn.com/images/game/main/wall.png); border: 1px solid #6e4b0b; margin: 1px; display: inline-block; vertical-align: middle; background-size: 100%; } ' +
+                '#dio_town_popup .count { position: absolute; bottom: -2px; right: 2px; font-size: 10px; font-family: Verdana,Arial,Helvetica,sans-serif; } ' +
+                '#dio_town_popup .four_digit_number .count { font-size:8px !important; } ' +
+                '#dio_town_popup .unit_icon25x25 { border: 1px solid #6e4b0b; margin: 1px; } ' +
+                '#dio_town_popup .wall { width:25px; height:25px; background-image:url(https://gpde.innogamescdn.com/images/game/main/wall.png); border: 1px solid #6e4b0b; margin: 1px; display: inline-block; vertical-align: middle; background-size: 100%; } ' +
 
-              // Spy Icon
-              '#dio_town_popup .support_filter { margin: 0px 4px 0px 0px; float:left; } ' +
-              '#dio_town_popup .spy_text { line-height: 2.3em; float:left; } ' +
+                // Spy Icon
+                '#dio_town_popup .support_filter { margin: 0px 4px 0px 0px; float:left; } ' +
+                '#dio_town_popup .spy_text { line-height: 2.3em; float:left; } ' +
 
-              // fury Icon
-              '#dio_town_popup .fury_icon { width:22px; height:15px; background: url(https://www.tuto-de-david1327.com/medias/images/fury.png) no-repeat; margin-left:2px; display: inline-block; vertical-align: middle; background-size: 75%;} ' +
+                // fury Icon
+                '#dio_town_popup .fury_icon { width:22px; height:15px; background: url(' + Home_img + 'fury.png) no-repeat; margin-left:2px; display: inline-block; vertical-align: middle; background-size: 75%;} ' +
 
-              // support Icon
-              '#dio_town_popup .support_icon { width:16px; height:16px; background: url(https://www.tuto-de-david1327.com/medias/images/support-16px.png); margin: 1px; margin-bottom: 2px; display: inline-block; vertical-align: middle; background-size: 100%;} ' +
-              // attack Icon
-              '#dio_town_popup .attack_icon { width:16px; height:16px; background: url(https://www.tuto-de-david1327.com/medias/images/attack-16px.png); margin: 1px; margin-bottom: 2px; display: inline-block; vertical-align: middle; background-size: 100%;} ' +
-
-
-              // Bei langen Stadtnamen wird sonst der Rand abgeschnitten:
-              '#dio_town_popup .popup_middle_right { min-width: 11px; } ' +
-
-              // Mouseover Effect
-              '.own_town .flagpole:hover, .m_town:hover { z-index: 101 !important; filter: brightness(1.2); -webkit-filter: brightness(1.2); font-size: 2em; margin-top: -1px; } ' +
-              '.own_town .flagpole, #main_area .m_town { cursor: pointer; } '+
-
-              // Context menu on mouse click
-              '#minimap_islands_layer .m_town { z-index: 99; cursor: pointer; } ' +
+                // support Icon
+                '#dio_town_popup .support_icon { width:16px; height:16px; background: url(' + Home_img + 'support-16px.png); margin: 1px; margin-bottom: 2px; display: inline-block; vertical-align: middle; background-size: 100%;} ' +
+                // attack Icon
+                '#dio_town_popup .attack_icon { width:16px; height:16px; background: url(' + Home_img + 'attack-16px.png); margin: 1px; margin-bottom: 2px; display: inline-block; vertical-align: middle; background-size: 100%;} ' +
 
 
-              '</style>').appendTo('head');
+                // Bei langen Stadtnamen wird sonst der Rand abgeschnitten:
+                '#dio_town_popup .popup_middle_right { min-width: 11px; } ' +
+
+                // Mouseover Effect
+                '.own_town .flagpole:hover, .m_town:hover { z-index: 101 !important; filter: brightness(1.2); -webkit-filter: brightness(1.2); font-size: 2em; margin-top: -1px; } ' +
+                '.own_town .flagpole, #main_area .m_town { cursor: pointer; } ' +
+
+                // Context menu on mouse click
+                '#minimap_islands_layer .m_town { z-index: 99; cursor: pointer; } ' +
+
+
+                '</style>').appendTo('head');
             // }// Town Popups on Strategic map
             $('#minimap_islands_layer').off('mouseout', '.m_town');
             $('#minimap_islands_layer').on('mouseout', '.m_town', function () {
@@ -7243,7 +8054,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });//}
 
         },
-        deactivate : function(){
+        deactivate: function () {
             $("#dio_town_popup_style").remove();
             // Events entfernen
             $('#minimap_islands_layer').off('click', '.m_town');
@@ -7252,18 +8063,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('#minimap_islands_layer').off('mouseout', '.m_town');
             $('#minimap_islands_layer').off('mouseover', '.m_town');
         },
-        add : function(that){
+        add: function (that) {
             var townID = 0;
             var popup_left = 0, popup_top = 0, classSize = "";
             //console.debug("TOWN", $(that).offset(), that.id);
 
-            if(that.id === ""){
+            if (that.id === "") {
                 // Island view
                 townID = parseInt($(that).parent()[0].id.substring(10), 10);
                 if (DATA.options.dio_tim) {
                     popup_left = ($(that).offset().left + 20);
                     popup_top = ($(that).offset().top + 20);
-                }else {
+                } else {
                     popup_left = ($(that).offset().left + 15);
                     popup_top = ($(that).offset().top + 15);
                 }
@@ -7274,13 +8085,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 if (DATA.options.dio_tim) {
                     popup_left = ($(that).offset().left - 150);
                     popup_top = ($(that).offset().top + 20);
-                }else {
+                } else {
                     popup_left = ($(that).offset().left - 145);
                     popup_top = ($(that).offset().top + 15);
                 }
             }
             // Own town?
-            if (typeof(uw.ITowns.getTown(townID)) !== "undefined") {
+            if (typeof (uw.ITowns.getTown(townID)) !== "undefined") {
 
                 var units = uw.ITowns.getTowns()[townID].units();
                 var unitsSupport = uw.ITowns.getTowns()[townID].unitsSupport();
@@ -7303,7 +8114,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     for (var group in Groups_town) {
                         if (Groups_town.hasOwnProperty(group)) {
                             if (group == 0 || group == -1) {
-                            }else {
+                            } else {
                                 var group_name = uw.ITowns.town_groups._byId[group].attributes.name;
                                 Group_name += " (" + group_name + ")";
                                 Group += 1
@@ -7327,46 +8138,46 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
 
-                if(sup > 0 || att > 0) {
+                if (sup > 0 || att > 0) {
                     popup += "<div class='move_counter_content' style=''><div style='float:left;margin-right:5px;'></div>" +
                         ((att > 0) ? (
-                        "<div class='movement off'></div>" +
-                        "<div style='font-size: 12px;'><div class='attack_icon'></div><span class='movement' style='color:red;'> " + att + "</span> " + uw.DM.getl10n("layout").toolbar_activities.incomming_attacks + "</div>") : "") +
+                            "<div class='movement off'></div>" +
+                            "<div style='font-size: 12px;'><div class='attack_icon'></div><span class='movement' style='color:red;'> " + att + "</span> " + (att > 1 ? getTexts("movement", "offs") : getTexts("movement", "off")) + "</div>") : "") +
                         ((sup > 0) ? (
-                        "<div class='movement def'></div>" +
-                        "<div style='font-size: 12px;'><div class='support_icon'></div><span class='movement' style='color:green;'> " + sup + "</span> " + uw.DM.getl10n("context_menu").titles.support + "</div>") : "") +
+                            "<div class='movement def'></div>" +
+                            "<div style='font-size: 12px;'><div class='support_icon'></div><span class='movement' style='color:green;'> " + sup + "</span> " + (sup > 1 ? getTexts("movement", "defs") : getTexts("movement", "def")) + "</div>") : "") +
                         "</div>";
                 }
 
                 // Unit Container
-                if(DATA.options.dio_tpt) {
+                if (DATA.options.dio_tpt) {
                     popup += "<div class='unit_content'>";
-                    if(!$.isEmptyObject(units)) {
+                    if (!$.isEmptyObject(units)) {
 
                         for (var unit_id in units) {
                             if (units.hasOwnProperty(unit_id)) {
 
-                                if(units[unit_id] > 1000){
+                                if (units[unit_id] > 1000) {
                                     classSize = "four_digit_number";
                                 }
 
                                 // Unit
-                                popup += '<div class="unit_icon25x25 ' + unit_id + ' '+ classSize +'"><span class="count text_shadow">' + units[unit_id] + '</span></div>';
+                                popup += '<div class="unit_icon25x25 ' + unit_id + ' ' + classSize + '"><span class="count text_shadow">' + units[unit_id] + '</span></div>';
                             }
                         }
                     }
 
                     // - Wall
                     var wallLevel = uw.ITowns.getTowns()[townID].getBuildings().attributes.wall;
-                    popup += '<div class="wall image bold"><span class="count text_shadow">'+ wallLevel +'</span></div>';
+                    popup += '<div class="wall image bold"><span class="count text_shadow">' + wallLevel + '</span></div>';
 
                     popup += "</div>";
                 }
 
                 //support
-                if(!$.isEmptyObject(unitsSupport) & DATA.options.dio_tis) {
+                if (!$.isEmptyObject(unitsSupport) & DATA.options.dio_tis) {
                     // Title (support name)
-                    popup += "<h4><span style='white-space: nowrap;margin-right:35px;'>" + uw.DM.getl10n("context_menu", "titles").support + "</span></h4>";
+                    popup += "<h4><span style='white-space: nowrap;margin-right:35px;'>" + getTexts("reports", "support") + "</span></h4>";
 
                     // Unit support
                     popup += "<div class='unit_content'>";
@@ -7374,12 +8185,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     for (var unitSupport_id in unitsSupport) {
                         if (unitsSupport.hasOwnProperty(unitSupport_id)) {
 
-                            if(unitsSupport[unitSupport_id] > 1000){
+                            if (unitsSupport[unitSupport_id] > 1000) {
                                 classSize = "four_digit_number";
                             }
 
                             // Unit
-                            popup += '<div class="unit_icon25x25 ' + unitSupport_id + ' '+ classSize +'"><span class="count text_shadow">' + unitsSupport[unitSupport_id] + '</span></div>';
+                            popup += '<div class="unit_icon25x25 ' + unitSupport_id + ' ' + classSize + '"><span class="count text_shadow">' + unitsSupport[unitSupport_id] + '</span></div>';
                         }
                     }
                 }
@@ -7387,7 +8198,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 popup += "</div>";
 
                 // Resources Container
-                if(DATA.options.dio_tir) {
+                if (DATA.options.dio_tir) {
                     popup += "<div class='resources_content'><table cellspacing='2px' cellpadding='0px'><tr>";
 
                     var resources = uw.ITowns.getTowns()[townID].resources();
@@ -7398,39 +8209,39 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     // - Wood
                     var textColor = (resources.wood === storage) ? textColor = "color:red;" : textColor = "";
-                    popup += '<td class="resources_small wood"></td><td style="'+ textColor +'; width:1%;">' + resources.wood + '</td>';
+                    popup += '<td class="resources_small wood"></td><td style="' + textColor + '; width:1%;">' + resources.wood + '</td>';
 
                     popup += '<td style="min-width:15px;"></td>';
 
                     // - Population
                     textColor = (resources.population === 0) ? textColor = "color:red;" : textColor = "";
-                    popup += '<td class="resources_small population"></td><td style="'+ textColor +' width:1%">' + resources.population + '</td>';
+                    popup += '<td class="resources_small population"></td><td style="' + textColor + ' width:1%">' + resources.population + '</td>';
 
                     popup += '</tr><tr>';
 
                     // - Stone
                     textColor = (resources.stone === storage) ? textColor = "color:red;" : textColor = "";
-                    popup += '<td class="resources_small stone"></td><td style="'+ textColor +'">' + resources.stone + '</td>';
+                    popup += '<td class="resources_small stone"></td><td style="' + textColor + '">' + resources.stone + '</td>';
 
                     popup += '<td style="min-width:15px;"></td>';
 
                     // - favor
                     textColor = (resources.favor === maxFavor) ? textColor = "color:red;" : textColor = "";
-                    popup += '<td class="resources_small favor"></td><td style="'+ textColor +'; width:1%">' + resources.favor + '</td>';
+                    popup += '<td class="resources_small favor"></td><td style="' + textColor + '; width:1%">' + resources.favor + '</td>';
 
                     popup += '</tr><tr>';
 
                     // - Iron
                     textColor = (resources.iron === storage) ? textColor = "color:red;" : textColor = "";
-                    popup += '<td class="resources_small iron"></td><td style="'+ textColor +'">' + resources.iron + '</td>';
+                    popup += '<td class="resources_small iron"></td><td style="' + textColor + '">' + resources.iron + '</td>';
 
 
-                    if(uw.ITowns.getTowns()[townID].god() == "ares") {
+                    if (uw.ITowns.getTowns()[townID].god() == "ares") {
                         popup += '<td style="min-width:15px;"></td>';
 
                         // - fury
                         textColor = (Fury === fury_max) ? textColor = "color:red;" : textColor = "";
-                        popup += '<td class="fury_icon"></td><td style="'+ textColor +'; width:1%">' + Fury + '</td>';
+                        popup += '<td class="fury_icon"></td><td style="' + textColor + '; width:1%">' + Fury + '</td>';
                     }
 
                     popup += '</tr></table></div>';
@@ -7445,12 +8256,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 // - Spy content
                 popup += "<td class='spy_content'>";
-                popup += '<div class="support_filter attack_spy"></div><div class="spy_text">'+ pointNumber(spy_storage) +'</div>';
+                popup += '<div class="support_filter attack_spy"></div><div class="spy_text">' + pointNumber(spy_storage) + '</div>';
                 popup += "</td>";
 
 
                 // - hero Content
-                if(DATA.options.dio_tih) {
+                if (DATA.options.dio_tih) {
                     var HeroArray = uw.ITowns.getHeroDIO()[townID];
                     if (HeroArray) {
 
@@ -7459,14 +8270,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         popup += '<div class="hero_icon hero25x25 ' + HeroArray.hero_name + '"><span class="count text_shadow">' + HeroArray.hero_level + '</span></div>';
                         popup += "</td>";
 
-                    }};
+                    }
+                };
 
                 // - God Content
                 var god = uw.ITowns.getTowns()[townID].god();
                 if (god) {
                     popup += "<td></td>";
                     popup += "<td class='god_content'>";
-                    popup += '<div class="god_mini '+ god +'"></div>';
+                    popup += '<div class="god_mini ' + god + '"></div>';
                     popup += "</td>";
                 }
 
@@ -7482,7 +8294,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $(popup).appendTo("#popup_div_curtain");
             }
         },
-        remove : function(){
+        remove: function () {
             $('#dio_town_popup').remove();
         }
     };
@@ -7520,14 +8332,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             // Set context menu animation
             $('<style id="dio_context_menu" type="text/css">' +
-              // set fixed position of 'select town' button
-              '#select_town { left: 0px !important; top: 0px !important; z-index: 6; } ' +
-              // set animation of 'goToTown' button
-              '#context_menu div#goToTown { left: 30px; top: -51px; ' +
-              '-webkit-animation: A 0.115s linear; animation: B 0.2s;} ' +
-              '@-webkit-keyframes A { from {left: 0px; top: 0px;} to {left: 30px; top: -51px;} }' +
-              '@keyframes B { from {left: 0px; top: 0px;} to {left: 30px; top: -51px;} }' +
-              '</style>').appendTo('head');
+                // set fixed position of 'select town' button
+                '#select_town { left: 0px !important; top: 0px !important; z-index: 6; } ' +
+                // set animation of 'goToTown' button
+                '#context_menu div#goToTown { left: 30px; top: -51px; ' +
+                '-webkit-animation: A 0.115s linear; animation: B 0.2s;} ' +
+                '@-webkit-keyframes A { from {left: 0px; top: 0px;} to {left: 30px; top: -51px;} }' +
+                '@keyframes B { from {left: 0px; top: 0px;} to {left: 30px; top: -51px;} }' +
+                '</style>').appendTo('head');
             updateIcon();
         },
         deactivate: function () {
@@ -7542,19 +8354,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         activate: function () {
             // Style town list
             $('<style id="dio_town_list" type="text/css">' +
-              '#town_groups_list .item { text-align: left; } ' +
-              '#town_groups_list .inner_column { border: 1px solid rgba(100, 100, 0, 0.3);margin: -2px 0px 0px 2px; } ' +
-              '#town_groups_list .island_quest_icon { position: absolute; right: 37px; top: 3px; } ' +
-              '#town_groups_list .island_quest_icon.hidden_icon { display:none; } ' +
-              // Quacks Zentrier-Button verschieben
-              '#town_groups_list .jump_town { right: 36px !important; } ' +
-              // Population percentage
-              '#town_groups_list .pop_percent { position: absolute; right: 6px; top:0px; font-size: 0.7em; display:block !important;} ' +
-              '#town_groups_list .full { color: green; } ' +
-              '#town_groups_list .threequarter { color: darkgoldenrod; } ' +
-              '#town_groups_list .half { color: darkred; } ' +
-              '#town_groups_list .quarter { color: red; } ' +
-              '</style>').appendTo('head');
+                '#town_groups_list .item { text-align: left; } ' +
+                '#town_groups_list .inner_column { border: 1px solid rgba(100, 100, 0, 0.3);margin: -2px 0px 0px 2px; } ' +
+                '#town_groups_list .island_quest_icon { position: absolute; right: 37px; top: 3px; } ' +
+                '#town_groups_list .island_quest_icon.hidden_icon { display:none; } ' +
+                // Quacks Zentrier-Button verschieben
+                '#town_groups_list .jump_town { right: 36px !important; } ' +
+                // Population percentage
+                '#town_groups_list .pop_percent { position: absolute; right: 6px; top:0px; font-size: 0.7em; display:block !important;} ' +
+                '#town_groups_list .full { color: green; } ' +
+                '#town_groups_list .threequarter { color: darkgoldenrod; } ' +
+                '#town_groups_list .half { color: darkred; } ' +
+                '#town_groups_list .quarter { color: red; } ' +
+                '</style>').appendTo('head');
 
 
             // Open town list: hook to grepolis function render()
@@ -7584,7 +8396,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             uw.layout_main_controller.sub_controllers[i].controller.town_groups_list_view.render = uw.layout_main_controller.sub_controllers[i].controller.town_groups_list_view.render_old;
 
             $('#dio_town_list').remove();
-            $('#town_groups_list .small_icon, #town_groups_list .pop_percent').css({display: 'none'});
+            $('#town_groups_list .small_icon, #town_groups_list .pop_percent').css({ display: 'none' });
             $("#town_groups_list .town_group_town").unbind('mouseenter mouseleave');
         },
         change: function () {
@@ -7647,14 +8459,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     };
 
     var HiddenHighlightWindow = {
-        activate : function(){
+        activate: function () {
             // Style town list
             $('<style id="dio_hidden_highlight_window" type="text/css">' +
-              '.strategic_map_filter { z-index:6 !important; } ' +
-              //'#cb_TL { sel="1" !important; } ' +
-              '</style>').appendTo('head');
+                '.strategic_map_filter { z-index:6 !important; } ' +
+                //'#cb_TL { sel="1" !important; } ' +
+                '</style>').appendTo('head');
         },
-        deactivate : function (){
+        deactivate: function () {
             $('#dio_hidden_highlight_window').remove();
         }
     };
@@ -7662,21 +8474,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     //Temporary replacement grcrt "City Command Overview"
 
     $('<style id="Temporary-replacement-grcrt" type="text/css">' +
-      '#place_defense {display: block;} ' +
-      '#dd_commands_select_town_group { width: 110px;} ' +
-      '#txt_commands_search { width: 100px;} ' +
-      '#dd_commands_sort_command { max-width: 280px; min-width: 269px; z-index: 1; } ' +
-      '#dd_commands_sort_command .caption { padding: 4px 19px 0 2px; } ' +
+        '#place_defense {display: block;} ' +
+        '#dd_commands_select_town_group { width: 110px;} ' +
+        '#txt_commands_search { width: 100px;} ' +
+        '#dd_commands_sort_command { max-width: 280px; min-width: 269px; z-index: 1; } ' +
+        '#dd_commands_sort_command .caption { padding: 4px 19px 0 2px; } ' +
 
-      '#grcrt_command_filter { position: absolute; top: 0px; right: 0px; } ' +
-      '#grcrt_towns width: { width: 170px; } ' +
-      '#grcrt_towns_list: { width: 180px; } ' +
+        '#grcrt_command_filter { position: absolute; top: 0px; right: 0px; } ' +
+        '#grcrt_towns width: { width: 170px; } ' +
+        '#grcrt_towns_list: { width: 180px; } ' +
 
-      '#place_defense #dd_filter_type .arrow, .select_rec_unit .arrow, .dropdown.default .arrow {' +
-      'width: 18px !important; height: 17px !important; background: url("https://www.tuto-de-david1327.com/medias/images/drop-out.png") no-repeat 0px -1px !important;' +
-      'position: absolute; top: 2px !important; right: 3px; } ' +
+        '#place_defense #dd_filter_type .arrow, .select_rec_unit .arrow, .dropdown.default .arrow {' +
+        'width: 18px !important; height: 17px !important; background: url("' + Home_img + 'drop-out.png") no-repeat 0px -1px !important;' +
+        'position: absolute; top: 2px !important; right: 3px; } ' +
 
-      '</style>').appendTo('head');
+        '</style>').appendTo('head');
 
     /*******************************************************************************************************************************
      * Available units
@@ -7716,19 +8528,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     "sea_monster": 0
                 },
 
-                unitArraySea = {"bireme": 0, "trireme": 0, "attack_ship": 0, "demolition_ship": 0, "colonize_ship": 0};
+                unitArraySea = { "bireme": 0, "trireme": 0, "attack_ship": 0, "demolition_ship": 0, "colonize_ship": 0 };
 
             //console.debug("DIO-TOOLS | getAllUnits | GROUP ARRAY", groupArray);
 
 
             if (uw.Game.hasArtemis) {
-                unitArray = $.extend(unitArray, {"griffin": 0, "calydonian_boar": 0});
+                unitArray = $.extend(unitArray, { "griffin": 0, "calydonian_boar": 0 });
             }
             if (uw.Game.gods_active.aphrodite) {
-                unitArray = $.extend(unitArray, {"siren": 0, "satyr": 0});
+                unitArray = $.extend(unitArray, { "siren": 0, "satyr": 0 });
             }
             if (uw.Game.gods_active.ares) {
-                unitArray = $.extend(unitArray, {"spartoi": 0, "ladon": 0});
+                unitArray = $.extend(unitArray, { "spartoi": 0, "ladon": 0 });
             }
             unitArray = $.extend(unitArray, unitArraySea);
 
@@ -7740,7 +8552,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     for (var town in groupArray[group].towns) {
                         if (groupArray[group].towns.hasOwnProperty(town)) {
-                            var type = {lo: 0, ld: 0, so: 0, sd: 0, fo: 0, fd: 0}; // Type for TownList
+                            var type = { lo: 0, ld: 0, so: 0, sd: 0, fo: 0, fd: 0 }; // Type for TownList
 
                             for (var unit in unitArray) {
                                 if (unitArray.hasOwnProperty(unit)) {
@@ -7804,7 +8616,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                                 population[town].max = popMax * popFactor + popPlow + popExtra;
                                 population[town].buildings = popBuilding;
-                                population[town].units = parseInt((population[town].max - (popBuilding + townArray[town].getAvailablePopulation()) ), 10);
+                                population[town].units = parseInt((population[town].max - (popBuilding + townArray[town].getAvailablePopulation())), 10);
 
                                 if (population[town].units < 300) {
                                     autoTownTypes[townArray[town].id] = "po";
@@ -7839,16 +8651,34 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
             // Copy function and prevent an error
             uw.MM.DIO = {
-                getPlayer : {},
-                info_dio : {
-                    name : "DIO-TOOLS-David1327",
-                    version : dio_version,
-                    latest_version : version_latest,
+                getPlayer: {},
+                info_dio: {
+                    name: "DIO-TOOLS-David1327",
+                    version: dio_version,
+                    latest_version: version_latest,
+                    script: {
+                        grcrt: "",
+                        HMole: "",
+                        Gt: "",
+                        FLASK: "",
+                        Quack: "",
+                        GrepoData: "",
+                    },
                 },
-                errorDio: {nb : 0},
-                lang : uw.Game.market_id,
-                land : uw.Game.world_id.substring(0, 2),
+                errorDio: { nb: 0 },
+                lang: uw.Game.market_id,
+                land: uw.Game.world_id.substring(0, 2),
             };
+
+            var script = uw.MM.DIO.info_dio.script;
+            setTimeout(function () {
+                script.grcrt = (typeof (uw.GRCRT_Notifications) !== "undefined" ? true : false);
+                script.HMole = (typeof (uw.MH) !== "undefined" ? true : false);
+                script.Gt = (typeof (uw.GtkAbout) !== "undefined" ? true : false);
+                script.FLASK = (typeof (uw.FLASK_GAME) !== "undefined" ? true : false);
+                script.Quack = (typeof (uw.main_script) !== "undefined" ? true : false);
+                script.GrepoData = (typeof (uw.gd_version) !== "undefined" ? true : false);
+            }, 10000);
 
             uw.MM.DIO.getPlayer.Groups = function () {
                 var town_groups_towns, town_groups, groups = {};
@@ -7875,7 +8705,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         };
                     }
 
-                    group.towns[town_id] = {id: town_id};
+                    group.towns[town_id] = { id: town_id };
                     //groups[gid].towns[town_id]={id:town_id};
                 });
                 //console.log(groups);
@@ -7909,7 +8739,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (town_id !== 0 || town_id !== -1) {
                         group.groups[gid] = {
                             id: gid,
-                            name : ITowns.town_groups._byId[gid].attributes.name
+                            name: ITowns.town_groups._byId[gid].attributes.name
                         }
                     };
                     //groups[gid].towns[town_id]={id:town_id};
@@ -7918,7 +8748,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 return groups;
             };
 
-            uw.MM.DIO.getPlayer.Hero = function  () {
+            uw.MM.DIO.getPlayer.Hero = function () {
                 var PlayerHero, heros = {};
 
                 // #Grepolis Fix: 2.75 -> 2.76
@@ -7977,7 +8807,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         };
                     }
 
-                    group.towns[town_id] = {id: town_id};
+                    group.towns[town_id] = { id: town_id };
                     //groups[gid].towns[town_id]={id:town_id};
                 });
                 //console.log(groups);
@@ -8054,9 +8884,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     // Neuer Einheitenzähler
     var UnitCounter = {
-        units : {"total":{}, "available":{}, "outer":{}, "foreign":{}, "support":{}},
+        units: { "total": {}, "available": {}, "outer": {}, "foreign": {}, "support": {} },
 
-        count : function(){
+        count: function () {
             var tooltipHelper = require("helpers/units_tooltip_helper");
 
             var groups = uw.ITowns.townGroups.getGroupsDIO();
@@ -8094,7 +8924,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                         if (supports[supportId].attributes.hasOwnProperty(attributeId)) {
 
                                             // Attribut ist eine Einheit?
-                                            if (typeof(uw.GameData.units[attributeId]) !== "undefined" && supports[supportId].attributes[attributeId] > 0) {
+                                            if (typeof (uw.GameData.units[attributeId]) !== "undefined" && supports[supportId].attributes[attributeId] > 0) {
 
                                                 UnitCounter.units.outer[groupId][townId][attributeId] = (UnitCounter.units.outer[groupId][townId][attributeId] || 0) + supports[supportId].attributes[attributeId];
 
@@ -8116,7 +8946,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             return UnitCounter.units;
         },
 
-        summarize : function(groupId){
+        summarize: function (groupId) {
             var tooltipHelper = require("helpers/units_tooltip_helper");
 
             UnitCounter.units.total[groupId]["all"] = {};
@@ -8124,37 +8954,37 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             UnitCounter.units.outer[groupId]["all"] = {};
             UnitCounter.units.support[groupId]["all"] = {};
 
-            for(var townId in UnitCounter.units.total[groupId]){
-                if(UnitCounter.units.total[groupId].hasOwnProperty(townId) && townId !== "all"){
+            for (var townId in UnitCounter.units.total[groupId]) {
+                if (UnitCounter.units.total[groupId].hasOwnProperty(townId) && townId !== "all") {
                     var unitId;
 
                     // Einheiten gesamt
-                    for(unitId in UnitCounter.units.total[groupId][townId]){
-                        if(UnitCounter.units.total[groupId][townId].hasOwnProperty(unitId)){
+                    for (unitId in UnitCounter.units.total[groupId][townId]) {
+                        if (UnitCounter.units.total[groupId][townId].hasOwnProperty(unitId)) {
 
                             UnitCounter.units.total[groupId]["all"][unitId] = (UnitCounter.units.total[groupId]["all"][unitId] || 0) + UnitCounter.units.total[groupId][townId][unitId];
                         }
                     }
 
                     // Einheiten verfügbar
-                    for(unitId in UnitCounter.units.available[groupId][townId]){
-                        if(UnitCounter.units.available[groupId][townId].hasOwnProperty(unitId)){
+                    for (unitId in UnitCounter.units.available[groupId][townId]) {
+                        if (UnitCounter.units.available[groupId][townId].hasOwnProperty(unitId)) {
 
                             UnitCounter.units.available[groupId]["all"][unitId] = (UnitCounter.units.available[groupId]["all"][unitId] || 0) + UnitCounter.units.available[groupId][townId][unitId];
                         }
                     }
 
                     // Einheiten außerhalb
-                    for(unitId in UnitCounter.units.outer[groupId][townId]){
-                        if(UnitCounter.units.outer[groupId][townId].hasOwnProperty(unitId)){
+                    for (unitId in UnitCounter.units.outer[groupId][townId]) {
+                        if (UnitCounter.units.outer[groupId][townId].hasOwnProperty(unitId)) {
 
                             UnitCounter.units.outer[groupId]["all"][unitId] = (UnitCounter.units.outer[groupId]["all"][unitId] || 0) + UnitCounter.units.outer[groupId][townId][unitId];
                         }
                     }
 
                     // Einheiten außerhalb
-                    for(unitId in UnitCounter.units.support[groupId][townId]){
-                        if(UnitCounter.units.support[groupId][townId].hasOwnProperty(unitId)){
+                    for (unitId in UnitCounter.units.support[groupId][townId]) {
+                        if (UnitCounter.units.support[groupId][townId].hasOwnProperty(unitId)) {
 
                             UnitCounter.units.support[groupId]["all"][unitId] = (UnitCounter.units.support[groupId]["all"][unitId] || 0) + UnitCounter.units.support[groupId][townId][unitId];
                         }
@@ -8172,40 +9002,40 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }, 1000);
             var DioMenuFix = !1;
             $("#dio_available_units_bullseye").length && 0 == DioMenuFix && (DioMenuFix = !0,
-                                                                             $("#HMoleM").css({
-                top: $("#ui_box .nui_left_box:first").offset().top + $("#ui_box .nui_left_box:first")[0].scrollHeight - 6
-            }),
-                                                                             uw.MH.nui_main_menu() ),
+                $("#HMoleM").css({
+                    top: $("#ui_box .nui_left_box:first").offset().top + $("#ui_box .nui_left_box:first")[0].scrollHeight - 6
+                }),
+                uw.MH.nui_main_menu()),
 
                 $('<style>' +
 
-                  'available_units_bullseye_addition { display:none!important; }'+
-                  '</style>').appendTo('head');
+                    'available_units_bullseye_addition { display:none!important; }' +
+                    '</style>').appendTo('head');
 
-            var default_title = uw.DM.getl10n("place", "support_overview").options.troop_count + " (" + uw.DM.getl10n("hercules2014", "available") + ")";
+            var default_title = uw.DM.getl10n("place", "support_overview").options.troop_count + " (" + getTexts("labels", "available") + ")";
 
             $(".dio_picomap_container").prepend("<div id='dio_available_units_bullseye' class='unit_icon90x90 " + (DATA.bullseyeUnit[DATA.bullseyeUnit.current_group] || "bireme") + "'><div class='amount'></div></div>");
 
             // Ab version 2.115
-            if($(".topleft_navigation_area").get(0)) {
+            if ($(".topleft_navigation_area").get(0)) {
 
                 $(".topleft_navigation_area").prepend("<div id='available_units_bullseye' style='display: none;'></div><div id='dio_available_units_bullseye_addition' class='picomap_area'><div class='dio_picomap_container'><div id='dio_available_units_bullseye' class='unit_icon90x90 " + (DATA.bullseyeUnit[DATA.bullseyeUnit.current_group] || "bireme") + "'><div class='amount'></div></div></div><div class='dio_picomap_overlayer'></div></div>");
 
                 $('<style id="dio_available_units_style_addition">' +
 
-                  '#dio_ava2 { display:block!important; }'+
+                    '#dio_ava2 { display:block!important; }' +
 
-                  //'#grcrt_mnu_list .nui_main_menu {top: 0px !important; }'+
-                  '.bull_eye_buttons, .rb_map { height:38px !important; }' +
-                  '.coords_box { top: 117px !important; } ' +
+                    //'#grcrt_mnu_list .nui_main_menu {top: 0px !important; }'+
+                    '.bull_eye_buttons, .rb_map { height:38px !important; }' +
+                    '.coords_box { top: 117px !important; } ' +
 
-                  '#ui_box .btn_change_colors { top: 31px !important; }' +
+                    '#ui_box .btn_change_colors { top: 31px !important; }' +
 
-                  '.picomap_area { position: absolute; overflow: visible; top: 0; left: 0; width: 156px; height: 161px; z-index: 5; }' +
-                  '.picomap_area .dio_picomap_container, .picomap_area .dio_picomap_overlayer { position: absolute; top: 33px; left: -3px; width: 147px; height: 101px; }' +
-                  //'.picomap_area .dio_picomap_overlayer { background: url(https://gpde.innogamescdn.com/images/game/autogenerated/layout/layout_2.107.png) -145px -208px no-repeat; width: 147px; height: 101px; z-index: 5;} '+
-                  '.picomap_area .dio_picomap_overlayer { background: url(' + dio_sprite + ');background-position: 473px 250px; width: 147px; z-index: 6;} ' +
-                  '</style>').appendTo('head');
+                    '.picomap_area { position: absolute; overflow: visible; top: 0; left: 0; width: 156px; height: 161px; z-index: 5; }' +
+                    '.picomap_area .dio_picomap_container, .picomap_area .dio_picomap_overlayer { position: absolute; top: 33px; left: -3px; width: 147px; height: 101px; }' +
+                    //'.picomap_area .dio_picomap_overlayer { background: url(https://gpde.innogamescdn.com/images/game/autogenerated/layout/layout_2.107.png) -145px -208px no-repeat; width: 147px; height: 101px; z-index: 5;} '+
+                    '.picomap_area .dio_picomap_overlayer { background: url(' + dio_sprite + ');background-position: 473px 250px; width: 147px; z-index: 6;} ' +
+                    '</style>').appendTo('head');
                 AvailableUnits.autre();
 
             }
@@ -8213,99 +9043,99 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // Style
             $('<style id="dio_available_units_style">' +
 
-              '#dio_available_units .unit.index_unit.bold.unit_icon40x40:hover {-webkit-filter: brightness(1.1); box-shadow: 0px 0px 6px rgb(0 252 18);}' +
-              '@-webkit-keyframes Z { 0% { opacity: 0; } 100% { opacity: 1; } } ' +
-              '@keyframes Z { 0% { opacity: 0; } 100% { opacity: 1; } } ' +
+                '#dio_available_units .unit.index_unit.bold.unit_icon40x40:hover {-webkit-filter: brightness(1.1); box-shadow: 0px 0px 6px rgb(0 252 18);}' +
+                '@-webkit-keyframes Z { 0% { opacity: 0; } 100% { opacity: 1; } } ' +
+                '@keyframes Z { 0% { opacity: 0; } 100% { opacity: 1; } } ' +
 
-              '@-webkit-keyframes blurr { 0% { -webkit-filter: blur(5px); } 100% { -webkit-filter: blur(0px); } } ' +
+                '@-webkit-keyframes blurr { 0% { -webkit-filter: blur(5px); } 100% { -webkit-filter: blur(0px); } } ' +
 
-              '.dio_picomap_overlayer { cursor:pointer; } ' +
+                '.dio_picomap_overlayer { cursor:pointer; } ' +
 
-              '.picomap_area .bull_eye_buttons { height: 55px; } ' +
+                '.picomap_area .bull_eye_buttons { height: 55px; } ' +
 
-              '#sea_id { background: none; font-size:25px; cursor:default; height:50px; width:50px; position:absolute; top:70px; left:157px; z-index: 30; } ' +
+                '#sea_id { background: none; font-size:25px; cursor:default; height:50px; width:50px; position:absolute; top:70px; left:157px; z-index: 30; } ' +
 
-              // Available bullseye unit
-              '#dio_available_units_bullseye { margin: 10px 28px 0px 28px; -webkit-animation: blur 2s; animation: Z 1s; } ' +
+                // Available bullseye unit
+                '#dio_available_units_bullseye { margin: 10px 28px 0px 28px; -webkit-animation: blur 2s; animation: Z 1s; } ' +
 
-              '#dio_available_units_bullseye .amount { color:#826021; position:relative; top:28px; font-style:italic; width:79px; font-weight: bold; text-shadow: 0px 0px 2px black, 1px 1px 2px black, 0px 2px 2px black; -webkit-animation: blur 3s; } ' +
+                '#dio_available_units_bullseye .amount { color:#826021; position:relative; top:28px; font-style:italic; width:79px; font-weight: bold; text-shadow: 0px 0px 2px black, 1px 1px 2px black, 0px 2px 2px black; -webkit-animation: blur 3s; } ' +
 
-              '#dio_available_units_bullseye.big_number { font-size: 0.90em; line-height: 1.4; } ' +
+                '#dio_available_units_bullseye.big_number { font-size: 0.90em; line-height: 1.4; } ' +
 
-              '#dio_available_units_bullseye.blur { -webkit-animation: blurr 0.6s; } ' +
+                '#dio_available_units_bullseye.blur { -webkit-animation: blurr 0.6s; } ' +
 
 
 
-              // Land units
-              '#dio_available_units_bullseye.sword	.amount	{ color:#E2D9C1; top:57px; width:90px;	} ' +
-              '#dio_available_units_bullseye.hoplite	.amount	{ color:#E2D9C1; top:57px; width:90px;	} ' +
-              '#dio_available_units_bullseye.archer	.amount	{ color:#E2D0C1; top:47px; width:70px;	} ' +
-              '#dio_available_units_bullseye.chariot			{ margin-top: 15px; } ' +
-              '#dio_available_units_bullseye.chariot	.amount	{ color:#F5E8B4; top:38px; width:91px;  } ' +
-              '#dio_available_units_bullseye.rider	.amount	{ color:#DFCC6C; top:52px; width:105px;	} ' +
-              '#dio_available_units_bullseye.slinger	.amount	{ color:#F5E8B4; top:53px; width:91px;	} ' +
-              '#dio_available_units_bullseye.catapult	.amount	{ color:#F5F6C5; top:36px; width:87px;	} ' +
-              '#dio_available_units_bullseye.godsent	.amount	{ color:#F5F6C5; top:57px; width:92px;	} ' +
+                // Land units
+                '#dio_available_units_bullseye.sword	.amount	{ color:#E2D9C1; top:57px; width:90px;	} ' +
+                '#dio_available_units_bullseye.hoplite	.amount	{ color:#E2D9C1; top:57px; width:90px;	} ' +
+                '#dio_available_units_bullseye.archer	.amount	{ color:#E2D0C1; top:47px; width:70px;	} ' +
+                '#dio_available_units_bullseye.chariot			{ margin-top: 15px; } ' +
+                '#dio_available_units_bullseye.chariot	.amount	{ color:#F5E8B4; top:38px; width:91px;  } ' +
+                '#dio_available_units_bullseye.rider	.amount	{ color:#DFCC6C; top:52px; width:105px;	} ' +
+                '#dio_available_units_bullseye.slinger	.amount	{ color:#F5E8B4; top:53px; width:91px;	} ' +
+                '#dio_available_units_bullseye.catapult	.amount	{ color:#F5F6C5; top:36px; width:87px;	} ' +
+                '#dio_available_units_bullseye.godsent	.amount	{ color:#F5F6C5; top:57px; width:92px;	} ' +
 
-              // Mythic units
-              '#dio_available_units_bullseye.medusa			.amount	{ color:#FBFFBB; top:50px; width:65px;	} ' +
-              '#dio_available_units_bullseye.manticore		.amount	{ color:#ECD181; top:50px; width:55px; 	} ' +
-              '#dio_available_units_bullseye.pegasus					{ margin-top: 16px;	} ' +
-              '#dio_available_units_bullseye.pegasus			.amount	{ color:#F7F8E3; top:36px; width:90px;	} ' +
-              '#dio_available_units_bullseye.minotaur			        { margin-top: 10px; } ' +
-              '#dio_available_units_bullseye.minotaur		    .amount	{ color:#EAD88A; top:48px; width:78px;	} ' +
-              '#dio_available_units_bullseye.zyklop					{ margin-top: 3px;	} '+
-              '#dio_available_units_bullseye.zyklop			.amount	{ color:#EDE0B0; top:50px; width:95px;	} ' +
-              '#dio_available_units_bullseye.harpy					{ margin-top: 16px;	} ' +
-              '#dio_available_units_bullseye.harpy			.amount	{ color:#E7DB79; top:30px; width:78px;	} ' +
-              '#dio_available_units_bullseye.sea_monster		.amount	{ color:#D8EA84; top:58px; width:91px;	} ' +
-              '#dio_available_units_bullseye.cerberus		    .amount	{ color:#EC7445; top:25px; width:101px;	} ' +
-              '#dio_available_units_bullseye.centaur					{ margin-top: 15px;	} ' +
-              '#dio_available_units_bullseye.centaur			.amount	{ color:#ECE0A8; top:29px; width:83px;	} ' +
-              '#dio_available_units_bullseye.fury			    .amount	{ color:#E0E0BC; top:57px; width:95px;	} ' +
-              '#dio_available_units_bullseye.griffin					{ margin-top: 15px;	} ' +
-              '#dio_available_units_bullseye.griffin			.amount	{ color:#FFDC9D; top:40px; width:98px;	} ' +
-              '#dio_available_units_bullseye.calydonian_boar	.amount	{ color:#FFDC9D; top:17px; width:85px;	} ' +
-              '#dio_available_units_bullseye.siren		    .amount	{ color:#EAD88A; top:50px; width:78px;	} ' +
-              '#dio_available_units_bullseye.satyr			        { margin-top: 15px; } ' +
-              '#dio_available_units_bullseye.satyr		    .amount	{ color:#EAD88A; top:48px; width:78px;	} ' +
-              '#dio_available_units_bullseye.spartoi			        { margin-top: 10px; } ' +
-              '#dio_available_units_bullseye.spartoi		    .amount	{ color:#EAD88A; top:48px; width:78px;	} ' +
-              '#dio_available_units_bullseye.ladon			        { margin-top: 10px; } ' +
-              '#dio_available_units_bullseye.ladon		    .amount	{ color:#EAD88A; top:48px; width:78px;	} ' +
+                // Mythic units
+                '#dio_available_units_bullseye.medusa			.amount	{ color:#FBFFBB; top:50px; width:65px;	} ' +
+                '#dio_available_units_bullseye.manticore		.amount	{ color:#ECD181; top:50px; width:55px; 	} ' +
+                '#dio_available_units_bullseye.pegasus					{ margin-top: 16px;	} ' +
+                '#dio_available_units_bullseye.pegasus			.amount	{ color:#F7F8E3; top:36px; width:90px;	} ' +
+                '#dio_available_units_bullseye.minotaur			        { margin-top: 10px; } ' +
+                '#dio_available_units_bullseye.minotaur		    .amount	{ color:#EAD88A; top:48px; width:78px;	} ' +
+                '#dio_available_units_bullseye.zyklop					{ margin-top: 3px;	} ' +
+                '#dio_available_units_bullseye.zyklop			.amount	{ color:#EDE0B0; top:50px; width:95px;	} ' +
+                '#dio_available_units_bullseye.harpy					{ margin-top: 16px;	} ' +
+                '#dio_available_units_bullseye.harpy			.amount	{ color:#E7DB79; top:30px; width:78px;	} ' +
+                '#dio_available_units_bullseye.sea_monster		.amount	{ color:#D8EA84; top:58px; width:91px;	} ' +
+                '#dio_available_units_bullseye.cerberus		    .amount	{ color:#EC7445; top:25px; width:101px;	} ' +
+                '#dio_available_units_bullseye.centaur					{ margin-top: 15px;	} ' +
+                '#dio_available_units_bullseye.centaur			.amount	{ color:#ECE0A8; top:29px; width:83px;	} ' +
+                '#dio_available_units_bullseye.fury			    .amount	{ color:#E0E0BC; top:57px; width:95px;	} ' +
+                '#dio_available_units_bullseye.griffin					{ margin-top: 15px;	} ' +
+                '#dio_available_units_bullseye.griffin			.amount	{ color:#FFDC9D; top:40px; width:98px;	} ' +
+                '#dio_available_units_bullseye.calydonian_boar	.amount	{ color:#FFDC9D; top:17px; width:85px;	} ' +
+                '#dio_available_units_bullseye.siren		    .amount	{ color:#EAD88A; top:50px; width:78px;	} ' +
+                '#dio_available_units_bullseye.satyr			        { margin-top: 15px; } ' +
+                '#dio_available_units_bullseye.satyr		    .amount	{ color:#EAD88A; top:48px; width:78px;	} ' +
+                '#dio_available_units_bullseye.spartoi			        { margin-top: 10px; } ' +
+                '#dio_available_units_bullseye.spartoi		    .amount	{ color:#EAD88A; top:48px; width:78px;	} ' +
+                '#dio_available_units_bullseye.ladon			        { margin-top: 10px; } ' +
+                '#dio_available_units_bullseye.ladon		    .amount	{ color:#EAD88A; top:48px; width:78px;	} ' +
 
-              // Naval units
-              '#dio_available_units_bullseye.attack_ship		    .amount	{ color:#FFCB00; top:26px; width:99px;	} ' +
-              '#dio_available_units_bullseye.bireme			    .amount	{ color:#DFC677; color:azure; top:28px; width:79px;	} ' +
-              '#dio_available_units_bullseye.trireme			    .amount	{ color:#F4FFD4; top:24px; width:90px;	} ' +
-              '#dio_available_units_bullseye.small_transporter	.amount { color:#F5F6C5; top:26px; width:84px;	} ' +
-              '#dio_available_units_bullseye.big_transporter	    .amount { color:#FFDC9D; top:27px; width:78px;	} ' +
-              '#dio_available_units_bullseye.colonize_ship		.amount { color:#F5F6C5; top:29px; width:76px;	} ' +
-              '#dio_available_units_bullseye.colonize_ship		.amount { color:#F5F6C5; top:29px; width:76px;	} ' +
-              '#dio_available_units_bullseye.demolition_ship	    .amount { color:#F5F6C5; top:35px; width:90px;	} ' +
+                // Naval units
+                '#dio_available_units_bullseye.attack_ship		    .amount	{ color:#FFCB00; top:26px; width:99px;	} ' +
+                '#dio_available_units_bullseye.bireme			    .amount	{ color:#DFC677; color:azure; top:28px; width:79px;	} ' +
+                '#dio_available_units_bullseye.trireme			    .amount	{ color:#F4FFD4; top:24px; width:90px;	} ' +
+                '#dio_available_units_bullseye.small_transporter	.amount { color:#F5F6C5; top:26px; width:84px;	} ' +
+                '#dio_available_units_bullseye.big_transporter	    .amount { color:#FFDC9D; top:27px; width:78px;	} ' +
+                '#dio_available_units_bullseye.colonize_ship		.amount { color:#F5F6C5; top:29px; width:76px;	} ' +
+                '#dio_available_units_bullseye.colonize_ship		.amount { color:#F5F6C5; top:29px; width:76px;	} ' +
+                '#dio_available_units_bullseye.demolition_ship	    .amount { color:#F5F6C5; top:35px; width:90px;	} ' +
 
-              // Available units window
-              '#dio_available_units { overflow: auto;  } ' +
-              '#dio_available_units .unit { margin: 5px; cursor:pointer; overflow:visible; display: -webkit-inline-box; float: none; } ' +
-              '#dio_available_units .unit.active { border: 2px solid #7f653a; border-radius:30px; margin:4px; } ' +
-              '#dio_available_units .unit span { text-shadow: 1px 1px 1px black, 1px 1px 2px black;} ' +
-              '#dio_available_units hr { margin: 5px 0px 5px 0px; } ' +
-              '#dio_available_units .drop_box .option { float: left; margin-right: 30px; width:100%; } ' +
-              '#dio_available_units .drop_box { position:absolute; top: -38px; right: 98px; width:120px; z-index:10; } ' +
-              '#dio_available_units .drop_box .drop_group { width: 140px; } ' +
-              '#dio_available_units .drop_box .select_group.open { display:block; } ' +
-              '#dio_available_units .drop_box .item-list { overflow: auto; overflow-x: hidden; } ' +
-              '#dio_available_units .drop_box .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
+                // Available units window
+                '#dio_available_units { overflow: auto;  } ' +
+                '#dio_available_units .unit { margin: 5px; cursor:pointer; overflow:visible; display: -webkit-inline-box; float: none; } ' +
+                '#dio_available_units .unit.active { border: 2px solid #7f653a; border-radius:30px; margin:4px; } ' +
+                '#dio_available_units .unit span { text-shadow: 1px 1px 1px black, 1px 1px 2px black;} ' +
+                '#dio_available_units hr { margin: 5px 0px 5px 0px; } ' +
+                '#dio_available_units .drop_box .option { float: left; margin-right: 30px; width:100%; } ' +
+                '#dio_available_units .drop_box { position:absolute; top: -38px; right: 98px; width:120px; z-index:10; } ' +
+                '#dio_available_units .drop_box .drop_group { width: 140px; } ' +
+                '#dio_available_units .drop_box .select_group.open { display:block; } ' +
+                '#dio_available_units .drop_box .item-list { overflow: auto; overflow-x: hidden; } ' +
+                '#dio_available_units .drop_box .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
 
-              // Available units button
-              '#dio_btn_available_units { top:84px; left:120px; z-index:15; position:absolute; } ' +
-              '#dio_btn_available_units .ico_available_units { margin:5px 0px 0px 4px; width:24px; height:24px; ' +
-              'background:url(https://www.tuto-de-david1327.com/medias/images/couteau.png) no-repeat 0px 0px;background-size:100%; filter:url(#Hue1); -webkit-filter:hue-rotate(100deg);  } ' +
+                // Available units button
+                '#dio_btn_available_units { top:84px; left:120px; z-index:15; position:absolute; } ' +
+                '#dio_btn_available_units .ico_available_units { margin:5px 0px 0px 4px; width:24px; height:24px; ' +
+                'background:url(' + Home_img + 'couteau.png) no-repeat 0px 0px;background-size:100%; filter:url(#Hue1); -webkit-filter:hue-rotate(100deg);  } ' +
 
-              '</style>').appendTo('head');
+                '</style>').appendTo('head');
             if (uw.Game.gods_active.aphrodite || uw.Game.gods_active.ares) {
                 createWindowType("DIO_UNITS", (LANG.hasOwnProperty(LID) ? getTexts("Options", "ava")[0] : default_title), 430, 315, true, [240, 70]);
-            }else {
+            } else {
                 createWindowType("DIO_UNITS", (LANG.hasOwnProperty(LID) ? getTexts("Options", "ava")[0] : default_title), 378, 315, true, [240, 70]);
             }
 
@@ -8321,32 +9151,32 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
 
         autre: function () {
-            if($(".topleft_navigation_area").get(0)) {
+            if ($(".topleft_navigation_area").get(0)) {
                 $('#dio_available_units_style_oceanautre').remove()
                 $('#dio_available_units_style_oceanaut').remove();
                 if (DATA.options.dio_ava2) {
                     $('<style id="dio_available_units_style_oceanautre">' +
-                      '.nui_grepo_score { top: 167px!important; } ' +
-                      '.nui_left_box { top: 119px ; } ' +
-                      '.nui_main_menu { top: 276px ; }' +
+                        '.nui_grepo_score { top: 167px!important; } ' +
+                        '.nui_left_box { top: 119px ; } ' +
+                        '.nui_main_menu { top: 276px ; }' +
 
-                      '#HMoleM {top: 270px !important;}'+
-                      '#ui_box .ocean_number_box { position: absolute; top: 151px; left: 45px; }' +
-                      '#ui_box .ocean_number_box .ocean_number { font-weight: 700; z-index: 5; width: 100px; left: -13px;}' +
-                      '.picomap_area .dio_picomap_overlayer { height: 135px ; } ' +
-                      '</style>').appendTo('head');
+                        '#HMoleM {top: 270px !important;}' +
+                        '#ui_box .ocean_number_box { position: absolute; top: 151px; left: 45px; }' +
+                        '#ui_box .ocean_number_box .ocean_number { font-weight: 700; z-index: 5; width: 100px; left: -13px;}' +
+                        '.picomap_area .dio_picomap_overlayer { height: 135px ; } ' +
+                        '</style>').appendTo('head');
                     //if ($('#MHOLE_MENU').is(':visible')) {$('<style id="dio_available_units_style_oceanautre">.nui_main_menu { top: 333px; }</style>').appendTo('head');}
-                }else if (!DATA.options.dio_ava2) {
+                } else if (!DATA.options.dio_ava2) {
                     $('<style id="dio_available_units_style_oceanaut">' +
-                      '.nui_grepo_score { top: 150px!important; } ' +
-                      '.nui_left_box { top: 102px ; } ' +
-                      '.nui_main_menu { top: 260px ; }' +
+                        '.nui_grepo_score { top: 150px!important; } ' +
+                        '.nui_left_box { top: 102px ; } ' +
+                        '.nui_main_menu { top: 260px ; }' +
 
-                      '#HMoleM {top: 253px !important;}'+
-                      '#ui_box .ocean_number_box { position: absolute; top: 65px; left: 44px; }' +
-                      '#ui_box .ocean_number_box .ocean_number { font-weight: 500; z-index: 1;}' +
-                      '.picomap_area .dio_picomap_overlayer { height: 101px;} ' +
-                      '</style>').appendTo('head');
+                        '#HMoleM {top: 253px !important;}' +
+                        '#ui_box .ocean_number_box { position: absolute; top: 65px; left: 44px; }' +
+                        '#ui_box .ocean_number_box .ocean_number { font-weight: 500; z-index: 1;}' +
+                        '.picomap_area .dio_picomap_overlayer { height: 101px;} ' +
+                        '</style>').appendTo('head');
                     //if ($('#MHOLE_MENU').is(':visible')) {$('<style id="dio_available_units_style_oceanautre">.nui_main_menu { top: 333px; }</style>').appendTo('head');}
                 };
             }
@@ -8393,7 +9223,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             AvailableUnits.timeout = null;
         },
         addButton: function () {
-            var default_title = uw.DM.getl10n("place", "support_overview").options.troop_count + " (" + uw.DM.getl10n("hercules2014", "available") + ")";
+            var default_title = uw.DM.getl10n("place", "support_overview").options.troop_count + " (" + getTexts("labels", "available") + ")";
 
             $('<div id="dio_btn_available_units" class="circle_button"><div class="ico_available_units js-caption"></div></div>').appendTo(".bull_eye_buttons");
 
@@ -8483,13 +9313,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '</div>' +
                 '<div class="select_group dropdown-list default active"><div class="item-list"></div></div>' +
                 '</div>' +
-                '<table width="100%" class="radiobutton horizontal rbtn_visibility"><tr>'+
-                '<td width="25%"><div class="option js-option" name="total"><div class="pointer"></div>'+ getTexts("labels", "total") +'</div></td>'+
-                '<td width="25%"><div class="option js-option" name="available"><div class="pointer"></div>'+ getTexts("labels", "available") +'</div></td>'+
-                '<td width="25%"><div class="option js-option" name="outer"><div class="pointer"></div>'+ getTexts("labels", "outer") +'</div></td>'+
-                '<td width="25%"><div class="option js-option" name="support"><div class="pointer"></div>' + uw.DM.getl10n("context_menu", "titles").support + '</div></td>'+
-                '</tr></table>'+
-                '<hr>'+
+                '<table width="100%" class="radiobutton horizontal rbtn_visibility"><tr>' +
+                '<td width="25%"><div class="option js-option" name="total"><div class="pointer"></div>' + getTexts("labels", "total") + '</div></td>' +
+                '<td width="25%"><div class="option js-option" name="available"><div class="pointer"></div>' + getTexts("labels", "available") + '</div></td>' +
+                '<td width="25%"><div class="option js-option" name="outer"><div class="pointer"></div>' + getTexts("labels", "outer") + '</div></td>' +
+                '<td width="25%"><div class="option js-option" name="support"><div class="pointer"></div>' + getTexts("labels", "sup") + '</div></td>' +
+                '</tr></table>' +
+                '<hr>' +
 
                 '<div id="dio_help_available_units" style="top: -37px;position: absolute; right: 33px;">' +
                 '<a class="ui-dialog-titlebar-help ui-corner-all" href=' + getTexts("link", "available_units") + ' target="_blank"></a>' +
@@ -8503,11 +9333,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (uw.Game.gods_active.aphrodite) {
                         if (unit == "siren") {
                             land_units_str += '<div style="clear:left;"></div>'; // break
-                        }}
+                        }
+                    }
                     else if (uw.Game.gods_active.ares) {
                         if (unit == "ladon") {
                             land_units_str += '<div style="clear:left;"></div>';
-                        }}
+                        }
+                    }
                     else if (unit == "sea_monster") {
                         land_units_str += '<div style="clear:left;"></div>';
                     }
@@ -8520,7 +9352,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             AvailableUnits.wnd.setContent(content);
 
             if (uw.Game.premium_features.curator <= Timestamp.now()) {
-                $('#dio_available_units .drop_box').css({display: 'none'});
+                $('#dio_available_units .drop_box').css({ display: 'none' });
                 DATA.bullseyeUnit.current_group = -1;
             }
 
@@ -8530,14 +9362,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (uw.ITowns.town_groups._byId[group]) {
                         var group_name = uw.ITowns.town_groups._byId[group].attributes.name;
                         $('<div class="option' + (group == -1 ? " sel" : "") + '" name="' + group + '">' + group_name + '</div>').appendTo('#dio_available_units .item-list');
-                    }}
+                    }
+                }
             }
 
             // Set active mode
-            if(typeof(DATA.bullseyeUnit.mode) !== "undefined"){
-                $('#dio_available_units .radiobutton .option[name="'+ DATA.bullseyeUnit.mode +'"]').addClass("checked");
+            if (typeof (DATA.bullseyeUnit.mode) !== "undefined") {
+                $('#dio_available_units .radiobutton .option[name="' + DATA.bullseyeUnit.mode + '"]').addClass("checked");
             }
-            else{
+            else {
                 $('#dio_available_units .radiobutton .option[name="available"]').addClass("checked");
             }
 
@@ -8569,7 +9402,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
 
             // Change mode (total, available, outer)
-            $('#dio_available_units .radiobutton .option').click(function(){
+            $('#dio_available_units .radiobutton .option').click(function () {
 
                 DATA.bullseyeUnit.mode = $(this).attr("name");
 
@@ -8627,7 +9460,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#dio_available_units_bullseye').get(0).className = "unit_icon90x90 " + (DATA.bullseyeUnit[DATA.bullseyeUnit.current_group] || "bireme");
 
                 if (UnitCounter.units[DATA.bullseyeUnit.mode || "available"][DATA.bullseyeUnit.current_group]) {
-                    sum = UnitCounter.units[DATA.bullseyeUnit.mode || "available"][DATA.bullseyeUnit.current_group]["all"][(DATA.bullseyeUnit[DATA.bullseyeUnit.current_group] || "bireme" )] || 0;
+                    sum = UnitCounter.units[DATA.bullseyeUnit.mode || "available"][DATA.bullseyeUnit.current_group]["all"][(DATA.bullseyeUnit[DATA.bullseyeUnit.current_group] || "bireme")] || 0;
                 }
                 sum = sum.toString();
 
@@ -8676,36 +9509,36 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // Style
             $('<style id="dio_comparison_style"> ' +
 
-              // Button
-              '#dio_comparison_button { top:51px; left:120px; z-index:11; position:absolute; } ' +
-              '#dio_comparison_button .ico_comparison { margin:5px 0px 0px 4px; width:24px; height:24px; z-index: 15;' +
-              'background:url(https://www.tuto-de-david1327.com/medias/images/casque.png) no-repeat 0px 0px; background-size:100%; filter:url(#Hue1); -webkit-filter:hue-rotate(60deg); } ' +
-              '#dio_comparison_button.checked .ico_comparison { margin-top:6px; } ' +
+                // Button
+                '#dio_comparison_button { top:51px; left:120px; z-index:11; position:absolute; } ' +
+                '#dio_comparison_button .ico_comparison { margin:5px 0px 0px 4px; width:24px; height:24px; z-index: 15;' +
+                'background:url(' + Home_img + 'casque.png) no-repeat 0px 0px; background-size:100%; filter:url(#Hue1); -webkit-filter:hue-rotate(60deg); } ' +
+                '#dio_comparison_button.checked .ico_comparison { margin-top:6px; } ' +
 
-              // Window
-              '#dio_comparison a { float:left; background-repeat:no-repeat; background-size:25px; line-height:2; margin-right:10px; } ' +
-              '#dio_comparison .box_content { text-align:center; font-style:normal; } ' +
+                // Window
+                '#dio_comparison a { float:left; background-repeat:no-repeat; background-size:25px; line-height:2; margin-right:10px; } ' +
+                '#dio_comparison .box_content { text-align:center; font-style:normal; } ' +
 
-              // Menu tabs
-              '#dio_comparison_menu .tab_icon { left: 23px;} ' +
-              '#dio_comparison_menu .tab_label { margin-left: 18px; } ' +
+                // Menu tabs
+                '#dio_comparison_menu .tab_icon { left: 23px;} ' +
+                '#dio_comparison_menu .tab_label { margin-left: 18px; } ' +
 
-              // Content
-              '#dio_comparison .hidden { display:none; } ' +
-              '#dio_comparison table { width:500px; } ' +
-              '#dio_comparison .hack .t_hack, #dio_comparison .pierce .t_pierce, #dio_comparison .distance .t_distance, #dio_comparison .sea .t_sea { display:inline-table; } ' +
+                // Content
+                '#dio_comparison .hidden { display:none; } ' +
+                '#dio_comparison table { width:500px; } ' +
+                '#dio_comparison .hack .t_hack, #dio_comparison .pierce .t_pierce, #dio_comparison .distance .t_distance, #dio_comparison .sea .t_sea { display:inline-table; } ' +
 
-              '#dio_comparison .box_content { background:url(https://www.tuto-de-david1327.com/medias/images/casque-1.png) 94% 94% no-repeat; background-size:140px; } ' +
+                '#dio_comparison .box_content { background:url(' + Home_img + 'casque-1.png) 94% 94% no-repeat; background-size:140px; } ' +
 
-              '#dio_comparison .compare_type_icon { height:25px; width:25px; background:url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png); background-size:100%; } ' +
-              '#dio_comparison .compare_type_icon.booty { background:url(https://www.tuto-de-david1327.com/medias/images/butin-sac.png); background-size:100%; } ' +
-              '#dio_comparison .compare_type_icon.time { background:url(https://gpall.innogamescdn.com/images/game/res/time.png); background-size:100%; } ' + //   // https://www.tuto-de-david1327.com/medias/images/time.png
-              '#dio_comparison .compare_type_icon.favor { background:url(https://gpall.innogamescdn.com/images/game/res/favor.png); background-size:100%; } ' + // https://www.tuto-de-david1327.com/medias/images/faveur.png
-              '#dio_comparison .compare_type_icon.wood { background:url(https://gpall.innogamescdn.com/images/game/res/wood.png); background-size:100%; } ' +
-              '#dio_comparison .compare_type_icon.stone { background:url(https://gpall.innogamescdn.com/images/game/res/stone.png); background-size:100%; } ' +
-              '#dio_comparison .compare_type_icon.iron { background:url(https://gpall.innogamescdn.com/images/game/res/iron.png); background-size:100%; } ' +
-              '.dio_icon_small2 { position:relative; height:20px; width:25px; margin-left:-25px; }' +
-              '</style>').appendTo("head");
+                '#dio_comparison .compare_type_icon { height:25px; width:25px; background:url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png); background-size:100%; } ' +
+                '#dio_comparison .compare_type_icon.booty { background:url(' + Home_img + 'butin-sac.png); background-size:100%; } ' +
+                '#dio_comparison .compare_type_icon.time { background:url(https://gpall.innogamescdn.com/images/game/res/time.png); background-size:100%; } ' + //   // ' + Home_img + 'time.png
+                '#dio_comparison .compare_type_icon.favor { background:url(https://gpall.innogamescdn.com/images/game/res/favor.png); background-size:100%; } ' + // ' + Home_img + 'faveur.png
+                '#dio_comparison .compare_type_icon.wood { background:url(https://gpall.innogamescdn.com/images/game/res/wood.png); background-size:100%; } ' +
+                '#dio_comparison .compare_type_icon.stone { background:url(https://gpall.innogamescdn.com/images/game/res/stone.png); background-size:100%; } ' +
+                '#dio_comparison .compare_type_icon.iron { background:url(https://gpall.innogamescdn.com/images/game/res/iron.png); background-size:100%; } ' +
+                '.dio_icon_small2 { position:relative; height:20px; width:25px; margin-left:-25px; }' +
+                '</style>').appendTo("head");
         },
         deactivate: function () {
             $('#dio_comparison_button').remove();
@@ -8782,9 +9615,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('.tr_bty').tooltip(labelArray.tooltips.booty.title);
             $('.tr_bty_sea').tooltip(labelArray.tooltips.ship_transport.title);
             $('.tr_res').tooltip(labelArray.costs + " (" +
-                                 labelArray.cost_details.wood + " + " +
-                                 labelArray.cost_details.stone + " + " +
-                                 labelArray.cost_details.iron + ")");
+                labelArray.cost_details.wood + " + " +
+                labelArray.cost_details.stone + " + " +
+                labelArray.cost_details.iron + ")");
             $('.tr_woo').tooltip(labelArray.costs + " (" + labelArray.cost_details.wood + ")");
             $('.tr_sto').tooltip(labelArray.costs + " (" + labelArray.cost_details.stone + ")");
             $('.tr_iro').tooltip(labelArray.costs + " (" + labelArray.cost_details.iron + ")");
@@ -8825,8 +9658,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
         addComparisonTable: function (type) {
             var pos = {
-                att: {hack: "36%", pierce: "27%", distance: "45.5%", sea: "72.5%"},
-                def: {hack: "18%", pierce: "18%", distance: "18%", sea: "81.5%"}
+                att: { hack: "36%", pierce: "27%", distance: "45.5%", sea: "72.5%" },
+                def: { hack: "18%", pierce: "18%", distance: "18%", sea: "81.5%" }
             };
             var unitIMG = "https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png";
             var strArray = [
@@ -8877,8 +9710,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
 
                         strArray[0] += '<td class="un' + (UnitComparison.t) + '"style="' + valArray.heroStyle + '"><span class="unit index_unit unit_icon40x40 ' + e + '" style="' + valArray.heroStyle + valArray.heroStyleIMG + '"></span></td>';
-                        strArray[1] += '<td class="bold" style="color:' + ((valArray.att > 19) ? 'green;' : ((valArray.att < 10 && valArray.att !== 0 ) ? 'red;' : 'black;')) + valArray.heroStyle + '">' + valArray.att + '</td>';
-                        strArray[2] += '<td class="bold" style="color:' + ((valArray.def > 19) ? 'green;' : ((valArray.def < 10 && valArray.def !== 0 ) ? 'red;' : 'black;')) + valArray.heroStyle + '">' + valArray.def + '</td>';
+                        strArray[1] += '<td class="bold" style="color:' + ((valArray.att > 19) ? 'green;' : ((valArray.att < 10 && valArray.att !== 0) ? 'red;' : 'black;')) + valArray.heroStyle + '">' + valArray.att + '</td>';
+                        strArray[2] += '<td class="bold" style="color:' + ((valArray.def > 19) ? 'green;' : ((valArray.def < 10 && valArray.def !== 0) ? 'red;' : 'black;')) + valArray.heroStyle + '">' + valArray.def + '</td>';
                         strArray[3] += '<td class="bold" style="' + valArray.heroStyle + '">' + valArray.speed + '</td>';
                         strArray[4] += '<td class="bold" style="' + valArray.heroStyle + '">' + valArray.booty + '</td>';
                         strArray[5] += '<td class="bold" style="' + valArray.heroStyle + '">' + valArray.res + '</td>';
@@ -8896,13 +9729,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
 
             $('<table class="hidden t_' + type + '" cellpadding="1px">' +
-              '<tr>' + strArray[0] + '</tr>' +
-              '<tr class="tr_att">' + strArray[1] + '</tr><tr class="tr_def' + (type == "sea" ? "_sea" : "") + '">' + strArray[2] + '</tr>' +
-              '<tr class="tr_spd">' + strArray[3] + '</tr><tr class="tr_bty' + (type == "sea" ? "_sea" : "") + '">' + strArray[4] + '</tr>' +
-              '<tr class="tr_res">' + strArray[5] + '</tr><tr class="tr_woo">' + strArray[8] + '</tr>' +
-              '<tr class="tr_sto">' + strArray[9] + '</tr><tr class="tr_iro">' + strArray[10] + '</tr>' +
-              '<tr class="tr_fav">' + strArray[6] + '</tr><tr class="tr_tim' + (type == "sea" ? "_sea" : "") + '">' + strArray[7] + '</tr>' +
-              '</table>').appendTo('#dio_comparison .box_content');
+                '<tr>' + strArray[0] + '</tr>' +
+                '<tr class="tr_att">' + strArray[1] + '</tr><tr class="tr_def' + (type == "sea" ? "_sea" : "") + '">' + strArray[2] + '</tr>' +
+                '<tr class="tr_spd">' + strArray[3] + '</tr><tr class="tr_bty' + (type == "sea" ? "_sea" : "") + '">' + strArray[4] + '</tr>' +
+                '<tr class="tr_res">' + strArray[5] + '</tr><tr class="tr_woo">' + strArray[8] + '</tr>' +
+                '<tr class="tr_sto">' + strArray[9] + '</tr><tr class="tr_iro">' + strArray[10] + '</tr>' +
+                '<tr class="tr_fav">' + strArray[6] + '</tr><tr class="tr_tim' + (type == "sea" ? "_sea" : "") + '">' + strArray[7] + '</tr>' +
+                '</table>').appendTo('#dio_comparison .box_content');
 
             for (var i = 0; i <= UnitComparison.t; i++) {
                 $('.un' + i).tooltip(UnitComparison.tooltips[i]);
@@ -8969,7 +9802,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         activate: function () {
 
         },
-        reportsColor : function () {
+        reportsColor: function () {
             var b = uw.GPWindowMgr.getOpen(uw.Layout.wnd.TYPE_REPORT);
             if (b.length == 0)
                 return;
@@ -8978,77 +9811,77 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // attaques
             $("DIV#gpwnd_" + c + " #report_list .color_highlight ").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid red"
+                    "border-left": "5px solid red"
                 }).addClass("angriffe");
             });
             // troupes stationnées
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "supporting") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid green"
+                    "border-left": "5px solid green"
                 }).addClass("unterstützungen");
             });
             // soutient
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "support") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid green"
+                    "border-left": "5px solid green"
                 }).addClass("unterstützungen");
             });
             // ne peut pas soutenir
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + uw.DM.getl10n("report").inbox.filter_types.support.toLowerCase() + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid green"
+                    "border-left": "5px solid green"
                 }).addClass("unterstützungen");
             });
             // Espion provenant
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "spy") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid blue"
+                    "border-left": "5px solid blue"
                 }).addClass("spios");
             });
             // espionne
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "spying") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid blue"
+                    "border-left": "5px solid blue"
                 }).addClass("spios");
             });
             // conquered
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "conquered") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid black"
+                    "border-left": "5px solid black"
                 });
             });
             // (lancé)
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "enacted") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid purple"
+                    "border-left": "5px solid purple"
                 }).addClass("zauber");
             });
             // Quests (a expiré)
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "Quests") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid rgb(128, 64, 0)"
+                    "border-left": "5px solid rgb(128, 64, 0)"
                 }).addClass("farm");
             });
             // (Vous avez reçu) gold
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "gold") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid rgba(123, 128, 0, 0.89)"
+                    "border-left": "5px solid rgba(123, 128, 0, 0.89)"
                 }).addClass("farm");
             });
             //réservation (Votre réservation pour)
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "Reservations") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid yellow"
+                    "border-left": "5px solid yellow"
                 }).addClass("farm");
             });
             //Alliance (parrainé)
             $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "parrainé") + "')").each(function () {
                 $(this).css({
-                    "border-left" : "5px solid yellow"
+                    "border-left": "5px solid yellow"
                 }).addClass("farm");
             });
         },
-        reportsFilter : function () {
+        reportsFilter: function () {
             if (MID == 'fr' || MID == 'de' || MID == 'en' || MID == 'zz') {
                 var b = uw.GPWindowMgr.getOpen(uw.Layout.wnd.TYPE_REPORT);
                 if (b.length == 0)
@@ -9063,18 +9896,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $('<label id="spios" class="dio_menu_berichte_Icon" style="background-position: -66px 0; border-right:3px solid blue;"><input type="checkbox" id="spios" class="dio_menu_berichte_checkbox"></label>').appendTo('#dio_menu_berichte_icon_wrapper');
                     $('<label id="farm" class="dio_menu_berichte_Icon" style="background-position: -176px 0; border-right:3px solid rgb(128, 64, 0);"><input type="checkbox" id="farm" class="dio_menu_berichte_checkbox"></label>').appendTo('#dio_menu_berichte_icon_wrapper');
                     $(".dio_menu_berichte_Icon").css({
-                        'display' : 'inline-block',
-                        'background-image' : 'url(https://www.tuto-de-david1327.com/medias/images/reportsfilter.gif)',
-                        'background-repeat' : 'repeat scroll',
-                        'width' : '22px',
-                        'height' : '22px',
-                        'position' : 'relative',
-                        'float' : 'left',
-                        'margin-left' : '22px'
+                        'display': 'inline-block',
+                        'background-image': 'url(' + Home_img + 'reportsfilter.gif)',
+                        'background-repeat': 'repeat scroll',
+                        'width': '22px',
+                        'height': '22px',
+                        'position': 'relative',
+                        'float': 'left',
+                        'margin-left': '22px'
                     });
                     $(".dio_menu_berichte_checkbox").css({
-                        'margin-top' : '5px',
-                        'margin-left' : '31px'
+                        'margin-top': '5px',
+                        'margin-left': '31px'
                     });
                     $(".dio_menu_berichte_checkbox").click(function () {
                         var classid = this.id;
@@ -9342,7 +10175,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $.ajax({
                     type: "GET",
                     url: '/game/alliance?town_id=' + uw.Game.townId + '&action=profile&h=' + uw.Game.csrfToken + '&json=%7B%22alliance_id%22%3A' + AID + '%2C%22town_id%22%3A' + uw.Game.townId +
-                    '%2C%22nlreq_id%22%3A' + uw.Game.notification_last_requested_id + '%7D&_=' + uw.Game.server_time,
+                        '%2C%22nlreq_id%22%3A' + uw.Game.notification_last_requested_id + '%7D&_=' + uw.Game.server_time,
                     success: function (text) {
                         try {
                             text = text.substr(text.indexOf("/li") + 14).substr(0, text.indexOf("\ "));
@@ -9388,25 +10221,25 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             activate: function () {
                 // Style
                 $('<style id="dio_wonder_calculator"> ' +
-                  '.wonder_controls { height:380px; } ' +
-                  '.wonder_controls .wonder_progress { margin: 0px auto 5px; } ' +
-                  '.wonder_controls .wonder_header { text-align:left; margin:10px -8px 12px 3px; }' +
-                  '.wonder_controls .build_wonder_icon { top:25px !important; }' +
-                  '.wonder_controls .wonder_progress_bar { top:54px; }' +
-                  '.wonder_controls .trade fieldset { float:right; } ' +
-                  '.wonder_controls .wonder_res_container { right:29px; } ' +
-                  '.wonder_controls .ww_ratio {position:relative; height:auto; } ' +
-                  '.wonder_controls fieldset.next_level_res {  height:auto; } ' +
-                  '.wonder_controls .town-capacity-indicator { margin-top:0px; } ' +
+                    '.wonder_controls { height:380px; } ' +
+                    '.wonder_controls .wonder_progress { margin: 0px auto 5px; } ' +
+                    '.wonder_controls .wonder_header { text-align:left; margin:10px -8px 12px 3px; }' +
+                    '.wonder_controls .build_wonder_icon { top:25px !important; }' +
+                    '.wonder_controls .wonder_progress_bar { top:54px; }' +
+                    '.wonder_controls .trade fieldset { float:right; } ' +
+                    '.wonder_controls .wonder_res_container { right:29px; } ' +
+                    '.wonder_controls .ww_ratio {position:relative; height:auto; } ' +
+                    '.wonder_controls fieldset.next_level_res {  height:auto; } ' +
+                    '.wonder_controls .town-capacity-indicator { margin-top:0px; } ' +
 
-                  '.wonder_controls .ww_ratio .progress { line-height:1; color:white; font-size:0.8em; } ' +
-                  '.wonder_controls .ww_perc { position:absolute; width:242px; text-align:center; } ' +
-                  '.wonder_controls .indicator3 { z-index:0; } ' +
-                  '.wonder_controls .indicator3.red { background-position:right -203px; height:10px; width:242px; } ' +
-                  '.wonder_controls .indicator3.green { background-position:right -355px; height:10px; width:242px; } ' +
-                  '.wonder_controls .all_res { background:url(https://gpall.innogamescdn.com/images/game/layout/resources_2.32.png) no-repeat 0 -90px; width:30px; height:30px; margin:0 auto; margin-left:5px; } ' +
-                  '.wonder_controls .town-capacity-indicator { margin-top:0px; } ' +
-                  '</style>').appendTo('head');
+                    '.wonder_controls .ww_ratio .progress { line-height:1; color:white; font-size:0.8em; } ' +
+                    '.wonder_controls .ww_perc { position:absolute; width:242px; text-align:center; } ' +
+                    '.wonder_controls .indicator3 { z-index:0; } ' +
+                    '.wonder_controls .indicator3.red { background-position:right -203px; height:10px; width:242px; } ' +
+                    '.wonder_controls .indicator3.green { background-position:right -355px; height:10px; width:242px; } ' +
+                    '.wonder_controls .all_res { background:url(https://gpall.innogamescdn.com/images/game/layout/resources_2.32.png) no-repeat 0 -90px; width:30px; height:30px; margin:0 auto; margin-left:5px; } ' +
+                    '.wonder_controls .town-capacity-indicator { margin-top:0px; } ' +
+                    '</style>').appendTo('head');
             },
             deactivate: function () {
                 $('#dio_wonder_calculator').remove();
@@ -9424,7 +10257,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         if ($(wndID + '.wonder_progress').get(0)) {
                             var res = 0,
-                                ww_share = {total: {share: 0, sum: 0}, stage: {share: 0, sum: 0}},
+                                ww_share = { total: { share: 0, sum: 0 }, stage: { share: 0, sum: 0 } },
                                 ww_type = $(wndID + '.finished_image_small').attr('src').split("/")[6].split("_")[0], // Which world wonder?
                                 res_stages = [2, 4, 6, 10, 16, 28, 48, 82, 140, 238], // Rohstoffmenge pro Rohstofftyp in 100.000 Einheiten
                                 stage = parseInt($(wndID + '.wonder_expansion_stage span').get(0).innerHTML.split("/")[0], 10) + 1, // Derzeitige Füllstufe
@@ -9474,7 +10307,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         } else {
                             $('<div class="prev_ww pos_Y"></div><div class="next_ww pos_Y"></div>').appendTo(wndID + '.wonder_controls');
 
-                            $(wndID + '.wonder_finished').css({width: '100%'});
+                            $(wndID + '.wonder_finished').css({ width: '100%' });
 
                             $(wndID + '.pos_Y').css({
                                 top: '-266px'
@@ -9592,28 +10425,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var farmingvillageshelper = {
         activate: function () {
         },
-        rememberloot : function () {
+        rememberloot: function () {
             var activeFarmClass = $('#time_options_wrapper .active').attr('class').split(' ');
             var activeFarm = activeFarmClass[1];
         },
-        setloot : function () {
+        setloot: function () {
             setTimeout(function () {
                 $('#time_options_wrapper .' + activeFarm).click();
             }, 500);
         },
-        islandHeader : function () {
-            $('#fto_town_list li').each(function( index ) {
+        islandHeader: function () {
+            $('#fto_town_list li').each(function (index) {
                 if (this.classList.length == 2) {
                     $(this).addClass("dio_li_island");
                     $(this).append(
-                        '<div class="dio_colordivider" style="background-image: url(https://www.tuto-de-david1327.com/medias/images/13-4.jpg); display: block; height: 24px; margin: -4px -2px;"></div>' +
+                        '<div class="dio_colordivider" style="background-image: url(' + Home_img + '13-4.jpg); display: block; height: 24px; margin: -4px -2px;"></div>' +
                         '<div class="checkbox_new checked disabled" style="position: absolute; right: 2px; top: 5px"><div class="cbx_icon"></div></div>'
                     );
                     $(this).find("span").css({
-                        "margin-left" : "2px"
+                        "margin-left": "2px"
                     });
                     $(this).find("a").css({
-                        "color" : "rgb(238, 221, 187)"
+                        "color": "rgb(238, 221, 187)"
                     });
                 }
             });
@@ -9627,12 +10460,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
             $('<style type="text/css">#fto_town_list li.active {background: rgba(208, 190, 151, 0.60)} .dio_autoHideCitiesOff {background-position: 0px -11px}</style>').appendTo('head');
         },
-        indicateLoot : function () {
+        indicateLoot: function () {
             var activeIsland = $('#fto_town_list li.active').prevAll(".dio_li_island").first();
             activeIsland.find("div.checkbox_new").removeClass("disabled");
-            activeIsland.find("div.dio_colordivider").trigger( "click" );
+            activeIsland.find("div.dio_colordivider").trigger("click");
         },
-        switchTown : function (direction) {
+        switchTown: function (direction) {
             var el;
             if (direction === "up") {
                 el = $('#fto_town_list li.active').prevAll("li:not(.dio_li_island):visible").first();
@@ -9695,16 +10528,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         }
 
         $('<style id="dio_conquest"> ' +
-          '.move_hr { margin:7px 0px 0px 0px; background-color:#5F5242; height:2px; border:0px solid; } ' +
-          // Smaller movements
-          '#unit_movements { font-size: 0.80em; } ' +
-          '#unit_movements .incoming { width:150px; height:45px; float:left; } ' +
-          // Counter
-          '#move_counter { position:relative; width:100px; margin-top:-16px; left: 40%; } ' +
-          '#move_counter .movement { float:left; margin:0px 5px 0px 0px; height:23px; width:23px; position:relative; } ' +
-          '#move_counter .def { background:url(https://gpzz.innogamescdn.com/images/game/autogenerated/olympus/sprite_images/olympus_temple_info_16afe3f.png) no-repeat -327px -289px; margin-top: -2px; } ' +
-          '#move_counter .off { background:url(https://gpzz.innogamescdn.com/images/game/autogenerated/olympus/sprite_images/olympus_temple_info_16afe3f.png) no-repeat -303px -289px; margin-top: -2px; }' +
-          '</style>').appendTo("head");
+            '.move_hr { margin:7px 0px 0px 0px; background-color:#5F5242; height:2px; border:0px solid; } ' +
+            // Smaller movements
+            '#unit_movements { font-size: 0.80em; } ' +
+            '#unit_movements .incoming { width:150px; height:45px; float:left; } ' +
+            // Counter
+            '#move_counter { position:relative; width:100px; margin-top:-16px; left: 40%; } ' +
+            '#move_counter .movement { float:left; margin:0px 5px 0px 0px; height:23px; width:23px; position:relative; } ' +
+            '#move_counter .def { background:url(https://gpzz.innogamescdn.com/images/game/autogenerated/olympus/sprite_images/olympus_temple_info_16afe3f.png) no-repeat -327px -289px; margin-top: -2px; } ' +
+            '#move_counter .off { background:url(https://gpzz.innogamescdn.com/images/game/autogenerated/olympus/sprite_images/olympus_temple_info_16afe3f.png) no-repeat -303px -289px; margin-top: -2px; }' +
+            '</style>').appendTo("head");
 
         /*
          $('#unit_movements div').each(function(){
@@ -9757,41 +10590,41 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     //console.log(wndID);
                     //if (wndA === action) {
-                        switch (action) {
-                            case "trading":
-                                if ($(wndID + '#trade_tab').get(0)) {
-                                    if (!$(wndID + '.dio_rec_trade').get(0) && DATA.options.dio_rec) {
-                                        RecruitingTrade.add(wndID);
-                                    }
-                                    //console.log(DATA.options.dio_per);
-                                    if (!$(wndID + '.dio_btn_trade').get(0) && DATA.options.dio_per) {
-                                        addPercentTrade(wndID, false);
-                                    }
+                    switch (action) {
+                        case "trading":
+                            if ($(wndID + '#trade_tab').get(0)) {
+                                if (!$(wndID + '.dio_rec_trade').get(0) && DATA.options.dio_rec) {
+                                    RecruitingTrade.add(wndID);
                                 }
-                                //addTradeMarks(wndID, 15, 18, 15, "red"); // town festival
-                                break;
-                            case "info":
-                                //console.log(wndArray[e].getAction());
-                                if (DATA.options.dio_BBt) {
-                                    BBtowninfo.towninfo(wnd);
+                                //console.log(DATA.options.dio_per);
+                                if (!$(wndID + '.dio_btn_trade').get(0) && DATA.options.dio_per) {
+                                    addPercentTrade(wndID, false);
                                 }
-                                break;
-                            case "support":
-                            case "attack":
-                                //if(!arrival_interval[wndID]){
-                                if (DATA.options.dio_way && !($('.js-casted-powers-viewport .unit_movement_boost').get(0) || $(wndID + '.short_duration').get(0))) {
-                                    //if(arrival_interval[wndID]) console.log("add " + wndID);
-                                    ShortDuration.add(wndID);
-                                } else $("#dio_short_duration_stylee").remove();
-                                if (DATA.options.dio_sen) {
-                                    SentUnits.add(wndID, action);
-                                }
-                                //}
-                                break;
-                            case "rec_mark":
-                                //addTradeMarks(wndID, 15, 18, 15, "lime");
-                                break;
-                        }
+                            }
+                            //addTradeMarks(wndID, 15, 18, 15, "red"); // town festival
+                            break;
+                        case "info":
+                            //console.log(wndArray[e].getAction());
+                            if (DATA.options.dio_BBt) {
+                                BBtowninfo.towninfo(wnd);
+                            }
+                            break;
+                        case "support":
+                        case "attack":
+                            //if(!arrival_interval[wndID]){
+                            if (DATA.options.dio_way && !($('.js-casted-powers-viewport .unit_movement_boost').get(0) || $(wndID + '.short_duration').get(0))) {
+                                //if(arrival_interval[wndID]) console.log("add " + wndID);
+                                ShortDuration.add(wndID);
+                            } else $("#dio_short_duration_stylee").remove();
+                            if (DATA.options.dio_sen) {
+                                SentUnits.add(wndID, action);
+                            }
+                            //}
+                            break;
+                        case "rec_mark":
+                            //addTradeMarks(wndID, 15, 18, 15, "lime");
+                            break;
+                    }
                     //}
                 }
             }
@@ -9842,44 +10675,45 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         add: function (wndID, action) {
 
             $('<style id="dio_table_box">' +
-              '.attack_support_window .send_units_form .button_wrapper { text-align:left; padding-left:70px; }' +
-              //'#btn_attack_town { margin-left: 55px; } ' +
-              '#gt_delete { display: none; }' +
-              '.attack_support_window .additional_info_wrapper .town_info_duration_pos_alt { min-height: 50px;; } ' +
-              '.attack_support_window .additional_info_wrapper .town_info_duration_pos { min-height: 62px!important; } ' +
-              '</style>').appendTo(wndID + '.attack_support_window');
+                '.attack_support_window .send_units_form .button_wrapper { text-align:left; padding-left:70px; }' +
+                //'#btn_attack_town { margin-left: 55px; } ' +
+                '#gt_delete { display: none; }' +
+                '.attack_support_window .additional_info_wrapper .town_info_duration_pos_alt { min-height: 50px;; } ' +
+                '.attack_support_window .additional_info_wrapper .town_info_duration_pos { min-height: 62px!important; } ' +
+                '</style>').appendTo(wndID + '.attack_support_window');
 
             //if (DATA.options.dio_sen) {
 
             if ((uw.ITowns.getTown(uw.Game.townId).researches().attributes.breach == true || uw.ITowns.getTown(uw.Game.townId).researches().attributes.stone_storm == true) & DATA.options.dio_sen) {
                 $('<style id="dio_table_box3">' +
-                  '.attack_support_window .send_units_form .attack_type_wrapper .attack_table_box { text-align:left;  transform:scale(0.94); margin: -5px 0px -5px -20px;}' +
-                  '.attack_support_window .table_box .table_box_content .content_box { min-width:137px ; }' +
-                  '</style>').appendTo(wndID + '.attack_support_window');
+                    '.attack_support_window .send_units_form .attack_type_wrapper .attack_table_box { text-align:left;  transform:scale(0.94); margin: -5px 0px -5px -20px;}' +
+                    '.attack_support_window .table_box .table_box_content .content_box { min-width:137px ; }' +
+                    '</style>').appendTo(wndID + '.attack_support_window');
 
-            }else {
+            } else {
                 $('<style id="dio_table_box4">' +
-                  '.attack_support_window .send_units_form .attack_type_wrapper .attack_table_box { text-align:left; transform:scale(1); margin: -8px 0px -2px 12px;}' +
-                  '.attack_support_window .table_box .table_box_content .content_box { min-width:180px; }' +
-                  '</style>').appendTo(wndID + '.attack_support_window');};
+                    '.attack_support_window .send_units_form .attack_type_wrapper .attack_table_box { text-align:left; transform:scale(1); margin: -8px 0px -2px 12px;}' +
+                    '.attack_support_window .table_box .table_box_content .content_box { min-width:180px; }' +
+                    '</style>').appendTo(wndID + '.attack_support_window');
+            };
 
             if (!$(wndID + '.sent_units_box').get(0)) {
                 $('<div id="dio_table_box2">' +
-                  '<div class="game_inner_box sent_units_box ' + action + '"><div class="game_border ">' +
-                  '<div class="game_border_top"></div><div class="game_border_bottom"></div><div class="game_border_left"></div><div class="game_border_right"></div>' +
-                  '<div class="game_border_corner corner1"></div><div class="game_border_corner corner2"></div>' +
-                  '<div class="game_border_corner corner3"></div><div class="game_border_corner corner4"></div>' +
-                  '<div class="game_header bold">' +
-                  '<div class="dio_icon b" style="opacity: 0.7;"></div>' +
-                  '<div class="icon_sent townicon_' + (action == "attack" ? "lo" : "ld") + '"></div><span>' + getTexts("labels", "lab") + ' (' + (action == "attack" ? "OFF" : "DEF") + ')</span>' +
-                  '</div>' +
-                  '<div class="troops"><div class="units_list"></div><hr style="width: 172px;border: 1px solid rgb(185, 142, 93);margin: 3px 0px 2px -1px;">' +
-                  '<div id="btn_sent_units_reset" class="button_new">' +
-                  '<div class="left"></div>' +
-                  '<div class="right"></div>' +
-                  '<div class="caption js-caption">' + getTexts("buttons", "res") + '<div class="effect js-effect"></div></div>' +
-                  '</div>' +
-                  '</div></div></div>').appendTo(wndID + '.attack_support_window');
+                    '<div class="game_inner_box sent_units_box ' + action + '"><div class="game_border ">' +
+                    '<div class="game_border_top"></div><div class="game_border_bottom"></div><div class="game_border_left"></div><div class="game_border_right"></div>' +
+                    '<div class="game_border_corner corner1"></div><div class="game_border_corner corner2"></div>' +
+                    '<div class="game_border_corner corner3"></div><div class="game_border_corner corner4"></div>' +
+                    '<div class="game_header bold">' +
+                    '<div class="dio_icon b" style="opacity: 0.7;"></div>' +
+                    '<div class="icon_sent townicon_' + (action == "attack" ? "lo" : "ld") + '"></div><span>' + getTexts("labels", "lab") + ' (' + (action == "attack" ? "OFF" : "DEF") + ')</span>' +
+                    '</div>' +
+                    '<div class="troops"><div class="units_list"></div><hr style="width: 172px;border: 1px solid rgb(185, 142, 93);margin: 3px 0px 2px -1px;">' +
+                    '<div id="btn_sent_units_reset" class="button_new">' +
+                    '<div class="left"></div>' +
+                    '<div class="right"></div>' +
+                    '<div class="caption js-caption">' + getTexts("buttons", "res") + '<div class="effect js-effect"></div></div>' +
+                    '</div>' +
+                    '</div></div></div>').appendTo(wndID + '.attack_support_window');
 
                 SentUnits.update(action);
 
@@ -9898,7 +10732,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     bottom: '26px',
                     width: '192px'
                 });
-                $(wndID + '.troops').css({padding: '6px 0px 6px 6px'});
+                $(wndID + '.troops').css({ padding: '6px 0px 6px 6px' });
 
                 $(wndID + '#btn_sent_units_reset').click(function () {
                     // Overwrite old array
@@ -9920,9 +10754,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if ((sentUnitsArray[action][x] || 0) > 0) {
                             $('.sent_units_box.' + action + ' .units_list').each(function () {
                                 $(this).append('<div class="unit_icon25x25 ' + x +
-                                               (sentUnitsArray[action][x] >= 1000 ? (sentUnitsArray[action][x] >= 10000 ? " five_digit_number" : " four_digit_number") : "") + '">' +
-                                               '<span class="count text_shadow">' + sentUnitsArray[action][x] + '</span>' +
-                                               '</div>');
+                                    (sentUnitsArray[action][x] >= 1000 ? (sentUnitsArray[action][x] >= 10000 ? " five_digit_number" : " four_digit_number") : "") + '">' +
+                                    '<span class="count text_shadow">' + sentUnitsArray[action][x] + '</span>' +
+                                    '</div>');
                             });
                         }
                     }
@@ -9941,31 +10775,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     // TODO: Calculator implementieren
     var DurationCalculator = {
         activate: function () {
-            var speedBoosterSprite = "https://www.tuto-de-david1327.com/medias/images/erreur-2.gif";/*speed_booster*/
+            var speedBoosterSprite = Home_img + "erreur-2.gif";/*speed_booster*/
 
             $('<style id="dio_duration_calculator_style">' +
-              '.dio_speed_booster { border:1px solid #724B08; border-spacing: 0px;} ' +
-              '.dio_speed_booster td { border:0; padding:2px; } ' +
-              '.dio_speed_booster .checkbox_new { margin: 4px 0px 1px 3px; } ' +
-              '.dio_speed_booster .odd { background: url("https://gpall.innogamescdn.com/images/game/border/brown.png") repeat scroll 0% 0% transparent; } ' +
-              '.dio_speed_booster .even { background: url("https://gpall.innogamescdn.com/images/game/border/odd.png") repeat scroll 0% 0% transparent; } ' +
-              '.booster_icon { width:20px; height:20px; background-image:url(' + speedBoosterSprite + ');} ' +
-              '.booster_icon.improved_speed { background-position:0 0; } ' +
-              '.booster_icon.cartography { background-position:-20px 0; } ' +
-              '.booster_icon.meteorology { background-position:-40px 0; } ' +
-              '.booster_icon.lighthouse { background-position:-60px 0; } ' +
-              '.booster_icon.set_sail { background-position:-80px 0; } ' +
-              '.booster_icon.atalanta { background-position:-100px 0; } ' +
-              '</style>').appendTo('head');
+                '.dio_speed_booster { border:1px solid #724B08; border-spacing: 0px;} ' +
+                '.dio_speed_booster td { border:0; padding:2px; } ' +
+                '.dio_speed_booster .checkbox_new { margin: 4px 0px 1px 3px; } ' +
+                '.dio_speed_booster .odd { background: url("https://gpall.innogamescdn.com/images/game/border/brown.png") repeat scroll 0% 0% transparent; } ' +
+                '.dio_speed_booster .even { background: url("https://gpall.innogamescdn.com/images/game/border/odd.png") repeat scroll 0% 0% transparent; } ' +
+                '.booster_icon { width:20px; height:20px; background-image:url(' + speedBoosterSprite + ');} ' +
+                '.booster_icon.improved_speed { background-position:0 0; } ' +
+                '.booster_icon.cartography { background-position:-20px 0; } ' +
+                '.booster_icon.meteorology { background-position:-40px 0; } ' +
+                '.booster_icon.lighthouse { background-position:-60px 0; } ' +
+                '.booster_icon.set_sail { background-position:-80px 0; } ' +
+                '.booster_icon.atalanta { background-position:-100px 0; } ' +
+                '</style>').appendTo('head');
 
             $('<table class="dio_speed_booster"><tr>' +
-              '<td class="odd"><div class="booster_icon improved_speed"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
-              '<td class="even"><div class="booster_icon cartography"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
-              '<td class="odd"><div class="booster_icon meteorology"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
-              '<td class="even"><div class="booster_icon lighthouse"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
-              '<td class="odd"><div class="booster_icon set_sail"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
-              '<td class="even"><div class="booster_icon atalanta"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
-              '</tr></table>').appendTo(wndID + ".duration_container");
+                '<td class="odd"><div class="booster_icon improved_speed"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+                '<td class="even"><div class="booster_icon cartography"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+                '<td class="odd"><div class="booster_icon meteorology"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+                '<td class="even"><div class="booster_icon lighthouse"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+                '<td class="odd"><div class="booster_icon set_sail"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+                '<td class="even"><div class="booster_icon atalanta"></div><div class="checkbox_new checked"><div class="cbx_icon"></div></div></td>' +
+                '</tr></table>').appendTo(wndID + ".duration_container");
         },
         deactivate: function () {
             $('#dio_duration_calculator_style').remove();
@@ -9980,14 +10814,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             $('<style id="dio_short_duration_style">' +
 
-              '.attack_support_window .dio_duration { border-spacing:0px; margin-bottom:2px; float: left; } ' +
+                '.attack_support_window .dio_duration { border-spacing:0px; margin-bottom:2px; float: left; } ' +
 
-              '.attack_support_window .way_icon { padding:30px 0px 0px 30px; background:transparent url(https://gpall.innogamescdn.com/images/game/towninfo/traveltime.png) no-repeat 0 0; } ' +
-              '.attack_support_window .arrival_icon { padding:30px 0px 0px 30px; background:transparent url(https://gpall.innogamescdn.com/images/game/towninfo/arrival.png) no-repeat 0 0; } ' +
+                '.attack_support_window .way_icon { padding:30px 0px 0px 30px; background:transparent url(https://gpall.innogamescdn.com/images/game/towninfo/traveltime.png) no-repeat 0 0; } ' +
+                '.attack_support_window .arrival_icon { padding:30px 0px 0px 30px; background:transparent url(https://gpall.innogamescdn.com/images/game/towninfo/arrival.png) no-repeat 0 0; } ' +
 
-              '.attack_support_window .additional_info_wrapper .town_info_duration_pos_alt { min-height: 50px;; } ' +
-              '.attack_support_window .additional_info_wrapper .town_info_duration_pos { min-height: 55px; } ' +
-              '</style>').appendTo('head');
+                '.attack_support_window .additional_info_wrapper .town_info_duration_pos_alt { min-height: 50px;; } ' +
+                '.attack_support_window .additional_info_wrapper .town_info_duration_pos { min-height: 55px; } ' +
+                '</style>').appendTo('head');
 
 
         },
@@ -10002,23 +10836,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var tooltip = (LANG.hasOwnProperty(LID) ? dio_icon + getTexts("labels", "improved_movement") : "") + " (+30% " + uw.DM.getl10n("barracks", "tooltips").speed.trim() + ")";
 
                 $('<style id="dio_short_duration_stylee">' +
-                  //'.attack_support_window .tab_type_support .duration_container { top:0px !important; } ' +
+                    //'.attack_support_window .tab_type_support .duration_container { top:0px !important; } ' +
 
-                  '.attack_support_window .additional_info_wrapper .nightbonus { margin-left: 10px; } ' +
-                  '.attack_support_window .fight_bonus.morale {  margin-top: -23px !important; margin-left: 222px; } ' +
-                  '.attack_support_window span.max_booty { width:5px !important; margin-left: 14px; } ' +
+                    '.attack_support_window .additional_info_wrapper .nightbonus { margin-left: 10px; } ' +
+                    '.attack_support_window .fight_bonus.morale {  margin-top: -23px !important; margin-left: 222px; } ' +
+                    '.attack_support_window span.max_booty { width:5px !important; margin-left: 14px; } ' +
 
-                  '.attack_support_window .way_duration, '+
-                  '.attack_support_window .arrival_time { padding:0px 0px 0px 0px; background:none; } ' +
-                  '</style>').appendTo(wndID + '.attack_support_window');
+                    '.attack_support_window .way_duration, ' +
+                    '.attack_support_window .arrival_time { padding:0px 0px 0px 0px; background:none; } ' +
+                    '</style>').appendTo(wndID + '.attack_support_window');
 
                 $('<table class="dio_duration">' +
-                  '<tr><td class="way_icon"></td><td class="dio_way"></td><td class="arrival_icon"></td><td class="dio_arrival"></td><td colspan="2" class="dio_night"></td></tr>' +
-                  '<tr class="short_duration_row" style="color:darkgreen">' +
-                  '<td>&nbsp;╚&gt;&nbsp;</td><td><span class="short_duration">~0:00:00</span></td>' +
-                  '<td>&nbsp;&nbsp;&nbsp;╚&gt;</td><td><span class="short_arrival">~00:00:00</span></td>' +
-                  '<td class="short_icon"></td><td></td></tr>' +
-                  '</table>').prependTo(wndID + ".duration_container");
+                    '<tr><td class="way_icon"></td><td class="dio_way"></td><td class="arrival_icon"></td><td class="dio_arrival"></td><td colspan="2" class="dio_night"></td></tr>' +
+                    '<tr class="short_duration_row" style="color:darkgreen">' +
+                    '<td>&nbsp;╚&gt;&nbsp;</td><td><span class="short_duration">~0:00:00</span></td>' +
+                    '<td>&nbsp;&nbsp;&nbsp;╚&gt;</td><td><span class="short_arrival">~00:00:00</span></td>' +
+                    '<td class="short_icon"></td><td></td></tr>' +
+                    '</table>').prependTo(wndID + ".duration_container");
 
 
 
@@ -10161,16 +10995,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     // TODO: Umstellen!
     // Preload images for drop down arrow buttons
     var drop_over = new Image();
-    drop_over.src = "https://www.tuto-de-david1327.com/medias/images/drop-over.png";
+    drop_over.src = Home_img + "drop-over.png";
     var drop_out = new Image();
-    drop_out.src = "https://www.tuto-de-david1327.com/medias/images/drop-out.png";
+    drop_out.src = Home_img + "drop-out.png";
 
     function changeDropDownButton() {
         $('<style id="dio_style_arrow" type="text/css">' +
-          '#dd_filter_type .arrow, .select_rec_unit .arrow, .dropdown.default .arrow {' +
-          'width: 18px !important; height: 17px !important; background: url("https://www.tuto-de-david1327.com/medias/images/drop-out.png") no-repeat 0px -1px !important;' +
-          'position: absolute; top: 2px !important; right: 3px; } ' +
-          '</style>').appendTo('head');
+            '#dd_filter_type .arrow, .select_rec_unit .arrow, .dropdown.default .arrow {' +
+            'width: 18px !important; height: 17px !important; background: url("' + Home_img + 'drop-out.png") no-repeat 0px -1px !important;' +
+            'position: absolute; top: 2px !important; right: 3px; } ' +
+            '</style>').appendTo('head');
 
     }
 
@@ -10183,31 +11017,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var RecruitingTrade = {
         activate: function () {
             $('<style id="dio_style_recruiting_trade" type="text/css">' +
-              '#dio_recruiting_trade .option_s { filter:grayscale(85%); -webkit-filter:grayscale(85%); margin:0px; cursor:pointer; } ' +
-              '#dio_recruiting_trade .option_s:hover { filter:unset !important; -webkit-filter:unset !important; } ' +
-              '#dio_recruiting_trade .select_rec_unit .sel { filter:sepia(100%); -webkit-filter:sepia(100%); } ' +
+                '#dio_recruiting_trade .option_s { filter:grayscale(85%); -webkit-filter:grayscale(85%); margin:0px; cursor:pointer; } ' +
+                '#dio_recruiting_trade .option_s:hover { filter:unset !important; -webkit-filter:unset !important; } ' +
+                '#dio_recruiting_trade .select_rec_unit .sel { filter:sepia(100%); -webkit-filter:sepia(100%); } ' +
 
-              '#dio_recruiting_trade .option {color:#000; background:#FFEEC7; } ' +
-              '#dio_recruiting_trade .option:hover {color:#fff; background:#328BF1; } ' +
+                '#dio_recruiting_trade .option {color:#000; background:#FFEEC7; } ' +
+                '#dio_recruiting_trade .option:hover {color:#fff; background:#328BF1; } ' +
 
-              '#dio_recruiting_trade { position:absolute; left:30px; top:70px; z-index: 200px; } ' +
-              '#dio_recruiting_trade .select_rec_unit { position:absolute; top:20px; width:147px; display:none; left:-31px; } ' +
-              '#dio_recruiting_trade .select_rec_perc { position:absolute; top:20px; width:50px; display:none; left:50px; } ' +
+                '#dio_recruiting_trade { position:absolute; left:30px; top:70px; z-index: 200px; } ' +
+                '#dio_recruiting_trade .select_rec_unit { position:absolute; top:20px; width:147px; display:none; left:-31px; } ' +
+                '#dio_recruiting_trade .select_rec_perc { position:absolute; top:20px; width:50px; display:none; left:50px; } ' +
 
-              '#dio_recruiting_trade .open { display:block !important; } '+
+                '#dio_recruiting_trade .open { display:block !important; } ' +
 
-              '#dio_recruiting_trade .item-list { max-height:237px; } ' +
+                '#dio_recruiting_trade .item-list { max-height:237px; } ' +
 
-              '#dio_recruiting_trade .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
+                '#dio_recruiting_trade .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
 
-              '#trade_tab .content { height:320px;  } ' +
+                '#trade_tab .content { height:320px;  } ' +
 
-              //'#dio_recruiting_trade .dio_rec_count { position:absolute; top:25px; } ' +
+                //'#dio_recruiting_trade .dio_rec_count { position:absolute; top:25px; } ' +
 
-              '#dio_recruiting_trade .dio_drop_rec_unit { position:absolute; display:block; width:50px; overflow:visible; } ' +
-              '#dio_recruiting_trade .dio_drop_rec_perc { position:absolute; display:block; width:55px; left:49px; color:#000; } ' +
+                '#dio_recruiting_trade .dio_drop_rec_unit { position:absolute; display:block; width:50px; overflow:visible; } ' +
+                '#dio_recruiting_trade .dio_drop_rec_perc { position:absolute; display:block; width:55px; left:49px; color:#000; } ' +
 
-              '</style>').appendTo('head');
+                '</style>').appendTo('head');
         },
         deactivate: function () {
             $('#dio_style_recruiting_trade').remove();
@@ -10217,93 +11051,93 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             var max_amount;
 
             $('<div id="dio_recruiting_trade" class="dio_rec_trade">' +
-              // DropDown-Button for unit
-              '<div class="dio_drop_rec_unit dropdown default">' +
-              '<div class="border-left"></div>' +
-              '<div class="border-right"></div>' +
-              '<div class="caption" name="' + unit + '">' + unit + '</div>' +
-              '<div class="arrow"></div>' +
-              '</div>' +
-              '<div class="dio_drop_rec_perc dropdown default">' +
-              // DropDown-Button for ratio
-              '<div class="border-left"></div>' +
-              '<div class="border-right"></div>' +
-              '<div class="caption" name="' + percent + '">' + Math.round(percent * 100) + '%</div>' +
-              '<div class="arrow"></div>' +
-              '</div><span class="dio_rec_count">(' + trade_count + ')</span></div>').appendTo(wndID + ".content"); //<span class="dio_rec_count">(' + trade_count + ')</span></div>
+                // DropDown-Button for unit
+                '<div class="dio_drop_rec_unit dropdown default">' +
+                '<div class="border-left"></div>' +
+                '<div class="border-right"></div>' +
+                '<div class="caption" name="' + unit + '">' + unit + '</div>' +
+                '<div class="arrow"></div>' +
+                '</div>' +
+                '<div class="dio_drop_rec_perc dropdown default">' +
+                // DropDown-Button for ratio
+                '<div class="border-left"></div>' +
+                '<div class="border-right"></div>' +
+                '<div class="caption" name="' + percent + '">' + Math.round(percent * 100) + '%</div>' +
+                '<div class="arrow"></div>' +
+                '</div><span class="dio_rec_count">(' + trade_count + ')</span></div>').appendTo(wndID + ".content"); //<span class="dio_rec_count">(' + trade_count + ')</span></div>
 
             $(".dio_cultureB").css({
-                "cursor" : "pointer",
-                "width" : "25px",
-                "height" : "27px",
-                "float" : "right",
-                "position" : "relative",
-                "margin-left" : "3px",
-                "border" : "2px groove gray",
-                "background" : "url(https://gpfr.innogamescdn.com/images/game/overviews/celebration_bg_new.png)"
+                "cursor": "pointer",
+                "width": "25px",
+                "height": "27px",
+                "float": "right",
+                "position": "relative",
+                "margin-left": "3px",
+                "border": "2px groove gray",
+                "background": "url(https://gpfr.innogamescdn.com/images/game/overviews/celebration_bg_new.png)"
             });
 
             // Select boxes for unit and ratio
             $('<div id="dio_Select_boxes" class="select_rec_unit dropdown-list default active">' +
-              '<div class="item-list">' +
-              //Ship
-              '<div id="dioattack_ship" class="option_s unit index_unit unit_icon40x40 attack_ship" 		name="FS"></div>' +			// Light ship
-              '<div id="diobireme"		class="option_s unit index_unit unit_icon40x40 bireme" 				name="BI"></div>' +			// Bireme
-              '<div id="diotrireme" 	class="option_s unit index_unit unit_icon40x40 trireme" 			name="TR"></div>' +			// Trireme
-              '<div id="diotransporter" class="option_s unit index_unit unit_icon40x40 big_transporter" 	name="BT"></div>' +			// Transport boat
-              '<div id="diosmall_trans" class="option_s unit index_unit unit_icon40x40 small_transporter" 	name="BE"></div>' +			// Fast transport ship
-              '<div id="diocolonize" 	class="option_s unit index_unit unit_icon40x40 colonize_ship" 		name="CE"></div>' +			// Colony ship
-              '<div id="diodemolition" 	class="option_s unit index_unit unit_icon40x40 demolition_ship" 	name="DS"></div>' +			// Fire ship
-              //Troop
-              '<div id="diosword" 		class="option_s unit index_unit unit_icon40x40 sword" 				name="SK"></div>' +			// Swordsman
-              '<div id="dioslinger" 	class="option_s unit index_unit unit_icon40x40 slinger" 			name="SL"></div>' +			// Slinger
-              '<div id="dioarcher" 		class="option_s unit index_unit unit_icon40x40 archer" 				name="BS"></div>' +			// Archer
-              '<div id="diohoplite" 	class="option_s unit index_unit unit_icon40x40 hoplite" 			name="HO"></div>' +			// Hoplite
-              '<div id="diorider" 		class="option_s unit index_unit unit_icon40x40 rider" 				name="RE"></div>' +			// Horseman
-              '<div id="diochariot" 	class="option_s unit index_unit unit_icon40x40 chariot" 			name="SW"></div>' +			// Chariot
-              '<div id="diocatapult" 	class="option_s unit index_unit unit_icon40x40 catapult" 			name="CA"></div>' +			// catapult
-              //Fly
-              '<div id="diocentaur" 	class="option_s unit index_unit unit_icon40x40 centaur" 			name="CT"></div>' +			// Centaur
-              '<div id="diocerberus" 	class="option_s unit index_unit unit_icon40x40 cerberus" 			name="CB"></div>' +			// Cerberus
-              '<div id="diozyklop" 		class="option_s unit index_unit unit_icon40x40 zyklop" 				name="CL"></div>' +			// Cyclop
-              '<div id="diofury" 		class="option_s unit index_unit unit_icon40x40 fury" 				name="EY"></div>' +			// Erinys
-              '<div id="diomedusa" 		class="option_s unit index_unit unit_icon40x40 medusa" 				name="MD"></div>' +			// Medusa
-              '<div id="diominotaur" 	class="option_s unit index_unit unit_icon40x40 minotaur" 			name="MT"></div>' +			// Minotaur
-              '<div id="diosea_monster" class="option_s unit index_unit unit_icon40x40 sea_monster" 		name="HD"></div>' +			// Hydra
-              '<div id="dioharpy" 		class="option_s unit index_unit unit_icon40x40 harpy" 				name="HP"></div>' +			// Harpy
-              '<div id="diomanticore" 	class="option_s unit index_unit unit_icon40x40 manticore" 			name="MN"></div>' +			// Manticore
-              '<div id="diopegasus" 	class="option_s unit index_unit unit_icon40x40 pegasus" 			name="PG"></div>' +			// Pegasus
-              '<div id="diogriffin" 	class="option_s unit index_unit unit_icon40x40 griffin" 			name="GF"></div>' +			// Griffin
-              '<div id="diocalydonian" 	class="option_s unit index_unit unit_icon40x40 calydonian_boar" 	name="CY"></div>' +			// Calydonian boar
-              ((uw.Game.gods_active.aphrodite) ? (
-                '<div id="diosiren" 	class="option_s unit index_unit unit_icon40x40 siren" 				name="SE"></div>' +			// Siren
-                '<div id="diosatyr" 	class="option_s unit index_unit unit_icon40x40 satyr" 				name="ST"></div>' ) : "") +	// Satyr
-              ((uw.Game.gods_active.ares) ? (
-                '<div id="dioladon" 	class="option_s unit index_unit unit_icon40x40 ladon" 				name="LD"></div>' +			// Ladon
-                '<div id="diospartoi" 	class="option_s unit index_unit unit_icon40x40 spartoi" 			name="SR"></div>' ) : "") +	// Spartoi
-              //Other
-              '<div id="diowall" 		class="option_s unit index_unit place_image wall_level" 			name="WA"></div>' +			// City wall Lv 5
-              '<div id="diowall2" 		class="option_s unit index_unit place_image wall_level" 			name="WA2"></div>' +		// City wall Lv 15
-              '<div id="diofestivals" 	class="option_s unit index_unit place_image morale" 				name="FE"></div>' +			// City festival
-              '</div></div>').appendTo(wndID + ".dio_rec_trade");
+                '<div class="item-list">' +
+                //Ship
+                '<div id="dioattack_ship" class="option_s unit index_unit unit_icon40x40 attack_ship" 		name="FS"></div>' +			// Light ship
+                '<div id="diobireme"		class="option_s unit index_unit unit_icon40x40 bireme" 				name="BI"></div>' +			// Bireme
+                '<div id="diotrireme" 	class="option_s unit index_unit unit_icon40x40 trireme" 			name="TR"></div>' +			// Trireme
+                '<div id="diotransporter" class="option_s unit index_unit unit_icon40x40 big_transporter" 	name="BT"></div>' +			// Transport boat
+                '<div id="diosmall_trans" class="option_s unit index_unit unit_icon40x40 small_transporter" 	name="BE"></div>' +			// Fast transport ship
+                '<div id="diocolonize" 	class="option_s unit index_unit unit_icon40x40 colonize_ship" 		name="CE"></div>' +			// Colony ship
+                '<div id="diodemolition" 	class="option_s unit index_unit unit_icon40x40 demolition_ship" 	name="DS"></div>' +			// Fire ship
+                //Troop
+                '<div id="diosword" 		class="option_s unit index_unit unit_icon40x40 sword" 				name="SK"></div>' +			// Swordsman
+                '<div id="dioslinger" 	class="option_s unit index_unit unit_icon40x40 slinger" 			name="SL"></div>' +			// Slinger
+                '<div id="dioarcher" 		class="option_s unit index_unit unit_icon40x40 archer" 				name="BS"></div>' +			// Archer
+                '<div id="diohoplite" 	class="option_s unit index_unit unit_icon40x40 hoplite" 			name="HO"></div>' +			// Hoplite
+                '<div id="diorider" 		class="option_s unit index_unit unit_icon40x40 rider" 				name="RE"></div>' +			// Horseman
+                '<div id="diochariot" 	class="option_s unit index_unit unit_icon40x40 chariot" 			name="SW"></div>' +			// Chariot
+                '<div id="diocatapult" 	class="option_s unit index_unit unit_icon40x40 catapult" 			name="CA"></div>' +			// catapult
+                //Fly
+                '<div id="diocentaur" 	class="option_s unit index_unit unit_icon40x40 centaur" 			name="CT"></div>' +			// Centaur
+                '<div id="diocerberus" 	class="option_s unit index_unit unit_icon40x40 cerberus" 			name="CB"></div>' +			// Cerberus
+                '<div id="diozyklop" 		class="option_s unit index_unit unit_icon40x40 zyklop" 				name="CL"></div>' +			// Cyclop
+                '<div id="diofury" 		class="option_s unit index_unit unit_icon40x40 fury" 				name="EY"></div>' +			// Erinys
+                '<div id="diomedusa" 		class="option_s unit index_unit unit_icon40x40 medusa" 				name="MD"></div>' +			// Medusa
+                '<div id="diominotaur" 	class="option_s unit index_unit unit_icon40x40 minotaur" 			name="MT"></div>' +			// Minotaur
+                '<div id="diosea_monster" class="option_s unit index_unit unit_icon40x40 sea_monster" 		name="HD"></div>' +			// Hydra
+                '<div id="dioharpy" 		class="option_s unit index_unit unit_icon40x40 harpy" 				name="HP"></div>' +			// Harpy
+                '<div id="diomanticore" 	class="option_s unit index_unit unit_icon40x40 manticore" 			name="MN"></div>' +			// Manticore
+                '<div id="diopegasus" 	class="option_s unit index_unit unit_icon40x40 pegasus" 			name="PG"></div>' +			// Pegasus
+                '<div id="diogriffin" 	class="option_s unit index_unit unit_icon40x40 griffin" 			name="GF"></div>' +			// Griffin
+                '<div id="diocalydonian" 	class="option_s unit index_unit unit_icon40x40 calydonian_boar" 	name="CY"></div>' +			// Calydonian boar
+                ((uw.Game.gods_active.aphrodite) ? (
+                    '<div id="diosiren" 	class="option_s unit index_unit unit_icon40x40 siren" 				name="SE"></div>' +			// Siren
+                    '<div id="diosatyr" 	class="option_s unit index_unit unit_icon40x40 satyr" 				name="ST"></div>') : "") +	// Satyr
+                ((uw.Game.gods_active.ares) ? (
+                    '<div id="dioladon" 	class="option_s unit index_unit unit_icon40x40 ladon" 				name="LD"></div>' +			// Ladon
+                    '<div id="diospartoi" 	class="option_s unit index_unit unit_icon40x40 spartoi" 			name="SR"></div>') : "") +	// Spartoi
+                //Other
+                '<div id="diowall" 		class="option_s unit index_unit place_image wall_level" 			name="WA"></div>' +			// City wall Lv 5
+                '<div id="diowall2" 		class="option_s unit index_unit place_image wall_level" 			name="WA2"></div>' +		// City wall Lv 15
+                '<div id="diofestivals" 	class="option_s unit index_unit place_image morale" 				name="FE"></div>' +			// City festival
+                '</div></div>').appendTo(wndID + ".dio_rec_trade");
 
             $('<div class="select_rec_perc dropdown-list default inactive">' +
-              '<div class="item-list">' +
-              '<div class="option sel" name="0.0">&nbsp;&nbsp;0%</div>' +
-              '<div class="option" name="0.01">&nbsp;&nbsp;1%</div>' +
-              '<div class="option" name="0.02">&nbsp;&nbsp;2%</div>' +
-              '<div class="option" name="0.04">&nbsp;&nbsp;4%</div>' +
-              '<div class="option" name="0.05">&nbsp;&nbsp;5%</div>' +
-              '<div class="option" name="0.06">&nbsp;&nbsp;6%</div>' +
-              '<div class="option" name="0.08">&nbsp;&nbsp;8%</div>' +
-              '<div class="option" name="0.10">10%</div>' +
-              '<div class="option" name="0.14">14%</div>' +
-              '<div class="option" name="0.17">17%</div>' +
-              '<div class="option" name="0.20">20%</div>' +
-              '<div class="option" name="0.25">25%</div>' +
-              '<div class="option" name="0.33">33%</div>' +
-              '<div class="option" name="0.50">50%</div>' +
-              '</div></div>').appendTo(wndID + ".dio_rec_trade");
+                '<div class="item-list">' +
+                '<div class="option sel" name="0.0">&nbsp;&nbsp;0%</div>' +
+                '<div class="option" name="0.01">&nbsp;&nbsp;1%</div>' +
+                '<div class="option" name="0.02">&nbsp;&nbsp;2%</div>' +
+                '<div class="option" name="0.04">&nbsp;&nbsp;4%</div>' +
+                '<div class="option" name="0.05">&nbsp;&nbsp;5%</div>' +
+                '<div class="option" name="0.06">&nbsp;&nbsp;6%</div>' +
+                '<div class="option" name="0.08">&nbsp;&nbsp;8%</div>' +
+                '<div class="option" name="0.10">10%</div>' +
+                '<div class="option" name="0.14">14%</div>' +
+                '<div class="option" name="0.17">17%</div>' +
+                '<div class="option" name="0.20">20%</div>' +
+                '<div class="option" name="0.25">25%</div>' +
+                '<div class="option" name="0.33">33%</div>' +
+                '<div class="option" name="0.50">50%</div>' +
+                '</div></div>').appendTo(wndID + ".dio_rec_trade");
 
             $(wndID + ".dio_rec_trade [name='" + unit + "']").toggleClass("sel");
 
@@ -10450,9 +11284,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 SR: res("spartoi"),			// Spartoi
                 CY: res("calydonian_boar"),	// Calydonian boar
                 //Other
-                WA: {w: 0.2286, s: 1, i: 0.6714},	// City wall Lv 5
-                WA2: {w: 0.0762, s: 1, i: 0.7491}, 	// City wall Lv 15
-                FE: {w: 0.8333, s: 1, i: 0.8333},	// City festival
+                WA: { w: 0.2286, s: 1, i: 0.6714 },	// City wall Lv 5
+                WA2: { w: 0.0762, s: 1, i: 0.7491 }, 	// City wall Lv 15
+                FE: { w: 0.8333, s: 1, i: 0.8333 },	// City festival
             };
 
 
@@ -10487,13 +11321,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var stone = ratio[unit].s * part;
                 var iron = ratio[unit].i * part;
 
-                if ((wood > rArray.wood) || (stone > rArray.stone) || (iron > rArray.iron) || ( (wood + stone + iron) > tradeCapacity)) {
+                if ((wood > rArray.wood) || (stone > rArray.stone) || (iron > rArray.iron) || ((wood + stone + iron) > tradeCapacity)) {
                     wood = stone = iron = 0;
-                    $('.dio_drop_rec_perc .caption').css({color: '#f00'});
+                    $('.dio_drop_rec_perc .caption').css({ color: '#f00' });
                     //$('.' + e.target.parentNode.parentNode.className + ' .select_rec_perc .sel').css({color:'#f00'});
                     //$('.select_rec_perc .sel').css({color:'#f00'});
                 } else {
-                    $('.' + e.target.parentNode.parentNode.className + ' .dio_drop_rec_perc .caption').css({color: '#000'});
+                    $('.' + e.target.parentNode.parentNode.className + ' .dio_drop_rec_perc .caption').css({ color: '#000' });
                 }
                 $("#trade_type_wood [type='text']").select().val(wood).blur();
                 $("#trade_type_stone [type='text']").select().val(stone).blur();
@@ -10550,12 +11384,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('#diofestivals').tooltip(getTexts("Quack", "cityfestivals"));
         },
         resources: function (res) {
-            let w,s,i,a;
+            let w, s, i, a;
             a = uw.GameData.units[res].resources;
             w = a.wood; s = a.stone; i = a.iron;
             a = Math.max(w, s, i);
-            w = w/a; s = s/a; i = i/a;
-            return ({w: w, s: s, i: i});
+            w = w / a; s = s / a; i = i / a;
+            return ({ w: w, s: s, i: i });
         },
     };
 
@@ -10606,7 +11440,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     function addPercentTrade(wndID, ww) {
 
-        var a,b = "";
+        var a, b = "";
         var content = wndID + ".content .btn_trade_button.button_new";
         if (ww) {
             a = "ww_"; b = "_ww";
@@ -10616,11 +11450,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         //$(content).after('<div id="dio_Percentual_trade' + b + '" class="button_new"><div class="left"></div><div class="right"></div><div class="caption js-caption">Plan<div class="effect js-effect"></div></div></div>');
 
         $(content).after('<div id="dio_Percentual_trade' + b + '" class="btn dio_btn_trade"><a class="button">' +
-                         '<span class="left"><span class="right">' +
-                         '<span class="middle mid">' +
-                         '<span class="img_trade"></span></span></span></span>' +
-                         '<span style="clear:both;"></span>' +
-                         '</a></div>');
+            '<span class="left"><span class="right">' +
+            '<span class="middle mid">' +
+            '<span class="img_trade"></span></span></span></span>' +
+            '<span style="clear:both;"></span>' +
+            '</a></div>');
 
         $(wndID + '.dio_btn_trade').tooltip(dio_icon + getTexts("labels", "per"));
 
@@ -10629,21 +11463,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         // Style
 
         $('<style id="dio_wonder_button">' +
-          'div.wonder_res_container fieldset.send_res .button { margin-top: 0px!important; } ' +
-          '</style>').appendTo('head');
+            'div.wonder_res_container fieldset.send_res .button { margin-top: 0px!important; } ' +
+            '</style>').appendTo('head');
 
         $('#trade_tab #duration_container').css({
-            "margin-bottom" : "-15px",
+            "margin-bottom": "-15px",
         });
 
         $(wndID + '.dio_btn_trade').css({
-            "position" : "relative",
-            "top" : "13px",
-            "display" : "inline",
-            "margin-left" : "10px"
+            "position": "relative",
+            "top": "13px",
+            "display": "inline",
+            "margin-left": "10px"
         });
 
-        $(wndID + '.mid').css({minWidth: '26px'});
+        $(wndID + '.mid').css({ minWidth: '26px' });
 
         $(wndID + '.img_trade').css({
             width: '27px',
@@ -10651,7 +11485,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             top: '-3px',
             float: 'left',
             position: 'relative',
-            background: 'url("https://www.tuto-de-david1327.com/medias/images/echange.png") no-repeat'
+            background: 'url("' + Home_img + 'echange.png") no-repeat'
         });
 
     }
@@ -10782,15 +11616,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     res.wnd = $("DIV#gpwnd_" + wnd_id);
                     res.selector = res.wnd.find("#town_capacity_" + res_type);
                     res.caption = {
-                        curr : parseInt(res.wnd.find("#big_progressbar .caption .curr").html()),
-                        max : parseInt(res.wnd.find("#big_progressbar .caption .max").html()),
-                        now : parseInt(res.wnd.find("#trade_type_" + res_type + " input").val())
+                        curr: parseInt(res.wnd.find("#big_progressbar .caption .curr").html()),
+                        max: parseInt(res.wnd.find("#big_progressbar .caption .max").html()),
+                        now: parseInt(res.wnd.find("#trade_type_" + res_type + " input").val())
                     }
                     res.amounts = {
-                        curr : parseInt(res.selector.find(".curr").html()) || 0,
-                        curr2 : parseInt(res.selector.find(".curr2").html().substring(3)) || 0,
-                        curr3 : parseInt(res.selector.find(".curr3").html().substring(3)) || 0,
-                        max : parseInt(res.selector.find(".max").html()) || 0
+                        curr: parseInt(res.selector.find(".curr").html()) || 0,
+                        curr2: parseInt(res.selector.find(".curr2").html().substring(3)) || 0,
+                        curr3: parseInt(res.selector.find(".curr3").html().substring(3)) || 0,
+                        max: parseInt(res.selector.find(".max").html()) || 0
                     }
                     if (mode === "cult" || mode === "cultreverse") {
                         res.amounts.max = (res_type === "stone") ? 18000 : 15000;
@@ -10812,54 +11646,54 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 dio.wnd.find("#trade_tab").append(
                     '<div id="dio_Improvement_trade">' +
-                    '<a id="dio_wood_'+dio.wndId+'_max" 	class="dio_trade dio_max" 		style="top:200px"></a>' +
-                    '<a id="dio_stone_'+dio.wndId+'_max" 	class="dio_trade dio_max" 		style="top:234px"></a>' +
-                    '<a id="dio_iron_'+dio.wndId+'_max" 	class="dio_trade dio_max" 		style="top:268px"></a>' +
-                    '<a id="dio_wood_'+dio.wndId+'_cult" 	class="dio_trade dio_send_cult" style="top:200px"></a>' +
-                    '<a id="dio_stone_'+dio.wndId+'_cult" 	class="dio_trade dio_send_cult" style="top:234px"></a>' +
-                    '<a id="dio_iron_'+dio.wndId+'_cult" 	class="dio_trade dio_send_cult" style="top:268px"></a>' +
+                    '<a id="dio_wood_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:200px"></a>' +
+                    '<a id="dio_stone_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:234px"></a>' +
+                    '<a id="dio_iron_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:268px"></a>' +
+                    '<a id="dio_wood_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:200px"></a>' +
+                    '<a id="dio_stone_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:234px"></a>' +
+                    '<a id="dio_iron_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:268px"></a>' +
                     /*'<a id="dio_wood_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:200px"></a>' +
 				'<a id="dio_stone_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:234px"></a>' +
 				'<a id="dio_iron_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:268px"></a>'*/'</div>'
                 );
 
                 dio.wnd.find(".dio_send_cult").css({
-                    "right" : "84px",
-                    "position" : "absolute",
-                    "height" : "16px",
-                    "width" : "22px",
-                    "background-image" : "url(https://www.tuto-de-david1327.com/medias/images/trade-cult.png)",
-                    "background-repeat" : "no-repeat",
-                    "background-position" : "0px -1px"
+                    "right": "84px",
+                    "position": "absolute",
+                    "height": "16px",
+                    "width": "22px",
+                    "background-image": "url(" + Home_img + "trade-cult.png)",
+                    "background-repeat": "no-repeat",
+                    "background-position": "0px -1px"
                 });
                 dio.wnd.find(".dio_send_cult_reverse").css({
-                    "left" : "105px",
-                    "position" : "absolute",
-                    "height" : "16px",
-                    "width" : "22px",
-                    "background-image" : "url(https://www.tuto-de-david1327.com/medias/images/trade-cultr.png)",
-                    "background-repeat" : "no-repeat",
-                    "background-position" : "0px -1px"
+                    "left": "105px",
+                    "position": "absolute",
+                    "height": "16px",
+                    "width": "22px",
+                    "background-image": "url(" + Home_img + "trade-cultr.png)",
+                    "background-repeat": "no-repeat",
+                    "background-position": "0px -1px"
                 });
                 dio.wnd.find(".dio_max").css({
-                    "right" : "105px",
-                    "position" : "absolute",
-                    "height" : "16px",
-                    "width" : "22px",
-                    "background-image" : "url(https://www.tuto-de-david1327.com/medias/images/trade-arrow.png)",
-                    "background-repeat" : "no-repeat",
-                    "background-position" : "0px -1px"
+                    "right": "105px",
+                    "position": "absolute",
+                    "height": "16px",
+                    "width": "22px",
+                    "background-image": "url(" + Home_img + "trade-arrow.png)",
+                    "background-repeat": "no-repeat",
+                    "background-position": "0px -1px"
                 });
 
                 dio.wnd.find(".dio_trade").hover(
                     function () {
                         $(this).css({
-                            "background-position" : "0px -17px"
+                            "background-position": "0px -17px"
                         });
                     },
                     function () {
                         $(this).css({
-                            "background-position" : "0px -1px"
+                            "background-position": "0px -1px"
                         });
                     });
 
@@ -10914,7 +11748,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 if (units.hasOwnProperty(e)) {
                     blunt += units[e] * (uw.GameData.units[e].def_hack || 0);
                     sharp += units[e] * (uw.GameData.units[e].def_pierce || 0);
-                    dist += units[e] * 	(uw.GameData.units[e].def_distance || 0);
+                    dist += units[e] * (uw.GameData.units[e].def_distance || 0);
                 }
             }
         },
@@ -10959,7 +11793,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</div></div>' +
                     '<div id= "dio_tr_btn" class="">' + getTexts("Options", "str")[0] + '</div>').appendTo('.units_land .content');
 
-                $(".units_land .nav .border_top").click(function () {uw.BarracksWindowFactory.openBarracksWindow();});
+                $(".units_land .nav .border_top").click(function () { uw.BarracksWindowFactory.openBarracksWindow(); });
 
 
                 $("#dio_tr_btn").click(function () {
@@ -10971,12 +11805,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $("#dio_tr_btn").hover(
                     function () {
                         $("#dio_tr_btn").css({
-                            "color" : "#ECB44D"
+                            "color": "#ECB44D"
                         });
                     },
                     function () {
                         $("#dio_tr_btn").css({
-                            "color" : "#EEDDBB"
+                            "color": "#EEDDBB"
                         });
                     });
                 /*$("#dio_strength").css({
@@ -10986,47 +11820,47 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     UnitStrength.Menu.update();
                 });
                 $("#dio_tr_btn").css({
-                    "cursor" : "pointer",
+                    "cursor": "pointer",
                     //"position" : "relative",
-                    "height" : "12px",
-                    "width" : "127px",
-                    "font-size" : "10px",
-                    "font-weight" : "bold",
-                    "color" : "#EEDDBB",
-                    "background" : "url(https://gpfr.innogamescdn.com/images/game/layout/progressbars-sprite_2.90_compressed.png) no-repeat 0 -100px"
+                    "height": "12px",
+                    "width": "127px",
+                    "font-size": "10px",
+                    "font-weight": "bold",
+                    "color": "#EEDDBB",
+                    "background": "url(https://gpfr.innogamescdn.com/images/game/layout/progressbars-sprite_2.90_compressed.png) no-repeat 0 -100px"
                     //background: url(https://gpfr.innogamescdn.com/images/game/layout/progressbars-sprite_2.90_compressed.png) no-repeat 0 0;
                 });
 
                 // Style
                 $('<style id="dio_strength_style">' +
-                  '#dio_strength.def #off_button, #dio_strength.off #def_button { filter:url(#Sepia); -webkit-filter:sepia(1); }' +
-                  '#dio_strength.off #off_button, #dio_strength.def #def_button { filter:none; -webkit-filter:none; } ' +
+                    '#dio_strength.def #off_button, #dio_strength.off #def_button { filter:url(#Sepia); -webkit-filter:sepia(1); }' +
+                    '#dio_strength.off #off_button, #dio_strength.def #def_button { filter:none; -webkit-filter:none; } ' +
 
-                  '#dio_strength.off .img_hack 		{ background-position:0% 36%;} ' +
-                  '#dio_strength.def .img_hack 		{ background-position:0%  0%;} ' +
-                  '#dio_strength.off .img_pierce 	{ background-position:0% 27%;} ' +
-                  '#dio_strength.def .img_pierce 	{ background-position:0%  9%;} ' +
-                  '#dio_strength.off .img_dist 		{ background-position:0% 45%;} ' +
-                  '#dio_strength.def .img_dist 		{ background-position:0% 18%;} ' +
+                    '#dio_strength.off .img_hack 		{ background-position:0% 36%;} ' +
+                    '#dio_strength.def .img_hack 		{ background-position:0%  0%;} ' +
+                    '#dio_strength.off .img_pierce 	{ background-position:0% 27%;} ' +
+                    '#dio_strength.def .img_pierce 	{ background-position:0%  9%;} ' +
+                    '#dio_strength.off .img_dist 		{ background-position:0% 45%;} ' +
+                    '#dio_strength.def .img_dist 		{ background-position:0% 18%;} ' +
 
-                  '#dio_strength .strength_font 	{ font-size: 0.8em; } ' +
-                  '#dio_strength.off .strength_font { color:#edb;} ' +
-                  '#dio_strength.def .strength_font { color:#fc6;} ' +
+                    '#dio_strength .strength_font 	{ font-size: 0.8em; } ' +
+                    '#dio_strength.off .strength_font { color:#edb;} ' +
+                    '#dio_strength.def .strength_font { color:#fc6;} ' +
 
-                  '#dio_strength .ico 				{ height:20px; width:20px; } ' +
-                  '#dio_strength .units_info_sprite { background:url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png); background-size:100%; } ' +
+                    '#dio_strength .ico 				{ height:20px; width:20px; } ' +
+                    '#dio_strength .units_info_sprite { background:url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png); background-size:100%; } ' +
 
-                  '#dio_strength .img_pierce { background-position:0px -20px; } ' +
-                  '#dio_strength .img_dist 	 { background-position:0px -40px; } ' +
-                  '#dio_strength hr 		 { margin:0px; background-color:#5F5242; height:2px; border:0px solid; } ' +
-                  '#dio_strength .cont_left  { width:65%;  display:table-cell; } ' +
+                    '#dio_strength .img_pierce { background-position:0px -20px; } ' +
+                    '#dio_strength .img_dist 	 { background-position:0px -40px; } ' +
+                    '#dio_strength hr 		 { margin:0px; background-color:#5F5242; height:2px; border:0px solid; } ' +
+                    '#dio_strength .cont_left  { width:65%;  display:table-cell; } ' +
 
-                  '#dio_strength.cont { background:url(https://gpall.innogamescdn.com/images/game/layout/layout_units_nav_border.png); } ' +
+                    '#dio_strength.cont { background:url(https://gpall.innogamescdn.com/images/game/layout/layout_units_nav_border.png); } ' +
 
-                  '#dio_strength .cont_right { width:30%; display:table-cell; vertical-align:middle; } ' +
-                  '#dio_strength .img 		 { float:right; background:none; margin:2px 8px 2px 0px; } ' +
+                    '#dio_strength .cont_right { width:30%; display:table-cell; vertical-align:middle; } ' +
+                    '#dio_strength .img 		 { float:right; background:none; margin:2px 8px 2px 0px; } ' +
 
-                  '</style>').appendTo("head");
+                    '</style>').appendTo("head");
 
                 // Button events
                 $('.units_land .units_wrapper, .btn_gods_spells .checked').click(function () {
@@ -11105,16 +11939,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 UnitStrength.calcDef(units);
 
                 $('<div id="dio_strength_eo" class="game_border" style="width:90px; margin: 20px; align:center;">' +
-                  '<div class="game_border_top"></div><div class="game_border_bottom"></div>' +
-                  '<div class="game_border_left"></div><div class="game_border_right"></div>' +
-                  '<div class="game_border_corner corner1"></div><div class="game_border_corner corner2"></div>' +
-                  '<div class="game_border_corner corner3"></div><div class="game_border_corner corner4"></div>' +
-                  '<span class="bold" style="color:#000;font-size: 0.8em;"><table style="margin:0px;background:#f7dca2;width:100%;align:center;">' +
-                  '<tr><td width="1%"><div class="ico units_info_sprite img_hack"></div></td><td id="dio_bl" align="center" width="100%">0</td></tr>' +
-                  '<tr><td><div class="ico units_info_sprite img_pierce"></div></td><td id="dio_sh" align="center">0</td></tr>' +
-                  '<tr><td><div class="ico units_info_sprite img_dist"></div></td><td id="dio_di" align="center">0</td></tr>' +
-                  '</table></span>' +
-                  '</div>').appendTo('#conqueror_units_in_town');
+                    '<div class="game_border_top"></div><div class="game_border_bottom"></div>' +
+                    '<div class="game_border_left"></div><div class="game_border_right"></div>' +
+                    '<div class="game_border_corner corner1"></div><div class="game_border_corner corner2"></div>' +
+                    '<div class="game_border_corner corner3"></div><div class="game_border_corner corner4"></div>' +
+                    '<span class="bold" style="color:#000;font-size: 0.8em;"><table style="margin:0px;background:#f7dca2;width:100%;align:center;">' +
+                    '<tr><td width="1%"><div class="ico units_info_sprite img_hack"></div></td><td id="dio_bl" align="center" width="100%">0</td></tr>' +
+                    '<tr><td><div class="ico units_info_sprite img_pierce"></div></td><td id="dio_sh" align="center">0</td></tr>' +
+                    '<tr><td><div class="ico units_info_sprite img_dist"></div></td><td id="dio_di" align="center">0</td></tr>' +
+                    '</table></span>' +
+                    '</div>').appendTo('#conqueror_units_in_town');
 
                 $('#dio_strength_eo').tooltip('Gesamteinheitenstärke der Belagerungstruppen');
 
@@ -11131,8 +11965,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     background: 'url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png)',
                     backgroundSize: '100%'
                 });
-                $('#dio_strength_eo .img_pierce').css({backgroundPosition: '0% 9%'});
-                $('#dio_strength_eo .img_dist').css({backgroundPosition: '0% 18%'});
+                $('#dio_strength_eo .img_pierce').css({ backgroundPosition: '0% 9%' });
+                $('#dio_strength_eo .img_dist').css({ backgroundPosition: '0% 18%' });
 
 
                 $('#dio_bl').get(0).innerHTML = blunt;
@@ -11162,26 +11996,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                     }
                     $('<div id="dio_strength_baracks" class="game_border" style="float:right; width:70px; align:center;">' +
-                      '<div class="game_border_top"></div><div class="game_border_bottom"></div>' +
-                      '<div class="game_border_left"></div><div class="game_border_right"></div>' +
-                      '<div class="game_border_corner corner1"></div><div class="game_border_corner corner2"></div>' +
-                      '<div class="game_border_corner corner3"></div><div class="game_border_corner corner4"></div>' +
-                      '<span class="bold" style="color:#000;font-size: 0.8em;"><table style="margin:0px;background:#f7dca2;width:100%;align:center;">' +
-                      '<tr><td width="1%"><div class="ico units_info_sprite img_hack"></div></td><td id="dio_b" align="center" width="100%">0</td></tr>' +
-                      '<tr><td><div class="ico units_info_sprite img_pierce"></div></td><td id="dio_s" align="center">0</td></tr>' +
-                      '<tr><td><div class="ico units_info_sprite img_dist"></div></td><td id="dio_d" align="center">0</td></tr>' +
-                      '</table></span>' +
-                      '</div>').appendTo('.ui-dialog #units');
+                        '<div class="game_border_top"></div><div class="game_border_bottom"></div>' +
+                        '<div class="game_border_left"></div><div class="game_border_right"></div>' +
+                        '<div class="game_border_corner corner1"></div><div class="game_border_corner corner2"></div>' +
+                        '<div class="game_border_corner corner3"></div><div class="game_border_corner corner4"></div>' +
+                        '<span class="bold" style="color:#000;font-size: 0.8em;"><table style="margin:0px;background:#f7dca2;width:100%;align:center;">' +
+                        '<tr><td width="1%"><div class="ico units_info_sprite img_hack"></div></td><td id="dio_b" align="center" width="100%">0</td></tr>' +
+                        '<tr><td><div class="ico units_info_sprite img_pierce"></div></td><td id="dio_s" align="center">0</td></tr>' +
+                        '<tr><td><div class="ico units_info_sprite img_dist"></div></td><td id="dio_d" align="center">0</td></tr>' +
+                        '</table></span>' +
+                        '</div>').appendTo('.ui-dialog #units');
 
                     $('<div id="dio_pop_baracks" class="game_border" style="float:right; width:60px; align:center;">' +
-                      '<div class="game_border_top"></div><div class="game_border_bottom"></div>' +
-                      '<div class="game_border_left"></div><div class="game_border_right"></div>' +
-                      '<div class="game_border_corner corner1"></div><div class="game_border_corner corner2"></div>' +
-                      '<div class="game_border_corner corner3"></div><div class="game_border_corner corner4"></div>' +
-                      '<span class="bold" style="color:#000;font-size: 0.8em;"><table style="margin:0px;background:#f7dca2;width:100%;align:center;">' +
-                      '<tr><td width="1%"><img class="ico" src="https://gpall.innogamescdn.com/images/game/res/pop.png"></td><td id="dio_p" align="center" width="100%">0</td></tr>' +
-                      '</table></span>' +
-                      '</div>').appendTo('.ui-dialog #units');
+                        '<div class="game_border_top"></div><div class="game_border_bottom"></div>' +
+                        '<div class="game_border_left"></div><div class="game_border_right"></div>' +
+                        '<div class="game_border_corner corner1"></div><div class="game_border_corner corner2"></div>' +
+                        '<div class="game_border_corner corner3"></div><div class="game_border_corner corner4"></div>' +
+                        '<span class="bold" style="color:#000;font-size: 0.8em;"><table style="margin:0px;background:#f7dca2;width:100%;align:center;">' +
+                        '<tr><td width="1%"><img class="ico" src="https://gpall.innogamescdn.com/images/game/res/pop.png"></td><td id="dio_p" align="center" width="100%">0</td></tr>' +
+                        '</table></span>' +
+                        '</div>').appendTo('.ui-dialog #units');
 
                     $('.ui-dialog #units .ico').css({
                         height: '20px',
@@ -11191,8 +12025,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         background: 'url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png)',
                         backgroundSize: '100%'
                     });
-                    $('.ui-dialog #units .img_pierce').css({backgroundPosition: '0% 9%'});
-                    $('.ui-dialog #units .img_dist').css({backgroundPosition: '0% 18%'});
+                    $('.ui-dialog #units .img_pierce').css({ backgroundPosition: '0% 9%' });
+                    $('.ui-dialog #units .img_dist').css({ backgroundPosition: '0% 18%' });
 
                     //$('#dio_pop_baracks').tooltip('Bevölkerungszahl aller Landeinheiten der Stadt');
                     //$('#dio_strength_baracks').tooltip('Gesamteinheitenstärke stadteigener Truppen');
@@ -11219,7 +12053,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     //'<a id="dio_Port" style="position: absolute; width: 60px; height: 26px;"></a>' +
                     '<div id="dio_transporter" class="cont" style="height:25px;">' +
                     '<table style=" margin:0px;"><tr align="center" >' +
-                    '<td><img id="dio_ship_img" class="ico" src="https://www.tuto-de-david1327.com/medias/images/mini-bateau.png"></td>' +
+                    '<td><img id="dio_ship_img" class="ico" src="' + Home_img + 'mini-bateau.png"></td>' +
                     '<td><span id="dio_ship" class="bold text_shadow" style="color:#FFCC66;font-size: 10px;line-height: 2.1;"></span></td></tr>' +
                     '<tr align="center"><td></td>' +
                     '<td><span id="dio_ship-def" class="bold text_shadow" style="color:#FFCC66;font-size: 10px;line-height: 2.1;"></span></td></tr>' +
@@ -11233,7 +12067,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 $(".dio_tr_recruit").css({
                     background:
-                    "url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png)",
+                        "url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png)",
                     "background-position-y": "0px",
                     "background-size": "100%",
                     width: "18px",
@@ -11264,12 +12098,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
                 $("#dio_transporter").toggleClick(
                     function () {
-                        $("#dio_ship_img").get(0).src = "https://www.tuto-de-david1327.com/medias/images/mini-bateau-red.png";
+                        $("#dio_ship_img").get(0).src = Home_img + "mini-bateau-red.png";
                         shipsize = true
                         TransportCapacity.update();
                     },
                     function () {
-                        $("#dio_ship_img").get(0).src = "https://www.tuto-de-david1327.com/medias/images/mini-bateau.png";
+                        $("#dio_ship_img").get(0).src = Home_img + "mini-bateau.png";
                         shipsize = false
                         TransportCapacity.update();
                     }
@@ -11293,18 +12127,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         update: function () {
             try {
                 const selected_town = uw.ITowns.getTown(uw.Game.townId),
-                      GD_units = uw.GameData.units,
-                      GD_heroes = uw.GameData.heroes,
-                      trans_small = GD_units.small_transporter,
-                      trans_big = GD_units.big_transporter;
+                    GD_units = uw.GameData.units,
+                    GD_heroes = uw.GameData.heroes,
+                    trans_small = GD_units.small_transporter,
+                    trans_big = GD_units.big_transporter;
                 let bigTransp = 0, smallTransp = 0, pop = 0, pop_def = 0, ship = 0, unit, berth, units = [];
 
                 // Ship space (available)
-                smallTransp = parseInt( uw.ITowns.getTown(parseInt(uw.Game.townId, 10)).units().small_transporter,10);
+                smallTransp = parseInt(uw.ITowns.getTown(parseInt(uw.Game.townId, 10)).units().small_transporter, 10);
                 if (isNaN(smallTransp)) smallTransp = 0;
-                if (shipsize) { bigTransp = parseInt(uw.ITowns.getTown(parseInt(uw.Game.townId, 10)).units().big_transporter,10);
-                               if (isNaN(bigTransp)) bigTransp = 0;
-                              }
+                if (shipsize) {
+                    bigTransp = parseInt(uw.ITowns.getTown(parseInt(uw.Game.townId, 10)).units().big_transporter, 10);
+                    if (isNaN(bigTransp)) bigTransp = 0;
+                }
 
                 // Checking: Research berth
                 berth = 0;
@@ -11353,7 +12188,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     const recruits = selected_town.getUnitOrdersCollection().models;
                     for (let i = 0; i < recruits.length; ++i) {
                         const unitt = recruits[i].attributes.unit_type,
-                              number = recruits[i].attributes.units_left;
+                            number = recruits[i].attributes.units_left;
 
                         // Landtruppen
                         if (!(unitt in GD_heroes) && units[unitt] != 0 && !GD_units[unitt].flying && GD_units[unitt].capacity == undefined) {
@@ -11396,9 +12231,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     pop = pop_def;
                 }
 
-                const newHTML = `<span style="color:${
-                pop === 0 & ship === 0 ? "#FFCC66" : (pop > ship ? "#ffb4b4" : "#6eff5c")
-                }">${pop}/${ship}</span>`;
+                const newHTML = `<span style="color:${pop === 0 & ship === 0 ? "#FFCC66" : (pop > ship ? "#ffb4b4" : "#6eff5c")
+                    }">${pop}/${ship}</span>`;
 
                 if ($("#dio_ship").get(0).innerHTML !== newHTML) {
                     $("#dio_ship").get(0).innerHTML = newHTML;
@@ -11413,15 +12247,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             name = missing === 1 ? trans_big.name : trans_big.name_plural;
                         }
 
-                        $("#dio_transporter").tooltip( dio_icon + getTexts("transport_calc", "Lack") + " " + missing + " " + name);
+                        $("#dio_transporter").tooltip(dio_icon + getTexts("transport_calc", "Lack") + " " + missing + " " + name);
                     } else {
                         let name = trans_small.name_plural
-                        if (shipsize) { name = trans_big.name_plural};
+                        if (shipsize) { name = trans_big.name_plural };
 
-                        $("#dio_transporter").tooltip( dio_icon + getTexts("transport_calc", "Still") + " " + popDiff + " " + getTexts("transport_calc", "pop") + " " + name + ".");
+                        $("#dio_transporter").tooltip(dio_icon + getTexts("transport_calc", "Still") + " " + popDiff + " " + getTexts("transport_calc", "pop") + " " + name + ".");
 
-                        if (pop === 0 & ship === 0) {$("#dio_transporter").tooltip( dio_icon + getTexts("transport_calc", "army"));}
-                        else if (popDiff === 0) {$("#dio_transporter").tooltip( dio_icon + getTexts("transport_calc", "Optipop") + " " + name + ".");}
+                        if (pop === 0 & ship === 0) { $("#dio_transporter").tooltip(dio_icon + getTexts("transport_calc", "army")); }
+                        else if (popDiff === 0) { $("#dio_transporter").tooltip(dio_icon + getTexts("transport_calc", "Optipop") + " " + name + "."); }
                     }
                 }
 
@@ -11442,31 +12276,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         activate: function () {
             $('<style id="dio_simulator_style" type="text/css">' +
 
-              '#place_simulator { overflow: hidden !important} ' +
-              '#place_simulator .place_sim_bonuses_heroes .place_symbol.place_def_losts { margin-bottom: 27px; } ' +
-              '#place_simulator_form .game_body { padding: 0px 1px;!important; } '+
-              '#place_simulator .place_sim_heroes_container .place_simulator_table { height: 64px!important; } '+
+                '#place_simulator { overflow: hidden !important} ' +
+                '#place_simulator .place_sim_bonuses_heroes .place_symbol.place_def_losts { margin-bottom: 27px; } ' +
+                '#place_simulator_form .game_body { padding: 0px 1px;!important; } ' +
+                '#place_simulator .place_sim_heroes_container .place_simulator_table { height: 64px!important; } ' +
 
-              // Bonus container
-              '#place_simulator .place_sim_wrap_mods { margin-bottom: 0px!important; } ' + // Hide modifier box button
-              '.place_sim_wrap_mods .place_simulator_table tbody tr:last-child { height: 47px; vertical-align: top; } ' +
+                // Bonus container
+                '#place_simulator .place_sim_wrap_mods { margin-bottom: 0px!important; } ' + // Hide modifier box button
+                '.place_sim_wrap_mods .place_simulator_table tbody tr:last-child { height: 47px; vertical-align: top; } ' +
 
-              // Sea unit box
-              '#place_sim_naval_units tbody tr:last-child { height:auto !important;}' +
-              '#place_sim_naval_units { margin-bottom: 91px;}' +
+                // Sea unit box
+                '#place_sim_naval_units tbody tr:last-child { height:auto !important;}' +
+                '#place_sim_naval_units { margin-bottom: 91px;}' +
 
-              // Select boxes
-              '.place_sim_select_gods_wrap { position:absolute; bottom: 178px; left: 160px;} ' +
-              '.place_sim_select_gods_wrap .place_symbol, .place_sim_select_strategies .place_symbol { margin: 1px 2px 0px 5px !important} ' +
-              '.place_sim_select_gods_wrap select { max-width: 200px; width: auto!important;} ' +
+                // Select boxes
+                '.place_sim_select_gods_wrap { position:absolute; bottom: 178px; left: 160px;} ' +
+                '.place_sim_select_gods_wrap .place_symbol, .place_sim_select_strategies .place_symbol { margin: 1px 2px 0px 5px !important} ' +
+                '.place_sim_select_gods_wrap select { max-width: 200px; width: auto!important;} ' +
 
-              //adaptation of the layout
-              '.place_sim_hero_container { width: 73px}' +
-              '.place_sim_hero_choose { width: 50px;' +
+                //adaptation of the layout
+                '.place_sim_hero_container { width: 73px}' +
+                '.place_sim_hero_choose { width: 50px;' +
 
-              '</style>').appendTo('head');
+                '</style>').appendTo('head');
 
-            if($('#place_simulator').get(0)) {
+            if ($('#place_simulator').get(0)) {
                 setStrengthSimulator();
             }
 
@@ -11475,7 +12309,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         deactivate: function () {
             $('#dio_simulator_style').remove();
-            if($('#simu_table').get(0)) {
+            if ($('#simu_table').get(0)) {
                 $('#simu_table').remove();
 
             }
@@ -11486,7 +12320,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     function afterSimulation() {
         try {
-            let lossArray = {att: {res: 0, fav: 0, pop: 0}, def: {res: 0, fav: 0, pop: 0}},
+            let lossArray = { att: { res: 0, fav: 0, pop: 0 }, def: { res: 0, fav: 0, pop: 0 } },
                 wall_level = parseInt($('.place_sim_wrap_mods .place_insert_field[name="sim[mods][def][wall_level]"]').val(), 10),
                 wall_damage = parseInt($('#building_place_def_losses_wall_level').get(0).innerHTML, 10),
                 wall_iron = [0, 200, 429, 670, 919, 1175, 1435, 1701, 1970, 2242, 2518, 2796, 3077, 3360, 3646, 3933, 4222, 4514, 4807, 5101, 5397, 5695, 5994, 6294, 6596, 6899];
@@ -11526,31 +12360,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
 
     // Stärkeanzeige: Simulator
-    let unitsGround = {att: {}, def: {}}, unitsNaval = {att: {}, def: {}}, name = "";
+    let unitsGround = { att: {}, def: {} }, unitsNaval = { att: {}, def: {} }, name = "";
 
     var SimulatorStrength = {
         timeout: null,
-        unitsGround : {att: {}, def: {}},
-        unitsNaval : {att: {}, def: {}},
+        unitsGround: { att: {}, def: {} },
+        unitsNaval: { att: {}, def: {} },
 
-        activate : function(){
-            $('<style id="dio_simulator_strength_style">'+
-              '#dio_simulator_strength { position:absolute; top:188px; font-size:0.8em; width:63%; } '+
-              '#dio_simulator_strength .ico { height:20px; width:20px; margin:auto; } '+
-              '#dio_simulator_strength .units_info_sprite { background:url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png); background-size:100%; } ' +
+        activate: function () {
+            $('<style id="dio_simulator_strength_style">' +
+                '#dio_simulator_strength { position:absolute; top:188px; font-size:0.8em; width:63%; } ' +
+                '#dio_simulator_strength .ico { height:20px; width:20px; margin:auto; } ' +
+                '#dio_simulator_strength .units_info_sprite { background:url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png); background-size:100%; } ' +
 
-              '#dio_simulator_strength .img_hack { background-position:0% 36%; } '+
-              '#dio_simulator_strength .img_pierce { background-position:0% 27%; } '+
-              '#dio_simulator_strength .img_dist { background-position:0% 45% !important; } '+
-              '#dio_simulator_strength .img_ship { background-position:0% 72%; } '+
+                '#dio_simulator_strength .img_hack { background-position:0% 36%; } ' +
+                '#dio_simulator_strength .img_pierce { background-position:0% 27%; } ' +
+                '#dio_simulator_strength .img_dist { background-position:0% 45% !important; } ' +
+                '#dio_simulator_strength .img_ship { background-position:0% 72%; } ' +
 
-              '#dio_simulator_strength .img_fav { background: url(https://gpall.innogamescdn.com/images/game/res/favor.png) !important; background-size: 100%; } '+
-              '#dio_simulator_strength .img_res { background: url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png) 0% 54%; background-size: 100%; } '+
-              '#dio_simulator_strength .img_pop { background: url(https://gpall.innogamescdn.com/images/game/res/pop.png); background-size:100%; } '+
+                '#dio_simulator_strength .img_fav { background: url(https://gpall.innogamescdn.com/images/game/res/favor.png) !important; background-size: 100%; } ' +
+                '#dio_simulator_strength .img_res { background: url(https://gpall.innogamescdn.com/images/game/units/units_info_sprite2.51.png) 0% 54%; background-size: 100%; } ' +
+                '#dio_simulator_strength .img_pop { background: url(https://gpall.innogamescdn.com/images/game/res/pop.png); background-size:100%; } ' +
 
-              '#dio_simulator_strength .left_border { width: 48px; } '+
-              '</style>'
-             ).appendTo('head');
+                '#dio_simulator_strength .left_border { width: 48px; } ' +
+                '</style>'
+            ).appendTo('head');
 
             SimulatorStrength.timeout = setInterval(() => {
                 if ($('#dio_simulator_strength').length) {
@@ -11559,7 +12393,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }, 900);
 
         },
-        deactivate : function(){
+        deactivate: function () {
             $('#dio_simulator_strength_style').remove();
             $('#dio_simulator_strength').remove();
             clearTimeout(SimulatorStrength.timeout);
@@ -11570,48 +12404,48 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     function setStrengthSimulator() {
         try {
             $('<div id="dio_simulator_strength" style="width: 49%;">' +
-              '<div style="float:left; margin-right: -6px;"><h4>' + getTexts("labels", "str") + '</h4>' +
-              '<table class="place_simulator_table strength" cellpadding="0px" cellspacing="0px" style="align:center;">' +
-              '<tr>' +
-              '<td class="place_simulator_even"></td>' +
-              '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_hack"></div></td>' +
-              '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_pierce"></div></td>' +
-              '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_dist"></div></td>' +
-              '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_ship"></div></td>' +
-              '</tr><tr>' +
-              '<td class="place_simulator_even"><div class="place_symbol place_att"></div></td>' +
-              '<td class="left_border place_simulator_odd" id="dio_att_b">0</td>' +
-              '<td class="left_border place_simulator_even" id="dio_att_s">0</td>' +
-              '<td class="left_border place_simulator_odd" id="dio_att_d">0</td>' +
-              '<td class="left_border place_simulator_even" id="dio_att_ship">0</td>' +
-              '</tr><tr>' +
-              '<td class="place_simulator_even"><div class="place_symbol place_def"></div></td>' +
-              '<td class="left_border place_simulator_odd" id="dio_def_b">0</td>' +
-              '<td class="left_border place_simulator_even" id="dio_def_s">0</td>' +
-              '<td class="left_border place_simulator_odd" id="dio_def_d">0</td>' +
-              '<td class="left_border place_simulator_even" id="dio_def_ship">0</td>' +
-              '</tr>' +
-              '</table>' +
-              '</div><div><h4 style="left: 6px; position: relative;">' + getTexts("labels", "los") + '</h4>' +
-              '<table class="place_simulator_table loss" cellpadding="0px" cellspacing="0px" style="align:center; height: 64px;">' +
-              '<tr>' +
-              '<td></td>' +
-              '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_res"></div></td>' +
-              '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_fav"></div></td>' +
-              '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_pop"></div></td>' +
-              '</tr><tr>' +
-              '<td></td>' +
-              '<td class="left_border place_simulator_odd" id="dio_att_res">0</td>' +
-              '<td class="left_border place_simulator_even" id="dio_att_fav">0</td>' +
-              '<td class="left_border place_simulator_odd" id="dio_att_pop">0</td>' +
-              '</tr><tr>' +
-              '<td></td>' +
-              '<td class="left_border place_simulator_odd" id="dio_def_res">0</td>' +
-              '<td class="left_border place_simulator_even" id="dio_def_fav">0</td>' +
-              '<td class="left_border place_simulator_odd" id="dio_def_pop">0</td>' +
-              '</tr>' +
-              '</table>' +
-              '</div></div>').appendTo('#simulator_body');
+                '<div style="float:left; margin-right: -6px;"><h4>' + getTexts("labels", "str") + '</h4>' +
+                '<table class="place_simulator_table strength" cellpadding="0px" cellspacing="0px" style="align:center;">' +
+                '<tr>' +
+                '<td class="place_simulator_even"></td>' +
+                '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_hack"></div></td>' +
+                '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_pierce"></div></td>' +
+                '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_dist"></div></td>' +
+                '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_ship"></div></td>' +
+                '</tr><tr>' +
+                '<td class="place_simulator_even"><div class="place_symbol place_att"></div></td>' +
+                '<td class="left_border place_simulator_odd" id="dio_att_b">0</td>' +
+                '<td class="left_border place_simulator_even" id="dio_att_s">0</td>' +
+                '<td class="left_border place_simulator_odd" id="dio_att_d">0</td>' +
+                '<td class="left_border place_simulator_even" id="dio_att_ship">0</td>' +
+                '</tr><tr>' +
+                '<td class="place_simulator_even"><div class="place_symbol place_def"></div></td>' +
+                '<td class="left_border place_simulator_odd" id="dio_def_b">0</td>' +
+                '<td class="left_border place_simulator_even" id="dio_def_s">0</td>' +
+                '<td class="left_border place_simulator_odd" id="dio_def_d">0</td>' +
+                '<td class="left_border place_simulator_even" id="dio_def_ship">0</td>' +
+                '</tr>' +
+                '</table>' +
+                '</div><div><h4 style="left: 6px; position: relative;">' + getTexts("labels", "los") + '</h4>' +
+                '<table class="place_simulator_table loss" cellpadding="0px" cellspacing="0px" style="align:center; height: 64px;">' +
+                '<tr>' +
+                '<td></td>' +
+                '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_res"></div></td>' +
+                '<td class="left_border place_simulator_even"><div class="ico units_info_sprite img_fav"></div></td>' +
+                '<td class="left_border place_simulator_odd"><div class="ico units_info_sprite img_pop"></div></td>' +
+                '</tr><tr>' +
+                '<td></td>' +
+                '<td class="left_border place_simulator_odd" id="dio_att_res">0</td>' +
+                '<td class="left_border place_simulator_even" id="dio_att_fav">0</td>' +
+                '<td class="left_border place_simulator_odd" id="dio_att_pop">0</td>' +
+                '</tr><tr>' +
+                '<td></td>' +
+                '<td class="left_border place_simulator_odd" id="dio_def_res">0</td>' +
+                '<td class="left_border place_simulator_even" id="dio_def_fav">0</td>' +
+                '<td class="left_border place_simulator_odd" id="dio_def_pop">0</td>' +
+                '</tr>' +
+                '</table>' +
+                '</div></div>').appendTo('#simulator_body');
 
 
             $('#dio_simulator_strength .left_border').each(function () {
@@ -11689,9 +12523,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }, 200);
             });
-            } catch (error) {
-                errorHandling(error, "setStrengthSimulator");
-            }
+        } catch (error) {
+            errorHandling(error, "setStrengthSimulator");
+        }
     }
 
     function getUnitInputs() {
@@ -11764,7 +12598,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
 
             $(bbcodeBarId + ' .dio_bbcode_option').css({
-                background: 'url("https://www.tuto-de-david1327.com/medias/images/bbcodebarid.png")',
+                background: 'url("' + Home_img + 'bbcodebarid.png")',
                 display: 'block',
                 float: 'left',
                 width: '22px',
@@ -11776,92 +12610,92 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 backgroundPosition: '-89px 0px'
             });
             var imgArray = {
-                wall: 	'https://www.tuto-de-david1327.com/medias/images/40px-remparts.png', 	// 'https://gpall.innogamescdn.com/images/game/main/wall.png',
-                tower: 	'https://www.tuto-de-david1327.com/medias/images/40px-tour.png', 		// 'https://gpall.innogamescdn.com/images/game/main/tower.png',
-                hide: 	'https://www.tuto-de-david1327.com/medias/images/40px-grotte.png', 		// 'https://gpall.innogamescdn.com/images/game/main/hide.png'
+                wall: Home_img + '40px-remparts.png', 	// 'https://gpall.innogamescdn.com/images/game/main/wall.png',
+                tower: Home_img + '40px-tour.png', 		// 'https://gpall.innogamescdn.com/images/game/main/tower.png',
+                hide: Home_img + '40px-grotte.png', 		// 'https://gpall.innogamescdn.com/images/game/main/hide.png'
 
-                spy: 	'https://www.tuto-de-david1327.com/medias/images/40px-spy.png',
-                pop: 	'https://www.tuto-de-david1327.com/medias/images/40px-pop.png',
+                spy: Home_img + '40px-spy.png',
+                pop: Home_img + '40px-pop.png',
 
-                rev1: 	'https://www.tuto-de-david1327.com/medias/images/40px-rev1.png',
-                rev0: 	'https://www.tuto-de-david1327.com/medias/images/40px-rev0.png',
-                eo1: 	'https://www.tuto-de-david1327.com/medias/images/40px-eo1.png',
-                eo0: 	'https://www.tuto-de-david1327.com/medias/images/40px-eo0.png',
-                att: 	'https://www.tuto-de-david1327.com/medias/images/40px-att.png',
-                sup: 	'https://www.tuto-de-david1327.com/medias/images/40px-sup.png',
+                rev1: Home_img + '40px-rev1.png',
+                rev0: Home_img + '40px-rev0.png',
+                eo1: Home_img + '40px-eo1.png',
+                eo0: Home_img + '40px-eo0.png',
+                att: Home_img + '40px-att.png',
+                sup: Home_img + '40px-sup.png',
 
-                zeus: 		'https://www.tuto-de-david1327.com/medias/images/40px-zeus.png',
-                hera: 		'https://www.tuto-de-david1327.com/medias/images/40px-hera.png',
-                athena: 	'https://www.tuto-de-david1327.com/medias/images/40px-athena.png',
-                poseidon: 	'https://www.tuto-de-david1327.com/medias/images/40px-poseidon.png',
-                hades: 		'https://www.tuto-de-david1327.com/medias/images/40px-hades.png',
-                artemis: 	'https://www.tuto-de-david1327.com/medias/images/40px-artemis.png',
-                nogod: 		'https://www.tuto-de-david1327.com/medias/images/40px-nogod.png',
-                aphrodite: 	'https://www.tuto-de-david1327.com/medias/images/40px-aphrodite.png',
-                ares: 		'https://www.tuto-de-david1327.com/medias/images/40px-ares.png',
+                zeus: Home_img + '40px-zeus.png',
+                hera: Home_img + '40px-hera.png',
+                athena: Home_img + '40px-athena.png',
+                poseidon: Home_img + '40px-poseidon.png',
+                hades: Home_img + '40px-hades.png',
+                artemis: Home_img + '40px-artemis.png',
+                nogod: Home_img + '40px-nogod.png',
+                aphrodite: Home_img + '40px-aphrodite.png',
+                ares: Home_img + '40px-ares.png',
 
-                captain: 	'https://www.tuto-de-david1327.com/medias/images/40px-captain.png',
-                commander: 'https://www.tuto-de-david1327.com/medias/images/40px-commander.png',
-                priest: 	'https://www.tuto-de-david1327.com/medias/images/40px-priest.png',
+                captain: Home_img + '40px-captain.png',
+                commander: Home_img + '40px-commander.png',
+                priest: Home_img + '40px-priest.png',
 
-                phalanx: 	'https://www.tuto-de-david1327.com/medias/images/40px-phalange.png',
-                ram: 		'https://www.tuto-de-david1327.com/medias/images/40px-belier.png',
+                phalanx: Home_img + '40px-phalange.png',
+                ram: Home_img + '40px-belier.png',
 
-                militia: 	'https://www.tuto-de-david1327.com/medias/images/40px-milice.png', 				// 'https://wiki.en.grepolis.com/images/9/9b/Militia_40x40.png',
-                sword: 		'https://www.tuto-de-david1327.com/medias/images/combattant-a-l-epee-1.png', 	// 'https://wiki.en.grepolis.com/images/9/9c/Sword_40x40.png',
-                slinger: 	'https://www.tuto-de-david1327.com/medias/images/frondeur-1.png', 				// 'https://wiki.en.grepolis.com/images/d/dc/Slinger_40x40.png',
-                archer: 	'https://www.tuto-de-david1327.com/medias/images/archer-1.png', 				// 'https://wiki.en.grepolis.com/images/1/1a/Archer_40x40.png',
-                hoplite: 	'https://www.tuto-de-david1327.com/medias/images/hoplite-1.png', 				// 'https://wiki.en.grepolis.com/images/b/bd/Hoplite_40x40.png',
-                rider: 		'https://www.tuto-de-david1327.com/medias/images/cavalier-1.png', 				// 'https://wiki.en.grepolis.com/images/e/e9/Rider_40x40.png',
-                chariot: 	'https://www.tuto-de-david1327.com/medias/images/char-1.png', 					// 'https://wiki.en.grepolis.com/images/b/b8/Chariot_40x40.png',
-                catapult: 	'https://www.tuto-de-david1327.com/medias/images/catapulte-1.png', 				// 'https://wiki.en.grepolis.com/images/f/f0/Catapult_40x40.png',
-                godsent: 	'https://www.tuto-de-david1327.com/medias/images/40px-ed.png', 					// 'https://wiki.de.grepolis.com/images/6/6e/Grepolis_Wiki_225.png',
+                militia: Home_img + '40px-milice.png', 				// 'https://wiki.en.grepolis.com/images/9/9b/Militia_40x40.png',
+                sword: Home_img + 'combattant-a-l-epee-1.png', 	// 'https://wiki.en.grepolis.com/images/9/9c/Sword_40x40.png',
+                slinger: Home_img + 'frondeur-1.png', 				// 'https://wiki.en.grepolis.com/images/d/dc/Slinger_40x40.png',
+                archer: Home_img + 'archer-1.png', 				// 'https://wiki.en.grepolis.com/images/1/1a/Archer_40x40.png',
+                hoplite: Home_img + 'hoplite-1.png', 				// 'https://wiki.en.grepolis.com/images/b/bd/Hoplite_40x40.png',
+                rider: Home_img + 'cavalier-1.png', 				// 'https://wiki.en.grepolis.com/images/e/e9/Rider_40x40.png',
+                chariot: Home_img + 'char-1.png', 					// 'https://wiki.en.grepolis.com/images/b/b8/Chariot_40x40.png',
+                catapult: Home_img + 'catapulte-1.png', 				// 'https://wiki.en.grepolis.com/images/f/f0/Catapult_40x40.png',
+                godsent: Home_img + '40px-ed.png', 					// 'https://wiki.de.grepolis.com/images/6/6e/Grepolis_Wiki_225.png',
 
-                def_sum: 	'https://www.tuto-de-david1327.com/medias/images/40px-def-sum.png',
+                def_sum: Home_img + '40px-def-sum.png',
 
-                minotaur: 	'https://www.tuto-de-david1327.com/medias/images/40px-minotaure.jpg', 	// 'https://wiki.de.grepolis.com/images/7/70/Minotaur_40x40.png',
-                manticore: 	'https://www.tuto-de-david1327.com/medias/images/40px-manticore.jpg', 	// 'https://wiki.de.grepolis.com/images/5/5e/Manticore_40x40.png',
-                zyclop: 	'https://www.tuto-de-david1327.com/medias/images/40px-cyclope.jpg', 	// 'https://wiki.de.grepolis.com/images/6/66/Zyklop_40x40.png',
-                sea_monster: 'https://www.tuto-de-david1327.com/medias/images/40px-hydre.jpg', 		// 'https://wiki.de.grepolis.com/images/7/70/Sea_monster_40x40.png',
-                harpy: 		'https://www.tuto-de-david1327.com/medias/images/40px-harpie.jpg', 		// 'https://wiki.de.grepolis.com/images/8/80/Harpy_40x40.png',
-                medusa: 	'https://www.tuto-de-david1327.com/medias/images/40px-meduse.jpg', 		// 'https://wiki.de.grepolis.com/images/d/db/Medusa_40x40.png',
-                centaur: 	'https://www.tuto-de-david1327.com/medias/images/40px-centaure.jpg', 	// 'https://wiki.de.grepolis.com/images/5/53/Centaur_40x40.png',
-                pegasus: 	'https://www.tuto-de-david1327.com/medias/images/40px-pegase.jpg', 		// 'https://wiki.de.grepolis.com/images/5/54/Pegasus_40x40.png',
-                cerberus: 	'https://www.tuto-de-david1327.com/medias/images/40px-cerbere.jpg', 	// 'https://wiki.de.grepolis.com/images/6/67/Zerberus_40x40.png',
-                fury: 		'https://www.tuto-de-david1327.com/medias/images/40px-erinye.jpg', 		// 'https://wiki.de.grepolis.com/images/6/67/Erinys_40x40.png',
-                griffin: 	'https://www.tuto-de-david1327.com/medias/images/40px-griffon.jpg', 	// 'https://wiki.de.grepolis.com/images/d/d1/Unit_greif.png',
-                calydonian_boar: 'https://www.tuto-de-david1327.com/medias/images/40px-sc.jpg', 	// 'https://wiki.de.grepolis.com/images/9/93/Unit_eber.png',
-                spartoi: 	'https://www.tuto-de-david1327.com/medias/images/40px-spartoi.png',
-                siren: 		'https://www.tuto-de-david1327.com/medias/images/40px-siren-1.png',
-                satyr: 		'https://www.tuto-de-david1327.com/medias/images/40px-satyr.png',
-                ladon: 		'https://www.tuto-de-david1327.com/medias/images/40px-ladon.png',
+                minotaur: Home_img + '40px-minotaure.jpg', 	// 'https://wiki.de.grepolis.com/images/7/70/Minotaur_40x40.png',
+                manticore: Home_img + '40px-manticore.jpg', 	// 'https://wiki.de.grepolis.com/images/5/5e/Manticore_40x40.png',
+                zyclop: Home_img + '40px-cyclope.jpg', 	// 'https://wiki.de.grepolis.com/images/6/66/Zyklop_40x40.png',
+                sea_monster: Home_img + '40px-hydre.jpg', 		// 'https://wiki.de.grepolis.com/images/7/70/Sea_monster_40x40.png',
+                harpy: Home_img + '40px-harpie.jpg', 		// 'https://wiki.de.grepolis.com/images/8/80/Harpy_40x40.png',
+                medusa: Home_img + '40px-meduse.jpg', 		// 'https://wiki.de.grepolis.com/images/d/db/Medusa_40x40.png',
+                centaur: Home_img + '40px-centaure.jpg', 	// 'https://wiki.de.grepolis.com/images/5/53/Centaur_40x40.png',
+                pegasus: Home_img + '40px-pegase.jpg', 		// 'https://wiki.de.grepolis.com/images/5/54/Pegasus_40x40.png',
+                cerberus: Home_img + '40px-cerbere.jpg', 	// 'https://wiki.de.grepolis.com/images/6/67/Zerberus_40x40.png',
+                fury: Home_img + '40px-erinye.jpg', 		// 'https://wiki.de.grepolis.com/images/6/67/Erinys_40x40.png',
+                griffin: Home_img + '40px-griffon.jpg', 	// 'https://wiki.de.grepolis.com/images/d/d1/Unit_greif.png',
+                calydonian_boar: Home_img + '40px-sc.jpg', 	// 'https://wiki.de.grepolis.com/images/9/93/Unit_eber.png',
+                spartoi: Home_img + '40px-spartoi.png',
+                siren: Home_img + '40px-siren-1.png',
+                satyr: Home_img + '40px-satyr.png',
+                ladon: Home_img + '40px-ladon.png',
 
-                big_transporter: 	'https://www.tuto-de-david1327.com/medias/images/40px-bt.png', 		// 'https://wiki.en.grepolis.com/images/0/04/Big_transporter_40x40.png',
-                bireme: 			'https://www.tuto-de-david1327.com/medias/images/40px-bireme.png', 	// 'https://wiki.en.grepolis.com/images/4/44/Bireme_40x40.png',
-                attack_ship: 		'https://www.tuto-de-david1327.com/medias/images/40px-bf.png', 		// 'https://wiki.en.grepolis.com/images/e/e6/Attack_ship_40x40.png',
-                demolition_ship: 	'https://www.tuto-de-david1327.com/medias/images/40px-brulot.png', 	// 'https://wiki.en.grepolis.com/images/e/ec/Demolition_ship_40x40.png',
-                small_transporter: 	'https://www.tuto-de-david1327.com/medias/images/40px-btr.png', 	// 'https://wiki.en.grepolis.com/images/8/85/Small_transporter_40x40.png',
-                trireme: 			'https://www.tuto-de-david1327.com/medias/images/40px-triere.png', 	// 'https://wiki.en.grepolis.com/images/a/ad/Trireme_40x40.png',
-                colonize_ship: 		'https://www.tuto-de-david1327.com/medias/images/40px-bc.png', 		// 'https://wiki.en.grepolis.com/images/d/d1/Colonize_ship_40x40.png',
+                big_transporter: Home_img + '40px-bt.png', 		// 'https://wiki.en.grepolis.com/images/0/04/Big_transporter_40x40.png',
+                bireme: Home_img + '40px-bireme.png', 	// 'https://wiki.en.grepolis.com/images/4/44/Bireme_40x40.png',
+                attack_ship: Home_img + '40px-bf.png', 		// 'https://wiki.en.grepolis.com/images/e/e6/Attack_ship_40x40.png',
+                demolition_ship: Home_img + '40px-brulot.png', 	// 'https://wiki.en.grepolis.com/images/e/ec/Demolition_ship_40x40.png',
+                small_transporter: Home_img + '40px-btr.png', 	// 'https://wiki.en.grepolis.com/images/8/85/Small_transporter_40x40.png',
+                trireme: Home_img + '40px-triere.png', 	// 'https://wiki.en.grepolis.com/images/a/ad/Trireme_40x40.png',
+                colonize_ship: Home_img + '40px-bc.png', 		// 'https://wiki.en.grepolis.com/images/d/d1/Colonize_ship_40x40.png',
 
                 move_icon: 'https://gpall.innogamescdn.com/images/game/unit_overview/', // '?',
 
-                bordure: 'https://www.tuto-de-david1327.com/medias/images/transition-mini.png' //'https://www.tuto-de-david1327.com/medias/images/bordure.png'
+                bordure: Home_img + 'transition-mini.png' // Home_img + 'bordure.png'
             };
 
             $('<div class="dio_bb_def_chooser">' +
-              '<div class="bbcode_box middle_center">' +
-              '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div>' +
-              '<div class="bbcode_box top_center"></div><div class="bbcode_box bottom_center"></div>' +
-              '<div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
-              '<div class="bbcode_box middle_left"></div><div class="bbcode_box middle_right"></div>' +
-              '<div class="bbcode_box content clearfix" style="padding:5px">' +
-              '<div id="f_uni" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "det") + '</div></div><br><br>' +
-              '<div id="f_prm" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "prm") + '</div></div><br><br>' +
-              '<div id="f_sil" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "sil") + '</div></div><br><br>' +
-              /*'<div id="f_mov" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "mov") + '</div></div><br><br>' +*/
-              '<div><a class="button" id="dio_insert" href="#"><span class="left"><span class="right"><span class="middle"><small>' + dio_icon + '' + getTexts("buttons", "ins") + '</small></span></span></span><span></span></a></div>' +
-              '</div></div></div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+                '<div class="bbcode_box middle_center">' +
+                '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div>' +
+                '<div class="bbcode_box top_center"></div><div class="bbcode_box bottom_center"></div>' +
+                '<div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
+                '<div class="bbcode_box middle_left"></div><div class="bbcode_box middle_right"></div>' +
+                '<div class="bbcode_box content clearfix" style="padding:5px">' +
+                '<div id="f_uni" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "det") + '</div></div><br><br>' +
+                '<div id="f_prm" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "prm") + '</div></div><br><br>' +
+                '<div id="f_sil" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "sil") + '</div></div><br><br>' +
+                /*'<div id="f_mov" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "mov") + '</div></div><br><br>' +*/
+                '<div><a class="button" id="dio_insert" href="#"><span class="left"><span class="right"><span class="middle"><small>' + dio_icon + '' + getTexts("buttons", "ins") + '</small></span></span></span><span></span></a></div>' +
+                '</div></div></div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
 
             $('.dio_bb_def_chooser').css({
                 display: 'none',
@@ -11918,7 +12752,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '\n[color=#006B00][size=12][u][b]' + getTexts("labels", "ttl") + '[/b][/u][/size][/color]\n\n' +
                     //'[table][**][img]'+ imgArray.sup +'[/img][||]'+
                     '[size=12][town]' + uw.ITowns.getTown(uw.Game.townId).getId() + '[/town] ([player]' + uw.Game.player_name + '[/player])[/size]' +
-                    '\n[size=8][url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v.'+ dio_version + '[/size]' +
+                    '\n[size=8][url=' + Home + 'en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v.' + dio_version + '[/size]' +
                     //'[||][img]'+ imgArray['rev' + (uw.ITowns.getTown(uw.Game.townId).hasConqueror()?1:0)] +'[/img][/**][/table]'+
                     '\n\n[i][b]' + getTexts("labels", "inf") + '[/b][/i]' + troop_table +
                     '[table][*]' +
@@ -12033,55 +12867,55 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
         activate: function () {
             $('<style id="dio_smiley">' +
-              '.dio_smiley_button { cursor:pointer; margin:3px 2px 2px 2px; } ' +
+                '.dio_smiley_button { cursor:pointer; margin:3px 2px 2px 2px; } ' +
 
-              '.dio_smiley_box.game { z-index:5000; position:absolute; top:27px; left:410px; min-width:350px; display:none; } ' +
+                '.dio_smiley_box.game { z-index:5000; position:absolute; top:27px; left:410px; min-width:350px; display:none; } ' +
 
-              // Smiley categories
-              '.dio_smiley_box .dio_box_header { display: table; width: 100%; text-align:center; } ' +
-              '.dio_smiley_box .dio_group { display:table-cell; color: #0c450c; cursor: pointer; font-weight:bold; padding: 0px 2px 0px 2px; } ' +
-              '.dio_smiley_box .dio_group.active { color: #089421; text-decoration:underline;} ' +
-              '.dio_smiley_box .dio_group:hover { color: #14999E; } ' + // #11AD6C
+                // Smiley categories
+                '.dio_smiley_box .dio_box_header { display: table; width: 100%; text-align:center; } ' +
+                '.dio_smiley_box .dio_group { display:table-cell; color: #0c450c; cursor: pointer; font-weight:bold; padding: 0px 2px 0px 2px; } ' +
+                '.dio_smiley_box .dio_group.active { color: #089421; text-decoration:underline;} ' +
+                '.dio_smiley_box .dio_group:hover { color: #14999E; } ' + // #11AD6C
 
-              // Special smiley categories
-              '.dio_smiley_box .halloween { color: #E25E00; } ' +
-              '.dio_smiley_box .xmas { color: darkred; } ' +
+                // Special smiley categories
+                '.dio_smiley_box .halloween { color: #E25E00; } ' +
+                '.dio_smiley_box .xmas { color: darkred; } ' +
 
-              '.dio_smiley_box hr { margin:3px 0px 0px 0px; color:#086b18; border:1px solid; } ' +
+                '.dio_smiley_box hr { margin:3px 0px 0px 0px; color:#086b18; border:1px solid; } ' +
 
-              // Smilies
-              '.dio_smiley_box .dio_box_content { overflow-y: auto !important; max-height: 120px; } ' +
-              '.dio_smiley_box .dio_box_content .smiley { border: 1px solid rgba(0,0,0,0); border-radius: 5px;} ' +
-              '.dio_smiley_box .dio_box_content .smiley:hover { background: rgba(8, 148, 77, 0.2); border: 1px solid rgba(0, 128, 0, 0.5); } ' +
+                // Smilies
+                '.dio_smiley_box .dio_box_content { overflow-y: auto !important; max-height: 120px; } ' +
+                '.dio_smiley_box .dio_box_content .smiley { border: 1px solid rgba(0,0,0,0); border-radius: 5px;} ' +
+                '.dio_smiley_box .dio_box_content .smiley:hover { background: rgba(8, 148, 77, 0.2); border: 1px solid rgba(0, 128, 0, 0.5); } ' +
 
-              // Scrollbar Style: Chrome, opera, safari
-              '.dio_smiley_box ::-webkit-scrollbar { width: 13px; } ' +
-              '.dio_smiley_box ::-webkit-scrollbar-track { background-color: rgba(130, 186, 135, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-              '.dio_smiley_box ::-webkit-scrollbar-thumb { background-color: rgba(87, 121, 45, 0.5); border-radius: 3px; } ' +
-              '.dio_smiley_box ::-webkit-scrollbar-thumb:hover { background-color: rgba(87, 121, 45, 0.8); } ' +
-              /* Button Up */
-              '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-up-green.png);} ' +
-              '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-up-green-hover.png);} ' +
-              /* Button Down */
-              '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-down-green.png);} ' +
-              '.dio_smiley_box ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-down-green-hover.png);} ' +
+                // Scrollbar Style: Chrome, opera, safari
+                '.dio_smiley_box ::-webkit-scrollbar { width: 13px; } ' +
+                '.dio_smiley_box ::-webkit-scrollbar-track { background-color: rgba(130, 186, 135, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                '.dio_smiley_box ::-webkit-scrollbar-thumb { background-color: rgba(87, 121, 45, 0.5); border-radius: 3px; } ' +
+                '.dio_smiley_box ::-webkit-scrollbar-thumb:hover { background-color: rgba(87, 121, 45, 0.8); } ' +
+                /* Button Up */
+                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url(' + Home_img + 'scroll-up-green.png);} ' +
+                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url(' + Home_img + 'scroll-up-green-hover.png);} ' +
+                /* Button Down */
+                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url(' + Home_img + 'scroll-down-green.png);} ' +
+                '.dio_smiley_box ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url(' + Home_img + 'scroll-down-green-hover.png);} ' +
 
-              // Smiley page link
-              '.dio_smiley_box .box_footer { text-align:center; margin-top:4px; } ' +
-              '.dio_smiley_box a:link, .dio_smiley_box a:visited { color: #086b18; font-size: 0.7em; } ' +
-              '.dio_smiley_box a:hover { color: #14999E; } ' +
+                // Smiley page link
+                '.dio_smiley_box .box_footer { text-align:center; margin-top:4px; } ' +
+                '.dio_smiley_box a:link, .dio_smiley_box a:visited { color: #086b18; font-size: 0.7em; } ' +
+                '.dio_smiley_box a:hover { color: #14999E; } ' +
 
-              // TODO Forum ...
-              '.dio_smiley_box.forum .dio_box_header_left { float:left; } ' +
-              //'.dio_smiley_box.forum .dio_group { padding-right: 10px; } '+
-              '.dio_smiley_box.forum .dio_box_header_right { text-align:right; margin-top:2px; } ' +
+                // TODO Forum ...
+                '.dio_smiley_box.forum .dio_box_header_left { float:left; } ' +
+                //'.dio_smiley_box.forum .dio_group { padding-right: 10px; } '+
+                '.dio_smiley_box.forum .dio_box_header_right { text-align:right; margin-top:2px; } ' +
 
-              '.dio_smiley_box.forum { max-height:90px; margin-left:5px; width:99%; min-height:10px; } ' +
-              '.dio_smiley_box.forum .dio_box_content { overflow:overlay; min-height:70px; margin-bottom:10px; } ' +
+                '.dio_smiley_box.forum { max-height:90px; margin-left:5px; width:99%; min-height:10px; } ' +
+                '.dio_smiley_box.forum .dio_box_content { overflow:overlay; min-height:70px; margin-bottom:10px; } ' +
 
-              '.dio_smiley_box.forum a:link, .dio_smiley_box.forum a:visited { font-size: 1em; } ' +
+                '.dio_smiley_box.forum a:link, .dio_smiley_box.forum a:visited { font-size: 1em; } ' +
 
-              '</style>').appendTo('head');
+                '</style>').appendTo('head');
 
 
             // Smiley categories
@@ -12259,10 +13093,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 smileyArray[e][f].className = "smiley";
 
                                 if (src.substring(0, 2) == "i/") {
-                                    smileyArray[e][f].src = "https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-" + src + ".gif";
+                                    smileyArray[e][f].src = Home_img + "smiley-emoticons-" + src + ".gif";
                                 } else {
                                     if (SmileyBox.loading_error == false) {
-                                        smileyArray[e][f].src = "https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-" + src + ".gif";
+                                        smileyArray[e][f].src = Home_img + "smiley-emoticons-" + src + ".gif";
                                         //console.debug("Smiley", e);
                                     } else {
                                         smileyArray[e][f].src = 'https://i.imgur.com/VdjJJgk.gif';
@@ -12307,27 +13141,27 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 if (($(bbcodeBarId + ' #emots_popup_7').get(0) || $(bbcodeBarId + ' #emots_popup_15').get(0)) && (PID == 1538932 || PID === 100144)) {
                     $(bbcodeBarId + " .bb_button_wrapper").get(0).lastChild.remove();
                 }
-                $('<img title="' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327" class="dio_smiley_button" src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif">').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+                $('<img title="' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327" class="dio_smiley_button" src="' + Home_img + 'smiley-emoticons-smile.gif">').appendTo(bbcodeBarId + ' .bb_button_wrapper');
 
                 $('<div class="dio_smiley_box game">' +
-                  '<div class="bbcode_box middle_center"><div class="bbcode_box middle_right"></div><div class="bbcode_box middle_left"></div>' +
-                  '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div><div class="bbcode_box top_center"></div>' +
-                  '<div class="bbcode_box bottom_center"></div><div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
-                  '<div class="dio_box_header">' +
-                  '<span class="dio_group standard active">' + getTexts("labels", "std") + '</span>' +
-                  '<span class="dio_group grepolis">' + getTexts("labels", "gre") + '</span>' +
-                  '<span class="dio_group nature">' + getTexts("labels", "nat") + '</span>' +
-                  '<span class="dio_group people">' + getTexts("labels", "ppl") + '</span>' +
-                  '<span class="dio_group Party">' + getTexts("labels", "Par") + '</span>' +
-                  '<span class="dio_group ' + (SmileyBox.isHalloween ? 'halloween' : (SmileyBox.isXmas ? 'xmas' : (SmileyBox.isEaster ? 'easter' : (SmileyBox.isLove ? 'love' : 'other')))) +
-                  '">' + getTexts("labels", (SmileyBox.isHalloween ? 'hal' : (SmileyBox.isXmas ? 'xma' : (SmileyBox.isEaster ? 'eas' : (SmileyBox.isLove ? 'lov' : 'oth'))))) + '</span>' +
-                  '</div>' +
-                  '<hr>' +
-                  '<div class="dio_box_content"></div>' +
-                  '<hr>' +
-                  '<div class="box_footer">' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327</div>' +
-                  /*'<div class="box_footer"><a href="http://www.greensmilies.com/smilie-album/" target="_blank">WWW.GREENSMILIES.COM</a></div>' +*/
-                  '</div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+                    '<div class="bbcode_box middle_center"><div class="bbcode_box middle_right"></div><div class="bbcode_box middle_left"></div>' +
+                    '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div><div class="bbcode_box top_center"></div>' +
+                    '<div class="bbcode_box bottom_center"></div><div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
+                    '<div class="dio_box_header">' +
+                    '<span class="dio_group standard active">' + getTexts("labels", "std") + '</span>' +
+                    '<span class="dio_group grepolis">' + getTexts("labels", "gre") + '</span>' +
+                    '<span class="dio_group nature">' + getTexts("labels", "nat") + '</span>' +
+                    '<span class="dio_group people">' + getTexts("labels", "ppl") + '</span>' +
+                    '<span class="dio_group Party">' + getTexts("labels", "Par") + '</span>' +
+                    '<span class="dio_group ' + (SmileyBox.isHalloween ? 'halloween' : (SmileyBox.isXmas ? 'xmas' : (SmileyBox.isEaster ? 'easter' : (SmileyBox.isLove ? 'love' : 'other')))) +
+                    '">' + getTexts("labels", (SmileyBox.isHalloween ? 'hal' : (SmileyBox.isXmas ? 'xma' : (SmileyBox.isEaster ? 'eas' : (SmileyBox.isLove ? 'lov' : 'oth'))))) + '</span>' +
+                    '</div>' +
+                    '<hr>' +
+                    '<div class="dio_box_content"></div>' +
+                    '<hr>' +
+                    '<div class="box_footer">' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327</div>' +
+                    /*'<div class="box_footer"><a href="http://www.greensmilies.com/smilie-album/" target="_blank">WWW.GREENSMILIES.COM</a></div>' +*/
+                    '</div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
 
 
                 $(bbcodeBarId + ' .dio_group').click(function () {
@@ -12369,7 +13203,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         //$('<img class="smiley" src="' + smileyArray[type][e].src + '" alt="" />').appendTo(bbcodeBarId + " .dio_box_content");
                     }
                 }
-                $('.smiley').css({margin: '0px', padding: '2px', maxHeight: '35px', cursor: 'pointer'});
+                $('.smiley').css({ margin: '0px', padding: '2px', maxHeight: '35px', cursor: 'pointer' });
 
                 $(bbcodeBarId + " .dio_box_content .smiley").click(function () {
                     var textarea;
@@ -12405,14 +13239,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var FavorPopup = {
 
         godArray: {
-            zeus:'zeus' ,
-            athena:'athena' ,
-            poseidon:'poseidon' ,
-            hera:'hera' ,
-            hades:'hades' ,
-            artemis:'artemis' ,
-            aphrodite:'aphrodite' ,
-            ares:'ares' ,
+            zeus: 'zeus',
+            athena: 'athena',
+            poseidon: 'poseidon',
+            hera: 'hera',
+            hades: 'hades',
+            artemis: 'artemis',
+            aphrodite: 'aphrodite',
+            ares: 'ares',
         },
 
         activate: function () {
@@ -12435,7 +13269,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if (uw.ITowns.player_gods.attributes.temples_for_gods[g]) {
                             pic_row += '<td><div style="transform:scale(0.8); margin: -6px;"; class="god_mini ' + [g] + '";></td>';
                             textColor = ((uw.ITowns.player_gods.attributes[g + "_favor"]) == uw.ITowns.player_gods.attributes.max_favor) ? textColor = "color:red;" : textColor = "color:blue";
-                            fav_row += '<td class="bold" style="'+ textColor +'">' + uw.ITowns.player_gods.attributes[g + "_favor"] + '</td>';
+                            fav_row += '<td class="bold" style="' + textColor + '">' + uw.ITowns.player_gods.attributes[g + "_favor"] + '</td>';
                             prod_row += '<td class="bold">' + uw.ITowns.player_gods.attributes.production_overview[g].production + '</td>';
                         }
                     }
@@ -12445,15 +13279,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var fury_max = uw.ITowns.player_gods.attributes.max_fury
 
                 textColor = ((uw.ITowns.player_gods.attributes.fury) == fury_max) ? textColor = "color:red;" : textColor = "color:blue";
-                fury_row = '<td class="bold" style="'+ textColor +'">' + uw.ITowns.player_gods.attributes.fury + '/' + fury_max + '</td>';
+                fury_row = '<td class="bold" style="' + textColor + '">' + uw.ITowns.player_gods.attributes.fury + '/' + fury_max + '</td>';
 
                 tooltip_str = $('<div id"tooltip"><table><tr><td><div class="dio_icon b" style="opacity: 0.30; width: 35px; height: 35px;"></td>' + pic_row + '</tr>' +
-                                '<tr align="center"><td><img src="https://gpall.innogamescdn.com/images/game/res/favor.png"></td>' + fav_row + '</tr>' +
-                                '<tr align="center"><td>+</td>' + prod_row + '</tr>' +
-                                '</table></div>');
+                    '<tr align="center"><td><img src="https://gpall.innogamescdn.com/images/game/res/favor.png"></td>' + fav_row + '</tr>' +
+                    '<tr align="center"><td>+</td>' + prod_row + '</tr>' +
+                    '</table></div>');
 
-                tooltip_fury = $('<div id"tooltip"><table><tr align="center"><td><img src="https://www.tuto-de-david1327.com/medias/images/fury.png"></td>' + fury_row + '</tr>' +
-                                 '</table></div>');
+                tooltip_fury = $('<div id"tooltip"><table><tr align="center"><td><img src="' + Home_img + 'fury.png"></td>' + fury_row + '</tr>' +
+                    '</table></div>');
 
 
                 //Update 2.231
@@ -12510,7 +13344,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                     });
                 });
-                startup.observe($('body').get(0), {attributes: false, childList: true, characterData: false});
+                startup.observe($('body').get(0), { attributes: false, childList: true, characterData: false });
 
                 setTimeout(function () {
                     startup.disconnect();
@@ -12565,16 +13399,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         $('#dio_plusmenuRecruits').remove();
                     });
                 /*$("#toolbar_activity_commands_list").hover(
-				function () {
-				if ($("#dio_plusmenuCommands").length == 0) {
-					$("#toolbar_activity_commands_list").append('<div id="dio_plusmenuCommands" class="dio_plusmenu"><div id="dio_plusdraghandleCommands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
-					$('#dio_plusmenuCommands .dio_plusback').click(function () {
-						dio_plus_destroy("dio_plusmenuCommands");
-					});
-				}
-			}, function () {
-				$('#dio_plusmenuCommands').remove();
-			});*/
+                function () {
+                if ($("#dio_plusmenuCommands").length == 0) {
+                    $("#toolbar_activity_commands_list").append('<div id="dio_plusmenuCommands" class="dio_plusmenu"><div id="dio_plusdraghandleCommands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
+                    $('#dio_plusmenuCommands .dio_plusback').click(function () {
+                        dio_plus_destroy("dio_plusmenuCommands");
+                    });
+                }
+            }, function () {
+                $('#dio_plusmenuCommands').remove();
+            });*/
                 $("#toolbar_activity_trades_list").hover(
                     function () {
                         if ($("#dio_plusmenuTrades").length == 0) {
@@ -12599,58 +13433,58 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     });
 
                 $('<style id="dio_plusmenustyle" type="text/css">' +
-                  '.displayImp {display: block !important;}' +
-                  '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
-                  '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(https://www.tuto-de-david1327.com/medias/images/draghandle.png)}' +
-                  '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(https://www.tuto-de-david1327.com/medias/images/plusback.png)}' +
-                  '#toolbar_activity_recruits_list {min-width: 113px;}' +
-                  '.dropdown-list .item_no_results, .dropdown-list.ui-draggable>div {cursor:text!important;}' +
-                  '</style>').appendTo('head');
+                    '.displayImp {display: block !important;}' +
+                    '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
+                    '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(' + Home_img + 'draghandle.png)}' +
+                    '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(' + Home_img + 'plusback.png)}' +
+                    '#toolbar_activity_recruits_list {min-width: 113px;}' +
+                    '.dropdown-list .item_no_results, .dropdown-list.ui-draggable>div {cursor:text!important;}' +
+                    '</style>').appendTo('head');
 
                 $('#toolbar_activity_recruits_list').draggable({
-                    cursor : "move",
-                    handle : ".dio_plusdraghandle",
-                    start : function () {
+                    cursor: "move",
+                    handle: ".dio_plusdraghandle",
+                    start: function () {
                         $("#dio_plusmenuRecruitsSTYLE").remove();
                         $('#toolbar_activity_recruits_list').addClass("displayImp");
                     },
-                    stop : function () {
+                    stop: function () {
                         var dio_position = $('#toolbar_activity_recruits_list').position();
                         $('<style id="dio_plusmenuRecruitsSTYLE" type="text/css">#toolbar_activity_recruits_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
                     }
                 });
                 /*$('#toolbar_activity_commands_list').draggable({
-				cursor : "move",
-				handle : ".dio_plusdraghandle",
-				start : function () {
-					$("#dio_plusmenuCommandsSTYLE").remove();
-					$('#toolbar_activity_commands_list').addClass("displayImp");
-				},
-				stop : function () {
-					var dio_position = $('#toolbar_activity_commands_list').position();
-					$('<style id="dio_plusmenuCommandsSTYLE" type="text/css">#toolbar_activity_commands_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
-				}
-			});*/
+                cursor : "move",
+                handle : ".dio_plusdraghandle",
+                start : function () {
+                    $("#dio_plusmenuCommandsSTYLE").remove();
+                    $('#toolbar_activity_commands_list').addClass("displayImp");
+                },
+                stop : function () {
+                    var dio_position = $('#toolbar_activity_commands_list').position();
+                    $('<style id="dio_plusmenuCommandsSTYLE" type="text/css">#toolbar_activity_commands_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
+                }
+            });*/
                 $('#toolbar_activity_trades_list').draggable({
-                    cursor : "move",
-                    handle : ".dio_plusdraghandle",
-                    start : function () {
+                    cursor: "move",
+                    handle: ".dio_plusdraghandle",
+                    start: function () {
                         $("#dio_plusmenuTradesSTYLE").remove();
                         $('#toolbar_activity_trades_list').addClass("displayImp");
                     },
-                    stop : function () {
+                    stop: function () {
                         var dio_position = $('#toolbar_activity_trades_list').position();
                         $('<style id="dio_plusmenuTradesSTYLE" type="text/css">#toolbar_activity_trades_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
                     }
                 });
                 $('#toolbar_activity_temple_commands_list').draggable({
-                    cursor : "move",
-                    handle : ".dio_plusdraghandle",
-                    start : function () {
+                    cursor: "move",
+                    handle: ".dio_plusdraghandle",
+                    start: function () {
                         $("#dio_plusmenuTemple_commandsSTYLE").remove();
                         $('#toolbar_activity_temple_commands_list').addClass("displayImp");
                     },
-                    stop : function () {
+                    stop: function () {
                         var dio_position = $('#toolbar_activity_temple_commands_list').position();
                         $('<style id="dio_plusmenuTemple_commandsSTYLE" type="text/css">#toolbar_activity_temple_commands_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
                     }
@@ -12658,14 +13492,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 function dio_plus_destroy(dioJQselector) {
                     /*if (dioJQselector == "dio_plusmenuCommands") {
-					$('#toolbar_activity_commands_list').hide();
-					$('#toolbar_activity_commands_list').on("mouseleave", function () {
-						$('#toolbar_activity_commands_list').hide();
-					});
-					$('#toolbar_activity_recruits, #toolbar_activity_trades').on("mouseenter", function () {
-						$('#toolbar_activity_commands_list').hide();
-					});
-				}*/
+                    $('#toolbar_activity_commands_list').hide();
+                    $('#toolbar_activity_commands_list').on("mouseleave", function () {
+                        $('#toolbar_activity_commands_list').hide();
+                    });
+                    $('#toolbar_activity_recruits, #toolbar_activity_trades').on("mouseenter", function () {
+                        $('#toolbar_activity_commands_list').hide();
+                    });
+                }*/
                     $("#" + dioJQselector).parent().removeClass("displayImp");
                     $("#" + dioJQselector + "STYLE").remove();
                 }
@@ -12721,17 +13555,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // Style
             $('<style id="dio_townbb_style"> ' +
 
-              // Button
-              '#dio_townbb { background: url("https://www.tuto-de-david1327.com/medias/images/logo-grepolis.png") -23px 0px!important; position:absolute; height: 22px; width: 21px; top:26px; left:184px; z-index:5002; } ' +
-              '#dio_townbb:hover { background: url("https://www.tuto-de-david1327.com/medias/images/logo-grepolis.png") -23px -23px!important; position:absolute; height: 22px; width: 21px; top:26px; left:184px; z-index:5002; } ' +
-              '#dio_townbb_logo { background: url("https://www.tuto-de-david1327.com/medias/images/logo-vile-2.png"); position: absolute; height: 30px; width: 30px; left:180px; top:27px; z-index:5001; } ' +
+                // Button
+                '#dio_townbb { background: url("' + Home_img + 'logo-grepolis.png") -23px 0px!important; position:absolute; height: 22px; width: 21px; top:26px; left:184px; z-index:5002; } ' +
+                '#dio_townbb:hover { background: url("' + Home_img + 'logo-grepolis.png") -23px -23px!important; position:absolute; height: 22px; width: 21px; top:26px; left:184px; z-index:5002; } ' +
+                '#dio_townbb_logo { background: url("' + Home_img + 'logo-vile-2.png"); position: absolute; height: 30px; width: 30px; left:180px; top:27px; z-index:5001; } ' +
 
-              // Style
-              '#input_townbb { background-color: #ffe2a0; display: none; position: absolute; left: 23px; top: 29px; width: 153px; height: 12px; text-align: center; z-index: 6; } ' +
+                // Style
+                '#input_townbb { background-color: #ffe2a0; display: none; position: absolute; left: 23px; top: 29px; width: 153px; height: 12px; text-align: center; z-index: 6; } ' +
 
-              // clipboard
-              '#dio_townbb-clipboard { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png); background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 6; top:29px ;left: 167px; display: none;} ' +
-              '</style>').appendTo("head");
+                // clipboard
+                '#dio_townbb-clipboard { background: url(' + Home_img + 'icon-add-to-clipboard.png); background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 6; top:29px ;left: 167px; display: none;} ' +
+                '</style>').appendTo("head");
         },
         deactivate: function () {
             $('#dio_townbb').remove();
@@ -12741,7 +13575,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         addButton: function () {
             try {
                 $('<a id="dio_townbb"></a><input id="input_townbb" type="text" onfocus="this.select();" onclick="this.select();"><div id="dio_townbb_logo"></div>').appendTo('.town_name_area');
-                $('<a id="dio_townbb-clipboard" data-clipboard-target="#input_townbb"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));
+                $('<a id="dio_townbb-clipboard" data-clipboard-action="cut" data-clipboard-target="#input_townbb"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));
                 $("#dio_townbb").click(function () {
                     $('#dio_townbb-clipboard').toggle();
                     $("#input_townbb").toggle();
@@ -12749,19 +13583,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
 
                 // clipboard
-                setTimeout(function() {
-                    new uw.ClipboardJS("#dio_townbb-clipboard").on("success", function() {
-                        setTimeout(function() {
-                            uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                            $('#dio_townbb-clipboard').css({"display" : "none"})
-                            $("#input_townbb").css({"display" : "none"})
-                        }, 50)
-                    })
+                setTimeout(function () {
+                    dio.clipboard('#dio_townbb-clipboard', '#input_townbb', "Townbb (addButton clipboard)", null);
                 }, 2000)
 
                 // Tooltip
-                $('#dio_townbb').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("market").city);
-                $('#dio_townbb-clipboard').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("market").city);
+                $('#dio_townbb').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("market").city);
+                $('#dio_townbb-clipboard').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("market").city);
             } catch (error) {
                 errorHandling(error, "Townbb (addButton)");
             }
@@ -12775,23 +13603,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var BBtowninfo = {
         activate: function () {
 
-            if ($('.dio_BBplayer').get(0)){
-            $('div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({"padding-left" : "23px"});
+            if ($('.dio_BBplayer').get(0)) {
+                $('div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({ "padding-left": "23px" });
             }
             $('<style id="dio_BBtowninfo_style"> ' +
-              // Button
-              '.dio_BBplayer { background: url(https://gpfr.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -28px; height: 22px; width: 21px; } ' +
-              '.dio_BBalliance { background: url(https://gpfr.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -5px; height: 22px; width: 21px; } ' +
-              // clipboard
-              '.dio_clipboard-player { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png) #ffedc5; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
-              '.dio_clipboard-alliance { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
-              '.dio_clipboard-town { background: url(https://www.tuto-de-david1327.com/medias/images/icon-add-to-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
-              // Style (text)
-              '.input_BBplayer { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
-              '.input_BBalliance { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
-              '#town_bbcode_id { background-color: #ffe2a0; } ' +
+                // Button
+                '.dio_BBplayer { background: url(https://gpfr.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -28px; height: 22px; width: 21px; } ' +
+                '.dio_BBalliance { background: url(https://gpfr.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -5px; height: 22px; width: 21px; } ' +
+                // clipboard
+                '.dio_clipboard-player { background: url(' + Home_img + 'icon-add-to-clipboard.png) #ffedc5; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+                '.dio_clipboard-alliance { background: url(' + Home_img + 'icon-add-to-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+                '.dio_clipboard-town { background: url(' + Home_img + 'icon-add-to-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+                // Style (text)
+                '.input_BBplayer { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
+                '.input_BBalliance { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
+                '#town_bbcode_id { background-color: #ffe2a0; } ' +
 
-              '</style>').appendTo("head");
+                '</style>').appendTo("head");
         },
         profile: function () {
             try {
@@ -12800,41 +13628,41 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 var grcrt = false, num = 2;
                 //grcrt ?
-                if (typeof(uw.GRCRT_Notifications) !== "undefined") {grcrt = true; num += 2;}
+                if (typeof (uw.GRCRT_Notifications) !== "undefined") { grcrt = true; num += 2; }
                 //Mole Hole ?
-                if (typeof(uw.mhCol) !== "undefined") { num += 1;}
+                if (typeof (uw.mhCol) !== "undefined") { num += 1; }
 
                 // Function
-                if (!$('#dio_gpwnd_'+ c +'_BBplayer').get(0)){
+                if (!$('#dio_gpwnd_' + c + '_BBplayer').get(0)) {
 
                     // BBCode player
-                    $('<a id="dio_gpwnd_'+ c +'_BBplayer" class="dio_BBplayer" style="float: left; margin-right: 2px;"></a><input id="input_gpwnd_'+ c +'_BBplayer" class="input_BBplayer" style="top:25px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" type="text" onfocus="this.select();" onclick="this.select();"></div>').appendTo("div#gpwnd_"+ c +" div#player_info h3");
-                    $('<a id="dio_gpwnd_'+ c +'_clipboard-player" class="dio_clipboard-player" style="top:27px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_'+ c +'_BBplayer"></a>').appendTo("div#gpwnd_"+ c +" div#player_info h3").tooltip(dio_icon + getTexts("messages", "copy"));
-                    $('#dio_gpwnd_'+ c +'_BBplayer').click(function () {
-                        $('#dio_gpwnd_'+ c +'_clipboard-player').toggle();
-                        $('#input_gpwnd_'+ c +'_BBplayer').toggle();
-                        $('#input_gpwnd_'+ c +'_BBplayer').val("[player]" + $("div#gpwnd_"+ c +" div#player_info h3").text().trim() + "[/player]");
+                    $('<a id="dio_gpwnd_' + c + '_BBplayer" class="dio_BBplayer" style="float: left; margin-right: 2px;"></a><input id="input_gpwnd_' + c + '_BBplayer" class="input_BBplayer" style="top:25px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" type="text" onfocus="this.select();" onclick="this.select();"></div>').appendTo("div#gpwnd_" + c + " div#player_info h3");
+                    $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:27px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo("div#gpwnd_" + c + " div#player_info h3").tooltip(dio_icon + getTexts("messages", "copy"));
+                    $('#dio_gpwnd_' + c + '_BBplayer').click(function () {
+                        $('#dio_gpwnd_' + c + '_clipboard-player').toggle();
+                        $('#input_gpwnd_' + c + '_BBplayer').toggle();
+                        $('#input_gpwnd_' + c + '_BBplayer').val("[player]" + $("div#gpwnd_" + c + " div#player_info h3").text().trim() + "[/player]");
                     });
 
                     // BBCode alliance
-                    if ($("div#gpwnd_"+ c +" div#player_info a").text().trim() !== "") {
-                        $("div#gpwnd_"+ c +" div#player_info div#player_points").before('<a id="dio_gpwnd_'+ c +'_BBalliance" class="dio_BBalliance" style="position: relative; top: -2px; float: left; margin-right: 1px; left: -1px;"></a><input id="input_gpwnd_'+ c +'_BBalliance" class="input_BBalliance" style="top:50px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" onclick="this.select();" onfocus="this.select();"></div>');
-                        $("div#gpwnd_"+ c +" div#player_info div#player_points").after('<a id="dio_gpwnd_'+ c +'_clipboard-alliance" class="dio_clipboard-alliance" style="top:51px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_'+ c +'_BBalliance"></a>');
-                        $('#dio_gpwnd_'+ c +'_BBalliance').click(function () {
-                            $('#dio_gpwnd_'+ c +'_clipboard-alliance').toggle();
+                    if ($("div#gpwnd_" + c + " div#player_info a").text().trim() !== "") {
+                        $("div#gpwnd_" + c + " div#player_info div#player_points").before('<a id="dio_gpwnd_' + c + '_BBalliance" class="dio_BBalliance" style="position: relative; top: -2px; float: left; margin-right: 1px; left: -1px;"></a><input id="input_gpwnd_' + c + '_BBalliance" class="input_BBalliance" style="top:50px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" onclick="this.select();" onfocus="this.select();"></div>');
+                        $("div#gpwnd_" + c + " div#player_info div#player_points").after('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:51px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>');
+                        $('#dio_gpwnd_' + c + '_BBalliance').click(function () {
+                            $('#dio_gpwnd_' + c + '_clipboard-alliance').toggle();
                             //alliance name ?
-                            var text = $("div#gpwnd_"+ c +" div#player_info.bold")[0].children[num].attributes[2].textContent,
+                            var text = $("div#gpwnd_" + c + " div#player_info.bold")[0].children[num].attributes[2].textContent,
                                 re = /Layout.allianceProfile.open\('(.*?)',(.*?)\)/mg,
-                                alliance_id = text.replace(re , "$2"); var alliance_name = text.replace(re , "$1").replace(/\\/mg , "");
-                            $('#input_gpwnd_'+ c +'_BBalliance').toggle();
-                            $('#input_gpwnd_'+ c +'_BBalliance').val("[ally]" + alliance_name + "[/ally]");
+                                alliance_id = text.replace(re, "$2"); var alliance_name = text.replace(re, "$1").replace(/\\/mg, "");
+                            $('#input_gpwnd_' + c + '_BBalliance').toggle();
+                            $('#input_gpwnd_' + c + '_BBalliance').val("[ally]" + alliance_name + "[/ally]");
                         });
                     }
                 };
                 // Tooltip
-                $('#dio_gpwnd_'+ c +'_BBplayer').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").player.name);
-                $('#dio_gpwnd_'+ c +'_BBalliance').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").ally.name);
-                $('#dio_gpwnd_'+ c +'_clipboard-alliance').tooltip(dio_icon + getTexts("messages", "copy"));
+                $('#dio_gpwnd_' + c + '_BBplayer').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").player.name);
+                $('#dio_gpwnd_' + c + '_BBalliance').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").ally.name);
+                $('#dio_gpwnd_' + c + '_clipboard-alliance').tooltip(dio_icon + getTexts("messages", "copy"));
             } catch (error) {
                 errorHandling(error, "BBtowninfo (profile)");
             }
@@ -12845,81 +13673,64 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 this.add(c);
 
                 var MH = false;
-                if (typeof(uw.mhCol) !== "undefined") {
+                if (typeof (uw.mhCol) !== "undefined") {
                     MH = true;
-                    $('div#gpwnd_'+ c + ' #town_bbcode_id').css({"margin-right" : "22px"});
+                    $('div#gpwnd_' + c + ' #town_bbcode_id').css({ "margin-right": "22px" });
                 }
 
                 // Function
-                if (!$('#dio_gpwnd_'+ c +'_BBplayer').get(0)){
-                    $('div#gpwnd_'+ c +' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#gpwnd_'+ c +' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({"padding-left" : "23px"});
+                if (!$('#dio_gpwnd_' + c + '_BBplayer').get(0)) {
+                    $('div#gpwnd_' + c + ' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#gpwnd_' + c + ' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({ "padding-left": "23px" });
 
                     // BBCode player
-                    if ($("div#gpwnd_"+ c +" div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even div.list_item_left a.gp_player_link").is(':visible')){
-                        $('<a id="dio_gpwnd_'+ c +'_BBplayer" class="dio_BBplayer" style="top:1px ;left: 0px; position:absolute;"></a><input id="input_gpwnd_'+ c +'_BBplayer" class="input_BBplayer" style="left: 20px; top: 3px;" onfocus="this.select();" onclick="this.select();"></div>').appendTo('div#gpwnd_'+ c +' div#info_tab_content li.even div.list_item_left');
-                        $('<a id="dio_gpwnd_'+ c +'_clipboard-player" class="dio_clipboard-player" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_'+ c +'_BBplayer"></a>').appendTo('div#gpwnd_'+ c +' div#info_tab_content li.even div.list_item_left').tooltip(dio_icon + getTexts("messages", "copy"));
-                        $('#dio_gpwnd_'+ c +'_BBplayer').click(function () {
-                            $('#dio_gpwnd_'+ c +'_clipboard-player').toggle();
-                            $('#input_gpwnd_'+ c +'_BBplayer').toggle();
-                            $('#input_gpwnd_'+ c +'_BBplayer').val("[player]" + $("div#gpwnd_"+ c +" div#info_tab_content li.even div.list_item_left a.gp_player_link").text().trim() + "[/player]");
+                    if ($("div#gpwnd_" + c + " div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even div.list_item_left a.gp_player_link").is(':visible')) {
+                        $('<a id="dio_gpwnd_' + c + '_BBplayer" class="dio_BBplayer" style="top:1px ;left: 0px; position:absolute;"></a><input id="input_gpwnd_' + c + '_BBplayer" class="input_BBplayer" style="left: 20px; top: 3px;" onfocus="this.select();" onclick="this.select();"></div>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.even div.list_item_left');
+                        $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.even div.list_item_left').tooltip(dio_icon + getTexts("messages", "copy"));
+                        $('#dio_gpwnd_' + c + '_BBplayer').click(function () {
+                            $('#dio_gpwnd_' + c + '_clipboard-player').toggle();
+                            $('#input_gpwnd_' + c + '_BBplayer').toggle();
+                            $('#input_gpwnd_' + c + '_BBplayer').val("[player]" + $("div#gpwnd_" + c + " div#info_tab_content li.even div.list_item_left a.gp_player_link").text().trim() + "[/player]");
                         });
 
                         // BBCode alliance
-                        $('<a id="dio_gpwnd_'+ c +'_BBalliance" class="dio_BBalliance" style="top: 1px; left: 0px; position: absolute;"></a><input id="input_gpwnd_'+ c +'_BBalliance" class="input_BBalliance" style="left: 20px; top: 3px;" onclick="this.select();" onfocus="this.select();"></div>').appendTo('div#gpwnd_'+ c +' ul.game_list li.odd.clearfix');
-                        $('<a id="dio_gpwnd_'+ c +'_clipboard-alliance" class="dio_clipboard-alliance" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_'+ c +'_BBalliance"></a>').appendTo('div#gpwnd_'+ c +' div#info_tab_content li.odd.clearfix').tooltip(dio_icon + getTexts("messages", "copy"));
-                        $('#dio_gpwnd_'+ c +'_BBalliance').click(function () {
-                            $('#dio_gpwnd_'+ c +'_clipboard-alliance').toggle();
-                            $('#input_gpwnd_'+ c +'_BBalliance').toggle();
-                            $('#input_gpwnd_'+ c +'_BBalliance').val("[ally]" + $("div#gpwnd_"+ c +" div#info_tab_content li.odd.clearfix a").text().trim() + "[/ally]");
+                        $('<a id="dio_gpwnd_' + c + '_BBalliance" class="dio_BBalliance" style="top: 1px; left: 0px; position: absolute;"></a><input id="input_gpwnd_' + c + '_BBalliance" class="input_BBalliance" style="left: 20px; top: 3px;" onclick="this.select();" onfocus="this.select();"></div>').appendTo('div#gpwnd_' + c + ' ul.game_list li.odd.clearfix');
+                        $('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.odd.clearfix').tooltip(dio_icon + getTexts("messages", "copy"));
+                        $('#dio_gpwnd_' + c + '_BBalliance').click(function () {
+                            $('#dio_gpwnd_' + c + '_clipboard-alliance').toggle();
+                            $('#input_gpwnd_' + c + '_BBalliance').toggle();
+                            $('#input_gpwnd_' + c + '_BBalliance').val("[ally]" + $("div#gpwnd_" + c + " div#info_tab_content li.odd.clearfix a").text().trim() + "[/ally]");
                         });
-                    } else {$('div#gpwnd_'+ c +' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img').css({"padding-left" : "0px"});}
+                    } else { $('div#gpwnd_' + c + ' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img').css({ "padding-left": "0px" }); }
 
                     // clipboard town
-                    $('div#gpwnd_'+ c + ' #town_bbcode_link').append('<a id="dio_gpwnd_'+ c +'_clipboard-town" class="dio_clipboard-town" style="top:3px; ' + (MH ? "left: 171px;" : "right: 169px;") + '" data-clipboard-text="' + $('div#gpwnd_'+ c + ' #town_bbcode_id')[0].value + '"></a>');
-                    $('div#gpwnd_'+ c + ' #town_bbcode_link').click(function () {
-                        $('#dio_gpwnd_'+ c +'_clipboard-town').toggle();
+                    $('div#gpwnd_' + c + ' #town_bbcode_link').append('<a id="dio_gpwnd_' + c + '_clipboard-town" class="dio_clipboard-town" style="top:3px; ' + (MH ? "left: 171px;" : "right: 169px;") + '" data-clipboard-text="' + $('div#gpwnd_' + c + ' #town_bbcode_id').val() + '"></a>');
+                    $('div#gpwnd_' + c + ' #town_bbcode_link').click(function () {
+                        $('#dio_gpwnd_' + c + '_clipboard-town').toggle();
                     });
                 };
 
                 // Tooltip
-                $('#dio_gpwnd_'+ c +'_BBplayer').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").player.name);
-                $('#dio_gpwnd_'+ c +'_BBalliance').tooltip(dio_icon + 'BBCode '+ uw.DM.getl10n("bbcodes").ally.name);
+                $('#dio_gpwnd_' + c + '_BBplayer').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").player.name);
+                $('#dio_gpwnd_' + c + '_BBalliance').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").ally.name);
             } catch (error) {
                 errorHandling(error, "BBtowninfo (towninfo)");
             }
         },
         add: function (c) {
             try {
-                // Clipboard success
-                new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-player').on("success", function() {
-                    setTimeout(function() {
-                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                        $('#dio_gpwnd_'+ c +'_clipboard-player').css({"display" : "none"})
-                        $('#input_gpwnd_'+ c +'_BBplayer').css({"display" : "none"})
-                    }, 50)
-                })
-                new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-alliance').on("success", function() {
-                    setTimeout(function() {
-                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                        $('#dio_gpwnd_'+ c +'_clipboard-alliance').css({"display" : "none"})
-                        $('#input_gpwnd_'+ c +'_BBalliance').css({"display" : "none"})
-                    }, 50)
-                })
-                new uw.ClipboardJS('#dio_gpwnd_'+ c +'_clipboard-town').on("success", function() {
-                    setTimeout(function() {
-                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                        $('#dio_gpwnd_'+ c +'_clipboard-town').css({"display" : "none"})
-                        $('#div#gpwnd_'+ c + ' #town_bbcode_id').css({"display" : "none"})
-                    }, 50)
-                })} catch (error) {
-                    errorHandling(error, "BBtowninfo (add)");
-                    uw.HumanMessage.error(dio_icon + "Error");
-                }
+                // Clipboard
+                dio.clipboard('#dio_gpwnd_' + c + '_clipboard-player', '#input_gpwnd_' + c + '_BBplayer', "BBtowninfo (add)", null);
+                dio.clipboard('#dio_gpwnd_' + c + '_clipboard-alliance', '#input_gpwnd_' + c + '_BBalliance', "BBtowninfo (add)", null);
+                dio.clipboard('#dio_gpwnd_' + c + '_clipboard-town', '#div#gpwnd_' + c + ' #town_bbcode_id', "BBtowninfo (add)"), null;
+            } catch (error) {
+                errorHandling(error, "BBtowninfo (add)");
+                uw.HumanMessage.error(dio_icon + "Error");
+            }
         },
         deactivate: function () {
             $('#dio_BBtowninfo_style').remove();
-            $('.input_BBplayer,.input_BBalliance').css({"display" : "none"});
-            $('div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({"padding-left" : "0px"});
+            $('.input_BBplayer,.input_BBalliance').css({ "display": "none" });
+            $('div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({ "padding-left": "0px" });
         },
     };
 
@@ -12945,8 +13756,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var b, c, d, e, f, i, j, k;
                 f = 0;
 
-                    var g = $("ul#culture_overview_towns span.eta");
-                    var h = $("#culture_points_overview_bottom #place_culture_count").text();
+                var g = $("ul#culture_overview_towns span.eta");
+                var h = $("#culture_points_overview_bottom #place_culture_count").text();
 
                 e = 0;
                 b = $('a[class~="confirm"][class~="type_triumph"]');
@@ -12994,45 +13805,45 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 if ($('#dio_cultureBTN_wrapper').length == 0) {
                     $("#culture_overview_wrapper").parent().append('<div id="dio_cultureBTN_wrapper"><div class="dio_cultureBTN_wrapper_right"><div id="dio_cultureBTN_theather_r" class="dio_cultureBTN_r dio_cultureBTN_theather"></div>' +
-                                                                   '<div id="dio_cultureBTN_triumph_r" class="dio_cultureBTN_r dio_cultureBTN_triumph"></div><div id="dio_cultureBTN_olympicgames_r" class="dio_cultureBTN_r dio_cultureBTN_olympicgames"></div>' +
-                                                                   '<div id="dio_cultureBTN_cityfestival_r" class="dio_cultureBTN_r dio_cultureBTN_cityfestival"></div></div></div>');
+                        '<div id="dio_cultureBTN_triumph_r" class="dio_cultureBTN_r dio_cultureBTN_triumph"></div><div id="dio_cultureBTN_olympicgames_r" class="dio_cultureBTN_r dio_cultureBTN_olympicgames"></div>' +
+                        '<div id="dio_cultureBTN_cityfestival_r" class="dio_cultureBTN_r dio_cultureBTN_cityfestival"></div></div></div>');
 
-                    $("#culture_overview_wrapper").css({"top" : "35px", "height" : "370px"});
+                    $("#culture_overview_wrapper").css({ "top": "35px", "height": "+=-35px" });
                     $("#dio_cultureBTN_wrapper").css({
-                        "color" : "white",
-                        "font-family" : "Verdana",
-                        "font-weight" : "bold",
-                        "font-size" : "12px",
-                        "text-align" : "center",
-                        "line-height" : "25px",
-                        "text-shadow" : "1px 1px 0 #000000"
+                        "color": "white",
+                        "font-family": "Verdana",
+                        "font-weight": "bold",
+                        "font-size": "12px",
+                        "text-align": "center",
+                        "line-height": "25px",
+                        "text-shadow": "1px 1px 0 #000000"
                     });
                     $(".dio_cultureBTN_wrapper_left").css({
-                        "position" : "absolute",
-                        "top" : "0px",
-                        "left" : "0px",
-                        "margin-left" : "7px"
+                        "position": "absolute",
+                        "top": "0px",
+                        "left": "0px",
+                        "margin-left": "7px"
                     });
                     $(".dio_cultureBTN_wrapper_right").css({
-                        "position" : "absolute",
-                        "top" : "0px",
-                        "right" : "0px"
+                        "position": "absolute",
+                        "top": "0px",
+                        "right": "0px"
                     });
                     $(".dio_cultureBTN_l, .dio_cultureBTN_r").css({
-                        "cursor" : "pointer",
-                        "max-width" : "40px",
-                        "min-width" : "25px",
-                        "height" : "27px",
-                        "float" : "right",
-                        "position" : "relative",
-                        "margin-left" : "3px",
-                        "border" : "2px groove gray",
-                        "background" : "url(https://gpfr.innogamescdn.com/images/game/overviews/celebration_bg_new.png)"
+                        "cursor": "pointer",
+                        "max-width": "40px",
+                        "min-width": "25px",
+                        "height": "27px",
+                        "float": "right",
+                        "position": "relative",
+                        "margin-left": "3px",
+                        "border": "2px groove gray",
+                        "background": "url(https://gpfr.innogamescdn.com/images/game/overviews/celebration_bg_new.png)"
                     });
-                    $(".dio_cultureBTN_cityfestival").css({"background-position" : "0 -109px"});
-                    $(".dio_cultureBTN_olympicgames").css({"background-position" : "0 -140px"});
-                    $(".dio_cultureBTN_triumph").css({"background-position" : "0 -110px"});
-                    $(".dio_cultureBTN_theather").css({"background-position" : "0 -170px"});
+                    $(".dio_cultureBTN_cityfestival").css({ "background-position": "0 -109px" });
+                    $(".dio_cultureBTN_olympicgames").css({ "background-position": "0 -140px" });
+                    $(".dio_cultureBTN_triumph").css({ "background-position": "0 -110px" });
+                    $(".dio_cultureBTN_theather").css({ "background-position": "0 -170px" });
 
                     var dio_cultureBTN_r_clicked_last = "";
                     function hideTownElements(JQelement) {
@@ -13051,7 +13862,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 dio_cultureBTN_mode = "ul li:eq(3)";
                                 break;
                             default:
-                                setTimeout(function () { uw.HumanMessage.error(dio_icon + "Error");}, 0);
+                                setTimeout(function () { uw.HumanMessage.error(dio_icon + "Error"); }, 0);
                                 break;
                         }
                         if (dio_cultureBTN_r_clicked_last === JQelement.id) {
@@ -13074,10 +13885,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                         dio_cultureBTN_r_clicked_last = JQelement.id;
                         $(".dio_cultureBTN_r").css({
-                            border : "2px groove #808080"
+                            border: "2px groove #808080"
                         });
                         $(".culture_red").css({
-                            border : "2px groove #CC0000"
+                            border: "2px groove #CC0000"
                         });
                     }
                     $(".dio_cultureBTN_r").click(function () {
@@ -13086,10 +13897,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
 
                 var dio_cultureCounter = {
-                    cityfestivals : 0,
-                    olympicgames : 0,
-                    triumph : 0,
-                    theather : 0
+                    cityfestivals: 0,
+                    olympicgames: 0,
+                    triumph: 0,
+                    theather: 0
                 };
 
                 var dio_bashpoints = $("#culture_points_overview_bottom .points_count").text().split("/");
@@ -13105,14 +13916,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
                 dio_cultureCounter.theather = $('a[class~="confirm"][class~="type_theater"]:not(.disabled)').length;
 
-                $("#dio_cultureBTN_cityfestival_r").text(dio_cultureCounter.cityfestivals);
-                $("#dio_cultureBTN_olympicgames_r").text(dio_cultureCounter.olympicgames);
-                $("#dio_cultureBTN_triumph_r").text(dio_cultureCounter.triumph);
-                $("#dio_cultureBTN_theather_r").text(dio_cultureCounter.theather);
-                $(".dio_cultureBTN_cityfestival").tooltip(dio_icon + getTexts("Quack", "cityfestivals"));
-                $(".dio_cultureBTN_olympicgames").tooltip(dio_icon + getTexts("Quack", "olympicgames"));
-                $(".dio_cultureBTN_triumph").tooltip(dio_icon + getTexts("Quack", "triumph"));
-                $(".dio_cultureBTN_theather").tooltip(dio_icon + getTexts("Quack", "theater"));
+                $("#dio_cultureBTN_cityfestival_r").text(pointNumberK(dio_cultureCounter.cityfestivals));
+                $("#dio_cultureBTN_olympicgames_r").text(pointNumberK(dio_cultureCounter.olympicgames));
+                $("#dio_cultureBTN_triumph_r").text(pointNumberK(dio_cultureCounter.triumph));
+                $("#dio_cultureBTN_theather_r").text(pointNumberK(dio_cultureCounter.theather));
+                $(".dio_cultureBTN_cityfestival").tooltip(dio_icon + getTexts("Quack", "cityfestivals") + " (" + pointNumber(dio_cultureCounter.cityfestivals) + ") ");
+                $(".dio_cultureBTN_olympicgames").tooltip(dio_icon + getTexts("Quack", "olympicgames") + " (" + pointNumber(dio_cultureCounter.olympicgames) + ") ");
+                $(".dio_cultureBTN_triumph").tooltip(dio_icon + getTexts("Quack", "triumph") + " (" + pointNumber(dio_cultureCounter.triumph) + ") ");
+                $(".dio_cultureBTN_theather").tooltip(dio_icon + getTexts("Quack", "theater") + " (" + pointNumber(dio_cultureCounter.theather) + ") ");
+
             } catch (error) {
                 errorHandling(error, "cultureOverview (add)");
             }
@@ -13125,7 +13937,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $("#dio_cultureBTN_wrapper").remove();
             clearTimeout(cultureOverview.timeout);
             cultureOverview.timeout = null;
-            $("#culture_overview_wrapper").css({"top" : "0px"});
+            $("#culture_overview_wrapper").css({ "top": "0px" });
         },
     };
 
@@ -13140,16 +13952,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         add: function () {
             try {
                 var f, i, j, k;
-                    //var test = false;
-                    var test = 100;
+                //var test = false;
+                var test = 100;
                 if ($("#culture_points_overview_bottom").length) {
                     let g = $("ul#culture_overview_towns span.eta");
-                    let h = $("#culture_points_overview_bottom #place_culture_count").text();
+                    var h = $("#culture_points_overview_bottom #place_culture_count").text();
                     i = h.split("/");
                     j = parseInt(i[0]) + g.length;
                     k = parseInt(i[1]) - j;
                     //console.log(k);
-                    if (test != 100) {k = k - test;}
+                    if (test != 100) { k = k - test; }
                     if (h.indexOf("[") < 1) {
                         if (k > 0) {
                             $("#culture_points_overview_bottom #place_culture_count").append(" <span id='dio_culture'>[-" + k + "]</span><span id='dio_cultureplus' style='color: #ECB44D'></span>");
@@ -13165,16 +13977,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             $("#dio_cultureplus").text(" +" + k * -1);
                         }
                     }
+                    h = $("#place_battle_points .points_background .points_count").text();
+                    i = h.split("/");
+                    j = parseInt(i[0]);
+                    k = parseInt(i[1]) - j;
+                    if (k > 0) {
+                        if (h.indexOf("[") < 1) {
+                            $("#place_battle_points .points_background .points_count").append(" <span id='dio_battle_points'>[-" + k + "]</span>");
+                        } else {
+                            $("#dio_battle_points").text("[-" + k + "]");
+                        }
+                    }
+
                 };
                 if ($("#place_container").length) {
                     let h = $("#place_container #place_culture_count").text();
                     let g = 0;
                     var inProgress = parseInt($('#place_culture_in_progress').text().match(/[0-9]+/));
-                    if (inProgress > 0) {g = inProgress;}
+                    if (inProgress > 0) { g = inProgress; }
                     i = h.split("/");
                     j = parseInt(i[0]) + g;
                     k = parseInt(i[1]) - j;
-                    if (test != 100) {k = k - test;}
+                    if (test != 100) { k = k - test; }
                     if (h.indexOf("[") < 1) {
                         if (k > 0) {
                             $("#place_container #place_culture_count").append("<span id='dio_cultureA'>[-" + k + "]</span>");
@@ -13185,11 +14009,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if (k > 0) {
                             $("#dio_cultureA").text("[-" + k + "]");
                         } else {
-                            $("dio_cultureplusA").text(" [+" + k * -1 + "]");
+                            $("#dio_cultureplusA").text(" [+" + k * -1 + "]");
                         }
                     }
+                    /*
+                    h = $(".nui_battlepoints_container .points").text();
+                    k = parseInt(300 - h);
+                    $("#place_container #place_triumph .game_footer span").text(h + "/300");
+                    if (k > 0) {
+                        if ($("#place_container #place_triumph .game_footer span").text().indexOf("[") < 1) {
+                            $("#place_container #place_triumph .game_footer span").append(" <span id='dio_battle_pointsA'>[-" + k + "]</span>");
+                        } else {
+                            $("#dio_battle_pointsA").text("[-" + k + "]");
+                        }
+                    }
+                    */
                 }
-                $('#dio_culture, dio_cultureplus, #dio_cultureA, dio_cultureplusA').tooltip(dio_icon);
+                $('#dio_culture, #dio_cultureplus, #dio_cultureA, #dio_cultureplusA, #dio_battle_points, #dio_battle_pointsA').tooltip(dio_icon);
             } catch (error) {
                 errorHandling(error, "culturePoints (add)");
             }
@@ -13200,7 +14036,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 i = h.split("/");
                 j = parseInt(i[0]) + g.length;
                 k = parseInt(i[1]) - j;
-                if (test != 100) {k = k - test;}
+                if (test != 100) { k = k - test; }
                 if (k <= 0) {
                     var l = new Array;
                     for (f = 0; f < g.length; f++)
@@ -13208,7 +14044,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         l.push(g[f].dataset.timestamp);
                     l.sort();
                     var m = l[l.length + k - 1];
-                } else {m = ""; culturePoints.add();}
+                } else { m = ""; culturePoints.add(); }
             } catch (error) {
                 errorHandling(error, "culturePoints (heure)");
                 m = "";
@@ -13224,6 +14060,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             clearTimeout(culturePoints.timeout);
             culturePoints.timeout = null;
+
+            $("#place_container #place_triumph .game_footer span").text(300);;
         },
     };
 
@@ -13237,42 +14075,42 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     var [currentCount, totalCount] = $('#place_culture_count').text().match(/[0-9]+/g);
                     var inProgress = parseInt($('#place_culture_in_progress').text().match(/[0-9]+/));
 
-                    var nbNeeded = (level-1)*3;
-                    var nbLeft = totalCount-currentCount;
-                    var percentLeft = 100 - nbLeft/nbNeeded*100;
-                    var percentInProgress = inProgress/nbNeeded*100;
+                    var nbNeeded = (level - 1) * 3;
+                    var nbLeft = totalCount - currentCount;
+                    var percentLeft = 100 - nbLeft / nbNeeded * 100;
+                    var percentInProgress = inProgress / nbNeeded * 100;
 
                     //Progress Bar
                     if (!$("#culture_points_overview_bottom #dio-ProgressBar").length) {
                         $('<div id="dio-ProgressBar">').insertBefore("#culture_points_overview_bottom #place_culture_bar");
                         $('<div id="dio-Bar">').insertBefore("#culture_points_overview_bottom #place_culture_bar");
                         $('<style id="dio-ProgressBar-style">' +
-                          '#culture_points_overview_bottom #dio-ProgressBar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;filter: hue-rotate(-40deg) brightness(2);}' +
-                          '#culture_points_overview_bottom #dio-Bar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;}' +
-                          '</style>').appendTo('head');
+                            '#culture_points_overview_bottom #dio-ProgressBar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;filter: hue-rotate(-40deg) brightness(2);}' +
+                            '#culture_points_overview_bottom #dio-Bar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;}' +
+                            '</style>').appendTo('head');
                     }
 
                     if (!$("#place_container #dio-ProgressBar").length) {
                         $('<div id="dio-ProgressBar">').insertBefore("#place_container #place_culture_bar");
                         $('<div id="dio-Bar">').insertBefore("#place_container #place_culture_bar");
                         $('<style id="dio-ProgressBar-style">' +
-                          '#place_container #dio-ProgressBar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;filter: hue-rotate(-40deg) brightness(2);}' +
-                          '#place_container #dio-Bar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;}' +
-                          '</style>').appendTo('head');
+                            '#place_container #dio-ProgressBar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;filter: hue-rotate(-40deg) brightness(2);}' +
+                            '#place_container #dio-Bar {position: absolute; height: 25px; top: 30px; background:url("https://gpfr.innogamescdn.com/images/game/place/culture_bar-2.99.png") no-repeat 0px 0px;}' +
+                            '</style>').appendTo('head');
                     }
 
                     $("#culture_points_overview_bottom #place_culture_bar, #place_container #place_culture_bar").css({
-                        "display" : "none"
+                        "display": "none"
                     });
 
                     $("#culture_points_overview_bottom #dio-Bar, #place_container #dio-Bar").css({
-                        "width" : "calc(" + percentLeft + "% - 1px)"
+                        "width": "calc(" + percentLeft + "% - 1px)"
                     });
 
                     $("#culture_points_overview_bottom #dio-ProgressBar, #place_container #dio-ProgressBar").css({
-                        "width" : percentInProgress + "%",
-                        "left" : "calc(" + percentLeft + "% + 2px)",
-                        "max-width" : "calc(" + (100 - percentLeft) + "% - 4px)"
+                        "width": percentInProgress + "%",
+                        "left": "calc(" + percentLeft + "% + 2px)",
+                        "max-width": "calc(" + (100 - percentLeft) + "% - 4px)"
                     });
 
                 }
@@ -13285,7 +14123,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $("#dio-ProgressBar").remove();
             $("#dio-Bar").remove();
             $("#culture_points_overview_bottom #place_culture_bar, #place_container #place_culture_bar").css({
-                "display" : "block"
+                "display": "block"
             });
         },
     };
@@ -13308,7 +14146,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     if ($('#hides_overview_wrapper').length & !$('#dio_hidesIndexIron2').get(0)) {
                         hidesIndexIron.add();
-                        setTimeout(function () {$('#dio_hidesIndexIron2').remove();}, 50000);
+                        setTimeout(function () { $('#dio_hidesIndexIron2').remove(); }, 50000);
                     }
                 }
             }, 800);
@@ -13320,7 +14158,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
                 var silver_total = 0;
                 var city_boxes = $("#hides_overview_towns").find(".town_item");
-                function silverToInt (str) {
+                function silverToInt(str) {
                     return parseInt(str.split("/")[0].replace(/\D/g, "")) || 0;
                 }
                 if (silver_total === 0) {
@@ -13348,7 +14186,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         add2: function () {
             try {
                 if (!$("#dio_hidesIndexIron").is(":visible") & ('#hide_espionage').length) {
-                $('<div id="dio_hidesIndexIron" style="width: 100px; height: 33px; position: absolute; left: 22px; top: 170px;"></div>').appendTo('#hide_espionage');
+                    $('<div id="dio_hidesIndexIron" style="width: 100px; height: 33px; position: absolute; left: 22px; top: 170px;"></div>').appendTo('#hide_espionage');
                 }
                 var b = uw.ITowns.getTown(parseInt(uw.Game.townId)).getCurrentResources().iron;
                 if (b > 15e3) {
@@ -13382,34 +14220,38 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         activate: function () {
             $('<style id="dio_hidesOverview_style"> ' +
 
-              // style
-              //'#dio_hides_sort_control { bottom: -8px; left: -9px; padding: 0 2px; right: -9px; top: -9px; z-index: 30;} ' +
-              '#dio_button_table_resize { background-image: url("https://www.tuto-de-david1327.com/medias/images/button-table-resize.png"); background-repeat: no-repeat; display: block !important; float: left; width: 22px; height: 23px; margin-right: 5px; margin-top: 2px; cursor: pointer;} ' +
-              '#dio_button_table_resize:hover { background-position: 0px -23px !important;} ' +
-              '#dio_button_table_resize.active { background-position: 0px -46px !important;} ' +
-              '#dio_sortinit { margin: 3px 0 0 3px;} ' +
-              '#dio_hides_sort_control .border { border-bottom: 1px solid #222; left: -2px; position: absolute; right: -2px; top: 28px;} ' +
-              '#hides_overview_wrapper { height: 425px!important; top: 39px;} ' +
-              '#hides_overview_towns { border-top: 0px;} ' +
-              '#dio_hides_silver_total { background: #ffe2a1 none repeat scroll 0 0; border: 1px solid #e1af55; font-size: 10px; padding: 0 4px 2px 1px; position: absolute; right: 2px; top: 3px;} ' +
-              '#dio_hides_silver_total .resource_iron_icon { padding-left: 25px; width: auto;} ' +
-              '#dio_hides_silver_total .silver_amount { display: block; padding-top: 1px;} ' +
-              '.dio_res_plenty, .dio_res_rare { background: url(https://gpde.innogamescdn.com/images/game/layout/resources_deposit.png) no-repeat scroll 0 0; height: 10px; width: 10px; position: absolute; left: 29px;} ' +
-              '.dio_res_rare { background-position: 0 -10px;} ' +
-              '#hides_overview_towns.dio_resize .box_content { display: none;} ' +
-              '#hides_overview_towns.dio_resize .hide_buttons, #hides_overview_towns.dio_resize .spinner { top: 23px;} ' +
-              '</style>').appendTo("head");
+                // style
+                //'#dio_hides_sort_control { bottom: -8px; left: -9px; padding: 0 2px; right: -9px; top: -9px; z-index: 30;} ' +
+                '#dio_button_table_resize { background-image: url("' + Home_img + 'button-table-resize.png"); background-repeat: no-repeat; display: block !important; float: left; width: 22px; height: 23px; margin-right: 5px; margin-top: 2px; cursor: pointer;} ' +
+                '#dio_button_table_resize:hover { background-position: 0px -23px !important;} ' +
+                '#dio_button_table_resize.active { background-position: 0px -46px !important;} ' +
+                '#dio_sortinit { margin: 3px 0 0 3px;} ' +
+                '#dio_hides_sort_control .border { border-bottom: 1px solid #222; left: -2px; position: absolute; right: -2px; top: 28px;} ' +
+                '#hides_overview_wrapper { top: 39px;} ' +
+                '#hides_overview_bottom { margin-top: 39px;} ' +
+                '#hides_overview_towns { border-top: 0px;} ' +
+                '#dio_hides_silver_total { background: #ffe2a1 none repeat scroll 0 0; border: 1px solid #e1af55; font-size: 10px; padding: 0 4px 2px 1px; position: absolute; right: 2px; top: 3px;} ' +
+                '#dio_hides_silver_total .resource_iron_icon { padding-left: 25px; width: auto;} ' +
+                '#dio_hides_silver_total .silver_amount { display: block; padding-top: 1px;} ' +
+                '.dio_res_plenty, .dio_res_rare { background: url(https://gpde.innogamescdn.com/images/game/layout/resources_deposit.png) no-repeat scroll 0 0; height: 10px; width: 10px; position: absolute; left: 29px;} ' +
+                '.dio_res_rare { background-position: 0 -10px;} ' +
+                '#hides_overview_towns.dio_resize .box_content { display: none;} ' +
+                '#hides_overview_towns.dio_resize .hide_buttons, #hides_overview_towns.dio_resize .spinner { top: 23px;} ' +
+                '</style>').appendTo("head");
+
             if ($('#hides_overview_wrapper').length) {
                 hidesOverview.init();
             }
         },
-        init : function () {
+        init: function () {
             try {
+                //$("#wrapper.game_inner_box").css({ "top": "39px" });
+                $("#hides_overview_wrapper").css({ "height": "+=-39px" });
                 var silver_total = 0;
                 var selection, order;
                 var city_boxes = $("#hides_overview_towns").find(".town_item");
 
-                function silverToInt (str) {
+                function silverToInt(str) {
                     return parseInt(str.split("/")[0].replace(/\D/g, "")) || 0;
                 }
 
@@ -13428,14 +14270,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     ["iron", uw.DM.getl10n("mass_recruit").sort_by.iron]
                 ];
 
-                $("#wrapper.game_inner_box").after('<div id="dio_hides_sort_control" class="overview_search_bar"><div id="dio_button_table_resize"></div>' + hidesOverview.grepo_dropdown("dio_sort_towns", sort_options) + hidesOverview.grepo_input("margin-top:0px","dio_sortfilterbox","")[0].outerHTML +
-                                                   '<div id="dio_sortinit" class="button_order_by active"></div><div id="dio_hides_silver_total"><span class="resource_iron_icon iron"><span class="silver_amount">' + silver_total + '</span></span></div><div class="border"></div></div>');
+                $("#wrapper.game_inner_box").after('<div id="dio_hides_sort_control" class="overview_search_bar"><div id="dio_button_table_resize"></div>' + hidesOverview.grepo_dropdown("dio_sort_towns", sort_options) + hidesOverview.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
+                    '<div id="dio_sortinit" class="button_order_by active"></div><div id="dio_hides_silver_total"><span class="resource_iron_icon iron"><span class="silver_amount">' + silver_total + '</span></span></div><div class="border"></div></div>');
                 $('#dio_button_table_resize').tooltip(dio_icon);
                 $('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
                 function table_resize_handler1() {
                     $(this).addClass("active");
                     $("#hides_overview_towns").addClass("dio_resize");
-                    city_boxes.each(function( index ) {
+                    city_boxes.each(function (index) {
                         var iron_span_class = $(this).find(".box_content.res_box .iron SPAN:first-child").prop("class");
                         if (iron_span_class == "res_rare") {
                             $(this).find(".iron_img").append('<span class="dio_res_rare"></span>');
@@ -13572,14 +14414,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "hidesOverview (init)");
             }
         },
-        refresh_silver_total : function (xhr) {
+        refresh_silver_total: function (xhr) {
             var JQ_silver_total = $('#dio_hides_silver_total .silver_amount');
             var silver_total = parseInt(JQ_silver_total.text());
             var silver_stored = $.parseJSON(xhr.responseText).json.iron_stored;
             silver_total += silver_stored;
             JQ_silver_total.text(silver_total);
         },
-        grepo_dropdown : function (ID, Options) {
+        grepo_dropdown: function (ID, Options) {
             var str = '<span class="grepo_input"><span class="left"><span class="right"><select name="' + ID + '" id="' + ID + '" type="text">';
             $.each(Options, function (a, b) {
                 if (b[1]) {
@@ -13591,7 +14433,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             str += '</select></span></span></span>';
             return str;
         },
-        grepo_input : function (Style, ID, Text) {
+        grepo_input: function (Style, ID, Text) {
             return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="text" value="' + Text + '"></span></span></span></div>');
         },
         deactivate: function () {
@@ -13617,8 +14459,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=messages]').removeClass("first");
                 //$('#ui_box .nui_main_menu .middle .content ul li[data-option-id=GRM_button]').addClass("messages main_menu_item first");
                 $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=messages]').before('<div id="dio_cityview_style"><li data-option-id="dio_cityview" class="messages main_menu_item first"><span class="content_wrapper"><span class="button_wrapper" style="opacity: 1;">' +
-                                                                                                   '<span class="button"><span class="icon" style="background:url(https://www.tuto-de-david1327.com/medias/images/city-view.png) no-repeat -36px -0px"></span>' +
-                                                                                                   '<span class="indicator" style="display: none;">0</span></span></span><span class="name_wrapper" style="opacity: 1;"><span class="name">' + getTexts("grepo_mainmenu", "island_view") + '</span></span></span></li></div>');
+                    '<span class="button"><span class="icon" style="background:url(' + Home_img + 'city-view.png) no-repeat -36px -0px"></span>' +
+                    '<span class="indicator" style="display: none;">0</span></span></span><span class="name_wrapper" style="opacity: 1;"><span class="name">' + getTexts("grepo_mainmenu", "island_view") + '</span></span></span></li></div>');
                 /*$('#ui_box .nui_main_menu .middle .content ul').not("ul li ul").css({
                 "height" : "+=34px"
             });*/
@@ -13631,17 +14473,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 function dio_island_overview() {
                     $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview] .icon').css({
-                        "background" : "url(https://www.tuto-de-david1327.com/medias/images/city-view.png) no-repeat -36px -0px", ///****
-                        "top" : "8px",
-                        "left" : "5px"
+                        "background": "url(" + Home_img + "city-view.png) no-repeat -36px -0px", ///****
+                        "top": "8px",
+                        "left": "5px"
                     });
                     $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview] .name').text(getTexts("grepo_mainmenu", "island_view"));
                 }
                 function dio_city_overview() {
                     $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview] .icon').css({
-                        "background" : "url(https://www.tuto-de-david1327.com/medias/images/city-view.png) no-repeat -3px 1px",
-                        "top" : "6px",
-                        "left" : "6px"
+                        "background": "url(" + Home_img + "city-view.png) no-repeat -3px 1px",
+                        "top": "6px",
+                        "left": "6px"
                     });
                     $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview] .name').text(uw.DM.getl10n("town_index").window_title);
                 }
@@ -13685,12 +14527,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var city_view_window = {
         activate: function () {
             try {
-                if (DATA.options.dio_Ciw & (typeof(uw.MoleHoleOnBoard) == "undefined")) {
+                if (DATA.options.dio_Ciw & (typeof (uw.MoleHoleOnBoard) == "undefined")) {
                     $('<style id="dio_city_view_style"> ' +
-                      '#ui_box.city-overview-enabled .skip_tutorial.minimized_windows {bottom: 35px; } ' +
-                      '#ui_box.city-overview-enabled .skip_tutorial {bottom: 0px; } ' +
-                      '.ui_construction_queue.minimized_windows {bottom: -3px; } ' +
-                      '</style>').appendTo("head");
+                        '#ui_box.city-overview-enabled .skip_tutorial.minimized_windows {bottom: 35px; } ' +
+                        '#ui_box.city-overview-enabled .skip_tutorial {bottom: 0px; } ' +
+                        '.ui_construction_queue.minimized_windows {bottom: -3px; } ' +
+                        '</style>').appendTo("head");
                     function WndHandlerDIOtownoverview(wndhandle) {
                         this.wnd = wndhandle;
                     }
@@ -13698,9 +14540,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     WndHandlerDIOtownoverview.prototype.getDefaultWindowOptions = function () {
                         return {
                             //position : ["center", "center"],
-                            height : 600,
-                            width : 800,
-                            minimizable : true,
+                            height: 600,
+                            width: 800,
+                            minimizable: true,
                             //title : "<img class='dio_title_img' src='"+ dio_img +"'><div class='dio_title'>" + getTexts("grepo_mainmenu", "city_view") + "</div>"
                         };
                     };
@@ -13714,26 +14556,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     };
                     uw.GPWindowMgr.addWndType("DIO_TOWNOVERVIEW", "dio_townoverview", WndHandlerDIOtownoverview, 1);
                     /*createWindowType("DIO_TOWNOVERVIEW", getTexts("labels", "tow"), 800, 600, true, ["center", "center"]);*/
-                    $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.city_overview.click).subscribe('dio_city_overview_window', function dedede (e, data) {
-                        if (DATA.options.dio_Ciw & (typeof(uw.MoleHoleOnBoard) == "undefined")) {
+                    $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.city_overview.click).subscribe('dio_city_overview_window', function dedede(e, data) {
+                        if (DATA.options.dio_Ciw & (typeof (uw.MoleHoleOnBoard) == "undefined")) {
                             var wnd = uw.GPWindowMgr.Create(uw.GPWindowMgr.TYPE_DIO_TOWNOVERVIEW) || uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_TOWNOVERVIEW);
                             if (MID == 'zz' || dio_bug) {
                                 wnd.setTitle(getTexts("grepo_mainmenu", "city_view") + " - " + tName);
                             } else {
-                                wnd.setTitle("<img class='dio_title_img' src='"+ dio_img +"' /><div class='dio_title'>" + getTexts("grepo_mainmenu", "city_view") + " - " + tName + "</div>");
+                                wnd.setTitle("<img class='dio_title_img' src='" + dio_img + "' /><div class='dio_title'>" + getTexts("grepo_mainmenu", "city_view") + " - " + tName + "</div>");
                             }
                             var html = '<div id="dio_townoverview"></div>';
                             wnd.setContent(html);
                             var JQel = wnd.getJQElement();
                             JQel.find(".gpwindow_content").css({
-                                "overflow" : "hidden",
-                                "border" : "1px solid black"
+                                "overflow": "hidden",
+                                "border": "1px solid black"
                             });
 
                             JQel.find('#dio_townoverview').append($('DIV.ui_city_overview')).append($('DIV.ui_construction_queue'));
 
                             $('DIV.ui_city_overview .town_background').css({
-                                "transform":"translate(-597px, -315px)"
+                                "transform": "translate(-597px, -315px)"
                             });
                         }
                     });
@@ -13764,10 +14606,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var HolidaySpecial = {
-        isHalloween : false, isXmas : false, isNewYear : false, isEaster :  false,
+        isHalloween: false, isXmas: false, isNewYear: false, isEaster: false,
 
-        activate : function(){
-            var daystamp = 1000*60*60*24, today = new Date((new Date())%(daystamp*(365+1/4))), // without year
+        activate: function () {
+            var daystamp = 1000 * 60 * 60 * 24, today = new Date((new Date()) % (daystamp * (365 + 1 / 4))), // without year
 
                 // Halloween -> 15 days
                 halloween_start = daystamp * 297, // 25. Oktober
@@ -13786,51 +14628,51 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             HolidaySpecial.isNewYear = (today >= newYear_start) ? (today <= newYear_end) : false;
 
 
-            if(HolidaySpecial.isXmas){ HolidaySpecial.XMas.add(); }
-            if(HolidaySpecial.isNewYear){ HolidaySpecial.NewYear.add(); }
+            if (HolidaySpecial.isXmas) { HolidaySpecial.XMas.add(); }
+            if (HolidaySpecial.isNewYear) { HolidaySpecial.NewYear.add(); }
         },
-        XMas : {
-            add : function(){
+        XMas: {
+            add: function () {
                 if (MID == 'fr') {
-                    $('<a href="https://www.tuto-de-david1327.com/pages/dio-tools-david1327" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
-                }else $('<a href="https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
+                    $('<a href="' + Home + 'pages/dio-tools-david1327" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
+                } else $('<a href="' + Home + 'en/pages/dio-tools-david1327" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
 
                 var dioXMAS = $('#dio_xmas');
 
                 dioXMAS.css({
-                    background: 'url("https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-weihnachtsmann-nordpol.gif") no-repeat',
+                    background: 'url("' + Home_img + 'smiley-emoticons-weihnachtsmann-nordpol.gif") no-repeat',
                     height: '51px',
                     width: '61px',
-                    position:'absolute',
-                    bottom:'10px',
-                    left:'60px',
-                    zIndex:'4'
+                    position: 'absolute',
+                    bottom: '10px',
+                    left: '60px',
+                    zIndex: '4'
                 });
                 dioXMAS.tooltip(getTexts("labels", "Merry"));
             }
         },
-        NewYear : {
-            add : function(){
+        NewYear: {
+            add: function () {
 
                 var Year = new Date().getFullYear() + "";
 
                 // TODO: Jahreszahl dynamisch setzen
-                $('<a href="https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/" target="_blank"><div id="dio_newYear">'+
-                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-'+ Year.substr(0, 1) +'.gif">'+
-                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-'+ Year.substr(1, 1) +'.gif">'+
-                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-'+ Year.substr(2, 1) +'.gif">'+
-                  '<img src="https://www.tuto-de-david1327.com/medias/images/sign2-'+ Year.substr(3, 1) +'.gif">'+
-                  '</div></a>').appendTo('#ui_box');
+                $('<a href="' + Home + 'en/pages/dio-tools-david1327/" target="_blank"><div id="dio_newYear">' +
+                    '<img src="' + Home_img + 'sign2-' + Year.substr(0, 1) + '.gif">' +
+                    '<img src="' + Home_img + 'sign2-' + Year.substr(1, 1) + '.gif">' +
+                    '<img src="' + Home_img + 'sign2-' + Year.substr(2, 1) + '.gif">' +
+                    '<img src="' + Home_img + 'sign2-' + Year.substr(3, 1) + '.gif">' +
+                    '</div></a>').appendTo('#ui_box');
 
                 var dioNewYear = $('#dio_newYear');
 
                 dioNewYear.css({
-                    position:'absolute',
-                    bottom:'10px',
-                    left:'70px',
-                    zIndex:'10'
+                    position: 'absolute',
+                    bottom: '10px',
+                    left: '70px',
+                    zIndex: '10'
                 });
-                dioNewYear.tooltip('<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-party.gif">  '+ getTexts("labels", "Happy"));
+                dioNewYear.tooltip('<img src="' + Home_img + 'smiley-emoticons-party.gif">  ' + getTexts("labels", "Happy"));
             }
         }
     };
@@ -13839,191 +14681,191 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      * Scrollbar Style
      *******************************************************************************************************************************/
     var Scrollbar = {
-        activate : function(){
+        activate: function () {
             try {
                 // Scrollbar Style: Chrome, opera, safari
                 $('#dio_Scrollbar_display_none').remove();
                 $('<style id="dio_Scrollbar_display">' +
-                  '#scrollbar { display:block!important; } ' +
-                  '</style>').appendTo('head');
+                    '#scrollbar { display:block!important; } ' +
+                    '</style>').appendTo('head');
 
                 //button
-                var scroll_vertical = "height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-"
-                var scroll_horizontal = "width: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-"
+                var scroll_vertical = "height: 16px; background-image: url(" + Home_img + "scroll-"
+                var scroll_horizontal = "width: 16px; background-image: url(" + Home_img + "scroll-"
 
-                if (DATA.options.dio_aaa || DATA.options.dio_bbb || DATA.options.dio_ccc || DATA.options.dio_ddd || DATA.options.dio_eee){
+                if (DATA.options.dio_aaa || DATA.options.dio_bbb || DATA.options.dio_ccc || DATA.options.dio_ddd || DATA.options.dio_eee) {
                     //Blue (Bleu)
-                    if (DATA.options.dio_aaa){
+                    if (DATA.options.dio_aaa) {
                         $('<style id="dio_Scrollbar">' +
 
-                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                          '::-webkit-scrollbar-track { background-color: rgba(145, 165, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                          '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.5); border-radius: 3px; } ' +
-                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.8); } ' +
+                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                            '::-webkit-scrollbar-track { background-color: rgba(145, 165, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                            '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.5); border-radius: 3px; } ' +
+                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.8); } ' +
 
-                          /* Button Up */
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-blue.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-blue-hover.png);} ' +
+                            /* Button Up */
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-blue.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-blue-hover.png);} ' +
 
-                          /* Button Down */
-                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-blue.png);} ' +
-                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-blue-hover.png);} ' +
+                            /* Button Down */
+                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-blue.png);} ' +
+                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-blue-hover.png);} ' +
 
-                          /* Button Left */
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-blue.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-blue-hover.png);} ' +
+                            /* Button Left */
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-blue.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-blue-hover.png);} ' +
 
-                          /* Button Right */
-                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-blue.png);} ' +
-                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-blue-hover.png);} ' +
+                            /* Button Right */
+                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-blue.png);} ' +
+                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-blue-hover.png);} ' +
 
-                          '</style>').appendTo('head');
+                            '</style>').appendTo('head');
                     }
                     //Red (Rouge)
-                    if (DATA.options.dio_bbb){
+                    if (DATA.options.dio_bbb) {
                         $('<style id="dio_Scrollbar">' +
 
-                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                          '::-webkit-scrollbar-track { background-color: rgba(193, 145, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                          '::-webkit-scrollbar-thumb { background-color: rgba(188, 37, 37, 0.5); border-radius: 3px; } ' +
-                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(188, 37, 37, 0.8); } ' +
+                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                            '::-webkit-scrollbar-track { background-color: rgba(193, 145, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                            '::-webkit-scrollbar-thumb { background-color: rgba(188, 37, 37, 0.5); border-radius: 3px; } ' +
+                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(188, 37, 37, 0.8); } ' +
 
-                          /* Button Up */
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-red.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-red-hover.png);} ' +
+                            /* Button Up */
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-red.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-red-hover.png);} ' +
 
-                          /* Button Down */
-                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-red.png);} ' +
-                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-red-hover.png);} ' +
+                            /* Button Down */
+                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-red.png);} ' +
+                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-red-hover.png);} ' +
 
-                          /* Button Left */
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-red.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-red-hover.png);} ' +
+                            /* Button Left */
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-red.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-red-hover.png);} ' +
 
-                          /* Button Right */
-                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-red.png);} ' +
-                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-red-hover.png);} ' +
+                            /* Button Right */
+                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-red.png);} ' +
+                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-red-hover.png);} ' +
 
-                          '</style>').appendTo('head');
+                            '</style>').appendTo('head');
                     }
                     //Green (Vert)
-                    if (DATA.options.dio_ccc){
+                    if (DATA.options.dio_ccc) {
                         $('<style id="dio_Scrollbar">' +
 
-                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                          '::-webkit-scrollbar-track { background-color: rgba(147, 193, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                          '::-webkit-scrollbar-thumb { background-color: rgba(37, 188, 46, 0.5); border-radius: 3px; } ' +
-                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 188, 46, 0.8); } ' +
+                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                            '::-webkit-scrollbar-track { background-color: rgba(147, 193, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                            '::-webkit-scrollbar-thumb { background-color: rgba(37, 188, 46, 0.5); border-radius: 3px; } ' +
+                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 188, 46, 0.8); } ' +
 
-                          /* Button Up */
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-green.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-green-hover.png);} ' +
+                            /* Button Up */
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-green.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-green-hover.png);} ' +
 
-                          /* Button Down */
-                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-green.png);} ' +
-                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-green-hover.png);} ' +
+                            /* Button Down */
+                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-green.png);} ' +
+                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-green-hover.png);} ' +
 
-                          /* Button Left */
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-green.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-green-hover.png);} ' +
+                            /* Button Left */
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-green.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-green-hover.png);} ' +
 
-                          /* Button Right */
-                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-green.png);} ' +
-                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-green-hover.png);} ' +
+                            /* Button Right */
+                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-green.png);} ' +
+                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-green-hover.png);} ' +
 
-                          '</style>').appendTo('head');
+                            '</style>').appendTo('head');
                     }
                     //Pink (Rose)
-                    if (DATA.options.dio_ddd){
+                    if (DATA.options.dio_ddd) {
                         $('<style id="dio_Scrollbar">' +
 
-                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                          '::-webkit-scrollbar-track { background-color: rgba(165, 145, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                          '::-webkit-scrollbar-thumb { background-color: rgba(162, 37, 188, 0.5); border-radius: 3px; } ' +
-                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(162, 37, 188, 0.8); } ' +
+                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                            '::-webkit-scrollbar-track { background-color: rgba(165, 145, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                            '::-webkit-scrollbar-thumb { background-color: rgba(162, 37, 188, 0.5); border-radius: 3px; } ' +
+                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(162, 37, 188, 0.8); } ' +
 
-                          /* Button Up */
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-pink.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-pink-hover.png);} ' +
+                            /* Button Up */
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-pink.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-pink-hover.png);} ' +
 
-                          /* Button Down */
-                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-pink.png);} ' +
-                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-pink-hover.png);} ' +
+                            /* Button Down */
+                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-pink.png);} ' +
+                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-pink-hover.png);} ' +
 
-                          /* Button Left */
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-pink.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-pink-hover.png);} ' +
+                            /* Button Left */
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-pink.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-pink-hover.png);} ' +
 
-                          /* Button Right */
-                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-pink.png);} ' +
-                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-pink-hover.png);} ' +
+                            /* Button Right */
+                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-pink.png);} ' +
+                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-pink-hover.png);} ' +
 
-                          '</style>').appendTo('head');
+                            '</style>').appendTo('head');
                     }
                     //White (Blanc)
-                    if (DATA.options.dio_eee){
+                    if (DATA.options.dio_eee) {
                         $('<style id="dio_Scrollbar">' +
 
-                          '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                          '::-webkit-scrollbar-track { background-color: rgba(255, 255, 255, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                          '::-webkit-scrollbar-thumb { background-color: rgba(152, 152, 152, 0.5); border-radius: 3px; } ' +
-                          '::-webkit-scrollbar-thumb:hover { background-color: rgba(152, 152, 152, 0.8); } ' +
+                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                            '::-webkit-scrollbar-track { background-color: rgba(255, 255, 255, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                            '::-webkit-scrollbar-thumb { background-color: rgba(152, 152, 152, 0.5); border-radius: 3px; } ' +
+                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(152, 152, 152, 0.8); } ' +
 
-                          /* Button Up */
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-white.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-white-hover.png);} ' +
+                            /* Button Up */
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-white.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-white-hover.png);} ' +
 
-                          /* Button Down */
-                          '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-white.png);} ' +
-                          '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-white-hover.png);} ' +
+                            /* Button Down */
+                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-white.png);} ' +
+                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-white-hover.png);} ' +
 
-                          /* Button Left */
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-white.png);} ' +
-                          '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-white-hover.png);} ' +
+                            /* Button Left */
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-white.png);} ' +
+                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-white-hover.png);} ' +
 
-                          /* Button Right */
-                          '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-white.png);} ' +
-                          '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-white-hover.png);} ' +
+                            /* Button Right */
+                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-white.png);} ' +
+                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-white-hover.png);} ' +
 
-                          '</style>').appendTo('head');
+                            '</style>').appendTo('head');
                     }
-                }else {
+                } else {
                     $('<style id="dio_Scrollbar">' +
 
-                      '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                      '::-webkit-scrollbar-track { background-color: rgba(145, 165, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                      '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.6); border-radius: 3px; } ' +
-                      '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.9); } ' +
+                        '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                        '::-webkit-scrollbar-track { background-color: rgba(145, 165, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                        '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.6); border-radius: 3px; } ' +
+                        '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.9); } ' +
 
-                      /* Button Up */
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-blue.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-blue-hover.png);} ' +
+                        /* Button Up */
+                        '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-blue.png);} ' +
+                        '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-blue-hover.png);} ' +
 
-                      /* Button Down */
-                      '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-blue.png);} ' +
-                      '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-blue-hover.png);} ' +
+                        /* Button Down */
+                        '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-blue.png);} ' +
+                        '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-blue-hover.png);} ' +
 
-                      /* Button Left */
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-blue.png);} ' +
-                      '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-blue-hover.png);} ' +
+                        /* Button Left */
+                        '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-blue.png);} ' +
+                        '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-blue-hover.png);} ' +
 
-                      /* Button Right */
-                      '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-blue.png);} ' +
-                      '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-blue-hover.png);} ' +
+                        /* Button Right */
+                        '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-blue.png);} ' +
+                        '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-blue-hover.png);} ' +
 
-                      '</style>').appendTo('head');
+                        '</style>').appendTo('head');
                 }
             } catch (error) {
                 errorHandling(error, "Scrollbar");
             }
         },
-        deactivate : function(){
+        deactivate: function () {
             $('#dio_Scrollbar').remove();
             $('#dio_Scrollbar_display').remove();
             $('#dio_Scrollbar_display').remove();
             $('<style id="dio_Scrollbar_none">' +
-              '#scrollbar { display:none!important; } ' +
-              '</style>').appendTo('head');
+                '#scrollbar { display:none!important; } ' +
+                '</style>').appendTo('head');
         }
     };
 
@@ -14072,30 +14914,30 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (wnds.hasOwnProperty(e)) {
                         var wndid = wnds[e].getID();
 
-                        var testel = $('DIV#gpwnd_'+wndid+' A.dio_balanced');
+                        var testel = $('DIV#gpwnd_' + wndid + ' A.dio_balanced');
                         if (testel.length > 0) continue;
 
-                        var handler=wnds[e].getHandler();
+                        var handler = wnds[e].getHandler();
 
-                        $('DIV#gpwnd_'+wndid+' A.select_all_units').after(' | <a class="dio_balanced" style="position:relative; top:4px" href="#">'+getTexts("Quack", "no_overload")+'</a> | <a class="dio_delete" style="position:relative; top:4px" href="#">'+uw.DM.getl10n("market").delete_all_market_offers+'</a>');
+                        $('DIV#gpwnd_' + wndid + ' A.select_all_units').after(' | <a class="dio_balanced" style="position:relative; top:4px" href="#">' + getTexts("Quack", "no_overload") + '</a> | <a class="dio_delete" style="position:relative; top:4px" href="#">' + uw.DM.getl10n("market").delete_all_market_offers + '</a>');
 
                         /*$('<style id="dio-ship_count">' +
                           '.attack_support_window .town_units_wrapper .ship_count {margin-left: 0px!important;}' +
                           '.gtk-deselect-units { display: none;}' +
                           '</style>').appendTo('head');*/
 
-                        $('.gtk-deselect-units').css({"display" : "none"});
-                        $('.attack_support_window .town_units_wrapper .ship_count').css({"margin-left" : "0px"});
+                        $('.gtk-deselect-units').css({ "display": "none" });
+                        $('.attack_support_window .town_units_wrapper .ship_count').css({ "margin-left": "0px" });
 
-                        var dio_bl_groundUnits=new Array('sword','slinger','archer','hoplite','rider','chariot','catapult','minotaur','zyklop','medusa','cerberus','fury','centaur','calydonian_boar','godsent');
+                        var dio_bl_groundUnits = new Array('sword', 'slinger', 'archer', 'hoplite', 'rider', 'chariot', 'catapult', 'minotaur', 'zyklop', 'medusa', 'cerberus', 'fury', 'centaur', 'calydonian_boar', 'godsent');
 
-                        $('DIV#gpwnd_'+wndid+' A.dio_balanced').click(function () {
-                            var units=new Array();
+                        $('DIV#gpwnd_' + wndid + ' A.dio_balanced').click(function () {
+                            var units = new Array();
                             var item;
 
-                            for (var i=0; i<dio_bl_groundUnits.length; i++)		{
-                                if (handler.data.units[dio_bl_groundUnits[i]])			{
-                                    item={name:dio_bl_groundUnits[i], count:handler.data.units[dio_bl_groundUnits[i]].count, population:handler.data.units[dio_bl_groundUnits[i]].population};
+                            for (var i = 0; i < dio_bl_groundUnits.length; i++) {
+                                if (handler.data.units[dio_bl_groundUnits[i]]) {
+                                    item = { name: dio_bl_groundUnits[i], count: handler.data.units[dio_bl_groundUnits[i]].count, population: handler.data.units[dio_bl_groundUnits[i]].population };
                                     units.push(item);
                                 }
                             }
@@ -14106,76 +14948,76 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 berth = 0;
                             }
 
-                            var totalCap=handler.data.units.big_transporter.count*(handler.data.units.big_transporter.capacity+berth)+handler.data.units.small_transporter.count*(handler.data.units.small_transporter.capacity+berth);
-                            units.sort(function(a,b){
-                                return b.population-a.population;
+                            var totalCap = handler.data.units.big_transporter.count * (handler.data.units.big_transporter.capacity + berth) + handler.data.units.small_transporter.count * (handler.data.units.small_transporter.capacity + berth);
+                            units.sort(function (a, b) {
+                                return b.population - a.population;
                             });
 
-                            for (i=0; i<units.length; i++) {
-                                if (units[i].count==0)			{
-                                    units.splice(i,1);
-                                    i=i-1;
+                            for (i = 0; i < units.length; i++) {
+                                if (units[i].count == 0) {
+                                    units.splice(i, 1);
+                                    i = i - 1;
                                 };
                             }
 
-                            var restCap=totalCap;
-                            var sendUnits=new Array();
-                            for (i=0; i<units.length; i++)		{
-                                item={name:units[i].name, count:0};
-                                sendUnits[units[i].name]=item;
+                            var restCap = totalCap;
+                            var sendUnits = new Array();
+                            for (i = 0; i < units.length; i++) {
+                                item = { name: units[i].name, count: 0 };
+                                sendUnits[units[i].name] = item;
                             };
 
                             var hasSent;
                             var k = 0;
-                            while (units.length>0) {
-                                hasSent=false;
-                                k = k+1;
-                                for (i = 0; i<units.length; i++) {
-                                    if (units[i].population<=restCap) {
-                                        hasSent=true;
-                                        units[i].count=units[i].count-1;
-                                        sendUnits[units[i].name].count=sendUnits[units[i].name].count+1;
-                                        restCap=restCap-units[i].population;
+                            while (units.length > 0) {
+                                hasSent = false;
+                                k = k + 1;
+                                for (i = 0; i < units.length; i++) {
+                                    if (units[i].population <= restCap) {
+                                        hasSent = true;
+                                        units[i].count = units[i].count - 1;
+                                        sendUnits[units[i].name].count = sendUnits[units[i].name].count + 1;
+                                        restCap = restCap - units[i].population;
                                     }
                                 }
-                                for (i = 0; i<units.length; i++)
-                                    if (units[i].count==0) {
-                                        units.splice(i,1);
-                                        i=i-1;
+                                for (i = 0; i < units.length; i++)
+                                    if (units[i].count == 0) {
+                                        units.splice(i, 1);
+                                        i = i - 1;
                                     };
                                 if (!hasSent) {
                                     break;
                                 }
                             }
 
-                            handler.getUnitInputs().each(function ()		{
-                                if (!sendUnits[this.name])			{
-                                    if (handler.data.units[this.name].count>0) {
-                                        this.value=handler.data.units[this.name].count;
-                                    }else {
-                                        this.value='';
+                            handler.getUnitInputs().each(function () {
+                                if (!sendUnits[this.name]) {
+                                    if (handler.data.units[this.name].count > 0) {
+                                        this.value = handler.data.units[this.name].count;
+                                    } else {
+                                        this.value = '';
                                     }
                                 }
                             });
 
-                            for (i=0; i<dio_bl_groundUnits.length; i++)		{
-                                if (sendUnits[dio_bl_groundUnits[i]])			{
-                                    if (sendUnits[dio_bl_groundUnits[i]].count>0) {
-                                        $('DIV#gpwnd_'+wndid+' INPUT.unit_type_'+dio_bl_groundUnits[i]).val(sendUnits[dio_bl_groundUnits[i]].count);
-                                    }else {
-                                        $('DIV#gpwnd_'+wndid+' INPUT.unit_type_'+dio_bl_groundUnits[i]).val('');
+                            for (i = 0; i < dio_bl_groundUnits.length; i++) {
+                                if (sendUnits[dio_bl_groundUnits[i]]) {
+                                    if (sendUnits[dio_bl_groundUnits[i]].count > 0) {
+                                        $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_' + dio_bl_groundUnits[i]).val(sendUnits[dio_bl_groundUnits[i]].count);
+                                    } else {
+                                        $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_' + dio_bl_groundUnits[i]).val('');
                                     }
                                 }
                             }
 
-                            $('DIV#gpwnd_'+wndid+' INPUT.unit_type_sword').trigger('change');
+                            $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_sword').trigger('change');
                         });
 
-                        $('DIV#gpwnd_'+wndid+' A.dio_delete').click(function () {
-                            handler.getUnitInputs().each(function ()		{
-                                this.value='';
+                        $('DIV#gpwnd_' + wndid + ' A.dio_delete').click(function () {
+                            handler.getUnitInputs().each(function () {
+                                this.value = '';
                             });
-                            $('DIV#gpwnd_'+wndid+' INPUT.unit_type_sword').trigger('change');
+                            $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_sword').trigger('change');
                         });
 
                     }
@@ -14196,25 +15038,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var hotkeys = {
         ImagesHotkeys: {
-            key : 'https://www.tuto-de-david1327.com/medias/images/dj4uootz.jpg',
-            city_select : 'https://www.tuto-de-david1327.com/medias/images/nzhgrbzm.png',
-            administrator : 'https://www.tuto-de-david1327.com/medias/images/j4kvrnok.png',
-            captain : 'https://www.tuto-de-david1327.com/medias/images/8r8ty3md.png',
-            menu : 'https://www.tuto-de-david1327.com/medias/images/giiagnrp.png'
+            key: Home_img + 'dj4uootz.jpg',
+            city_select: Home_img + 'nzhgrbzm.png',
+            administrator: Home_img + 'j4kvrnok.png',
+            captain: Home_img + '8r8ty3md.png',
+            menu: Home_img + 'giiagnrp.png'
         },
 
         activate: function () {
 
-            $('.toolbar_activities .right').before('<a id="dio_BTN_HK" style="z-index: 6; top: -27px; left: 24px; float: right; position: relative;"><img src="https://www.tuto-de-david1327.com/medias/images/hotkeys.png" style="float:left; border-width: 0px"></a></a>');
+            $('.toolbar_activities .right').before('<a id="dio_BTN_HK" style="z-index: 6; top: -27px; left: 24px; float: right; position: relative;"><img src="' + Home_img + 'hotkeys.png" style="float:left; border-width: 0px"></a></a>');
 
-            if ($('#gsa_shortcutOverview').is(':visible')){
-                if ($('.temple_commands').is(':visible')){
+            if ($('#gsa_shortcutOverview').is(':visible')) {
+                if ($('.temple_commands').is(':visible')) {
                     $('<style id="dio_MH_attsup_style">#MH_attsup {left:422px !important;}</style>').appendTo('head');
                 } else {
                     $('<style id="dio_MH_attsup_style">#MH_attsup {left:422px !important;}</style>').appendTo('head');
-                }}
-            else{
-                if ($('.temple_commands').is(':visible')){
+                }
+            }
+            else {
+                if ($('.temple_commands').is(':visible')) {
                     $('<style id="dio_MH_attsup_style">#MH_attsup {left:423px !important;}</style>').appendTo('head');
                 } else {
                     $('<style id="dio_MH_attsup_style">#MH_attsup {left:395px !important;}</style>').appendTo('head');
@@ -14319,10 +15162,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             try {
                 var ctrlDown = false;
 
-                document.onkeyup = function(e) {
+                document.onkeyup = function (e) {
                     if (e.keyCode == "17") ctrlDown = false;
                 };
-                document.onkeydown = function(e) {
+                document.onkeydown = function (e) {
                     e = e || window.event;
                     var target = e.target.tagName.toLowerCase();
 
@@ -14351,7 +15194,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                         // simulator
                         if (e.keyCode == "85" && (DATA.options.dio_Hot)) {
-                            uw.PlaceWindowFactory.openPlaceWindow('simulator',open);
+                            uw.PlaceWindowFactory.openPlaceWindow('simulator', open);
                         }
                         // Troupes en dehors
                         if (e.keyCode == "89" && (DATA.options.dio_Hot)) {
@@ -14391,7 +15234,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                         //
                         if (e.keyCode == "69" && (DATA.options.dio_Hot)) {
-                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS, uw.DM.getl10n("layout", "config_buttons").settings || "Settings");
+                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS, getTexts("hotkeys", "settings"));
                         }
                         /*/ PROFILE
                         if (e.keyCode == "80" && (DATA.options.dio_Hot)) {
@@ -14484,12 +15327,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             uw.FarmTownOverviewWindowFactory.openFarmTownOverview();
                         }
                         // Plannificateur
-                        if ((e.keyCode == "192" || e.keyCode == "221" || e.keyCode == "187") && (DATA.options.dio_Hot)) {
+                        if ((e.keyCode == "192" || e.keyCode == "221" || e.keyCode == "187" || e.keyCode == "61") && (DATA.options.dio_Hot)) {
                             uw.AttackPlannerWindowFactory.openAttackPlannerWindow();
                         }
                         // Outil de réservation
                         if (e.keyCode == "16" && (DATA.options.dio_Hot)) {
-                            uw.hOpenWindow.openReservationList();void(0);
+                            uw.hOpenWindow.openReservationList(); void (0);
                         }
                         // Notes
                         if (((MID == 'de') ? e.keyCode == "77" : e.keyCode == "78") && (DATA.options.dio_Hot)) {
@@ -14498,9 +15341,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         //
                         if (e.keyCode == "13" && (DATA.options.dio_Hot)) {
                             uw.WMap.mapJump({
-                                'id' :  + uw.Game.townId,
-                                'ix' : uw.WMap.islandPosition.x,
-                                'iy' : uw.WMap.islandPosition.y
+                                'id': + uw.Game.townId,
+                                'ix': uw.WMap.islandPosition.x,
+                                'iy': uw.WMap.islandPosition.y
                             });
                         }
                         //
@@ -14533,31 +15376,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         activate: function () {
             try {
                 $('<style id="dio_message_recipients_style">' +
-                  '#message_recipients { width:630px ; }' +
-                  '#message_subject { width:630px ; }' +
-                  '#message_alliance { position:absolute; right: 3px; top: 6px; }' +
-                  'div.island_info_wrapper div.center1 { left:239px; width: 466px; top: 0px; }' +
-                  'div.island_info_left { bottom: 0px; left: 0px; position: absolute; }' +
-                  'div.island_info_towns ul#island_info_towns_left_sorted_by_name { height: 347px; }' +
-                  'div.island_info_right { bottom: 0px; right: 0px; position: absolute; }' +
-                  'div.island_info_right UL.game_list { height: 378px; }' +
-                  '#farm_town_overview_btn { top: 465px; right: 9px; }' +
-                  '</style>').appendTo('head');
+                    '#message_recipients { width:630px ; }' +
+                    '#message_subject { width:630px ; }' +
+                    '#message_alliance { position:absolute; right: 3px; top: 6px; }' +
+                    'div.island_info_wrapper div.center1 { left:239px; width: 466px; top: 0px; }' +
+                    'div.island_info_left { bottom: 0px; left: 0px; position: absolute; }' +
+                    'div.island_info_towns ul#island_info_towns_left_sorted_by_name { height: 347px; }' +
+                    'div.island_info_right { bottom: 0px; right: 0px; position: absolute; }' +
+                    'div.island_info_right UL.game_list { height: 378px; }' +
+                    '#farm_town_overview_btn { top: 465px; right: 9px; }' +
+                    '</style>').appendTo('head');
 
                 $("#island_towns_controls").append('<a id="dio_message_island"></a>');
                 $('<style id="dio_message_recipients_stylee">' +
-                  '#dio_message_island { float: right; right: 3px; height: 23px; width: 22px; background: url("https://www.tuto-de-david1327.com/medias/images/islandmessage.png") no-repeat; 0px 0px; }' +
-                  '</style>').appendTo('head');
+                    '#dio_message_island { float: right; right: 3px; height: 23px; width: 22px; background: url("' + Home_img + 'islandmessage.png") no-repeat; 0px 0px; }' +
+                    '</style>').appendTo('head');
 
                 $("#dio_message_island").hover(
                     function () {
                         $(this).css({
-                            "background-position" : "0px -23px"
+                            "background-position": "0px -23px"
                         });
                     },
                     function () {
                         $(this).css({
-                            "background-position" : "0px 0px"
+                            "background-position": "0px 0px"
                         });
                     });
                 $("#dio_message_island").click(function () {
@@ -14576,12 +15419,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         });
                     }
                     uw.Layout.newMessage.open({
-                        recipients : spielernamen
+                        recipients: spielernamen
                     });
                 });
 
                 // Tooltip
-                $('#dio_message_island').tooltip(dio_icon + uw.DM.getl10n("layout").main_menu.items.messages +" "+ uw.DM.getl10n("bbcodes").island.name);
+                $('#dio_message_island').tooltip(dio_icon + uw.DM.getl10n("layout").main_menu.items.messages + " " + uw.DM.getl10n("bbcodes").island.name);
             } catch (error) {
                 errorHandling(error, "islandFarmingVillages");
             }
@@ -14610,14 +15453,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             this.addCopyListener()
             createWindowType("DIO_BBCODE", getTexts("labels", "tow"), 470, 375, true, [240, 70]); //[240, 70]
             $('<style id="dio_town_list_bb_style"> ' +
-              '#dio_town_list_bb { background: url("https://www.tuto-de-david1327.com/medias/images/subforum-old.png") no-repeat; height: 15px; width: 15px; position: absolute; right: 6px; top: 2px;} ' +
-              '.dio_town_bb { position: absolute; top: 2px; right: 20px; width: 30px; height: 20px; } ' +
-              '.dio_title_bb { margin:1px 6px 13px 3px; color:rgb(126,223,126); } ' +
-              '#dio_close_bb { display: inline-block; float: none; position: relative; top: 5px; margin-left: 10px; } ' +
-              '#dio_close_bb.close_b { position: absolute; top: -37px; right: -8px; } ' +
-              '</style>').appendTo('head');
+                '#dio_town_list_bb { background: url("' + Home_img + 'subforum-old.png") no-repeat; height: 15px; width: 15px; position: absolute; right: 6px; top: 2px;} ' +
+                '.dio_town_bb { position: absolute; top: 2px; right: 20px; width: 30px; height: 20px; } ' +
+                '.dio_title_bb { margin:1px 6px 13px 3px; color:rgb(126,223,126); } ' +
+                '#dio_close_bb { display: inline-block; float: none; position: relative; top: 5px; margin-left: 10px; } ' +
+                '#dio_close_bb.close_b { position: absolute; top: -37px; right: -8px; } ' +
+                '</style>').appendTo('head');
         },
-        add : function () {
+        add: function () {
             try {
                 if (!$('#town_groups_list a.town_bb').length != 0) {
                     $('.content .group_name .name').append('<a class="dio_town_bb"><div id="dio_town_list_bb"></div></a>');
@@ -14642,7 +15485,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             townslist.groups = towngrp_id;
 
                             if (uw.Game.premium_features.curator >= uw.Timestamp.now()) {
-                                bb_premium = uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + ": " + uw.MM.getCollections().TownGroup[0]._byId[towngrp_id].attributes.name +" ";
+                                bb_premium = uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + ": " + uw.MM.getCollections().TownGroup[0]._byId[towngrp_id].attributes.name + " ";
                                 bb_contentP1 += bb_premium; bb_contentP2 += bb_premium; bb_contentP3 += bb_premium; bb_contentP4 += bb_premium; bb_contentP5 += bb_premium;
                                 bb_premiumb = "(" + bb_premium + ")";
                                 bb_premiumc = true;
@@ -14677,26 +15520,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 bb_contentP3 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (3/5)";
                                 bb_contentP4 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (4/5)";
                                 bb_contentP5 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (5/5)";
-                                bb_nonbre = 5;}
+                                bb_nonbre = 5;
+                            }
 
                             bb_contentP1 += "\n[table]\n"; bb_contentP2 += "\n[table]\n"; bb_contentP3 += "\n[table]\n"; bb_contentP4 += "\n[table]\n"; bb_contentP5 += "\n[table]\n";
                             $.each(cities_towngroup, function (key, town) {
 
                                 bb_count++;
 
-                                if (bb_count < 61) { bb_contentP1 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                                   }else if (bb_count < 121) {
-                                                       bb_contentP2 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                                   }else if (bb_count < 181) {
-                                                       bb_contentP3 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                                   }else if (bb_count < 241) {
-                                                       bb_contentP4 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                                   }else if (bb_count < 301) {
-                                                       bb_contentP5 += "[*]"+ bb_count +".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                                   }else {}
+                                if (bb_count < 61) {
+                                    bb_contentP1 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                } else if (bb_count < 121) {
+                                    bb_contentP2 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                } else if (bb_count < 181) {
+                                    bb_contentP3 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                } else if (bb_count < 241) {
+                                    bb_contentP4 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                } else if (bb_count < 301) {
+                                    bb_contentP5 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+                                } else { }
                             });
                             var wnd = uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_DIO_BBCODE) || uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                            var dio_version_PUB = "[url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v."+ dio_version + "[/quote]";
+                            var dio_version_PUB = "[url=" + Home + "en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
                             bb_contentP1 += "[/table]" + dio_version_PUB; bb_contentP2 += "[/table]" + dio_version_PUB; bb_contentP3 += "[/table]" + dio_version_PUB; bb_contentP4 += "[/table]" + dio_version_PUB; bb_contentP5 += "[/table]" + dio_version_PUB;
                             var expRahmen_a = "<button id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></button><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
                                 "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
@@ -14728,12 +15573,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             }
 
                             wnd.setContent(expRahmen_a + expTitel +
-                                           (bb_nombre_ville > 0 ? (expRahmen_bP1 + bb_contentP1 + expRahmen_cP1) : expRahmen_e) +
-                                           (bb_nombre_ville > 60 ? (expRahmen_bP2 + bb_contentP2 + expRahmen_cP2) : "") +
-                                           (bb_nombre_ville > 120 ? (expRahmen_bP3 + bb_contentP3 + expRahmen_cP3) : "") +
-                                           (bb_nombre_ville > 180 ? (expRahmen_bP4 + bb_contentP4 + expRahmen_cP4) : "") +
-                                           (bb_nombre_ville > 240 ? (expRahmen_bP5 + bb_contentP5 + expRahmen_cP5) : "") +
-                                           expRahmen_d);
+                                (bb_nombre_ville > 0 ? (expRahmen_bP1 + bb_contentP1 + expRahmen_cP1) : expRahmen_e) +
+                                (bb_nombre_ville > 60 ? (expRahmen_bP2 + bb_contentP2 + expRahmen_cP2) : "") +
+                                (bb_nombre_ville > 120 ? (expRahmen_bP3 + bb_contentP3 + expRahmen_cP3) : "") +
+                                (bb_nombre_ville > 180 ? (expRahmen_bP4 + bb_contentP4 + expRahmen_cP4) : "") +
+                                (bb_nombre_ville > 240 ? (expRahmen_bP5 + bb_contentP5 + expRahmen_cP5) : "") +
+                                expRahmen_d);
 
                             $('.close_a').click(function () {
                                 uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
@@ -14749,16 +15594,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "townslist");
             }
         },
-        addCopyListener: function() {
-            new uw.ClipboardJS("#dio-copy-townslist").on("success", function() {
-                setTimeout(function() {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                }, 50)
-                if ($('#town_groups_list').length) {
-                    $('.button.js-button-caption').click();
-                }
-                townslist.groups = -2;
-            })
+        addCopyListener: function () {
+            dio.clipboard("#dio-copy-townslist", null, "townslist", null)
+            if ($('#town_groups_list').length) {
+                $('.button.js-button-caption').click();
+            }
+            townslist.groups = -2;
         },
         deactivate: function () {
             $('#dio_town_list_bb_style').remove();
@@ -14776,12 +15617,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var MessageExport = {
-        activate: function() {
+        activate: function () {
             if ($('#message_message_list').length) {
                 MessageExport.add();
             }
         },
-        add: function() {
+        add: function () {
             try {
                 this.addCopyListener()
                 createWindowType("DIO_BBCODEE", getTexts("messages", "bbmessages"), 700, 350, true, ["center", "center", 100, 100]);
@@ -14804,11 +15645,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         if (author === "[player][/player]") author = "Grepolis";
 
-                        if (alliance) {i = "(" + author + " [ally]"+ alliance +"[/ally])"}
-                        else {i = "(" + author + ")"};
+                        if (alliance) { i = "(" + author + " [ally]" + alliance + "[/ally])" }
+                        else { i = "(" + author + ")" };
 
-                        bb_content += "[b]" + uw.DM.getl10n("layout").main_menu.items.messages + ":[/b] " + title + " "+ i +"\n";
-                        bb_content += '[img]https://www.tuto-de-david1327.com/medias/images/transition-mini.png[/img]';
+                        bb_content += "[b]" + uw.DM.getl10n("layout").main_menu.items.messages + ":[/b] " + title + " " + i + "\n";
+                        bb_content += '[img]' + Home_img + 'transition-mini.png[/img]';
 
 
                         let format_search = [
@@ -14908,16 +15749,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
 
                             dio_messageExportTMP.find(".published_report").replaceWith("[report][/report]"); //replace reports
-                            dio_messageExportTMP.find(".bbcode_awards").replaceWith("[img]https://www.tuto-de-david1327.com/medias/images/award.gif[/img]"); //replace awards
+                            dio_messageExportTMP.find(".bbcode_awards").replaceWith("[img]" + Home_img + "award.gif[/img]"); //replace awards
                             dio_messageExportTMP.find(".reservation_list").replaceWith(function () { //replace reservations
-                                if (MessageExport.bbcodes_town_id($(this).find("a.gp_town_link")) == false){
+                                if (MessageExport.bbcodes_town_id($(this).find("a.gp_town_link")) == false) {
                                     dio_messageExportTMP.find(".reservation_list").replaceWith(function () {
                                         return '[reservation]9999999[/reservation]';
-                                    })}
-                                else { dio_messageExportTMP.find(".reservation_list").replaceWith(function () {
-                                    return "[reservation]" + MessageExport.bbcodes_town_id($(this).find("a.gp_town_link")) + "[/reservation]";
-                                    //return '[reservation]' + $(".bbcodes_reservation", this).text().trim() + '[/reservation]'; //remove reservations
-                                })}});
+                                    })
+                                }
+                                else {
+                                    dio_messageExportTMP.find(".reservation_list").replaceWith(function () {
+                                        return "[reservation]" + MessageExport.bbcodes_town_id($(this).find("a.gp_town_link")) + "[/reservation]";
+                                        //return '[reservation]' + $(".bbcodes_reservation", this).text().trim() + '[/reservation]'; //remove reservations
+                                    })
+                                }
+                            });
                             dio_messageExportTMP.find(".bbcodes_spoiler").replaceWith(function () { //replace spoiler
                                 $(this).find(".button").remove();
                                 return '[spoiler=' + $("b:first", this).text() + ']' + $(".bbcodes_spoiler_text", this).html() + '[/spoiler]';
@@ -14944,7 +15789,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 return '[score]' + $(".bbcode_playername", this).text().trim() + '[/score]';
                             });
                             dio_messageExportTMP.find(".bbcode_application").replaceWith(function () { //replace invitation à rejoindre l'alliance
-                                return '[center][img]https://www.tuto-de-david1327.com/medias/images/horizontal-separator.png[/img][/center][center][b]' + $(this).text().trim().replace(/            /mg, "[img]https://www.tuto-de-david1327.com/medias/images/espace-1.png[/img]") + '[/b][/center]';
+                                return '[center][img]' + Home_img + 'horizontal-separator.png[/img][/center][center][b]' + $(this).text().trim().replace(/            /mg, "[img]" + Home_img + "espace-1.png[/img]") + '[/b][/center]';
                             });
                             dio_messageExportTMP.find("table").replaceWith(function () { //replace table
                                 return '[table]' + $(this)[0].outerHTML + '[/table]';
@@ -14958,7 +15803,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             if (author === "[player][/player]") author = "Grepolis";
                             const postDate = $(".message_poster .message_date", this).text().trim();
                             bb_content += '[size=7]' + author + ' ' + postDate + '[/size]\n';
-                            bb_content += '[img]https://www.tuto-de-david1327.com/medias/images/transition-mini2.png[/img]\n';
+                            bb_content += '[img]' + Home_img + 'transition-mini2.png[/img]\n';
                             let postHTML = $("#dio_messageExportTMP .message_post_content").html().trim();
                             postHTML = postHTML.replace(e, i)
                             postHTML = postHTML.replace(/(\r\n|\n|\r|\t)/gm, ""); //remove line-breaks, tab characters
@@ -14977,12 +15822,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 postHTML = postHTML.replace(format_search[i], format_replace[i]);
                             }
                             bb_content += postHTML + "\n";
-                            bb_content += '[img]https://www.tuto-de-david1327.com/medias/images/transition-mini.png[/img]';
+                            bb_content += '[img]' + Home_img + 'transition-mini.png[/img]';
                             bb_content += "\n";
                         });
 
                         //bb_content = bb_content.slice(0, -1);
-                        bb_content += "[url=https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v."+ dio_version;
+                        bb_content += "[url=" + Home + "en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v." + dio_version;
                         bb_content += "[/quote]";
 
                         let expRahmen_a = "<div class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
@@ -15013,32 +15858,25 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "MessageExport");
             }
         },
-        bbcodes_town_id: function(e) {
+        bbcodes_town_id: function (e) {
             let t = $(e).attr("href");
             return void 0 !== t && !1 !== t && "undefined" != (t = MessageExport.Link2Struct(t)).id && (t = parseInt(t.id),
-                                                                                                        !isNaN(t)) && t
+                !isNaN(t)) && t
         },
-        Link2Struct: function(l) {
+        Link2Struct: function (l) {
             let ret = {};
             try {
                 l = l.split(/#/)
                 eval("ret=" + atob(l[1] || l[0]))
-            } catch (e) {}
+            } catch (e) { }
             return ret
         },
-        addCopyListener: function() {
-            new uw.ClipboardJS("#dio-copy-message-quote").on("success", function() {
-                setTimeout(function() {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                    if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
-                        uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
-                    }
-                }, 50)
-            })
+        addCopyListener: function () {
+            dio.clipboard("#dio-copy-message-quote", null, "MessageExport", true)
         },
-        replaceTownNameById: function(t, e) {
+        replaceTownNameById: function (t, e) {
             const n = t.attr("href")
-            , i = t.text();
+                , i = t.text();
             if (null != n && 0 <= n.indexOf("#")) {
                 var o = JSON.parse(atob(n.replace("#", ""))).id;
                 e = e.replace(">" + i + "<", ">" + o + "<")
@@ -15072,17 +15910,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var resCounter = {
         activate: function () {
             $('<style id="dio_trade_overview_style">' +
-              '#dio_resource_counter {position: absolute; right: 40px; margin-top: 4px; height: 16px; background-color: #ffe2a1; border: 1px solid #e1af55; display: inline-block}' +
-              '#dio_wood_counter {float: left;}' +
-              '#dio_wood_counter .resource_wood_icon {padding-left: 24px; width: auto;}' +
-              '#dio_wood_counter .wood_amount {display: inline; padding-bottom: 1px; padding-right: 5px; font-size: 10px}' +
-              '#dio_stone_counter {float: left;}' +
-              '#dio_stone_counter .resource_stone_icon {padding-left: 24px; width: auto;}' +
-              '#dio_stone_counter .stone_amount {display: inline; padding-right: 5px; font-size: 10px}' +
-              '#dio_silver_counter {float: left; margin-right: 3px;}' +
-              '#dio_silver_counter .resource_iron_icon {padding-left: 24px; width: auto;}' +
-              '#dio_silver_counter .iron_amount {display: inline; padding-right: 2px; font-size: 10px}' +
-              '</style>').appendTo("head");
+                '#dio_resource_counter {position: absolute; right: 40px; margin-top: 4px; height: 16px; background-color: #ffe2a1; border: 1px solid #e1af55; display: inline-block}' +
+                '#dio_wood_counter {float: left;}' +
+                '#dio_wood_counter .resource_wood_icon {padding-left: 24px; width: auto;}' +
+                '#dio_wood_counter .wood_amount {display: inline; padding-bottom: 1px; padding-right: 5px; font-size: 10px}' +
+                '#dio_stone_counter {float: left;}' +
+                '#dio_stone_counter .resource_stone_icon {padding-left: 24px; width: auto;}' +
+                '#dio_stone_counter .stone_amount {display: inline; padding-right: 5px; font-size: 10px}' +
+                '#dio_silver_counter {float: left; margin-right: 3px;}' +
+                '#dio_silver_counter .resource_iron_icon {padding-left: 24px; width: auto;}' +
+                '#dio_silver_counter .iron_amount {display: inline; padding-right: 2px; font-size: 10px}' +
+                '</style>').appendTo("head");
             if ($('#trade_overview_wrapper').length) {
                 resCounter.init();
             }
@@ -15094,7 +15932,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 let stone_total = 0;
                 let silver_total = 0;
                 const city_boxes = $('#trade_overview_wrapper').find(".trade_town");
-                for (var a = 0; a < city_boxes.length-2; a++) {
+                for (var a = 0; a < city_boxes.length - 2; a++) {
                     wood_total += parseInt($(city_boxes[a]).find(".resource_wood_icon").text());
                     stone_total += parseInt($(city_boxes[a]).find(".resource_stone_icon").text());
                     silver_total += parseInt($(city_boxes[a]).find(".resource_iron_icon").text());
@@ -15103,9 +15941,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //Appending counter to trade window
                 const wnd = uw.GPWindowMgr.getFocusedWindow() || false;
                 const dio_wnd = wnd.getJQElement().find(".overview_search_bar");
-                dio_wnd.append('<div id="dio_resource_counter" nobr><div id="dio_wood_counter"><span class="resource_wood_icon wood"><span class="wood_amount">'+wood_total+'</span></span></div>' +
-                               '<div id="dio_stone_counter"><span class="resource_stone_icon stone"><span class="stone_amount">'+stone_total+'</span></span></div>' +
-                               '<div id="dio_silver_counter"><span class="resource_iron_icon iron"><span class="iron_amount">'+silver_total+'</span></span></div></div>');
+                dio_wnd.append('<div id="dio_resource_counter" nobr><div id="dio_wood_counter"><span class="resource_wood_icon wood"><span class="wood_amount">' + wood_total + '</span></span></div>' +
+                    '<div id="dio_stone_counter"><span class="resource_stone_icon stone"><span class="stone_amount">' + stone_total + '</span></span></div>' +
+                    '<div id="dio_silver_counter"><span class="resource_iron_icon iron"><span class="iron_amount">' + silver_total + '</span></span></div></div>');
             } catch (error) {
                 errorHandling(error, "resCounter");
             }
