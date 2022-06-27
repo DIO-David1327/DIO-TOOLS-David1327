@@ -16,7 +16,6 @@
 // @icon		https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-bussi2.gif
 // @icon64		https://www.tuto-de-david1327.com/medias/images/dio-tools-david1327.jpg
 // @copyright	2013+, DIONY and 2019+, David1327
-// @grant		GM_info
 // @grant		GM_setValue
 // @grant		GM_getValue
 // @grant		GM_deleteValue
