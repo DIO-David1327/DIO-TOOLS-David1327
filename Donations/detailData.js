@@ -13,6 +13,8 @@ var data_month = ([
     ['2022/05', 15, 9.36],
 ]);
 
+var date = '27/06/2022'
+
 var detailData = {
     '2020/01': [
         { 'dat': '2020-01-28', 'inc': 9.36, 'who': 'Christiane G', 'pays': ['DE', 'Allemagne', 'Germany'] },
@@ -98,5 +100,9 @@ var detailData = {
     ], '2022/04': [
     ], '2022/05': [
         { 'dat': '2022-05-06', 'inc': 9.36, 'who': 'filippo v', 'pays': ['IT', 'Italie', 'Italy'] },
+    ], '2022/06': [
+        { 'dat': '2022-06-01', 'inc': 9.36, 'who': 'Gabory A', 'pays': ['FR', 'France', 'France'] },
+        { 'dat': '2022-06-01', 'inc': 4.5, 'who': 'Dorthe D', 'pays': ['NL', 'Pays-Bas', 'Netherlands'] },
+        { 'dat': '2022-06-21', 'inc': 0.62, 'who': 'Gyorgy C', 'pays': ['NL', 'Pays-Bas', 'Netherlands'] },
     ],
 };
