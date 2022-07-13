@@ -8,7 +8,7 @@
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
 // @match		https://*.grepolis.com/game/*
 // @match		https://*.forum.grepolis.com/*
-// @match		https://*tuto-de-david1327.com/*
+// @match		https://*.tuto-de-david1327.com/*
 // @updateURL   https://raw.githubusercontent.com/DIO-David1327/DIO-TOOLS-David1327/main/code.user.js
 // @downloadURL	https://raw.githubusercontent.com/DIO-David1327/DIO-TOOLS-David1327/main/code.user.js
 // @resource    Version_dio https://raw.githubusercontent.com/DIO-David1327/DIO-TOOLS-David1327/main/Version.js
