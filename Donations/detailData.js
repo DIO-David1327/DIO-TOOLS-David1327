@@ -1,6 +1,4 @@
 var data_month = ([
-    ['2021/06', 15, 4.5],
-    ['2021/07', 15, 0],
     ['2021/08', 15, 23.02],
     ['2021/09', 15, 0],
     ['2021/10', 15, 9],
@@ -11,9 +9,11 @@ var data_month = ([
     ['2022/03', 15, 0],
     ['2022/04', 15, 0],
     ['2022/05', 15, 9.36],
+    ['2022/06', 15, 18.98],
+    ['2022/07', 15, 4.22],
 ]);
 
-var date = '27/06/2022'
+var date = '22/07/2022'
 
 var detailData = {
     '2020/01': [
@@ -104,5 +104,10 @@ var detailData = {
         { 'dat': '2022-06-01', 'inc': 9.36, 'who': 'Gabory A', 'pays': ['FR', 'France', 'France'] },
         { 'dat': '2022-06-01', 'inc': 4.5, 'who': 'Dorthe D', 'pays': ['NL', 'Pays-Bas', 'Netherlands'] },
         { 'dat': '2022-06-21', 'inc': 0.62, 'who': 'Gyorgy C', 'pays': ['NL', 'Pays-Bas', 'Netherlands'] },
+        { 'dat': '2022-06-29', 'inc': 4.5, 'who': 'Dylan D', 'pays': ['FR', 'France', 'France'] },
+    ], '2022/07': [
+        { 'dat': '2022-07-04', 'inc': 2.22, 'who': 'adriano g', 'pays': ['IT', 'Italie', 'Italy'] },
+        { 'dat': '2022-07-14', 'inc': 1, 'who': 'Gyorgy C', 'pays': ['NL', 'Pays-Bas', 'Netherlands'] },
+        { 'dat': '2022-07-16', 'inc': 1, 'who': 'Eduard B', 'pays': ['TR', 'Turquie', ''] },
     ],
 };

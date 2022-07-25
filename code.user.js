@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.27.1
+// @version		4.27.2
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -30,7 +30,7 @@ var dio_version = '4.28';
  * Global stuff
  *******************************************************************************************************************************/
 
-var uw = unsafeWindow || window, $ = uw.jQuery || jQuery, DATA, GM;
+var uw = unsafeWindow || window, $ = uw.jQuery, DATA, GM;
 
 // GM-API?
 GM = (typeof GM_info === 'object');
@@ -395,7 +395,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var Home_img = "https://www.tuto-de-david1327.com/medias/images/";
     var updateversion = dio_version.replace(/\./g, "-");
     var dio_sprite = Home_img + "dio-sprite-5.png"; // http://abload.de/img/dio_spritejmqxp.png, -> Forbidden!? https://www.tuto-de-david1327.com/medias/images/dio-sprite-5.png
-    var dio_spritetest = "https://www.tuto-de-david1327.com/medias/images/town-icons-test-29.png"
+    var dio_spritetest = "https://www.tuto-de-david1327.com/medias/images/town-icons-test-54.png"
     /*dio_sprite = Home_img + "d9xuhtcctx5fdi8i.2.png"; // http://abload.de/img/dio_spritejmqxp.png, -> Forbidden!?*/
 
     //dio_icon
@@ -1294,7 +1294,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
                 FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""],
                 Mole: ["Not compatible to activate in the parameters of Mole Hole", ""],
-                Cic: ["City view construction mode is selected by default", ""],
+                Cic: ["City view", "City view construction mode is selected by default"],
 
                 err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."],
                 //her: ["Thracian Conquest", "Downsizing of the map of the Thracian conquest."],
@@ -1515,6 +1515,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 enter_lang_name: 'Please enter a language name',
                 send: 'Generate message',
                 name: 'Name',
+                add_edit: 'Add / edit',
             },
             buttons: {
                 sav: "Save", ins: "Insert", res: "Reset"
@@ -1892,7 +1893,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 cat_icons: "Icônes de la ville",
                 cat_forum: "Forum", //uw.DM.getl10n("layout").main_menu.items.forum
                 cat_trade: "Commerce", //uw.DM.getl10n("layout").premium_button.premium_menu.trade_overview
-                //cat_wonders: "Merveille", 
+                //cat_wonders: "Merveille",
                 cat_layout: "Disposition",
                 cat_other: "Divers", //uw.DM.getl10n("report").inbox.filter_types.misc
                 cat_Premium: "Premium", //uw.DM.getl10n("premium").common.window_title
@@ -1952,7 +1953,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"],
                 FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""],
                 Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""],
-                Cic: ["Le mode construction de la vue de la ville est sélectionné par défaut", ""],
+                Cic: ["Vue de la ville", "Le mode construction de la vue de la ville est sélectionné par défaut"],
 
                 err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
             },
@@ -2173,6 +2174,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 enter_lang_name: 'Entrer un nom de langue',
                 send: 'Générer message',
                 name: 'Nom',
+                add_edit: 'Ajouter / modifier',
             },
             buttons: {
                 sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser" //uw.DM.getl10n("notes").btn_save
@@ -4781,9 +4783,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     console.debug("SPRACHE", MID);
     // Translation GET
 
-    function getTexts(category, name) {
+    function getTexts(category, name, data) {
         var txt = "???", lang = MID;
-        if (DATA.test.lang) { lang = DATA.test.lang }
+        if (DATA.test.lang && !data) { lang = DATA.test.lang }
         if (LANG[lang]) {
             if (LANG[lang][category]) {
                 if (LANG[lang][category][name]) {
@@ -5009,7 +5011,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
         '#dio_settings .submenu_link {color: #000;} ' +
 
-
         '#dio_settings .dio_settings_tabs li { float:left; } ' +
 
         '#dio_settings .dio_icon_small { margin:0px; } ' +
@@ -5022,14 +5023,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         '#dio_settings .dio_options_table legend { font-weight:bold; } ' +
         '#dio_settings .dio_options_table p { margin:0px; } ' +
         '#dio_settings #dio_donate_btn { filter: hue-rotate(45deg); -webkit-filter: hue-rotate(45deg); } ' +
-        /*'#dio_settings #dio_donate_btn:hover { filter: hue-rotate(70deg); -webkit-filter: hue-rotate(70deg); } ' +
-
-                    '#dio_donate_btn { background: url(' + dio_sprite + '); width:92px; height:26px; background-position: 0px -228px; } ' +
-                    '#dio_donate_btn.de { background-position: 0px -264px; width:98px; } ' +
-                    '#dio_donate_btn.fr { background-position: 0px -300px; width:124px; } ' +
-                    '#dio_donate_btn.it { background-position: -96px -228px; width:109px; } ' +
-                    '#dio_donate_btn.pt { background-position: -128px -300px; width:71px; } ' +
-                    '#dio_donate_btn.es { background-position: -102px -264px; width:79px; } ' +*/
 
         '#dio_hall table { border-spacing: 9px 3px; } ' +
         '#dio_hall table th { text-align:left !important;color:green;text-decoration:underline;padding-bottom:10px; } ' +
@@ -5043,7 +5036,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         '#dio_hall table td.laurel.blue { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 100%; height:18px; width:18px; } ' +
         '#dio_settings .radiobutton .disabled { color: #000000; } ' +
 
-        '#dio_settings .défaut_s { background:url(' + Home_img + 'reset-icon.png) no-repeat; width:30px; height:30px; position: absolute; bottom: 3px; left: 3px;} ' +
+        '#dio_settings .défaut_s { background:url(' + Home_img + 'reset-icon.png) no-repeat; width:30px; height:30px; position: absolute; bottom: -19px; left: 3px; z-index: 100; cursor:pointer;} ' +
         '</style>').appendTo('head');
 
     function settings() {
@@ -5081,7 +5074,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var Navigator = navigator.language[0] + navigator.language[1];
                 var trans = [(DATA.test.lang ? "Actuel " + (DATA.test.lang).toUpperCase() : getTexts("translations", "translations")), getTexts("buttons", "res") + " (" + (MID).toUpperCase() + ")"];
                 (typeof (navigator) ? (LANG[Navigator] ? trans.push(getTexts("labels", "loc") + " " + Navigator.toUpperCase()) : "") : "");
-                var dio_supported_lang = [getTexts("translations", "add_lang")];
+                var dio_supported_lang = [getTexts("translations", "add_edit")];
                 $.each(LANG, function (a, b) {
                     if (a != "AUTO") {
                         dio_supported_lang.push(a);
@@ -5095,15 +5088,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div style="float: right; margin-top: -2px; margin-right: -5px">' + dio.grepo_dropdown_flag("dio_langdiv", dio_supported_lang, trans, null, getTexts("translations", "language"))[0].outerHTML + '</div>' +
                     '<div style="float: right; margin-right: 90px;" id="tuto2"><a target="_blank" style="color:white">BUG</a></div></div>' +
 
-                    //'<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com/TutoDeDavid1327/;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21" scrolling="no" frameborder="0" style="border:none; height:21px; position: absolute; right:-216px;" allowTransparency="true"></iframe></div>' +
-
                     // Check latest version
                     '<div id="dio_version_info"><img src="' + Home_img + 'restricted.gif" /></div>' +
 
                     // Donate button
                     '<div id="dio_donate_btn" style="position:absolute; right: 50px;top: 28px;">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
-                    /*<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url" target="_blank">' +
-                    '<div id="dio_donate_btn" class="' + LID + '" alt="Donate"></div></a></div>' +*/
+                    //
+                    '<div class="défaut_s"></div>' +
 
                     // Settings navigation
                     '<ul class="menu_inner dio_settings_tabs">' +
@@ -5122,8 +5113,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     // Settings content
                     '<DIV class="content">' +
-                    //
-                    '<div class="défaut_s"></div>' +
                     // Units tab
                     '<table id="dio_units_table" class="content_category visible"><tr>' +
                     '<td><img src="' + Home_img + 'available-units.90px.png" alt="available_units" /></td>' +
@@ -5409,7 +5398,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if ($(this).val() === (DATA.test.lang ? (DATA.test.lang).toUpperCase() : getTexts("translations", "translations"))) {
                         return;
                     }
-                    else if ($(this).val() === getTexts("translations", "add_lang")) {
+                    else if ($(this).val() === getTexts("translations", "add_edit")) {
                         dio.add_lang = true;
                         Notification.activate();
                         uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS).close();
@@ -5447,7 +5436,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
 
                 //
-                $('#tuto').click(function () {
+                $('#tuto').tooltip(getTexts("Settings", "Update") + " / " + getTexts("labels", "donat") + " / " + getTexts("translations", "translations") + " / BUG");
+                $('#tuto').click(() => {
                     //$('#dio_settings .dio_settings_tabs .submenu_link.active').removeClass("active");
 
                     //$("#dio_settings .visible").removeClass("visible");
@@ -5456,14 +5446,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
 
                 $('#dio_settings .défaut_s').tooltip(dio_icon + getTexts("buttons", "res"));
-                $("#dio_settings .défaut_s").click(function () {
-                    uw.hOpenWindow.showConfirmDialog('', getTexts("labels", "raf"), function () {
+                $("#dio_settings .défaut_s").click(() => {
+                    uw.hOpenWindow.showConfirmDialog(getTexts("buttons", "res"), getTexts("labels", "raf"), function () {
                         deleteValue("options");
                         location.reload();
                     });
                 });
 
-                $('#tuto2').click(function () {
+                $('#tuto2').click(() => {
 
                     dio.bug = true;
                     Notification.activate();
@@ -5708,8 +5698,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         return $('.dio_settings').tooltip(tooltip_str);
     }
     function addSettingsButton() {
-        //var tooltip_str = "DIO-Tools-David1327: " + (uw.DM.getl10n("layout", "config_buttons").settings || "Settings") + "<br/> v" + dio_version + " [" + (DATA.test.lang ? (DATA.test.lang === "zz" ? "EN" : (DATA.test.lang).toUpperCase()) : (MID === "zz" ? "EN" : MID)) + "]";
-
         $('<div class="btn_settings circle_button dio_settings"><div class="dio_icon js-caption"></div></div><div class="dio_settings_test"></div>').appendTo(".gods_area");
 
         // Style
@@ -5724,22 +5712,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         tooltip_settings();
 
         // Mouse Events
-        $('.dio_settings').on('mousedown', function () {
-            $('.dio_icon').addClass('click');
-        });
-        $('.dio_settings').on('mouseup', function () {
-            $('.dio_icon').removeClass('click');
-        });
+        $('.dio_settings').on('mousedown', function () { $('.dio_icon').addClass('click'); });
+        $('.dio_settings').on('mouseup', function () { $('.dio_icon').removeClass('click'); });
         $('.dio_settings').click(openSettings);
     }
 
     var diosettings = false;
 
     function openSettings() {
-        if (!uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_PLAYER_SETTINGS)) {
-            diosettings = true;
-        } else { $('#dio_tools').click(); }
-
+        if (!uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_PLAYER_SETTINGS)) { diosettings = true; }
+        else { $('#dio_tools').click(); }
         uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS, getTexts("hotkeys", "settings"));
     }
 
@@ -5757,17 +5739,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         sum = 0;
         for (var b in ch) {
             if (ch.hasOwnProperty(b)) {
-                if (pB !== ch[b]) {
-                    exc = true;
-                } else {
-                    exc = false;
-                    return;
-                }
-                for (var s in ch[b]) {
-                    if (ch[b].hasOwnProperty(s)) {
-                        sum += alpha.indexOf(ch[b][s]);
-                    }
-                }
+                if (pB !== ch[b]) { exc = true; }
+                else { exc = false; return; }
+                for (var s in ch[b]) { if (ch[b].hasOwnProperty(s)) { sum += alpha.indexOf(ch[b][s]); } }
             }
         }
     }
@@ -5866,48 +5840,48 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                                     getAllUnits();
 
-                                    setInterval(function () {
+                                    setInterval(() => {
                                         getAllUnits();
                                     }, 5000); // 15min
 
-                                    /*setInterval(function () {
+                                    /*setInterval(() => {
                                         UnitCounter.count();
                                     }, 600000); // 10min*/
-                                    setTimeout(function () {
+                                    setTimeout(() => {
                                         getLatestVersion();
                                     }, 2000);
                                     if (DATA.options.dio_ava) {
-                                        setTimeout(function () {
+                                        setTimeout(() => {
                                             AvailableUnits.activate();
                                         }, 0);
                                     }
                                     if (DATA.options.dio_ava2) {
-                                        setTimeout(function () {
+                                        setTimeout(() => {
                                             AvailableUnits.ocean.activate();
                                         }, 0);
                                     }
                                     if (DATA.options.dio_tic) {
-                                        setTimeout(function () {
+                                        setTimeout(() => {
                                             TownIcons.activate();
                                         }, 0);
                                     }
                                     if (DATA.options.dio_tic) {
-                                        setTimeout(function () {
+                                        setTimeout(() => {
                                             TownIcons.auto.activate();
                                         }, 0);
                                     }
                                     if (DATA.options.dio_tiw) {
-                                        setTimeout(function () {
+                                        setTimeout(() => {
                                             TownPopup.activate();
                                         }, 0);
                                     }
                                     if (DATA.options.dio_tim) {
-                                        setTimeout(function () {
+                                        setTimeout(() => {
                                             Map.activate();
                                         }, 100);
                                     }
                                     if (DATA.options.dio_til & (typeof (uw.FLASK_GAME) == "undefined")) {
-                                        setTimeout(function () {
+                                        setTimeout(() => {
                                             TownList.activate();
                                         }, 0);
                                     }
@@ -5922,7 +5896,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                         console.warn("DIO-Tools | Fehler | getAllUnits | units() fehlerhaft ausgeführt?", e);
 
                                         // Ausführung wiederholen
-                                        setTimeout(function () {
+                                        setTimeout(() => {
                                             waitForGrepoLazyLoading();
                                         }, 5000); // 5s
                                     }
@@ -5940,7 +5914,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                     console.warn("DIO-Tools | Fehler | getAllUnits | " + e.stack);
 
                                     // Ausführung wiederholen
-                                    setTimeout(function () {
+                                    setTimeout(() => {
                                         waitForGrepoLazyLoading();
                                     }, 5000); // 5s
                                 }
@@ -5957,7 +5931,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }, 0);
 
                     if (DATA.options.dio_pop) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             FavorPopup.activate();
                         }, 0);
                     }
@@ -5965,183 +5939,183 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     imageSelectionProtection();
 
                     if (DATA.options.dio_con) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             ContextMenu.activate();
                         }, 0);
                     }
 
                     if (DATA.options.dio_act) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             ActivityBoxes.activate();
                         }, 0);
                     }
 
                     if (DATA.options.dio_str) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             UnitStrength.Menu.activate();
                             //hideNavElements();
                         }, 0);
                     }
 
                     if (DATA.options.dio_tra) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             TransportCapacity.activate();
                         }, 0);
                     }
 
                     if (DATA.options.dio_com) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             UnitComparison.activate();
                         }, 0);
                     }
 
                     if (DATA.options.dio_sml) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             SmileyBox.activate();
                         }, 0);
                     }
 
                     if (DATA.options.dio_scr) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             MouseWheelZoom.activate();
                         }, 0);
                     }
 
                     if (DATA.options.dio_sim) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             Simulator.activate();
                         }, 0);
                     }
 
                     if (DATA.options.dio_sen) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             SentUnits.activate();
                         }, 0);
                     }
                     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
                         if (DATA.options.dio_wwc) {
-                            setTimeout(function () {
+                            setTimeout(() => {
                                 WorldWonderCalculator.activate();
                             }, 0);
                         }
                     }
                     if (DATA.options.dio_rec) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             RecruitingTrade.activate();
                         }, 0);
                     }
 
                     if (DATA.options.dio_way) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             ShortDuration.activate();
                         }, 0);
                     }
                     if (DATA.options.dio_Scr) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             Scrollbar.activate();
                         }, 0);
                     }
                     if (DATA.options.dio_Tow) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             Townbb.activate();
                         }, 100);
                     }
                     if (DATA.options.dio_Hot) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             hotkeys.activate();
                         }, 3000);
                     }
                     if (DATA.options.dio_Isl) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             islandFarmingVillages.activate();
                         }, 500);
                     }
                     if (DATA.options.dio_Rew) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             Reward.activate();
                         }, 100);
                     }
                     if (DATA.options.dio_Cib) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             city_view_btn.activate();
                         }, 1000);
                     }
                     if (DATA.options.dio_Ciw & (typeof (uw.MoleHoleOnBoard) == "undefined")) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             city_view_window.activate();
                         }, 1000);
                     }
                     if (DATA.options.dio_Cic) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             city_btn_construction.activate();
                         }, 1000);
                     }
                     if (DATA.options.dio_Hio) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             hidesOverview.activate();
                         }, 1000);
                     }
                     if (DATA.options.dio_Rtt) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             removetooltipps.activate();
                         }, 100);
                     }
                     if (DATA.options.dio_Rct) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             resCounter.activate();
                         }, 0);
                     }
                     if (DATA.options.dio_Hid) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             hidesIndexIron.activate();
                         }, 0);
                     }
                     if (DATA.options.dio_Tol) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             townslist.activate();
                         }, 100);
                     }
                     if (DATA.options.dio_BBt) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             BBtowninfo.activate();
                         }, 100);
                     }
                     if (DATA.options.dio_Cul) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             cultureOverview.activate();
                         }, 100);
                     }
 
                     // compatibility flask-tools ?
                     if (typeof (uw.FLASK_GAME) !== "undefined") {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             compatibility.flask_tools();
                         }, 2000);
                     };
 
-                    /*setTimeout(function () {
+                    /*setTimeout(() => {
                         counter(uw.Timestamp.server());
-                        setInterval(function () {
+                        setInterval(() => {
                             counter(uw.Timestamp.server());
                         }, 21600000);
                     }, 60000);*/
 
                     // Notifications
-                    setTimeout(function () {
+                    setTimeout(() => {
                         Notification.init();
                     }, 0);
 
-                    setTimeout(function () { HolidaySpecial.activate(); }, 0);
+                    setTimeout(() => { HolidaySpecial.activate(); }, 0);
 
-                    setTimeout(function () { dio.style(); }, 0);
+                    setTimeout(() => { dio.style(); }, 0);
 
                     // Execute once to get the world wonder types and coordinates
-                    /*setTimeout(function () {
+                    /*setTimeout(() => {
                         if (!wonderTypes.great_pyramid_of_giza) {
                             getWorldWonderTypes();
                         }
                         if (wonderTypes.great_pyramid_of_giza) {
-                            setTimeout(function () {
+                            setTimeout(() => {
                                 if (!wonder.map.mausoleum_of_halicarnassus) {
                                     getWorldWonders();
                                 } else {
@@ -6156,8 +6130,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     // Execute once to get alliance ratio
                     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
                         if (wonder.ratio[AID] == -1 || !$.isNumeric(wonder.ratio[AID])) {
-                            setTimeout(function () {
-                                getPointRatioFromAllianceProfile();
+                            setTimeout(() => {
+                                uw.getPointRatioFromAllianceProfile();
                             }, 5000);
                         }
                     }
@@ -6166,7 +6140,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //console.log("Gebrauchte Zeit:" + (time_b - time_a));
             });
         } else {
-            setTimeout(function () {
+            setTimeout(() => {
                 loadFeatures();
             }, 100);
         }
@@ -6227,17 +6201,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 case "/frontend_bridge/execute":
                 case "/index/switch_town":
                     if (DATA.options.dio_str) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             UnitStrength.Menu.update();
                         }, 0);
                     }
                     if (DATA.options.dio_tra) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             TransportCapacity.update();
                         }, 0);
                     }
                     if (DATA.options.dio_tic) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             TownIcons.changeTownIcon();
                         }, 0);
                     }
@@ -6461,7 +6435,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         hidesOverview.init();
                     }
                     if (DATA.options.dio_Hid) {
-                        setTimeout(function () {
+                        setTimeout(() => {
                             hidesIndexIron.add();
                         }, 100);
                     }
@@ -6472,32 +6446,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
 
     function test() {
-        //https://gpde.innogamescdn.com/images/game/temp/island.png
-
-        //console.log(uw.WMap);
-        //console.log(uw.WMap.getSea(uw.WMap.getXCoord(), uw.WMap.getYCoord()));
-
-        //console.log(uw.GameControllers.LayoutToolbarActivitiesController().prototype.getActivityTypes());
-        //console.log(uw.GameViews);
-        //console.log(uw.GameViews.BarracksUnitDetails());
-
-        //console.log(uw.ITowns.getTown(uw.Game.townId).unitsOuter().sword);
-        //console.log(uw.ITowns.getCurrentTown().unitsOuter().sword);
-
-        //console.log(uw.ITowns.getTown(uw.Game.townId).researches().attributes);
-        //console.log(uw.ITowns.getTown(uw.Game.townId).hasConqueror());
-        //console.log(uw.ITowns.getTown(uw.Game.townId).allUnits());
-        //console.log(uw.ITowns.all_units.fragments[uw.Game.townId]._byId);
-        //console.log("Zeus: " + uw.ITowns.player_gods.zeus_favor_delta_property.lastTriggeredVirtualPropertyValue);
-        //console.log(uw.ITowns.player_gods.attributes);
-
-        //console.log(uw.ITowns.getTown('5813').createTownLink());
-        //console.log(uw.ITowns.getTown(5813).unitsOuterTown);
-
-        //console.log(uw.ITowns.getTown(uw.Game.townId).getLinkFragment());
-
-        //console.log(uw.ITowns.getTown(uw.Game.townId).allGodsFavors());
-
         console.debug("STADTGRUPPEN", uw.Game.constants.ui.town_group);
     }
 
@@ -6509,7 +6457,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      * ----------------------------------------------------------------------------------------------------------------------------
      *******************************************************************************************************************************/
     var dio = {
-        style: function () {
+        style: () => {
             $('<style id="createButton">' + //style="color: #fc6;"
                 '.don { height: 26px; display: block; background: url(' + Home_img + 'donate-btn.png) 0 0 no-repeat; position: relative; z-index: -1; } ' +
                 '.don.dio-left { background-position: left 0px; } ' +
@@ -6517,25 +6465,25 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '.don.dio-middle { color: #33268a;padding: 0 4px;margin: 0 12px;background-position: 0 -27px;background-repeat: repeat-x;line-height: 25px;min-width: 10px;cursor: pointer;font-style: italic;font-size: 14px; } ' +
                 '</style>').appendTo('head');
         },
-        createButton: function (Text, ID, Class, i) { //dio.createButton(getTexts("messages", "copy"), "dio-copy-message-quote", null, 'data-clipboard-target="#expTextarea"')
+        createButton: (Text, ID, Class, i) => { //dio.createButton(getTexts("messages", "copy"), "dio-copy-message-quote", null, 'data-clipboard-target="#expTextarea"')
             return "<a " + (i = void 0 === i ? "" : i) + ' class="button ' + (Class = null == Class || void 0 === Class ? "" : Class) + '"  ' + (ID = null == ID ? "" : 'id="' + ID + '"') + '><span class="left"><span class="right"><span style="color: #fc6;" class="middle">' + dio_icon + '' + Text + '</span></span></span><span style="clear:both;"></span></a>'
         },
-        createBtnDonate: function (Text, ID, Class, i, h) { //dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate"))
+        createBtnDonate: (Text, ID, Class, i, h) => { //dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate"))
             return "<a " + (i = void 0 === i ? "" : i) + ' class="dio-button button ' + (Class = null == Class || void 0 === Class ? "" : Class) + '" ' + (h = null == h ? "" : 'href="' + h + '"target="_blank"') + (ID = null == ID ? "" : 'id="' + ID + '"') + '><span class="don dio-left"><span class="don dio-right"><span class="don dio-middle">' + Text + '</span></span></span><span style="clear:both;"></span></a>'
         },
-        grepo_btn: function (ID, Text) {
+        grepo_btn: (ID, Text) => {
             return $('<a id="' + ID + '" href="#" class="button"><span class="left"><span class="right"><span class="middle"><small>' + Text + '</small></span></span></span></a>');
         },
-        grepo_dropdown_flag: function (ID, Options, label, group, group2) {
+        grepo_dropdown_flag: (ID, Options, label, group, group2) => {
             var str = '<span class="grepo_input"><span class="left"><span class="right"><select name="' + ID + '" id="' + ID + '" type="text">' + (group = null == group ? "" : '<optgroup label="' + group + '">');
             var option_image = "";
             if (label != null) {
-                $.each(label, function (a, b) {
+                $.each(label, (a, b) => {
                     str += '<option value="' + b + '">' + b + '</option>'
                 });
             };
             str += (group = null == group ? "" : '</optgroup>') + (group2 = null == group2 ? "" : '<optgroup label="' + group2 + '">');
-            $.each(Options, function (a, b) {
+            $.each(Options, (a, b) => {
                 if (LANG[b]) {
                     option_image = '' + Home_img + 'flag.16.' + b + '.png';
                 } else {
@@ -6547,10 +6495,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             str += ((group = null == group) || (group2 = null == group2) ? "" : '</optgroup>') + '</select></span></span></span>';
             return $(str);
         },
-        grepo_submenu: function (ID, Title) {
+        grepo_submenu: (ID, Title) => {
             return $('<li><a id="' + ID + '" class="submenu_link" ><span class="left"><span class="right"><span class="middle" title="' + Title + '" style="color: #000;">' + Title + '</span></span></span></a></li>');
         },
-        removeTooltipps: function (type) {
+        daystamp: (start, end) => { //dio.daystamp(start, end)
+            var daystamp = 1000 * 60 * 60 * 24, today = new Date((new Date()) % (daystamp * (365 + 1 / 4))), // without year
+                // Xmas -> 28 days
+                Start = daystamp * start,
+                End = daystamp * end,
+                ID = (today >= Start) ? (today <= End) : false;
+            return ID;
+        },
+        removeTooltipps: (type) => {
             var a;
 
             switch (type) {
@@ -6578,15 +6534,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     break;
             }
 
-            a.each(function (index) {
+            a.each((index) => {
                 $(this).off('mouseenter mouseleave');
             });
         },
-        clipboard: function (IDbutton, input, error, Text) {
+        clipboard: (IDbutton, input, error, Text) => {
             var clipboard = new uw.ClipboardJS(IDbutton);
 
-            clipboard.on("success", function () {
-                setTimeout(function () {
+            clipboard.on("success", () => {
+                setTimeout(() => {
                     uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
                     if (input !== null) {
                         $(IDbutton).css({ "display": "none" })
@@ -6599,7 +6555,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }, 50)
             });
-            clipboard.on('error', function (e) {
+            clipboard.on('error', (e) => {
                 uw.HumanMessage.error(dio_icon + getTexts("messages", "cli"))
                 errorHandling(e, "clipboard" + error)
             });
@@ -6688,15 +6644,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             if (typeof (errordio[fn]) !== "undefined") {
                 nb = nb + errordio[fn].nb;
             }
-            //var text = $("div#gpwnd_" + c + " div#player_info.bold")[0].children[num].attributes[2].textContent,
-            //var re = /Layout.allianceProfile.open\('(.*?)',(.*?)\)/mg,
 
-            var re = /at (.*?) \(<anonymous>:(.*?)\)(.*?)/mg,
-                testt = e.stack.replace(/\)at (.*?) \(<anonymous>:(.*?)\)(.*?)/mg, "ok$1ok").replace(/ok(.*?)ok/mg, "$1");;
-            //testt = e.stack.replace(re, "$2");
-            //testt.replace(/at HTMLDocument.(.*?)/mg, "");
-            console.log(testt);
-            //console.log(e.stack);
             var date = new Date();
             errordio[fn] = {
                 "function": fn,
@@ -6757,7 +6705,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             this.wnd = wndhandle;
         }
 
-        Function.prototype.inherits.call(WndHandler, WndHandlerDefault);
+        Function.prototype.inherits.call(WndHandler, uw.WndHandlerDefault);
         WndHandler.prototype.getDefaultWindowOptions = function () {
             if (MID == 'zz' || dio_bug) {
                 return {
@@ -6984,71 +6932,82 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 HTML_tab2 += grepoGameBorder + getTexts("labels", "donat") + '</div>';
 
+                var don, donNb = 0, reste, donationsListe = [
+                    [1, 5, 60, 56.51, 'Christiane G'],
+                    [2, 1, 50, 47.2, 'Nepomuk P'],
+                    [3, 1, 30, 28.78, 'glaglatoulle'],
+                    [3, 3, 30, 27.48, 'Eli M'],
+                    [4, 2, 22, 20.66, 'Ulla R'],
+                    [5, 1, 20, 19.07, 'Artur Z'],
+                    [5, 1, 20, 19.07, 'Elwira G'],
+                    [5, 1, 20, 19.07, 'kanokwan s'],
+                    [5, 2, 20, 18.32, 'Ines L'],
+                    [5, 1, 20, 19.07, 'Sven K'],
+                    [6, 1, 15, 14.21, 'Attila'],
+                    [7, 1, 10, 9.36, 'Andreas S'],
+                    [7, 1, 10, 9.36, 'Ocaso'],
+                    [7, 1, 10, 9.36, 'Herbert L'],
+                    [7, 1, 10, 9.36, 'Andreas A'],
+                    [7, 1, 10, 9.16, 'Eric A'],
+                    [7, 1, 10, 9.36, 'Christian P'],
+                    [7, 1, 10, 9.36, 'SABINE B'],
+                    [7, 1, 10, 9.36, 'Uwe J'],
+                    [7, 1, 10, 9.36, 'benoit A'],
+                    [7, 1, 10, 9.36, 'Jean-Paul B'],
+                    [7, 1, 10, 9.36, 'Doris H'],
+                    [7, 1, 10, 9.36, 'filippo v'],
+                    [7, 1, 10, 9.36, 'Gabory A'],
+                    [7, 1, 10, 9.36, 'etienne1306'],
+                    [8, 1, 5.55, 5.04, 'Susi K'],
+                    [8, 1, 5.55, 5.04, 'Annette H'],
+                    [9, 1, 5, 4.5, 'Kornelia M'],
+                    [9, 1, 5, 4.5, 'Diana S'],
+                    [9, 1, 5, 4.5, 'Dylan D'],
+                    [9, 1, 5, 4.5, 'Kallerberg'],
+                    [9, 1, 5, 4.5, 'Raul-Garcia C'],
+                    [9, 1, 5, 4.5, 'Petr M'],
+                    [9, 1, 5, 4.5, 'Dorthe D'],
+                    [9, 1, 5, 4.5, 'Detlef Z'],
+                    [9, 1, 5, 4.4, 'Therese S'],
+                    [9, 1, 5, 4.5, 'Swen A'],
+                    [9, 1, 5, 4.5, 'Antonio-Acuña B'],
+                    [9, 1, 5, 5.5, 'Max P'],
+                    [9, 1, 5, 4.5, 'José-Miguel A'],
+                    [9, 1, 5, 4.5, 'Comte M'],
+                    [9, 1, 5, 4.5, 'Thomas C'],
+                    [9, 1, 5, 4.5, 'Mateusz O'],
+                    [9, 1, 5, 4.5, 'Societatea-d-S B'],
+                    [9, 1, 5, 4.5, 'Sven O'],
+                    [9, 1, 5, 4.5, 'Denai'],
+                    [10, 3, 3.39, 2.24, 'Gyorgy C'],
+                    [11, 1, 2.65, 2.22, 'adriano g'],
+                    [12, 1, 2.5, 2.08, 'Martin G'],
+                    [13, 1, 2, 1.59, 'Marie-Laure D'],
+                    [14, 1, 1.39, 1, 'Eduard B'],
+                    [15, 1, 1, 0.38, 'Francesco L'],
+                ];
+                $.each(donationsListe, function () {
+                    donNb++;
+                });
+                don = Math.round(donNb / 4)
+                reste = (donNb - 4 * don)
+                if (reste < 0) reste = 0
+
                 HTML_tab2 += '<div id="NotifText">' +
 
                     '<p>' + getTexts("labels", "ingame_name")[0] + '</p>' +
                     '<p>' + getTexts("labels", "ingame_name")[1] + '</p>' +
-                    '<table style="float:left;margin-right: 18px;">' +
+                    '<table style="float:left; margin-right: 8px; margin-left: -5px;">' +
                     '<tr><th colspan="3">' + getTexts("labels", "donat") + '</th></tr>' +
                     (function () {
-                        var donations = [
-                            [1, 5, 60, 56.51, 'Christiane G'],
-                            [2, 1, 50, 47.2, 'Nepomuk P'],
-                            [3, 1, 30, 28.78, 'glaglatoulle'],
-                            [3, 3, 30, 27.48, 'Eli M'],
-                            [4, 2, 22, 20.66, 'Ulla R'],
-                            [5, 1, 20, 19.07, 'Elwira G'],
-                            [5, 1, 20, 19.07, 'Sven K'],
-                            [5, 1, 20, 19.07, 'kanokwan s'],
-                            [5, 1, 20, 19.07, 'Artur Z'],
-                            [5, 2, 20, 18.32, 'Ines L'],
-                            [6, 1, 15, 14.21, 'Attila'],
-                            [7, 1, 10, 9.36, 'Andreas S'],
-                            [7, 1, 10, 9.16, 'Eric A'],
-                            [7, 1, 10, 9.36, 'Ocaso'],
-                            [7, 1, 10, 9.36, 'Andreas A'],
-                            [7, 1, 10, 9.36, 'SABINE B'],
-                            [7, 1, 10, 9.36, 'Herbert L'],
-                        ];
-                        var donations2 = [
-                            [7, 1, 10, 9.36, 'Jean-Paul B'],
-                            [7, 1, 10, 9.36, 'Uwe J'],
-                            [7, 1, 10, 9.36, 'filippo v'],
-                            [7, 1, 10, 9.36, 'benoit A'],
-                            [7, 1, 10, 9.36, 'Doris H'],
-                            [7, 1, 10, 9.36, 'Gabory A'],
-                            [7, 1, 10, 9.36, 'etienne1306'],
-                            [7, 1, 10, 9.36, 'Christian P'],
-                            [8, 1, 5.55, 5.04, 'Annette H'],
-                            [8, 1, 5.55, 5.04, 'Susi K'],
-                            [9, 1, 5, 4.5, 'Dorthe D'],
-                            [9, 1, 5, 4.5, 'Antonio-Acuña B'],
-                            [9, 1, 5, 5.5, 'Max P'],
-                            [9, 1, 5, 4.5, 'Swen A'],
-                            [9, 1, 5, 4.5, 'Denai'],
-                            [9, 1, 5, 4.5, 'Petr M'],
-                            [9, 1, 5, 4.5, 'Sven O'],
-                        ];
-                        var donations3 = [
-                            [9, 1, 5, 4.5, 'Detlef Z'],
-                            [9, 1, 5, 4.5, 'Diana S'],
-                            [9, 1, 5, 4.5, 'Thomas C'],
-                            [9, 1, 5, 4.5, 'Raul-Garcia C'],
-                            [9, 1, 5, 4.5, 'José-Miguel A'],
-                            [9, 1, 5, 4.5, 'Kornelia M'],
-                            [9, 1, 5, 4.5, 'Societatea-d-S B'],
-                            [9, 1, 5, 4.5, 'Mateusz O'],
-                            [9, 1, 5, 4.5, 'Comte M'],
-                            [9, 1, 5, 4.5, 'Kallerberg'],
-                            [9, 1, 5, 4.4, 'Therese S'],
-                            [10, 1, 2.5, 2.08, 'Martin G'],
-                            [11, 1, 2, 1.59, 'Marie-Laure D'],
-                            [11, 2, 2, 1.24, 'Gyorgy C'],
-                            [12, 1, 1, 0.38, 'Francesco L'],
-                        ];
-                        var donation_table = "";
-                        var donation_table2 = "";
-                        var donation_table3 = "";
+                        var donNb2 = -1, donations = [], donations2 = [], donations3 = [], donations4 = [], donation_table = "", donation_table2 = "", donation_table3 = "", donation_table4 = "";
+                        $.each(donationsListe, function (a) {
+                            donNb2++;
+                            if (donNb2 < (don + reste)) { donations.push(donationsListe[donNb2]) }
+                            else if (donNb2 < (don + don + reste)) { donations2.push(donationsListe[donNb2]) }
+                            else if (donNb2 < (don + don + don + reste + reste)) { donations3.push(donationsListe[donNb2]) }
+                            else { donations4.push(donationsListe[donNb2]) }
+                        })
 
                         var d = 0;
                         for (d = 0; d < donations.length; d++) {
@@ -7065,17 +7024,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             donation_table += '<tr class="donation"><td class="laurel ' + donation_class + '"></td><td>' + donations[d][4] + '</td><td class="value">' + donations[d][2] + '€</td></tr>'; //<td class="value">(' + donations[d][3] + '€)</td></tr>';
                         }
                         for (d = 0; d < donations2.length; d++) {
-
-                            var donation_class2 = "";
                             donation_table2 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations2[d][4] + '</td><td class="value">' + donations2[d][2] + '€</td></tr>'; //<td class="value">(' + donations2[d][3] + '€)</td></tr>';
                         }
                         for (d = 0; d < donations3.length; d++) {
-
-                            var donation_class3 = "";
-                            donation_table3 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations3[d][4] + '</td><td class="value">' + donations3[d][2] + '€</td></tr>' //<td class="value">(' + donations3[d][3] + '€)</td></tr>';
+                            donation_table3 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations3[d][4] + '</td><td class="value">' + donations3[d][2] + '€</td></tr>'; //<td class="value">(' + donations3[d][3] + '€)</td></tr>';
+                        }
+                        for (d = 0; d < donations4.length; d++) {
+                            donation_table4 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations4[d][4] + '</td><td class="value">' + donations4[d][2] + '€</td></tr>'; //<td class="value">(' + donations3[d][3] + '€)</td></tr>';
                         }
 
-                        return donation_table + '</table><table style="float:left;margin-right: 18px; margin-top: 30px;">' + donation_table2 + '</table><table style="float:left;margin-right: 18px; margin-top: 30px;">' + donation_table3;
+                        return donation_table + '</table><table style="float:left; margin-right: 8px; margin-top: 30px;">' + donation_table2 + '</table><table style="float:left; margin-right: 8px; margin-top: 30px;">' + donation_table3 + '</table><table style="float:left; margin-top: 30px;">' + donation_table4;
                     })() +
                     '</table>' +
                     '</div>';
@@ -7139,6 +7097,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     '<a id="link_forum" href=' + getTexts("link", "Translations") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
                     '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+
+                    '<a id="link_forum" href="https://discord.gg/Q7WXtmRNRW" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>Discord</span></a>' +
+
                     '</ul><div style="margin-top:30px"><b>' + getTexts("translations", "credits") + ':</b><ul style="list-style:square outside;">';
 
                 HTML_tab3 += '<table>' +
@@ -7233,7 +7195,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 dio.clipboard("#dio-copy-Traductions-quote", null, "handle_and_style", true)
 
-                $("#dioerrordio").click(function () {
+                $("#dioerrordio").click(() => {
                     var name_a = "", errordio = DATA.error[dio_version], script = uw.MM.DIO.info_dio.script, errorr = uw.MM.DIO.errorDio;
                     var name_b = '' +
                         'Grcrt: ' + (script.grcrt ? true : false) + "; " +
@@ -7286,7 +7248,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     });
                 });
 
-                $("#dio_res").click(function () {
+                $("#dio_res").click(() => {
                     uw.hOpenWindow.showConfirmDialog('', getTexts("labels", "raf"), function () {
                         deleteValue("error");
                         location.reload();
@@ -7507,11 +7469,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 BBwnd.setContent(inhalte.dioset_tab1);
             }
             if ($("#diomenu_settings_tabs").length === 0) {
-                BBwnd.getJQElement().append('<div class="menu_wrapper minimize closable" style="left: 1px; right: 33px"><ul id="diomenu_settings_tabs" class="menu_inner" style="right: 24px;">' +
+                BBwnd.getJQElement().append('<ul id="diomenu_settings_tabs" class="menu_inner" style="top: 7px;right: 54px;">' +
                     dio.grepo_submenu("dioset_tab4", "BUG")[0].outerHTML +
                     dio.grepo_submenu("dioset_tab3", getTexts("translations", "translations"))[0].outerHTML +
                     dio.grepo_submenu("dioset_tab2", getTexts("labels", "donat"))[0].outerHTML +
-                    dio.grepo_submenu("dioset_tab1", getTexts("Settings", "Update"))[0].outerHTML + '</ul></div>');
+                    dio.grepo_submenu("dioset_tab1", getTexts("Settings", "Update"))[0].outerHTML + '</ul>');
             }
             $("#diomenu_settings_tabs li a").removeClass("active");
             if (dio.bug) {
@@ -7530,7 +7492,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
         },
         create: function (nid, feature) {
-            var Notification = new NotificationHandler();
+            var Notification = new uw.NotificationHandler();
             Notification.notify($('#notification_area>.notification').length + 1, uw.NotificationType.DIO_TOOLS,
                 "<span style='color:rgb(8, 207, 0)'><b><u>" + getTexts("Settings", "Feature2" /*"Feature"*/) + "!</u></b></span>" + feature + "<span class='small notification_date'>DIO-Tools-david1327: v" + dio_version + "</span>");
         },
@@ -7606,7 +7568,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // Agora
             $('<style id="dio_Agora_style">#dio_Agora {position: absolute; width: 144px; height: 26px; left: 1px; z-index: 5;}</style>').appendTo('head');
             $('<a id="dio_Agora"></a>').appendTo('.nui_battlepoints_container');
-            $("#dio_Agora").click(function () { uw.PlaceWindowFactory.openPlaceWindow(); });
+            $("#dio_Agora").click(() => { uw.PlaceWindowFactory.openPlaceWindow(); });
 
             // Scroll trough the views
             $('#main_area, #dio_political_map, .viewport, .sjs-city-overview-viewport').bind('mousewheel', function (e) {
@@ -7916,7 +7878,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '.town_name_area { z-index:11; left:52%; } ' +
                     '.town_name_area .left { z-index:20; left:-39px; } ' +
                     '.town_name_area .button.GMHADD {left: -134px !important; z-index: 100 !important;}' +
-                    '#town_groups_list {margin-left: -27px;}' +
+                    '#town_groups_list {margin-left: -20px;}' +
 
 
                     '#dio_tic2 { display:block!important; }' +
@@ -7924,7 +7886,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</style>').appendTo('head');
 
 
-                var icoArray = ['lo', 'ld', 'fo', 'fd', 'so', 'sd', 'no', 'po',
+                var icoArray = [
+                    'lo', 'ld', 'fo', 'fd', 'so', 'sd', 'no', 'po',
                     'sh', 'di', 'un', 'ko', 'ti', 'gr', 'dp', 're',
                     'wd', 'st', 'si', 'bu', 'he', 'ch', 'bo', 'fa',
                     'wo', 'OO', 'O1', 'O2', 'O3', 'O4', 'O5', 'O6',
@@ -7983,6 +7946,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     TownIcons.changeTownIcon();
                     getAllUnits();
+                    TownList.change();
 
                     // Update town icons on the map
                     if (DATA.options.dio_tim) {
@@ -7994,7 +7958,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
 
                 // Show & hide drop menus on click
-                $('#town_icon .town_icon_bg').click(function () {
+                $('#town_icon .town_icon_bg').click(() => {
                     var el = $('#town_icon .select_town_icon').get(0);
                     if (el.style.display === "none") {
                         el.style.display = "block";
@@ -8508,6 +8472,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#town_groups_list .threequarter { color: darkgoldenrod; } ' +
                 '#town_groups_list .half { color: darkred; } ' +
                 '#town_groups_list .quarter { color: red; } ' +
+                '#town_groups_list .dio_icon_small { display:block !important;} ' +
                 '</style>').appendTo('head');
 
 
@@ -8538,11 +8503,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             uw.layout_main_controller.sub_controllers[i].controller.town_groups_list_view.render = uw.layout_main_controller.sub_controllers[i].controller.town_groups_list_view.render_old;
 
             $('#dio_town_list').remove();
-            $('#town_groups_list .small_icon, #town_groups_list .pop_percent').css({ display: 'none' });
+            $('#town_groups_list .dio_icon_small, #town_groups_list .pop_percent').css({ display: 'none' });
             $("#town_groups_list .town_group_town").unbind('mouseenter mouseleave');
         },
         change: function () {
-            if (!$('#town_groups_list .dio_icon_small').get(0) && !$('#town_groups_list .pop_percent').get(0)) {
+            if (!$('#town_groups_list .dio_icon_small').get(0)) {
                 $("#town_groups_list .town_group_town").each(function () {
                     try {
                         var town_item = $(this), town_id = town_item.attr('name'), townicon_div, percent_div = "", percent = -1, pop_space = "full";
@@ -8568,16 +8533,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             }
                             town_item.prepend(townicon_div + percent_div);
                         }
-
-                        // opening context menu
-                        /*
-                         $(this).click(function(e){
-                         console.log(e);
-                         uw.Layout.contextMenu(e, 'determine', {"id": town_id,"name": uw.ITowns[town_id].getName()});
-                         });
-                         */
-
-                        updateIcon();
 
                     } catch (error) {
                         errorHandling(error, "TownList.change");
@@ -8923,11 +8878,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 return heros;
             };
 
-            //uw.MM.DIO.getHero = function () {};
-
-
-
-
             uw.ITowns.townGroups.getGroupsDIO = function () {
                 var town_groups_towns, town_groups, groups = {};
 
@@ -8959,39 +8909,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //console.log(groups);
                 return groups;
             };
-
-            /*uw.ITowns.townGroups.getGroupsDIOdav = function () {
-            var town_groups_towns, town_groups, groups = {};
-
-            // #Grepolis Fix: 2.75 -> 2.76
-            if (MM.collections) {
-                town_groups_towns = MM.collections.TownGroupTown[0];
-                town_groups = MM.collections.TownGroup[0];
-            } else {
-                town_groups_towns = MM.getCollections().TownGroupTown[0];
-                town_groups = MM.getCollections().TownGroup[0];
-            }
-
-            town_groups_towns.each(function (town_group_town) {
-                var gid = town_group_town.getGroupId(),
-                    group = groups[gid],
-                    town_id = town_group_town.getTownId();
-
-                if (!group) {
-                    groups[gid] = group = {
-                        id: gid,
-                        //name: town_groups.get(gid).getName(), // hier tritt manchmal ein Fehler auf: TypeError: Cannot read property "getName" of undefined at https://_.grepolis.com/cache/js/merged/game.js?1407322916:8298:525
-                        towns: {}
-                    };
-                }
-
-                group.towns[town_id] = {id: town_id};
-                //groups[gid].towns[town_id]={id:town_id};
-            });
-            //console.log(groups);
-            return groups;
-        };*/
-
 
             uw.ITowns.getHeroDIO = function () {
                 var town_groups_towns, town_groups, groups = {};
@@ -9033,7 +8950,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         units: { "total": {}, "available": {}, "outer": {}, "foreign": {}, "support": {} },
 
         count: function () {
-            var tooltipHelper = require("helpers/units_tooltip_helper");
+            var tooltipHelper = uw.require("helpers/units_tooltip_helper");
 
             var groups = uw.ITowns.townGroups.getGroupsDIO();
 
@@ -9093,12 +9010,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
 
         summarize: function (groupId) {
-            var tooltipHelper = require("helpers/units_tooltip_helper");
+            var tooltipHelper = uw.require("helpers/units_tooltip_helper");
 
-            UnitCounter.units.total[groupId]["all"] = {};
-            UnitCounter.units.available[groupId]["all"] = {};
-            UnitCounter.units.outer[groupId]["all"] = {};
-            UnitCounter.units.support[groupId]["all"] = {};
+            UnitCounter.units.total[groupId].all = {};
+            UnitCounter.units.available[groupId].all = {};
+            UnitCounter.units.outer[groupId].all = {};
+            UnitCounter.units.support[groupId].all = {};
 
             for (var townId in UnitCounter.units.total[groupId]) {
                 if (UnitCounter.units.total[groupId].hasOwnProperty(townId) && townId !== "all") {
@@ -9108,7 +9025,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     for (unitId in UnitCounter.units.total[groupId][townId]) {
                         if (UnitCounter.units.total[groupId][townId].hasOwnProperty(unitId)) {
 
-                            UnitCounter.units.total[groupId]["all"][unitId] = (UnitCounter.units.total[groupId]["all"][unitId] || 0) + UnitCounter.units.total[groupId][townId][unitId];
+                            UnitCounter.units.total[groupId].all[unitId] = (UnitCounter.units.total[groupId].all[unitId] || 0) + UnitCounter.units.total[groupId][townId][unitId];
                         }
                     }
 
@@ -9116,7 +9033,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     for (unitId in UnitCounter.units.available[groupId][townId]) {
                         if (UnitCounter.units.available[groupId][townId].hasOwnProperty(unitId)) {
 
-                            UnitCounter.units.available[groupId]["all"][unitId] = (UnitCounter.units.available[groupId]["all"][unitId] || 0) + UnitCounter.units.available[groupId][townId][unitId];
+                            UnitCounter.units.available[groupId].all[unitId] = (UnitCounter.units.available[groupId].all[unitId] || 0) + UnitCounter.units.available[groupId][townId][unitId];
                         }
                     }
 
@@ -9124,7 +9041,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     for (unitId in UnitCounter.units.outer[groupId][townId]) {
                         if (UnitCounter.units.outer[groupId][townId].hasOwnProperty(unitId)) {
 
-                            UnitCounter.units.outer[groupId]["all"][unitId] = (UnitCounter.units.outer[groupId]["all"][unitId] || 0) + UnitCounter.units.outer[groupId][townId][unitId];
+                            UnitCounter.units.outer[groupId].all[unitId] = (UnitCounter.units.outer[groupId].all[unitId] || 0) + UnitCounter.units.outer[groupId][townId][unitId];
                         }
                     }
 
@@ -9132,7 +9049,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     for (unitId in UnitCounter.units.support[groupId][townId]) {
                         if (UnitCounter.units.support[groupId][townId].hasOwnProperty(unitId)) {
 
-                            UnitCounter.units.support[groupId]["all"][unitId] = (UnitCounter.units.support[groupId]["all"][unitId] || 0) + UnitCounter.units.support[groupId][townId][unitId];
+                            UnitCounter.units.support[groupId].all[unitId] = (UnitCounter.units.support[groupId].all[unitId] || 0) + UnitCounter.units.support[groupId][townId][unitId];
                         }
                     }
                 }
@@ -9151,12 +9068,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $("#HMoleM").css({
                     top: $("#ui_box .nui_left_box:first").offset().top + $("#ui_box .nui_left_box:first")[0].scrollHeight - 6
                 }),
-                uw.MH.nui_main_menu()),
+                uw.MH.nui_main_menu());
 
-                $('<style>' +
+            $('<style>' +
 
-                    'available_units_bullseye_addition { display:none!important; }' +
-                    '</style>').appendTo('head');
+                'available_units_bullseye_addition { display:none!important; }' +
+                '</style>').appendTo('head');
 
             var default_title = uw.DM.getl10n("place", "support_overview").options.troop_count + " (" + getTexts("labels", "available") + ")";
 
@@ -9311,7 +9228,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         '#ui_box .ocean_number_box .ocean_number { font-weight: 700; z-index: 5; width: 100px; left: -13px;}' +
                         '.picomap_area .dio_picomap_overlayer { height: 135px ; } ' +
                         '</style>').appendTo('head');
-                    //if ($('#MHOLE_MENU').is(':visible')) {$('<style id="dio_available_units_style_oceanautre">.nui_main_menu { top: 333px; }</style>').appendTo('head');}
                 } else if (!DATA.options.dio_ava2) {
                     $('<style id="dio_available_units_style_oceanaut">' +
                         '.nui_grepo_score { top: 150px!important; } ' +
@@ -9323,7 +9239,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         '#ui_box .ocean_number_box .ocean_number { font-weight: 500; z-index: 1;}' +
                         '.picomap_area .dio_picomap_overlayer { height: 101px;} ' +
                         '</style>').appendTo('head');
-                    //if ($('#MHOLE_MENU').is(':visible')) {$('<style id="dio_available_units_style_oceanautre">.nui_main_menu { top: 333px; }</style>').appendTo('head');}
                 };
             }
         },
@@ -9380,7 +9295,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#dio_btn_available_units, .ico_available_units').removeClass("checked");
             });
 
-            $('#dio_btn_available_units, .dio_picomap_overlayer').click(function () {
+            $('#dio_btn_available_units, .dio_picomap_overlayer').click(() => {
                 if (!uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_UNITS)) {
                     AvailableUnits.openWindow();
                     $('#dio_btn_available_units, .ico_available_units').addClass("checked");
@@ -9389,6 +9304,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $('#dio_btn_available_units, .ico_available_units').removeClass("checked");
                 }
             });
+
+            $('.close_all').click(() => { $('#dio_btn_available_units, .ico_available_units').removeClass("checked"); });
 
             // Tooltip
             $('#dio_btn_available_units').tooltip(LANG.hasOwnProperty(LID) ? dio_icon + getTexts("labels", "uni") : default_title);
@@ -9470,6 +9387,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '<div id="dio_help_available_units" style="top: -37px;position: absolute; right: 33px;">' +
                 '<a class="ui-dialog-titlebar-help ui-corner-all" href=' + getTexts("link", "available_units") + ' target="_blank"></a>' +
                 '</div>' +
+                '<button id="dio_close_available_units" role="button" class="available_units ui-dialog-titlebar-close" style="top: -37px;position: absolute; right: -8px;"></button>' +
                 // Content
                 '<div class="box_content">';
 
@@ -9524,7 +9442,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             AvailableUnits.updateWindow();
 
             // Dropdown menu Handler
-            $('#dio_available_units .drop_group').click(function () {
+            $('#dio_available_units .drop_group').click(() => {
                 $('#dio_available_units .select_group').toggleClass('open');
             });
             // Change group
@@ -9576,10 +9494,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 AvailableUnits.save();
 
             });
-            // Close button event - uncheck available units button
-            /*uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_UNITS).getJQCloseButton().get(0).onclick = function () {
-                $('#dio_btn_available_units, .ico_available_units').removeClass("checked");
-            };*/
 
             //tooltip
 
@@ -9589,6 +9503,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $('#dio' + unit).tooltip(uw.GameData.units[unit].name);
                 }
             }
+            $('#dio_close_available_units').click(() => {
+                if (!uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_UNITS)) {
+                    AvailableUnits.openWindow();
+                    $('#dio_btn_available_units, .ico_available_units').addClass("checked");
+                } else {
+                    AvailableUnits.closeWindow();
+                    $('#dio_btn_available_units, .ico_available_units').removeClass("checked");
+                }
+            });
         },
         closeWindow: function () {
             uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_UNITS).close();
@@ -9698,13 +9621,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('<div id="dio_comparison_button" class="circle_button"><div class="ico_comparison js-caption"></div></div>').appendTo(".bull_eye_buttons");
 
             // Events
-            /*
-             $('#dio_comparison_button').on('mousedown', function(){
-             $('#dio_comparison_button').addClass("checked");
-             }, function(){
-             $('#dio_comparison_button').removeClass("checked");
-             });
-             */
             $('#dio_comparison_button').on('click', function () {
                 if (!uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_COMPARISON)) {
                     UnitComparison.openWindow();
@@ -9714,6 +9630,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $('#dio_comparison_button').removeClass("checked");
                 }
             });
+
+            $('.close_all').click(() => { $('#dio_comparison_button').removeClass("checked"); });
 
             // Tooltip
             $('#dio_comparison_button').tooltip(dio_icon + getTexts("labels", "dsc"));
@@ -9739,6 +9657,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '<div id="dio_help_UnitComparison" style="top: -37px;position: absolute; right: 33px;">' +
                 '<a class="ui-dialog-titlebar-help ui-corner-all" href=' + getTexts("link", "UnitComparison") + ' target="_blank"></a>' +
                 '</div>' +
+                '<button id="dio_close_UnitComparison" role="button" class="available_units ui-dialog-titlebar-close" style="top: -37px;position: absolute; right: -8px;"></button>' +
                 // Content
                 '<div id="dio_comparison" style="margin-bottom:5px; font-style:italic;"><div class="box_content hack"></div></div>';
 
@@ -9778,12 +9697,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             /*if (typeof uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_COMPARISON).getJQCloseButton() != 'undefined') {
 
 
-            //uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_COMPARISON).getJQCloseButton().get(0).onclick = function () {
+            uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_COMPARISON).getJQCloseButton().get(0).onclick = function () {
                 $('#dio_comparison_button').removeClass("checked");
                 $('.ico_comparison').get(0).style.marginTop = "5px";
-            //};
+            };
             };*/
 
+            $('#dio_close_UnitComparison').on('click', function () {
+                if (uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_COMPARISON)) {
+                    UnitComparison.closeWindow();
+                    $('#dio_comparison_button').removeClass("checked");
+                }
+            });
 
         },
         closeWindow: function () {
@@ -9954,74 +9879,73 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 return;
             var wnd = b[b.length - 1];
             var c = wnd.getID();
-            // attaques
-            $("DIV#gpwnd_" + c + " #report_list .color_highlight ").each(function () {
-                $(this).css({
-                    "border-left": "5px solid red"
-                }).addClass("angriffe");
-            });
-            // troupes stationnées
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "supporting") + "')").each(function () {
-                $(this).css({
-                    "border-left": "5px solid green"
-                }).addClass("unterstützungen");
-            });
-            // soutient
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "support") + "')").each(function () {
-                $(this).css({
-                    "border-left": "5px solid green"
-                }).addClass("unterstützungen");
-            });
-            // ne peut pas soutenir
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + uw.DM.getl10n("report").inbox.filter_types.support.toLowerCase() + "')").each(function () {
-                $(this).css({
-                    "border-left": "5px solid green"
-                }).addClass("unterstützungen");
-            });
-            // Espion provenant
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "spy") + "')").each(function () {
-                $(this).css({
-                    "border-left": "5px solid blue"
-                }).addClass("spios");
-            });
-            // espionne
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "spying") + "')").each(function () {
-                $(this).css({
-                    "border-left": "5px solid blue"
-                }).addClass("spios");
-            });
-            // conquered
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "conquered") + "')").each(function () {
-                $(this).css({
-                    "border-left": "5px solid black"
-                });
-            });
-            // (lancé)
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "enacted") + "')").each(function () {
-                $(this).css({
-                    "border-left": "5px solid purple"
-                }).addClass("zauber");
-            });
-            // Quests (a expiré)
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "Quests") + "')").each(function () {
+            $("DIV#gpwnd_" + c + " #report_list li").each(function () {
                 $(this).css({
                     "border-left": "5px solid rgb(128, 64, 0)"
                 }).addClass("farm");
             });
+            // attaques
+            $("DIV#gpwnd_" + c + " #report_list .color_highlight ").each(function () {
+                $(this).css({
+                    "border-left": "5px solid red"
+                }).removeClass("farm").addClass("angriffe");
+            });
+            // troupes stationnées
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "supporting", true) + "')").each(function () {
+                $(this).css({
+                    "border-left": "5px solid green"
+                }).removeClass("farm").addClass("unterstützungen");
+            });
+            // soutient
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "support", true) + "')").each(function () {
+                $(this).css({
+                    "border-left": "5px solid green"
+                }).removeClass("farm").addClass("unterstützungen");
+            });
+            // ne peut pas soutenir
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + uw.DM.getl10n("report", true).inbox.filter_types.support.toLowerCase() + "')").each(function () {
+                $(this).css({
+                    "border-left": "5px solid green"
+                }).removeClass("farm").addClass("unterstützungen");
+            });
+            // Espion provenant
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "spy", true) + "')").each(function () {
+                $(this).css({
+                    "border-left": "5px solid blue"
+                }).removeClass("farm").addClass("spios");
+            });
+            // espionne
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "spying", true) + "')").each(function () {
+                $(this).css({
+                    "border-left": "5px solid blue"
+                }).removeClass("farm").addClass("spios");
+            });
+            // conquered
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "conquered", true) + "')").each(function () {
+                $(this).css({
+                    "border-left": "5px solid black"
+                }).removeClass("farm");
+            });
+            // (lancé)
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "enacted", true) + "')").each(function () {
+                $(this).css({
+                    "border-left": "5px solid purple"
+                }).removeClass("farm").addClass("zauber");
+            });
             // (Vous avez reçu) gold
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "gold") + "')").each(function () {
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "gold", true) + "')").each(function () {
                 $(this).css({
                     "border-left": "5px solid rgba(123, 128, 0, 0.89)"
                 }).addClass("farm");
             });
             //réservation (Votre réservation pour)
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "Reservations") + "')").each(function () {
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "Reservations", true) + "')").each(function () {
                 $(this).css({
                     "border-left": "5px solid yellow"
                 }).addClass("farm");
             });
             //Alliance (parrainé)
-            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "parrainé") + "')").each(function () {
+            $("DIV#gpwnd_" + c + " #report_list li:contains('" + getTexts("reports", "parrainé", true) + "')").each(function () {
                 $(this).css({
                     "border-left": "5px solid yellow"
                 }).addClass("farm");
@@ -10880,7 +10804,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
                 $(wndID + '.troops').css({ padding: '6px 0px 6px 6px' });
 
-                $(wndID + '#btn_sent_units_reset').click(function () {
+                $(wndID + '#btn_sent_units_reset').click(() => {
                     // Overwrite old array
                     sentUnitsArray[action] = {};
 
@@ -11357,42 +11281,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $(wndID + '.dio_drop_rec_unit').tooltip(dio_icon + getTexts("labels", "rat"));
             $(wndID + '.dio_drop_rec_perc').tooltip(dio_icon + getTexts("labels", "shr"));
 
-            /*var ratio = {
-                MO: {w: 0, s: 0, i: 0},
-                FS: {w: 1, s: 0.2308, i: 0.6154},	// Light ship
-                BI: {w: 1, s: 0.875, i: 0.225},		// Bireme
-                SL: {w: 0.55, s: 1, i: 0.4},		// Slinger
-                RE: {w: 0.6667, s: 0.3333, i: 1},	// Horseman
-                CE: {w: 1, s: 1, i: 1},				// Colony ship
-                SK: {w: 1, s: 0, i: 0.8947},		// Swordsman
-                HO: {w: 0, s: 0.5, i: 1},			// Hoplite
-                BS: {w: 1, s: 0, i: 0.625},			// Archer
-                SW: {w: 0.4545, s: 1, i: 0.7273},	// Chariot
-                TR: {w: 1, s: 0.65, i: 0.65},		// Trireme
-                BT: {w: 1, s: 1, i: 0.8},			// Transport boat
-                BE: {w: 1, s: 0, i: 0.5},			// Fast transport ship
-                WA: {w: 0.0879, s: 1, i: 0.7385},	// City wall
-                FE: {w: 0.8333, s: 1, i: 0.8333},	// City festival
-                CT: {w: 1, s: 0.1739, i: 0.3913},	// Centaur
-                CB: {w: 0.4149, s: 0.5, i: 1},		// Cerberus
-                CL: {w: 0.6, s: 1, i: 0.8},			// Cyclop
-                EY: {w: 0.5, s: 1, i: 1},			// Erinys
-                MD: {w: 0.4074, s: 1, i: 0.5926},	// Medusa
-                MT: {w: 0.4587, s: 0.1927, i: 1},	// Minotaur
-                HD: {w: 1, s: 0.5185, i: 0.7037},	// Hydra
-                HP: {w: 1, s: 0.25, i: 0.85},		// Harpy
-                MN: {w: 1, s: 0.6818, i: 0.7727},	// Manticore
-                PG: {w: 1, s: 0.325, i: 0.175},		// Pegasus
-                GF: {w: 0.7885, s: 0.4038, i: 1},	// Griffin
-                SR: {w: 0.9756, s: 0.9512, i: 1},	// Spartoi
-                ST: {w: 0.5577, s: 0.2885, i: 1},	// Satyr
-                LD: {w: 0.9767, s: 1, i: 0.9535},	// Ladon
-                SE: {w: 0.7727, s: 0.5909, i: 1},	// Siren
-                CA: {w: 1, s: 1, i: 1},				// Catapult
-                CY: {w: 1, s: 0.5172, i: 0.5517},	// Calydonian boar
-                DS: {w: 0.6667, s: 1, i: 0.2},		// Fire ship
-            };*/
-
             var res = RecruitingTrade.resources;
             var ratio = {
                 //MO: RecruitingTrade.addd(""),
@@ -11480,7 +11368,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $("#trade_type_iron [type='text']").select().val(iron).blur();
             });
 
-            $('#trade_button').click(function () {
+            $('#trade_button').click(() => {
                 trade_count++;
                 $('.dio_rec_count').get(0).innerHTML = "(" + trade_count + ")";
 
@@ -11608,9 +11496,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
         // Style
 
-        $('<style id="dio_wonder_button">' +
-            'div.wonder_res_container fieldset.send_res .button { margin-top: 0px!important; } ' +
-            '</style>').appendTo('head');
+        $('div.wonder_res_container fieldset.send_res .button').css({
+            "margin-top": "0px",
+        });
 
         $('#trade_tab #duration_container').css({
             "margin-bottom": "-15px",
@@ -11754,113 +11642,112 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         add: function () {
             try {
-                if (dio.wnd.find(".dio_needed").length > 0 || dio.wnd.find(".town-capacity-indicator").length == 0)
-                    return;
-
-                function getRes(res_type, wnd_id, mode) {
-                    var res = {};
-                    res.wnd = $("DIV#gpwnd_" + wnd_id);
-                    res.selector = res.wnd.find("#town_capacity_" + res_type);
-                    res.caption = {
-                        curr: parseInt(res.wnd.find("#big_progressbar .caption .curr").html()),
-                        max: parseInt(res.wnd.find("#big_progressbar .caption .max").html()),
-                        now: parseInt(res.wnd.find("#trade_type_" + res_type + " input").val())
+                if (dio.wnd.find(".dio_needed").length > 0 || dio.wnd.find(".town-capacity-indicator").length == 0);
+                else {
+                    function getRes(res_type, wnd_id, mode) {
+                        var res = {};
+                        res.wnd = $("DIV#gpwnd_" + wnd_id);
+                        res.selector = res.wnd.find("#town_capacity_" + res_type);
+                        res.caption = {
+                            curr: parseInt(res.wnd.find("#big_progressbar .caption .curr").html()),
+                            max: parseInt(res.wnd.find("#big_progressbar .caption .max").html()),
+                            now: parseInt(res.wnd.find("#trade_type_" + res_type + " input").val())
+                        }
+                        res.amounts = {
+                            curr: parseInt(res.selector.find(".curr").html()) || 0,
+                            curr2: parseInt(res.selector.find(".curr2").html().substring(3)) || 0,
+                            curr3: parseInt(res.selector.find(".curr3").html().substring(3)) || 0,
+                            max: parseInt(res.selector.find(".max").html()) || 0
+                        }
+                        if (mode === "cult" || mode === "cultreverse") {
+                            res.amounts.max = (res_type === "stone") ? 18000 : 15000;
+                        }
+                        if (mode === "cultreverse") {
+                            var townrescurrent = $("div#ui_box div.ui_resources_bar div.indicator[data-type='" + res_type + "'] div.amount").text();
+                            res.needed = townrescurrent - res.amounts.max;
+                        } else {
+                            res.needed = res.amounts.max - res.amounts.curr - res.amounts.curr2;
+                        }
+                        return res;
                     }
-                    res.amounts = {
-                        curr: parseInt(res.selector.find(".curr").html()) || 0,
-                        curr2: parseInt(res.selector.find(".curr2").html().substring(3)) || 0,
-                        curr3: parseInt(res.selector.find(".curr3").html().substring(3)) || 0,
-                        max: parseInt(res.selector.find(".max").html()) || 0
-                    }
-                    if (mode === "cult" || mode === "cultreverse") {
-                        res.amounts.max = (res_type === "stone") ? 18000 : 15000;
-                    }
-                    if (mode === "cultreverse") {
-                        var townrescurrent = $("div#ui_box div.ui_resources_bar div.indicator[data-type='" + res_type + "'] div.amount").text();
-                        res.needed = townrescurrent - res.amounts.max;
-                    } else {
-                        res.needed = res.amounts.max - res.amounts.curr - res.amounts.curr2;
-                    }
-                    return res;
-                }
 
-                dio.wnd.find(".tripple-progress-progressbar").each(function () {
-                    var res_type = this.id.split("_")[2];
-                    var res = getRes(res_type, dio.wndId);
-                    $(this).find(".amounts").append('<span class="dio_needed_' + res_type + '_' + dio.wndId + '"> &#9658; ' + res.needed + '</span>');
-                });
-
-                dio.wnd.find("#trade_tab").append(
-                    '<div id="dio_Improvement_trade">' +
-                    '<a id="dio_wood_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:200px"></a>' +
-                    '<a id="dio_stone_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:234px"></a>' +
-                    '<a id="dio_iron_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:268px"></a>' +
-                    '<a id="dio_wood_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:200px"></a>' +
-                    '<a id="dio_stone_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:234px"></a>' +
-                    '<a id="dio_iron_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:268px"></a>' +
-                    /*'<a id="dio_wood_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:200px"></a>' +
-				'<a id="dio_stone_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:234px"></a>' +
-				'<a id="dio_iron_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:268px"></a>'*/'</div>'
-                );
-
-                dio.wnd.find(".dio_send_cult").css({
-                    "right": "84px",
-                    "position": "absolute",
-                    "height": "16px",
-                    "width": "22px",
-                    "background-image": "url(" + Home_img + "trade-cult.png)",
-                    "background-repeat": "no-repeat",
-                    "background-position": "0px -1px"
-                });
-                dio.wnd.find(".dio_send_cult_reverse").css({
-                    "left": "105px",
-                    "position": "absolute",
-                    "height": "16px",
-                    "width": "22px",
-                    "background-image": "url(" + Home_img + "trade-cultr.png)",
-                    "background-repeat": "no-repeat",
-                    "background-position": "0px -1px"
-                });
-                dio.wnd.find(".dio_max").css({
-                    "right": "105px",
-                    "position": "absolute",
-                    "height": "16px",
-                    "width": "22px",
-                    "background-image": "url(" + Home_img + "trade-arrow.png)",
-                    "background-repeat": "no-repeat",
-                    "background-position": "0px -1px"
-                });
-
-                dio.wnd.find(".dio_trade").hover(
-                    function () {
-                        $(this).css({
-                            "background-position": "0px -17px"
-                        });
-                    },
-                    function () {
-                        $(this).css({
-                            "background-position": "0px -1px"
-                        });
+                    dio.wnd.find(".tripple-progress-progressbar").each(function () {
+                        var res_type = this.id.split("_")[2];
+                        var res = getRes(res_type, dio.wndId);
+                        $(this).find(".amounts").append('<span class="dio_needed_' + res_type + '_' + dio.wndId + '"> &#9658; ' + res.needed + '</span>');
                     });
 
-                dio.wnd.find(".dio_trade").click(function () {
-                    var id = this.id.split("_");
-                    var res = getRes(id[1], id[2], id[3]);
-                    if (res.needed - res.amounts.curr3 <= 0 || res.caption.curr <= 0 || res.amounts.curr3 > 0) {
-                        res.send = 0;
-                    } else if (res.needed - res.amounts.curr3 > res.caption.curr) {
-                        res.send = res.caption.curr + res.amounts.curr3
-                    } else {
-                        res.send = res.needed;
-                    }
-                    res.wnd.find("#trade_type_" + id[1] + " input").val(res.send).select().blur();
-                });
+                    dio.wnd.find("#trade_tab").append(
+                        '<div id="dio_Improvement_trade">' +
+                        '<a id="dio_wood_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:200px"></a>' +
+                        '<a id="dio_stone_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:234px"></a>' +
+                        '<a id="dio_iron_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:268px"></a>' +
+                        '<a id="dio_wood_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:200px"></a>' +
+                        '<a id="dio_stone_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:234px"></a>' +
+                        '<a id="dio_iron_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:268px"></a>' +
+                        /*'<a id="dio_wood_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:200px"></a>' +
+				'<a id="dio_stone_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:234px"></a>' +
+				'<a id="dio_iron_'+dio.wndId+'_cultreverse" class="dio_trade dio_send_cult_reverse" style="top:268px"></a>'*/'</div>'
+                    );
 
-                // Tooltip
-                $('.dio_max').tooltip(dio_icon + "max");
-                $('.dio_send_cult').tooltip(dio_icon + getTexts("Quack", "cityfestivals"));
-                //$('.dio_send_cult_reverse').tooltip(getTexts("Quack", "delete"));
+                    dio.wnd.find(".dio_send_cult").css({
+                        "right": "84px",
+                        "position": "absolute",
+                        "height": "16px",
+                        "width": "22px",
+                        "background-image": "url(" + Home_img + "trade-cult.png)",
+                        "background-repeat": "no-repeat",
+                        "background-position": "0px -1px"
+                    });
+                    dio.wnd.find(".dio_send_cult_reverse").css({
+                        "left": "105px",
+                        "position": "absolute",
+                        "height": "16px",
+                        "width": "22px",
+                        "background-image": "url(" + Home_img + "trade-cultr.png)",
+                        "background-repeat": "no-repeat",
+                        "background-position": "0px -1px"
+                    });
+                    dio.wnd.find(".dio_max").css({
+                        "right": "105px",
+                        "position": "absolute",
+                        "height": "16px",
+                        "width": "22px",
+                        "background-image": "url(" + Home_img + "trade-arrow.png)",
+                        "background-repeat": "no-repeat",
+                        "background-position": "0px -1px"
+                    });
 
+                    dio.wnd.find(".dio_trade").hover(
+                        function () {
+                            $(this).css({
+                                "background-position": "0px -17px"
+                            });
+                        },
+                        function () {
+                            $(this).css({
+                                "background-position": "0px -1px"
+                            });
+                        });
+
+                    dio.wnd.find(".dio_trade").click(function () {
+                        var id = this.id.split("_");
+                        var res = getRes(id[1], id[2], id[3]);
+                        if (res.needed - res.amounts.curr3 <= 0 || res.caption.curr <= 0 || res.amounts.curr3 > 0) {
+                            res.send = 0;
+                        } else if (res.needed - res.amounts.curr3 > res.caption.curr) {
+                            res.send = res.caption.curr + res.amounts.curr3
+                        } else {
+                            res.send = res.needed;
+                        }
+                        res.wnd.find("#trade_type_" + id[1] + " input").val(res.send).select().blur();
+                    });
+
+                    // Tooltip
+                    $('.dio_max').tooltip(dio_icon + "max");
+                    $('.dio_send_cult').tooltip(dio_icon + getTexts("Quack", "cityfestivals"));
+                    //$('.dio_send_cult_reverse').tooltip(getTexts("Quack", "delete"));
+                }
             } catch (error) {
                 errorHandling(error, "townTradeImprovement");
             }
@@ -11939,10 +11826,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</div></div>' +
                     '<div id= "dio_tr_btn" class="">' + getTexts("Options", "str")[0] + '</div>').appendTo('.units_land .content');
 
-                $(".units_land .nav .border_top").click(function () { uw.BarracksWindowFactory.openBarracksWindow(); });
+                $(".units_land .nav .border_top").click(() => { uw.BarracksWindowFactory.openBarracksWindow(); });
 
 
-                $("#dio_tr_btn").click(function () {
+                $("#dio_tr_btn").click(() => {
                     if ($("#dio_strength").css('display') == 'none') {
                         UnitStrength.Menu.update();
                     }
@@ -11962,7 +11849,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 /*$("#dio_strength").css({
                     "display" : "none",
                 });*/
-                $("#dio_strength").click(function () {
+                $("#dio_strength").click(() => {
                     UnitStrength.Menu.update();
                 });
                 $("#dio_tr_btn").css({
@@ -12009,19 +11896,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</style>').appendTo("head");
 
                 // Button events
-                $('.units_land .units_wrapper, .btn_gods_spells .checked').click(function () {
+                $('.units_land .units_wrapper, .btn_gods_spells .checked').click(() => {
                     setTimeout(function () {
                         UnitStrength.Menu.update();
                     }, 100);
                 });
 
-                $('#dio_off_button').click(function () {
+                $('#dio_off_button').click(() => {
                     $('#dio_strength').addClass('off').removeClass('def');
 
                     def = false;
                     UnitStrength.Menu.update();
                 });
-                $('#dio_def_button').click(function () {
+                $('#dio_def_button').click(() => {
                     $('#dio_strength').addClass('def').removeClass('off');
 
                     def = true;
@@ -12207,7 +12094,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     "</div>"
                 ).appendTo(".units_naval .content");
 
-                $(".units_naval .nav .border_top").click(function () {
+                $(".units_naval .nav .border_top").click(() => {
                     uw.DocksWindowFactory.openDocksWindow();
                 });
 
@@ -12675,23 +12562,27 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
 
     function getUnitInputs() {
-        $('#place_sim_ground_units .place_insert_field, #place_sim_naval_units .place_insert_field').each(function () {
-            name = $(this).attr("name").replace(/\]/g, "").split("[");
+        try {
+            $('#place_sim_ground_units .place_insert_field, #place_sim_naval_units .place_insert_field').each(function () {
+                name = $(this).attr("name").replace(/\]/g, "").split("[");
 
-            const str = this;
+                const str = this;
 
-            const unit_type = $(str).closest('.place_simulator_table').attr("id").split("_")[2];
+                const unit_type = $(str).closest('.place_simulator_table').attr("id").split("_")[2];
 
-            let val = parseInt($(str).val(), 10);
+                let val = parseInt($(str).val(), 10);
 
-            val = val || 0;
+                val = val || 0;
 
-            if (unit_type === "ground") {
-                unitsGround[name[2]][name[3]] = val;
-            } else {
-                unitsNaval[name[2]][name[3]] = val;
-            }
-        });
+                if (unit_type === "ground") {
+                    unitsGround[name[2]][name[3]] = val;
+                } else {
+                    unitsNaval[name[2]][name[3]] = val;
+                }
+            });
+        } catch (error) {
+            errorHandling(error, "getUnitInputs");
+        }
     }
 
     function setChangeUnitInputs(side) {
@@ -12895,12 +12786,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
 
                 var str = '[img]' + imgArray.bordure + '[/img]' +
-                    '\n[color=#006B00][size=12][u][b]' + getTexts("labels", "ttl") + '[/b][/u][/size][/color]\n\n' +
+                    '\n[color=#006B00][size=12][u][b]' + getTexts("labels", "ttl", true) + '[/b][/u][/size][/color]\n\n' +
                     //'[table][**][img]'+ imgArray.sup +'[/img][||]'+
                     '[size=12][town]' + uw.ITowns.getTown(uw.Game.townId).getId() + '[/town] ([player]' + uw.Game.player_name + '[/player])[/size]' +
                     '\n[size=8][url=' + Home + 'en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v.' + dio_version + '[/size]' +
                     //'[||][img]'+ imgArray['rev' + (uw.ITowns.getTown(uw.Game.townId).hasConqueror()?1:0)] +'[/img][/**][/table]'+
-                    '\n\n[i][b]' + getTexts("labels", "inf") + '[/b][/i]' + troop_table +
+                    '\n\n[i][b]' + getTexts("labels", "inf", true) + '[/b][/i]' + troop_table +
                     '[table][*]' +
                     '[img]' + imgArray.wall + '[/img][|]\n' +
                     '[img]' + imgArray.tower + '[/img][|]\n' +
@@ -12928,7 +12819,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 var i = 0;
                 /*if ($('#f_mov').hasClass("checked")) {
-                move_table += '\n[i][b]' + getTexts("labels", "mov") + '[/b][/i]\n[table]';
+                move_table += '\n[i][b]' + getTexts("labels", "mov", true) + '[/b][/i]\n[table]';
 
                 $('#toolbar_activity_commands').mouseover();
 
@@ -12952,7 +12843,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 //console.log((bb_count_str + bb_count_move));
                 move_table += (i % 1) ? "[/**]" : "";
-                move_table += "[*][|][color=#800000][size=6][i] (" + getTexts("labels", "dev") + ": ±1s)[/i][/size][/color][/*][/table]\n";
+                move_table += "[*][|][color=#800000][size=6][i] (" + getTexts("labels", "dev", true) + ": ±1s)[/i][/size][/color][/*][/table]\n";
             }*/
 
                 str += move_table + '[img]' + imgArray.bordure + '[/img]\n';
@@ -12966,7 +12857,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
 
     function getArrivalTime(duration_time) {
-        /*
+        try {
+            /*
          var server_time = new Date((uw.Timestamp.server() + 7200) * 1000);
 
          duration_time = duration_time.split(":");
@@ -12976,24 +12868,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
          h = server_time.getUTCHours() + parseInt(duration_time[0], 10) + ((m>=60)? 1 : 0);
          */
 
-        var server_time = $('.server_time_area').get(0).innerHTML.split(" ")[0].split(":"), arrival_time, s, m, h;
-        duration_time = duration_time.split(":");
+            var server_time = $('.server_time_area').get(0).innerHTML.split(" ")[0].split(":"), arrival_time, s, m, h;
+            duration_time = duration_time.split(":");
 
-        s = parseInt(server_time[2], 10) + parseInt(duration_time[2], 10);
-        m = parseInt(server_time[1], 10) + parseInt(duration_time[1], 10) + ((s >= 60) ? 1 : 0);
-        h = parseInt(server_time[0], 10) + parseInt(duration_time[0], 10) + ((m >= 60) ? 1 : 0);
+            s = parseInt(server_time[2], 10) + parseInt(duration_time[2], 10);
+            m = parseInt(server_time[1], 10) + parseInt(duration_time[1], 10) + ((s >= 60) ? 1 : 0);
+            h = parseInt(server_time[0], 10) + parseInt(duration_time[0], 10) + ((m >= 60) ? 1 : 0);
 
-        s = s % 60;
-        m = m % 60;
-        h = h % 24;
+            s = s % 60;
+            m = m % 60;
+            h = h % 24;
 
-        s = ((s < 10) ? "0" : "") + s;
-        m = ((m < 10) ? "0" : "") + m;
-        h = ((h < 10) ? "0" : "") + h;
+            s = ((s < 10) ? "0" : "") + s;
+            m = ((m < 10) ? "0" : "") + m;
+            h = ((h < 10) ? "0" : "") + h;
 
-        arrival_time = h + ":" + m + ":" + s;
+            arrival_time = h + ":" + m + ":" + s;
 
-        return arrival_time;
+            return arrival_time;
+
+        } catch (error) {
+            errorHandling(error, "getArrivalTime");
+        }
     }
 
 
@@ -13009,7 +12905,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var smileyArray = {};
 
     var SmileyBox = {
-        loading_error: false, isHalloween: false, isXmas: false, isForum: $(".editor_textbox_container").get(0), isEaster: false, isLove: false,
+        loading_error: false, isHalloween: false, isXmas: false, isEaster: false, isLove: false,
 
         activate: function () {
             $('<style id="dio_smiley">' +
@@ -13131,44 +13027,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 ];
             }
 
-            //smileyArray.other = smileyArray.halloween.slice();
-
-            // Forum: Extra smiley
-            if (SmileyBox.isForum) {
-                smileyArray.grepolis.push("i/ckajscggscw4s2u60"); // Pacman
-                smileyArray.grepolis.push("i/cowqyl57t5o255zli"); // Bugpolis
-                smileyArray.grepolis.push("i/cowquq2foog1qrbee"); // Inno
-            }
-
             SmileyBox.loadSmileys();
         },
         deactivate: function () {
             $('#dio_smiley').remove();
         },
         checkHolidaySeason: function () {
-            // TODO: HolidaySpecial-Klasse stattdessen benutzen
-            var daystamp = 1000 * 60 * 60 * 24, today = new Date((new Date()) % (daystamp * (365 + 1 / 4))), // without year
-
-                // Halloween-Smileys ->21 days
-                halloween_start = daystamp * 295, // 22. Oktober (296)
-                halloween_end = daystamp * 316, // 12. November (316)
-                // Xmas-Smileys -> 28 days
-                xmas_start = daystamp * 295, // 1. Dezember (334)
-                xmas_end = daystamp * 361, // 28. Dezember (361)
-                // Easter-Smileys -> 23 days
-                easter_start = daystamp * 88, // 30. march (88)
-                easter_end = daystamp * 110, // 21. april (110)
-                // Valentine's Day-Smileys -> 11 days
-                love_start = daystamp * 37, // 9. february (37)
-                love_end = daystamp * 50; // 20. february (50)
-
-            SmileyBox.isHalloween = (today >= halloween_start) ? (today <= halloween_end) : false;
-
-            SmileyBox.isXmas = (today >= xmas_start) ? (today <= xmas_end) : false;
-
-            SmileyBox.isEaster = (today >= easter_start) ? (today <= easter_end) : false;
-
-            SmileyBox.isLove = (today >= love_start) ? (today <= love_end) : false;
+            // Halloween-Smileys ->21 days
+            SmileyBox.isHalloween = dio.daystamp(295, 316); // 21. Oktober (295) / 12. November (316)
+            // Xmas-Smileys -> 28 days
+            SmileyBox.isXmas = dio.daystamp(334, 361); // 1. Dezember (334) / 28. Dezember (361)
+            // Easter-Smileys -> 23 days
+            SmileyBox.isEaster = dio.daystamp(88, 110); // 30. march (88) / 21. april (110)
+            // Valentine's Day-Smileys -> 11 days
+            SmileyBox.isLove = dio.daystamp(37, 50); // 9. february (37) / 20. february (50)
         },
         // preload images
         loadSmileys: function () {
@@ -13537,7 +13409,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     function () {
                         if ($("#dio_plusmenuRecruits").length == 0) {
                             $("#toolbar_activity_recruits_list").append('<div id="dio_plusmenuRecruits" class="dio_plusmenu"><div id="dio_plusdraghandleRecruits" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
-                            $('#dio_plusmenuRecruits .dio_plusback').click(function () {
+                            $('#dio_plusmenuRecruits .dio_plusback').click(() => {
                                 dio_plus_destroy("dio_plusmenuRecruits");
                             });
                         }
@@ -13548,7 +13420,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 function () {
                 if ($("#dio_plusmenuCommands").length == 0) {
                     $("#toolbar_activity_commands_list").append('<div id="dio_plusmenuCommands" class="dio_plusmenu"><div id="dio_plusdraghandleCommands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
-                    $('#dio_plusmenuCommands .dio_plusback').click(function () {
+                    $('#dio_plusmenuCommands .dio_plusback').click(() => {
                         dio_plus_destroy("dio_plusmenuCommands");
                     });
                 }
@@ -13559,7 +13431,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     function () {
                         if ($("#dio_plusmenuTrades").length == 0) {
                             $("#toolbar_activity_trades_list").append('<div id="dio_plusmenuTrades" class="dio_plusmenu"><div id="dio_plusdraghandleTrades" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
-                            $('#dio_plusmenuTrades .dio_plusback').click(function () {
+                            $('#dio_plusmenuTrades .dio_plusback').click(() => {
                                 dio_plus_destroy("dio_plusmenuTrades");
                             });
                         }
@@ -13570,7 +13442,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     function () {
                         if ($("#dio_plusmenuTemple_commands").length == 0) {
                             $("#toolbar_activity_temple_commands_list").append('<div id="dio_plusmenuTemple_commands" class="dio_plusmenu"><div id="dio_plusdraghandleTemple_commands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
-                            $('#dio_plusmenuTemple_commands .dio_plusback').click(function () {
+                            $('#dio_plusmenuTemple_commands .dio_plusback').click(() => {
                                 dio_plus_destroy("dio_plusmenuTemple_commands");
                             });
                         }
@@ -13668,13 +13540,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('#dio_plusmenuTemple_commands').remove();
             $("#dio_plusmenuTemple_commandsSTYLE").remove();
 
-            $('#toolbar_activity_recruits_list').click(function () {
+            $('#toolbar_activity_recruits_list').click(() => {
                 dio_plus_destroy("dio_plusmenuRecruits");
             });
-            $('#toolbar_activity_trades_list').click(function () {
+            $('#toolbar_activity_trades_list').click(() => {
                 dio_plus_destroy("dio_plusmenuTrades");
             });
-            $('#toolbar_activity_temple_commands_list').click(function () {
+            $('#toolbar_activity_temple_commands_list').click(() => {
                 dio_plus_destroy("dio_plusmenuTemple_commands");
             });
 
@@ -13694,7 +13566,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var Townbb = {
-        activate: function () {
+        activate: () => {
 
             Townbb.addButton();
 
@@ -13713,23 +13585,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_townbb-clipboard { background: url(' + Home_img + 'icon-add-to-clipboard.png); background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 6; top:29px ;left: 167px; display: none;} ' +
                 '</style>').appendTo("head");
         },
-        deactivate: function () {
+        deactivate: () => {
             $('#dio_townbb').remove();
             $('#dio_townbb_style').remove();
             $('#input_townbb').remove();
         },
-        addButton: function () {
+        addButton: () => {
             try {
                 $('<a id="dio_townbb"></a><input id="input_townbb" type="text" onfocus="this.select();" onclick="this.select();"><div id="dio_townbb_logo"></div>').appendTo('.town_name_area');
                 $('<a id="dio_townbb-clipboard" data-clipboard-action="cut" data-clipboard-target="#input_townbb"></a>').appendTo('.town_name_area').tooltip(dio_icon + getTexts("messages", "copy"));
-                $("#dio_townbb").click(function () {
+                $("#dio_townbb").click(() => {
                     $('#dio_townbb-clipboard').toggle();
                     $("#input_townbb").toggle();
                     $("#input_townbb").val("[town]" + uw.Game.townId + "[/town]");
                 });
 
                 // clipboard
-                setTimeout(function () {
+                setTimeout(() => {
                     dio.clipboard('#dio_townbb-clipboard', '#input_townbb', "Townbb (addButton clipboard)", null);
                 }, 2000)
 
@@ -13747,7 +13619,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var BBtowninfo = {
-        activate: function () {
+        activate: () => {
 
             if ($('.dio_BBplayer').get(0)) {
                 $('div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({ "padding-left": "23px" });
@@ -13767,10 +13639,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 '</style>').appendTo("head");
         },
-        profile: function () {
+        profile: () => {
             try {
                 var c = dio.wndId;
-                this.add(c);
+                BBtowninfo.add(c);
 
                 var grcrt = false, num = 2;
                 //grcrt ?
@@ -13784,7 +13656,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     // BBCode player
                     $('<a id="dio_gpwnd_' + c + '_BBplayer" class="dio_BBplayer" style="float: left; margin-right: 2px;"></a><input id="input_gpwnd_' + c + '_BBplayer" class="input_BBplayer" style="top:25px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" type="text" onfocus="this.select();" onclick="this.select();"></div>').appendTo("div#gpwnd_" + c + " div#player_info h3");
                     $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:27px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo("div#gpwnd_" + c + " div#player_info h3").tooltip(dio_icon + getTexts("messages", "copy"));
-                    $('#dio_gpwnd_' + c + '_BBplayer').click(function () {
+                    $('#dio_gpwnd_' + c + '_BBplayer').click(() => {
                         $('#dio_gpwnd_' + c + '_clipboard-player').toggle();
                         $('#input_gpwnd_' + c + '_BBplayer').toggle();
                         $('#input_gpwnd_' + c + '_BBplayer').val("[player]" + $("div#gpwnd_" + c + " div#player_info h3").text().trim() + "[/player]");
@@ -13794,7 +13666,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if ($("div#gpwnd_" + c + " div#player_info a").text().trim() !== "") {
                         $("div#gpwnd_" + c + " div#player_info div#player_points").before('<a id="dio_gpwnd_' + c + '_BBalliance" class="dio_BBalliance" style="position: relative; top: -2px; float: left; margin-right: 1px; left: -1px;"></a><input id="input_gpwnd_' + c + '_BBalliance" class="input_BBalliance" style="top:50px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" onclick="this.select();" onfocus="this.select();"></div>');
                         $("div#gpwnd_" + c + " div#player_info div#player_points").after('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:51px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>');
-                        $('#dio_gpwnd_' + c + '_BBalliance').click(function () {
+                        $('#dio_gpwnd_' + c + '_BBalliance').click(() => {
                             $('#dio_gpwnd_' + c + '_clipboard-alliance').toggle();
                             //alliance name ?
                             var text = $("div#gpwnd_" + c + " div#player_info.bold")[0].children[num].attributes[2].textContent,
@@ -13814,9 +13686,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
         },
 
-        towninfo: function (c) {
+        towninfo: (c) => {
             try {
-                this.add(c);
+                BBtowninfo.add(c);
 
                 var MH = false;
                 if (typeof (uw.mhCol) !== "undefined") {
@@ -13832,7 +13704,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if ($("div#gpwnd_" + c + " div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even div.list_item_left a.gp_player_link").is(':visible')) {
                         $('<a id="dio_gpwnd_' + c + '_BBplayer" class="dio_BBplayer" style="top:1px ;left: 0px; position:absolute;"></a><input id="input_gpwnd_' + c + '_BBplayer" class="input_BBplayer" style="left: 20px; top: 3px;" onfocus="this.select();" onclick="this.select();"></div>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.even div.list_item_left');
                         $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.even div.list_item_left').tooltip(dio_icon + getTexts("messages", "copy"));
-                        $('#dio_gpwnd_' + c + '_BBplayer').click(function () {
+                        $('#dio_gpwnd_' + c + '_BBplayer').click(() => {
                             $('#dio_gpwnd_' + c + '_clipboard-player').toggle();
                             $('#input_gpwnd_' + c + '_BBplayer').toggle();
                             $('#input_gpwnd_' + c + '_BBplayer').val("[player]" + $("div#gpwnd_" + c + " div#info_tab_content li.even div.list_item_left a.gp_player_link").text().trim() + "[/player]");
@@ -13841,7 +13713,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         // BBCode alliance
                         $('<a id="dio_gpwnd_' + c + '_BBalliance" class="dio_BBalliance" style="top: 1px; left: 0px; position: absolute;"></a><input id="input_gpwnd_' + c + '_BBalliance" class="input_BBalliance" style="left: 20px; top: 3px;" onclick="this.select();" onfocus="this.select();"></div>').appendTo('div#gpwnd_' + c + ' ul.game_list li.odd.clearfix');
                         $('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.odd.clearfix').tooltip(dio_icon + getTexts("messages", "copy"));
-                        $('#dio_gpwnd_' + c + '_BBalliance').click(function () {
+                        $('#dio_gpwnd_' + c + '_BBalliance').click(() => {
                             $('#dio_gpwnd_' + c + '_clipboard-alliance').toggle();
                             $('#input_gpwnd_' + c + '_BBalliance').toggle();
                             $('#input_gpwnd_' + c + '_BBalliance').val("[ally]" + $("div#gpwnd_" + c + " div#info_tab_content li.odd.clearfix a").text().trim() + "[/ally]");
@@ -13850,7 +13722,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     // clipboard town
                     $('div#gpwnd_' + c + ' #town_bbcode_link').append('<a id="dio_gpwnd_' + c + '_clipboard-town" class="dio_clipboard-town" style="top:3px; ' + (MH ? "left: 171px;" : "right: 169px;") + '" data-clipboard-text="' + $('div#gpwnd_' + c + ' #town_bbcode_id').val() + '"></a>');
-                    $('div#gpwnd_' + c + ' #town_bbcode_link').click(function () {
+                    $('div#gpwnd_' + c + ' #town_bbcode_link').click(() => {
                         $('#dio_gpwnd_' + c + '_clipboard-town').toggle();
                     });
                 };
@@ -13862,18 +13734,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "BBtowninfo (towninfo)");
             }
         },
-        add: function (c) {
+        add: (c) => {
             try {
                 // Clipboard
                 dio.clipboard('#dio_gpwnd_' + c + '_clipboard-player', '#input_gpwnd_' + c + '_BBplayer', "BBtowninfo (add)", null);
                 dio.clipboard('#dio_gpwnd_' + c + '_clipboard-alliance', '#input_gpwnd_' + c + '_BBalliance', "BBtowninfo (add)", null);
-                dio.clipboard('#dio_gpwnd_' + c + '_clipboard-town', '#div#gpwnd_' + c + ' #town_bbcode_id', "BBtowninfo (add)"), null;
+                dio.clipboard('#dio_gpwnd_' + c + '_clipboard-town', '#div#gpwnd_' + c + ' #town_bbcode_id', "BBtowninfo (add)", null);
             } catch (error) {
                 errorHandling(error, "BBtowninfo (add)");
                 uw.HumanMessage.error(dio_icon + "Error");
             }
         },
-        deactivate: function () {
+        deactivate: () => {
             $('#dio_BBtowninfo_style').remove();
             $('.input_BBplayer,.input_BBalliance').css({ "display": "none" });
             $('div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({ "padding-left": "0px" });
@@ -14089,20 +13961,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var culturePoints = {
         timeout: null,
-        activate: function () {
+        activate: () => {
             if ($('#culture_points_overview_bottom').length || $("#place_container").length) { culturePoints.add(); }
             culturePoints.timeout = setInterval(() => {
                 if ($('#culture_points_overview_bottom').length || $("#place_container").length) { culturePoints.add(); }
             }, 50000); //0.
         },
-        add: function () {
+        add: () => {
             try {
-                var f, i, j, k;
-                //var test = false;
-                var test = 100;
+                let f, i, j, k, g, h;
+                //let test = false;
+                let test = 100;
                 if ($("#culture_points_overview_bottom").length) {
-                    let g = $("ul#culture_overview_towns span.eta");
-                    var h = $("#culture_points_overview_bottom #place_culture_count").text();
+                    g = $("ul#culture_overview_towns span.eta");
+                    h = $("#culture_points_overview_bottom #place_culture_count").text();
                     i = h.split("/");
                     j = parseInt(i[0]) + g.length;
                     k = parseInt(i[1]) - j;
@@ -14139,7 +14011,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 if ($("#place_container").length) {
                     let h = $("#place_container #place_culture_count").text();
                     let g = 0;
-                    var inProgress = parseInt($('#place_culture_in_progress').text().match(/[0-9]+/));
+                    let inProgress = parseInt($('#place_culture_in_progress').text().match(/[0-9]+/));
                     if (inProgress > 0) { g = inProgress; }
                     i = h.split("/");
                     j = parseInt(i[0]) + g;
@@ -14158,25 +14030,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             $("#dio_cultureplusA").text(" [+" + k * -1 + "]");
                         }
                     }
-                    /*
-                    h = $(".nui_battlepoints_container .points").text();
-                    k = parseInt(300 - h);
-                    $("#place_container #place_triumph .game_footer span").text(h + "/300");
-                    if (k > 0) {
-                        if ($("#place_container #place_triumph .game_footer span").text().indexOf("[") < 1) {
-                            $("#place_container #place_triumph .game_footer span").append(" <span id='dio_battle_pointsA'>[-" + k + "]</span>");
-                        } else {
-                            $("#dio_battle_pointsA").text("[-" + k + "]");
-                        }
-                    }
-                    */
                 }
                 $('#dio_culture, #dio_cultureplus, #dio_cultureA, #dio_cultureplusA, #dio_battle_points, #dio_battle_pointsA').tooltip(dio_icon);
             } catch (error) {
                 errorHandling(error, "culturePoints (add)");
             }
         },
-        heure: function (g, h, test) {
+        heure: (g, h, test) => {
             try {
                 var f, i, j, k;
                 i = h.split("/");
@@ -14197,7 +14057,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
             return m;
         },
-        deactivate: function () {
+        deactivate: () => {
             $("#dio_culture").remove();
             $("#dio_cultureplus").remove();
             //
@@ -14213,18 +14073,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
 
     var cultureProgress = {
-        activate: function () {
+        activate: () => {
             try {
                 if ($("#place_culture_towns").is(":visible")) {
 
-                    var level = parseInt($('#place_culture_towns').text().split('/')[1]);
-                    var [currentCount, totalCount] = $('#place_culture_count').text().match(/[0-9]+/g);
-                    var inProgress = parseInt($('#place_culture_in_progress').text().match(/[0-9]+/));
+                    let level = parseInt($('#place_culture_towns').text().split('/')[1]);
+                    let [currentCount, totalCount] = $('#place_culture_count').text().match(/[0-9]+/g);
+                    let inProgress = parseInt($('#place_culture_in_progress').text().match(/[0-9]+/));
 
-                    var nbNeeded = (level - 1) * 3;
-                    var nbLeft = totalCount - currentCount;
-                    var percentLeft = 100 - nbLeft / nbNeeded * 100;
-                    var percentInProgress = inProgress / nbNeeded * 100;
+                    let nbNeeded = (level - 1) * 3;
+                    let nbLeft = totalCount - currentCount;
+                    let percentLeft = 100 - nbLeft / nbNeeded * 100;
+                    let percentInProgress = inProgress / nbNeeded * 100;
 
                     //Progress Bar
                     if (!$("#culture_points_overview_bottom #dio-ProgressBar").length) {
@@ -14264,7 +14124,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "cultureProgress");
             }
         },
-        deactivate: function () {
+        deactivate: () => {
             $("#dio-ProgressBar-style").remove();
             $("#dio-ProgressBar").remove();
             $("#dio-Bar").remove();
@@ -14646,7 +14506,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     dio_city_overview();
                 });
 
-                $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview]').click(function () {
+                $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview]').click(() => {
                     if (!$("#ui_box .bull_eye_buttons .city_overview").hasClass('checked')) {
                         $("#ui_box .bull_eye_buttons .city_overview").click();
                     } else {
@@ -14752,13 +14612,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             if (!$('.city_overview_overlay.main').length) {
                 setTimeout(() => {
                     $(".construction_queue_sprite.queue_button-idle.queue_button.btn_construction_mode.js-tutorial-btn-construction-mode").click();
-                }, 500);
+                }, 20);
             }
             $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.city_overview.click).subscribe('dio_city_overview', () => {
                 if (DATA.options.dio_Cic && !$('.city_overview_overlay.main').length) {
                     setTimeout(() => {
                         $(".construction_queue_sprite.queue_button-idle.queue_button.btn_construction_mode.js-tutorial-btn-construction-mode").click();
-                    }, 300);
+                    }, 20);
                 }
             });
         },
@@ -14775,24 +14635,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         isHalloween: false, isXmas: false, isNewYear: false, isEaster: false,
 
         activate: () => {
-            var daystamp = 1000 * 60 * 60 * 24, today = new Date((new Date()) % (daystamp * (365 + 1 / 4))), // without year
-
-                // Halloween -> 15 days
-                halloween_start = daystamp * 297, // 25. Oktober
-                halloween_end = daystamp * 321, // 8. November
-                // Xmas -> 28 days
-                xmas_start = daystamp * 343, // 10. Dezember (343)
-                xmas_end = daystamp * 361, // 28. Dezember
-                // NewYear -> 7 days
-                newYear_start = daystamp * 0, // 1. Januar
-                newYear_end = daystamp * 7; // 7. Januar
-
-            HolidaySpecial.isHalloween = (today >= halloween_start) ? (today <= halloween_end) : false;
-
-            HolidaySpecial.isXmas = (today >= xmas_start) ? (today <= xmas_end) : false;
-
-            HolidaySpecial.isNewYear = (today >= newYear_start) ? (today <= newYear_end) : false;
-
+            // Xmas-Smileys -> 18 days
+            HolidaySpecial.isXmas = dio.daystamp(344, 361); // 10. Dezember (344) / 28. Dezember (361)
+            // NewYear -> 7 days
+            HolidaySpecial.isNewYear = dio.daystamp(0, 7); // 1. Januar / 7. Januar
 
             if (HolidaySpecial.isXmas) { HolidaySpecial.XMas.add(); }
             if (HolidaySpecial.isNewYear) { HolidaySpecial.NewYear.add(); }
@@ -14855,183 +14701,60 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '#scrollbar { display:block!important; } ' +
                     '</style>').appendTo('head');
 
-                //button
-                var scroll_vertical = "height: 16px; background-image: url(" + Home_img + "scroll-"
-                var scroll_horizontal = "width: 16px; background-image: url(" + Home_img + "scroll-"
+                //Blue (Bleu)
+                if (DATA.options.dio_aaa) { Scrollbar.collor([145, 165, 193, 0.5], [37, 82, 188, 0.5], [37, 82, 188, 0.8], 'blue') }
 
-                if (DATA.options.dio_aaa || DATA.options.dio_bbb || DATA.options.dio_ccc || DATA.options.dio_ddd || DATA.options.dio_eee) {
-                    //Blue (Bleu)
-                    if (DATA.options.dio_aaa) {
-                        $('<style id="dio_Scrollbar">' +
+                //Red (Rouge)
+                else if (DATA.options.dio_bbb) { Scrollbar.collor([193, 145, 145, 0.5], [188, 37, 37, 0.5], [188, 37, 37, 0.8], 'red') }
 
-                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                            '::-webkit-scrollbar-track { background-color: rgba(145, 165, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                            '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.5); border-radius: 3px; } ' +
-                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.8); } ' +
+                //Green (Vert)
+                else if (DATA.options.dio_ccc) { Scrollbar.collor([147, 193, 145, 0.5], [37, 188, 46, 0.5], [37, 188, 46, 0.8], 'green') }
 
-                            /* Button Up */
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-blue.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-blue-hover.png);} ' +
+                //Pink (Rose)
+                else if (DATA.options.dio_ddd) { Scrollbar.collor([165, 145, 193, 0.5], [162, 37, 188, 0.5], [162, 37, 188, 0.8], 'pink') }
 
-                            /* Button Down */
-                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-blue.png);} ' +
-                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-blue-hover.png);} ' +
+                //White (Blanc)
+                else if (DATA.options.dio_eee) { Scrollbar.collor([255, 255, 255, 0.5], [152, 152, 152, 0.5], [152, 152, 152, 0.8], 'white') }
 
-                            /* Button Left */
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-blue.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-blue-hover.png);} ' +
+                else { Scrollbar.collor([145, 165, 193, 0.5], [37, 82, 188, 0.5], [37, 82, 188, 0.8], 'blue') }
 
-                            /* Button Right */
-                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-blue.png);} ' +
-                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-blue-hover.png);} ' +
-
-                            '</style>').appendTo('head');
-                    }
-                    //Red (Rouge)
-                    if (DATA.options.dio_bbb) {
-                        $('<style id="dio_Scrollbar">' +
-
-                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                            '::-webkit-scrollbar-track { background-color: rgba(193, 145, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                            '::-webkit-scrollbar-thumb { background-color: rgba(188, 37, 37, 0.5); border-radius: 3px; } ' +
-                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(188, 37, 37, 0.8); } ' +
-
-                            /* Button Up */
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-red.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-red-hover.png);} ' +
-
-                            /* Button Down */
-                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-red.png);} ' +
-                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-red-hover.png);} ' +
-
-                            /* Button Left */
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-red.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-red-hover.png);} ' +
-
-                            /* Button Right */
-                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-red.png);} ' +
-                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-red-hover.png);} ' +
-
-                            '</style>').appendTo('head');
-                    }
-                    //Green (Vert)
-                    if (DATA.options.dio_ccc) {
-                        $('<style id="dio_Scrollbar">' +
-
-                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                            '::-webkit-scrollbar-track { background-color: rgba(147, 193, 145, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                            '::-webkit-scrollbar-thumb { background-color: rgba(37, 188, 46, 0.5); border-radius: 3px; } ' +
-                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 188, 46, 0.8); } ' +
-
-                            /* Button Up */
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-green.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-green-hover.png);} ' +
-
-                            /* Button Down */
-                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-green.png);} ' +
-                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-green-hover.png);} ' +
-
-                            /* Button Left */
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-green.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-green-hover.png);} ' +
-
-                            /* Button Right */
-                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-green.png);} ' +
-                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-green-hover.png);} ' +
-
-                            '</style>').appendTo('head');
-                    }
-                    //Pink (Rose)
-                    if (DATA.options.dio_ddd) {
-                        $('<style id="dio_Scrollbar">' +
-
-                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                            '::-webkit-scrollbar-track { background-color: rgba(165, 145, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                            '::-webkit-scrollbar-thumb { background-color: rgba(162, 37, 188, 0.5); border-radius: 3px; } ' +
-                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(162, 37, 188, 0.8); } ' +
-
-                            /* Button Up */
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-pink.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-pink-hover.png);} ' +
-
-                            /* Button Down */
-                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-pink.png);} ' +
-                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-pink-hover.png);} ' +
-
-                            /* Button Left */
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-pink.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-pink-hover.png);} ' +
-
-                            /* Button Right */
-                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-pink.png);} ' +
-                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-pink-hover.png);} ' +
-
-                            '</style>').appendTo('head');
-                    }
-                    //White (Blanc)
-                    if (DATA.options.dio_eee) {
-                        $('<style id="dio_Scrollbar">' +
-
-                            '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                            '::-webkit-scrollbar-track { background-color: rgba(255, 255, 255, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                            '::-webkit-scrollbar-thumb { background-color: rgba(152, 152, 152, 0.5); border-radius: 3px; } ' +
-                            '::-webkit-scrollbar-thumb:hover { background-color: rgba(152, 152, 152, 0.8); } ' +
-
-                            /* Button Up */
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-white.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-white-hover.png);} ' +
-
-                            /* Button Down */
-                            '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-white.png);} ' +
-                            '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-white-hover.png);} ' +
-
-                            /* Button Left */
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-white.png);} ' +
-                            '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-white-hover.png);} ' +
-
-                            /* Button Right */
-                            '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-white.png);} ' +
-                            '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-white-hover.png);} ' +
-
-                            '</style>').appendTo('head');
-                    }
-                } else {
-                    $('<style id="dio_Scrollbar">' +
-
-                        '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
-                        '::-webkit-scrollbar-track { background-color: rgba(145, 165, 193, 0.5); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
-                        '::-webkit-scrollbar-thumb { background-color: rgba(37, 82, 188, 0.6); border-radius: 3px; } ' +
-                        '::-webkit-scrollbar-thumb:hover { background-color: rgba(37, 82, 188, 0.9); } ' +
-
-                        /* Button Up */
-                        '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-blue.png);} ' +
-                        '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-blue-hover.png);} ' +
-
-                        /* Button Down */
-                        '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-blue.png);} ' +
-                        '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-blue-hover.png);} ' +
-
-                        /* Button Left */
-                        '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-blue.png);} ' +
-                        '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-blue-hover.png);} ' +
-
-                        /* Button Right */
-                        '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-blue.png);} ' +
-                        '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-blue-hover.png);} ' +
-
-                        '</style>').appendTo('head');
-                }
             } catch (error) {
                 errorHandling(error, "Scrollbar");
             }
         },
+        collor: (a, b, c, collor) => {
+            //button
+            var scroll_vertical = "height: 16px; background-image: url(" + Home_img + "scroll-", scroll_horizontal = "width: 16px; background-image: url(" + Home_img + "scroll-";
+
+            return $('<style id="dio_Scrollbar">' +
+
+                '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
+                '::-webkit-scrollbar-track { background-color: rgba(' + a + '); border-top-right-radius: 4px; border-bottom-right-radius: 4px; } ' +
+                '::-webkit-scrollbar-thumb { background-color: rgba(' + b + '); border-radius: 3px; } ' +
+                '::-webkit-scrollbar-thumb:hover { background-color: rgba(' + c + '); } ' +
+
+                /* Button Up */
+                '::-webkit-scrollbar-button:single-button:vertical:decrement {' + scroll_vertical + 'up-' + collor + '.png);} ' +
+                '::-webkit-scrollbar-button:single-button:vertical:decrement:hover {' + scroll_vertical + 'up-' + collor + '-hover.png);} ' +
+
+                /* Button Down */
+                '::-webkit-scrollbar-button:single-button:vertical:increment {' + scroll_vertical + 'down-' + collor + '.png);} ' +
+                '::-webkit-scrollbar-button:vertical:single-button:increment:hover {' + scroll_vertical + 'down-' + collor + '-hover.png);} ' +
+
+                /* Button Left */
+                '::-webkit-scrollbar-button:single-button:horizontal:decrement {' + scroll_horizontal + 'left-' + collor + '.png);} ' +
+                '::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {' + scroll_horizontal + 'left-' + collor + '-hover.png);} ' +
+
+                /* Button Right */
+                '::-webkit-scrollbar-button:single-button:horizontal:increment {' + scroll_horizontal + 'right-' + collor + '.png);} ' +
+                '::-webkit-scrollbar-button:horizontal:single-button:increment:hover {' + scroll_horizontal + 'right-' + collor + '-hover.png);} ' +
+
+                '</style>').appendTo('head');
+        },
         deactivate: () => {
             $('#dio_Scrollbar').remove();
             $('#dio_Scrollbar_display').remove();
-            $('#dio_Scrollbar_display').remove();
-            $('<style id="dio_Scrollbar_none">' +
-                '#scrollbar { display:none!important; } ' +
-                '</style>').appendTo('head');
+            $('<style id="dio_Scrollbar_none"> #scrollbar { display:none!important; } </style>').appendTo('head');
         },
     };
 
@@ -15211,11 +14934,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             menu: Home_img + 'giiagnrp.png'
         },
 
-        activate: function () {
+        activate: () => {
 
             $('.toolbar_activities .right').before('<a id="dio_BTN_HK" style="z-index: 6; top: -27px; left: 24px; float: right; position: relative;"><img src="' + Home_img + 'hotkeys.png" style="float:left; border-width: 0px"></a></a>');
 
+            $('<style id="dio_hotkeys_style">.town_name_area {z-index: 6}</style>').appendTo('head');
             if ($('#gsa_shortcutOverview').is(':visible')) {
+
                 if ($('.temple_commands').is(':visible')) {
                     $('<style id="dio_MH_attsup_style">#MH_attsup {left:422px !important;}</style>').appendTo('head');
                 } else {
@@ -15224,9 +14949,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
             else {
                 if ($('.temple_commands').is(':visible')) {
-                    $('<style id="dio_MH_attsup_style">#MH_attsup {left:423px !important;}</style>').appendTo('head');
+                    $('<style id="dio_MH_attsup_style">#MH_attsup {left:413px !important;}</style>').appendTo('head');
                 } else {
-                    $('<style id="dio_MH_attsup_style">#MH_attsup {left:395px !important;}</style>').appendTo('head');
+                    $('<style id="dio_MH_attsup_style">#MH_attsup {left:384px !important;}</style>').appendTo('head');
                 }
             }
             var mousePopupHTML = '<span style="margin-bottom:3px; display:inline-block">' + dio_icon + '<b>' + getTexts("hotkeys", "hotkeys") + ':</b></span>';
@@ -15319,12 +15044,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
             $('#dio_BTN_HK').tooltip(mousePopupHTML);
 
-            $("#dio_BTN_HK").click(function () {
+            $("#dio_BTN_HK").click(() => {
                 hotkeys.add()
             });
             hotkeys.add();
         },
-        add: function () {
+        add: () => {
             try {
                 var ctrlDown = false;
 
@@ -15528,7 +15253,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "hotkeys");
             }
         },
-        deactivate: function () {
+        deactivate: () => {
             $('#dio_BTN_HK').remove();
             $('#dio_MH_attsup_style').remove();
         },
@@ -15539,7 +15264,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var islandFarmingVillages = {
-        activate: function () {
+        activate: () => {
             try {
                 $('<style id="dio_message_recipients_style">' +
                     '#message_recipients { width:630px ; }' +
@@ -15595,7 +15320,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "islandFarmingVillages");
             }
         },
-        deactivate: function () {
+        deactivate: () => {
             $('#dio_message_island').remove();
             $('#dio_message_recipients_style').remove();
         },
@@ -15607,8 +15332,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var townslist = {
         timeout: null,
-        groups: -2,
-        activate: function () {
+        activate: () => {
             townslist.timeout = setInterval(() => {
                 if ($('#town_groups_list').length) {
                     if (!$('.dio_town_bb').get(0)) {
@@ -15616,7 +15340,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
             }, 100); //0.1s
-            this.addCopyListener()
+            dio.clipboard("#dio-copy-townslist", null, "townslist", true)
             createWindowType("DIO_BBCODE", getTexts("labels", "tow"), 470, 375, true, [240, 70]); //[240, 70]
             $('<style id="dio_town_list_bb_style"> ' +
                 '#dio_town_list_bb { background: url("' + Home_img + 'subforum-old.png") no-repeat; height: 15px; width: 15px; position: absolute; right: 6px; top: 2px;} ' +
@@ -15626,131 +15350,116 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_close_bb.close_b { position: absolute; top: -37px; right: -8px; } ' +
                 '</style>').appendTo('head');
         },
-        add: function () {
+        add: () => {
             try {
                 if (!$('#town_groups_list a.town_bb').length != 0) {
                     $('.content .group_name .name').append('<a class="dio_town_bb"><div id="dio_town_list_bb"></div></a>');
                     $('.dio_town_bb').click(function (e) {
-                        var towngrp_id = $(this).parent().data('groupid');
-                        if (townslist.groups === towngrp_id) {
-                            if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
-                                uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                            }
-                            townslist.groups = -2;
+                        $('.button.js-button-caption').click();
+                        let towngrp_id = $(this).parent().data('groupid');
+                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
+                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
                         }
-                        else {
-                            var cities_towngroup = uw.ITowns.town_group_towns.getTowns(towngrp_id);
-                            var bb_contentP1 = "[quote][size=9][player]" + pName + "[/player][/size] ";
-                            var bb_contentP2 = bb_contentP1, bb_contentP3 = bb_contentP1, bb_contentP4 = bb_contentP1, bb_contentP5 = bb_contentP1;
-                            var bb_premium = 0, bb_premiumb = "", bb_premiumc = false;
-                            if (townslist.groups != towngrp_id & $('#dio_townslist').length) {
-                                if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
-                                    uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                                }
-                            }
-                            townslist.groups = towngrp_id;
+                        let cities_towngroup = uw.ITowns.town_group_towns.getTowns(towngrp_id)
+                        let bb_contentP1 = "[quote][size=9][player]" + pName + "[/player][/size] ";
+                        let bb_contentP2 = bb_contentP1, bb_contentP3 = bb_contentP1, bb_contentP4 = bb_contentP1, bb_contentP5 = bb_contentP1;
+                        let bb_premium = 0, bb_premiumb = "", bb_premiumc = false;
 
-                            if (uw.Game.premium_features.curator >= uw.Timestamp.now()) {
-                                bb_premium = uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + ": " + uw.MM.getCollections().TownGroup[0]._byId[towngrp_id].attributes.name + " ";
-                                bb_contentP1 += bb_premium; bb_contentP2 += bb_premium; bb_contentP3 += bb_premium; bb_contentP4 += bb_premium; bb_contentP5 += bb_premium;
-                                bb_premiumb = "(" + bb_premium + ")";
-                                bb_premiumc = true;
-                            }
-                            var bb_count = 0, bb_nombre_ville = 0, bb_nonbre = 0, bb_ville = uw.DM.getl10n("market").city;
-
-                            $.each(cities_towngroup, function (key, town) {
-                                bb_nombre_ville++;
-                            });
-
-                            if (bb_nombre_ville < 61) {
-                                bb_nonbre = 1;
-                            } else if (bb_nombre_ville < 121) {
-                                bb_nonbre = 2;
-                            } else if (bb_nombre_ville < 181) {
-                                bb_nonbre = 3;
-                            } else if (bb_nombre_ville < 241) {
-                                bb_nonbre = 4;
-                            } else {
-                                bb_nonbre = 5;
-                            }
-
-                            if (bb_nombre_ville < 301) {
-                                bb_contentP1 += "(" + bb_nombre_ville + " " + bb_ville + ") " + (bb_nombre_ville < 61 ? "" : "(1/" + bb_nonbre + ")");
-                                bb_contentP2 += "(" + bb_nombre_ville + " " + bb_ville + ") (2/" + bb_nonbre + ")";
-                                bb_contentP3 += "(" + bb_nombre_ville + " " + bb_ville + ") (3/" + bb_nonbre + ")";
-                                bb_contentP4 += "(" + bb_nombre_ville + " " + bb_ville + ") (4/" + bb_nonbre + ")";
-                                bb_contentP5 += "(" + bb_nombre_ville + " " + bb_ville + ") (5/" + bb_nonbre + ")";
-                            } else {
-                                bb_contentP1 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (1/5)";
-                                bb_contentP2 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (2/5)";
-                                bb_contentP3 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (3/5)";
-                                bb_contentP4 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (4/5)";
-                                bb_contentP5 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (5/5)";
-                                bb_nonbre = 5;
-                            }
-
-                            bb_contentP1 += "\n[table]\n"; bb_contentP2 += "\n[table]\n"; bb_contentP3 += "\n[table]\n"; bb_contentP4 += "\n[table]\n"; bb_contentP5 += "\n[table]\n";
-                            $.each(cities_towngroup, function (key, town) {
-
-                                bb_count++;
-
-                                if (bb_count < 61) {
-                                    bb_contentP1 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                } else if (bb_count < 121) {
-                                    bb_contentP2 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                } else if (bb_count < 181) {
-                                    bb_contentP3 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                } else if (bb_count < 241) {
-                                    bb_contentP4 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                } else if (bb_count < 301) {
-                                    bb_contentP5 += "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
-                                } else { }
-                            });
-                            var wnd = uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_DIO_BBCODE) || uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                            var dio_version_PUB = "[url=" + Home + "en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
-                            bb_contentP1 += "[/table]" + dio_version_PUB; bb_contentP2 += "[/table]" + dio_version_PUB; bb_contentP3 += "[/table]" + dio_version_PUB; bb_contentP4 += "[/table]" + dio_version_PUB; bb_contentP5 += "[/table]" + dio_version_PUB;
-                            var expRahmen_a = "<button id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></button><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
-                                "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
-                                "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
-                                "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
-                            var expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 120px; width: 99%;'>";
-                            if (bb_nombre_ville < 61) {
-                                expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 235px; width: 99%;'>";
-                            }
-                            var expRahmen_bP2 = "<textarea id='expTextareaP2' style='height: 120px; width: 98%;'>";
-                            var expRahmen_bP3 = "<textarea id='expTextareaP3' style='height: 120px; width: 98%;'>";
-                            var expRahmen_bP4 = "<textarea id='expTextareaP4' style='height: 120px; width: 98%;'>";
-                            var expRahmen_bP5 = "<textarea id='expTextareaP5' style='height: 120px; width: 98%;'>";
-                            var expRahmen_cP1 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + (bb_nombre_ville < 61 ? "" : " (1/" + bb_nonbre + ")"), "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP1"') + "</div>";
-                            var expRahmen_cP2 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (2/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP2"') + "</div>";
-                            var expRahmen_cP3 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (3/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP3"') + "</div>";
-                            var expRahmen_cP4 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (4/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP4"') + "</div>";
-                            var expRahmen_cP5 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (5/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP5"') + "</div>";
-
-                            var expRahmen_d = "</div><div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
-                            var expRahmen_e = "<div style='font-weight: bold; margin-left: 5px;'>" + uw.DM.getl10n("layout").town_name_area.no_towns_in_group + " " + bb_premiumb + "</div>";
-
-                            var expTitel = "";
-
-                            if (bb_nombre_ville > 300) {
-                                expTitel = (bb_premiumc ? bb_premium + "(" + bb_ville + " 300/" + bb_nombre_ville + ")" : bb_ville + " 300/" + bb_nombre_ville) + "</div>";
-                            } else {
-                                expTitel = (bb_premiumc ? bb_premium + "(" + bb_nombre_ville + " " + bb_ville + ")" : bb_nombre_ville + " " + bb_ville) + "</div>";
-                            }
-
-                            wnd.setContent(expRahmen_a + expTitel +
-                                (bb_nombre_ville > 0 ? (expRahmen_bP1 + bb_contentP1 + expRahmen_cP1) : expRahmen_e) +
-                                (bb_nombre_ville > 60 ? (expRahmen_bP2 + bb_contentP2 + expRahmen_cP2) : "") +
-                                (bb_nombre_ville > 120 ? (expRahmen_bP3 + bb_contentP3 + expRahmen_cP3) : "") +
-                                (bb_nombre_ville > 180 ? (expRahmen_bP4 + bb_contentP4 + expRahmen_cP4) : "") +
-                                (bb_nombre_ville > 240 ? (expRahmen_bP5 + bb_contentP5 + expRahmen_cP5) : "") +
-                                expRahmen_d);
-
-                            $('.close_a').click(function () {
-                                uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                                townslist.groups = -2;
-                            });
+                        if (uw.Game.premium_features.curator >= uw.Timestamp.now()) {
+                            bb_premium = uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + ": " + uw.MM.getCollections().TownGroup[0]._byId[towngrp_id].attributes.name + " ";
+                            bb_contentP1 += bb_premium; bb_contentP2 += bb_premium; bb_contentP3 += bb_premium; bb_contentP4 += bb_premium; bb_contentP5 += bb_premium;
+                            bb_premiumb = "(" + bb_premium + ")";
+                            bb_premiumc = true;
                         }
+                        let bb_count = 0, bb_nombre_ville = 0, bb_nonbre = 0;
+                        const bb_ville = uw.DM.getl10n("market").city;
+
+                        $.each(cities_towngroup, function (key, town) {
+                            bb_nombre_ville++;
+                        });
+
+                        if (bb_nombre_ville < 61) { bb_nonbre = 1; }
+                        else if (bb_nombre_ville < 121) { bb_nonbre = 2; }
+                        else if (bb_nombre_ville < 181) { bb_nonbre = 3; }
+                        else if (bb_nombre_ville < 241) { bb_nonbre = 4; }
+                        else { bb_nonbre = 5; }
+
+                        if (bb_nombre_ville < 301) {
+                            bb_contentP1 += "(" + bb_nombre_ville + " " + bb_ville + ") " + (bb_nombre_ville < 61 ? "" : "(1/" + bb_nonbre + ")");
+                            bb_contentP2 += "(" + bb_nombre_ville + " " + bb_ville + ") (2/" + bb_nonbre + ")";
+                            bb_contentP3 += "(" + bb_nombre_ville + " " + bb_ville + ") (3/" + bb_nonbre + ")";
+                            bb_contentP4 += "(" + bb_nombre_ville + " " + bb_ville + ") (4/" + bb_nonbre + ")";
+                            bb_contentP5 += "(" + bb_nombre_ville + " " + bb_ville + ") (5/" + bb_nonbre + ")";
+                        } else {
+                            bb_contentP1 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (1/5)";
+                            bb_contentP2 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (2/5)";
+                            bb_contentP3 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (3/5)";
+                            bb_contentP4 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (4/5)";
+                            bb_contentP5 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (5/5)";
+                            bb_nonbre = 5;
+                        }
+
+                        bb_contentP1 += "\n[table]\n"; bb_contentP2 += "\n[table]\n"; bb_contentP3 += "\n[table]\n"; bb_contentP4 += "\n[table]\n"; bb_contentP5 += "\n[table]\n";
+                        $.each(cities_towngroup, function (key, town) {
+
+                            bb_count++;
+                            if (bb_count < 61) { bb_contentP1 += townslist.content(bb_count, town); }
+                            else if (bb_count < 121) { bb_contentP2 += townslist.content(bb_count, town); }
+                            else if (bb_count < 181) { bb_contentP3 += townslist.content(bb_count, town); }
+                            else if (bb_count < 241) { bb_contentP4 += townslist.content(bb_count, town); }
+                            else if (bb_count < 301) { bb_contentP5 += townslist.content(bb_count, town); }
+                            else { }
+                        });
+                        const wnd = uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_DIO_BBCODE) || uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                        const dio_version_PUB = "[url=" + Home + "en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
+                        bb_contentP1 += "[/table]" + dio_version_PUB; bb_contentP2 += "[/table]" + dio_version_PUB; bb_contentP3 += "[/table]" + dio_version_PUB; bb_contentP4 += "[/table]" + dio_version_PUB; bb_contentP5 += "[/table]" + dio_version_PUB;
+                        const expRahmen_a = "<button id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></button><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
+                            "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
+                            "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
+                            "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
+                        let expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 120px; width: 99%;'>";
+                        if (bb_nombre_ville < 61) {
+                            expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 235px; width: 99%;'>";
+                        }
+                        const expRahmen_bP2 = "<textarea id='expTextareaP2' style='height: 120px; width: 98%;'>";
+                        const expRahmen_bP3 = "<textarea id='expTextareaP3' style='height: 120px; width: 98%;'>";
+                        const expRahmen_bP4 = "<textarea id='expTextareaP4' style='height: 120px; width: 98%;'>";
+                        const expRahmen_bP5 = "<textarea id='expTextareaP5' style='height: 120px; width: 98%;'>";
+                        const expRahmen_cP1 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + (bb_nombre_ville < 61 ? "" : " (1/" + bb_nonbre + ")"), "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP1"') + "</div>";
+                        const expRahmen_cP2 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (2/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP2"') + "</div>";
+                        const expRahmen_cP3 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (3/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP3"') + "</div>";
+                        const expRahmen_cP4 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (4/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP4"') + "</div>";
+                        const expRahmen_cP5 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (5/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP5"') + "</div>";
+
+                        const expRahmen_d = "</div><div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
+                        const expRahmen_e = "<div style='font-weight: bold; margin-left: 5px;'>" + uw.DM.getl10n("layout").town_name_area.no_towns_in_group + " " + bb_premiumb + "</div>";
+
+                        let expTitel = "";
+
+                        if (bb_nombre_ville > 300) {
+                            expTitel = (bb_premiumc ? bb_premium + "(" + bb_ville + " 300/" + bb_nombre_ville + ")" : bb_ville + " 300/" + bb_nombre_ville) + "</div>";
+                        } else {
+                            expTitel = (bb_premiumc ? bb_premium + "(" + bb_nombre_ville + " " + bb_ville + ")" : bb_nombre_ville + " " + bb_ville) + "</div>";
+                        }
+
+                        wnd.setContent(expRahmen_a + expTitel +
+                            (bb_nombre_ville > 0 ? (expRahmen_bP1 + bb_contentP1 + expRahmen_cP1) : expRahmen_e) +
+                            (bb_nombre_ville > 60 ? (expRahmen_bP2 + bb_contentP2 + expRahmen_cP2) : "") +
+                            (bb_nombre_ville > 120 ? (expRahmen_bP3 + bb_contentP3 + expRahmen_cP3) : "") +
+                            (bb_nombre_ville > 180 ? (expRahmen_bP4 + bb_contentP4 + expRahmen_cP4) : "") +
+                            (bb_nombre_ville > 240 ? (expRahmen_bP5 + bb_contentP5 + expRahmen_cP5) : "") +
+                            expRahmen_d);
+
+                        $('.close_a').click(() => {
+                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                        });
+
+                        $('#dio-copy-townslist').click(() => {
+                            if ($('#town_groups_list').length) {
+                                $('.button.js-button-caption').click();
+                            }
+                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                        });
                     });
 
 
@@ -15760,21 +15469,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "townslist");
             }
         },
-        addCopyListener: function () {
-            dio.clipboard("#dio-copy-townslist", null, "townslist", null)
-            if ($('#town_groups_list').length) {
-                $('.button.js-button-caption').click();
-            }
-            townslist.groups = -2;
+        content: (bb_count, town) => {
+            return "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
         },
-        deactivate: function () {
+        deactivate: () => {
             $('#dio_town_list_bb_style').remove();
             clearTimeout(townslist.timeout);
             if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
                 uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
             }
             townslist.timeout = null;
-            townslist.groups = -2;
         },
     };
 
@@ -15783,14 +15487,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var MessageExport = {
-        activate: function () {
+        activate: () => {
             if ($('#message_message_list').length) {
                 MessageExport.add();
             }
         },
-        add: function () {
+        add: () => {
             try {
-                this.addCopyListener()
+                dio.clipboard("#dio-copy-message-quote", null, "MessageExport", true)
                 createWindowType("DIO_BBCODEE", getTexts("messages", "bbmessages"), 700, 350, true, ["center", "center", 100, 100]);
                 const wnd = uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_MESSAGE);
                 const wndid = wnd.getID();
@@ -15934,7 +15638,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 return '[spoiler=' + $("b:first", this).text() + ']' + $(".bbcodes_spoiler_text", this).html() + '[/spoiler]';
                             });
                             dio_messageExportTMP.find(".bbcodes_quote").replaceWith(function () { //replace quotes
-                                return '[quote=' + $('.quote_author', this).text().replace(' ' + getTexts("messages", "écrit"), '') + ']' + $(".quote_message", this).html() + '[/quote]';
+                                return '[quote=' + $('.quote_author', this).text().replace(' ' + getTexts("messages", "écrit", true), '') + ']' + $(".quote_message", this).html() + '[/quote]';
                             });
                             dio_messageExportTMP.find(".bbcodes_size").replaceWith(function () { //replace size
                                 return '[size=' + $(this)[0].style.fontSize + ']' + $(this).html() + '[/size]';
@@ -16024,12 +15728,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "MessageExport");
             }
         },
-        bbcodes_town_id: function (e) {
+        bbcodes_town_id: (e) => {
             let t = $(e).attr("href");
             return void 0 !== t && !1 !== t && "undefined" != (t = MessageExport.Link2Struct(t)).id && (t = parseInt(t.id),
                 !isNaN(t)) && t
         },
-        Link2Struct: function (l) {
+        Link2Struct: (l) => {
             let ret = {};
             try {
                 l = l.split(/#/)
@@ -16037,10 +15741,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             } catch (e) { }
             return ret
         },
-        addCopyListener: function () {
-            dio.clipboard("#dio-copy-message-quote", null, "MessageExport", true)
-        },
-        replaceTownNameById: function (t, e) {
+        replaceTownNameById: (t, e) => {
             const n = t.attr("href")
                 , i = t.text();
             if (null != n && 0 <= n.indexOf("#")) {
@@ -16049,7 +15750,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
             return e
         },
-        deactivate: function () {
+        deactivate: () => {
             $('#dio_messageExport').remove();
             if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
                 uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
@@ -16062,10 +15763,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var removetooltipps = {
-        activate: function () {
+        activate: () => {
             dio.removeTooltipps("sidebar");
         },
-        deactivate: function () {
+        deactivate: () => {
         },
     };
 
@@ -16074,7 +15775,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      * Adding total resource counter to trade overview
      *******************************************************************************************************************************/
     var resCounter = {
-        activate: function () {
+        activate: () => {
             $('<style id="dio_trade_overview_style">' +
                 '#dio_resource_counter {position: absolute; right: 40px; margin-top: 4px; height: 16px; background-color: #ffe2a1; border: 1px solid #e1af55; display: inline-block}' +
                 '#dio_wood_counter {float: left;}' +
@@ -16092,7 +15793,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             }
         },
         //Counting resources in town right now
-        init: function () {
+        init: () => {
             try {
                 let wood_total = 0;
                 let stone_total = 0;
@@ -16114,7 +15815,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 errorHandling(error, "resCounter");
             }
         },
-        deactivate: function () {
+        deactivate: () => {
             $('#dio_trade_overview_style').remove();
             $('#dio_resource_counter').remove();
         },

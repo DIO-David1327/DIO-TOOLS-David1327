@@ -74,6 +74,7 @@ LANG = {
             bbc: ["Formulaire de défense", "Ajout d'un bouton dans la barre BBCode pour un formulaire de défense automatique"],
             com: ["Comparaison des unités", "Ajoutes des tableaux de comparaison des unités"],
             tic: ["Icônes des villes", "Chaque ville reçoit une icône pour le type de ville (détection automatique)", "Des icônes supplémentaires sont disponibles pour la sélection manuelle"],
+            tic2: ["Détection automatique", ""],
             til: ["Liste de ville", "Ajoute les icônes de la ville à la liste de la ville"],
             tim: ["Carte", "Définit les icônes de la ville sur la carte stratégique"],
             tiw: ["Icônes Popup", ""],
@@ -107,6 +108,7 @@ LANG = {
             Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"],
             FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""],
             Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""],
+            Cic: ["Vue de la ville", "Le mode construction de la vue de la ville est sélectionné par défaut"],
 
             err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
         },
@@ -327,9 +329,10 @@ LANG = {
             enter_lang_name: 'Entrer un nom de langue',
             send: 'Générer message',
             name: 'Nom',
+            add_edit: 'Ajouter / modifier',
         },
         buttons: {
-            sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser"   //uw.DM.getl10n("notes").btn_save
+            sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser" //uw.DM.getl10n("notes").btn_save
         }
     },
 };
