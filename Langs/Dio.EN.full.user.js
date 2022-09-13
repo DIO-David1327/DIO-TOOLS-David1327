@@ -53,6 +53,12 @@ LANG = {
             cat_other: "Miscellaneous",
             cat_Premium: "Premium",
             cat_Quack: "Quack",
+
+            install: "install",
+            reminder: "Remind me later",
+            Available: "New version Available",
+            reqreload: "Refresh required",
+            reload: "Refresh",
         },
         Options: {
             //bir: ["Bireme counter", "Counts the biremes of a city and sums these"],
@@ -73,6 +79,7 @@ LANG = {
             bbc: ["Defense form", "Extends the bbcode bar by an automatic defense form"],
             com: ["Unit Comparison", "Adds unit comparison tables"],
             tic: ["Town icons", "Each city receives an icon for the town type (automatic detection)", "Additional icons are available for manual selection"],
+            tic2: ["Automatic detection", ""],
             til: ["Town list", "Adds the town icons to the town list"],
             tim: ["Map", "Sets the town icons on the strategic map"],
             tiw: ["Icons Popup", ""],
@@ -106,6 +113,7 @@ LANG = {
             Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"],
             FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""],
             Mole: ["Not compatible to activate in the parameters of Mole Hole", ""],
+            Cic: ["City view", "City view construction mode is selected by default"],
 
             err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."],
             //her: ["Thracian Conquest", "Downsizing of the map of the Thracian conquest."],
@@ -196,6 +204,7 @@ LANG = {
             loc: "Local",
             ingame_name: ["Do not hesitate to contact me if you prefer to be called by your ingame name", "Since this is a great deal of work that can be very time-consuming I am always very grateful for any type of support. Therefore I would like to thank everyone who has offered support for this project - whether through donations, knowledge, creativity, bug reports or just some encouraging words."],
             raf: "By confirming the page will refresh",
+            con: "Unit strength: Total strength of siege troops",
         },
         tutoriel: {
             tuto: "Useful info",
@@ -326,6 +335,7 @@ LANG = {
             enter_lang_name: 'Please enter a language name',
             send: 'Generate message',
             name: 'Name',
+            add_edit: 'Add / edit',
         },
         buttons: {
             sav: "Save", ins: "Insert", res: "Reset"
