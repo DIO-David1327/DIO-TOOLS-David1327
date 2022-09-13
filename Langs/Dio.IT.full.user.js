@@ -53,12 +53,6 @@ LANG = {
             cat_other: "Altro",
             cat_Premium: "Premium",
             cat_Quack: "Quack",
-
-            install: "installa",
-            reminder: "Ricordamelo più tardi",
-            Available: "Nuova versione disponibile",
-            reqreload: "E' necessario aggiornare la pagina",
-            reload: "Aggiorna",
         },
         Options: {
             bir: ["Conta biremi", "Conta le biremi di una città e le somma"],
