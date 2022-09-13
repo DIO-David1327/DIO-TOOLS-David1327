@@ -53,6 +53,12 @@ LANG = {
             cat_other: "Diversen",
             //cat_Premium: "",
             cat_Quack: "Quack",
+
+            install: "installeer",
+            reminder: "Herinner mij later",
+            Available: "Er is een nieuwe versie beschikbaar",
+            reqreload: "Het is nodig om de site opnieuw te laden",
+            reload: "Opnieuw laden",
         },
         Options: {
             //bir: ["Biremen teller", "Telt de biremen van een stad en somt deze op"],
@@ -109,6 +115,12 @@ LANG = {
 
             err: ["Stuur automatisch bugrapporten", "Als u deze optie activeert, kunt u helpen bij het identificeren van bugs."],
             her: ["Thracische verovering", "Verkleinen van de kaart van de verovering van Thracië."],
+        },
+        movement: {
+            //off: "",
+            //offs: "",
+            //def: "",
+            //defs: "",
         },
         Town_icons: {
             LandOff: "Landoffensief",
@@ -187,7 +199,9 @@ LANG = {
             Happy: "Gelukkig nieuwjaar!",
             Merry: "Ho Ho Ho, Merry Christmas!",
             tow: "BBCode stad",
-            ingame_name: ["Aarzel niet om contact met me op te nemen als je liever gebeld wordt met je bijnaam ", " Omdat het een grote hoeveelheid werk is die lang kan duren, ben ik altijd erg dankbaar voor elke vorm van ondersteuning. Daarom wil ik iedereen bedanken die ondersteuning heeft geboden voor dit project, hetzij door donaties, kennis, creativiteit, foutmeldingen of slechts enkele bemoedigende woorden."]
+            loc: "Lokaal",
+            ingame_name: ["Aarzel niet om contact met me op te nemen als je liever gebeld wordt met je bijnaam ", " Omdat het een grote hoeveelheid werk is die lang kan duren, ben ik altijd erg dankbaar voor elke vorm van ondersteuning. Daarom wil ik iedereen bedanken die ondersteuning heeft geboden voor dit project, hetzij door donaties, kennis, creativiteit, foutmeldingen of slechts enkele bemoedigende woorden."],
+            raf: "Bij accepteren zal de pagina vernieuwen",
         },
         tutoriel: {
             tuto: "=Grepolis Gidsen=",
@@ -256,6 +270,7 @@ LANG = {
             bbmessages: 'BB-Code-berichten',
             copybb: 'BBCode is gekopieerd',
             écrit: 'heeft het volgende geschreven:',
+            cli: "Dit bericht is niet gekopieerd",
         },
         caves: {
             stored_silver: 'Opgeslagen zilverstukken',
@@ -264,7 +279,7 @@ LANG = {
             wood: 'Hout',
             stone: 'Steen',
             silver: 'Zilverstukken',
-            //search_for: ""
+            search_for: "Zoeken naar"
         },
         grepo_mainmenu: {
             city_view: 'Stadsoverzicht',
@@ -272,28 +287,28 @@ LANG = {
         },
         transport_calc: {
             recruits: 'Eenheden in de rekruteringsrij meetellen',
-            //slowtrans : "",
-            //fasttrans : "",
-            //Lack: "",
-            //Still: "",
-            //pop: "",
-            //Optipop : "",
-            //army : "",
+            slowtrans: "Tel trage transport schepen",
+            fasttrans: "Tel snelle transport schepen",
+            Lack: "Gebrek",
+            Still: "Nog steeds",
+            pop: "Vrij inwoners. Voor de",
+            Optipop: "Optimale bevolking voor",
+            army: "Je hebt geen troepen",
         },
         reports: {
-            choose_folder: "",
-            enacted: "",
-            conquered: "",
-            spying: "",
-            spy: "",
-            support: "",
-            support2: "",
-            supporting: "",
-            attacking: "",
-            farming_village: "",
-            gold: "",
-            Quests: "",
-            Reservations: "",
+            choose_folder: "Kies map",
+            enacted: "uitgevaardigd",
+            conquered: "Veroverd",
+            spying: "Spioneren",
+            spy: "Spion",
+            support: "Ondersteunen",
+            support2: "Kan niet ondersteunen",
+            supporting: "Gestationeerd",
+            attacking: "Aanval",
+            farming_village: "Booerendorp",
+            gold: "Je hebt ontvangen",
+            Quests: "Quests",
+            Reservations: "Reserveringen",
         },
         translations: {
             info: 'Info',

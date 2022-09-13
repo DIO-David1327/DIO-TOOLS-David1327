@@ -53,6 +53,12 @@ LANG = {
             cat_other: "Sonstiges",
             cat_Premium: "Premium",
             cat_Quack: "Quack",
+
+            install: "installieren",
+            reminder: "später erinnern",
+            Available: "Neue Version verfügbar",
+            reqreload: "Aktualisierung erforderlich",
+            reload: "Aktualisierung",
         },
         Options: {
             //bir: ["Biremenzähler", "Zählt die jeweiligen Biremen einer Stadt und summiert diese.<br><br>Anzeige im Minimap-Bullauge oben links"],
@@ -187,7 +193,8 @@ LANG = {
             Happy: "Frohes neues Jahr!",
             Merry: "Ho Ho Ho frohe Weihnachten!",
             tow: "BBCode Stadt",
-            ingame_name: ["Wer lieber via ingame Name genannt werden möchte, kann sich gerne bei mir melden", "Da dies mitunter viel Aufwand und Zeit beansprucht, freue ich mich immer sehr über jede Form von Unterstützung. Deshalb ein großes Danke an alle die dieses Projekt schon solange unterstützen - sei es durch eine Spende, Wissen, Kreativität, Bugberichte oder aufmunternde Worte."]
+            ingame_name: ["Wer lieber via ingame Name genannt werden möchte, kann sich gerne bei mir melden", "Da dies mitunter viel Aufwand und Zeit beansprucht, freue ich mich immer sehr über jede Form von Unterstützung. Deshalb ein großes Danke an alle die dieses Projekt schon solange unterstützen - sei es durch eine Spende, Wissen, Kreativität, Bugberichte oder aufmunternde Worte."],
+            con: "Einheitenstärke: Gesamteinheitenstärke der Belagerungstruppen",
         },
         tutoriel: {
             tuto: "Nützliche Info",
