@@ -53,6 +53,12 @@ LANG = {
             cat_other: "Diverse",
             //cat_Premium: "",
             cat_Quack: "Quack",
+
+            install: "Instaleaza",
+            reminder: "Adu-mi aminte mai tarziu",
+            Available: "O noua versiune este disponibila",
+            reqreload: "Reimprospatare nececsara",
+            reload: "Reimprospateaza",
         },
         Options: {
             bir: ["Contor de bireme", "Numără câte bireme sunt în orașe și face suma lor"],

@@ -53,6 +53,12 @@ LANG = {
             cat_other: "Divers", //uw.DM.getl10n("report").inbox.filter_types.misc
             cat_Premium: "Premium", //uw.DM.getl10n("premium").common.window_title
             cat_Quack: "Quack",
+
+            install: "installer",
+            reminder: "Me rappeler plus tard",
+            Available: "Nouvelle version disponible",
+            reqreload: "Nécessite le raffraîchissement du site",
+            reload: "Raffraîchir",
         },
         Options: {
             bir: ["Compteur de birèmes ", "Totalise l'ensemble des birèmes présentent en villes et les résume. (Remplace la mini carte dans le cadran)"],
@@ -74,6 +80,7 @@ LANG = {
             bbc: ["Formulaire de défense", "Ajout d'un bouton dans la barre BBCode pour un formulaire de défense automatique"],
             com: ["Comparaison des unités", "Ajoutes des tableaux de comparaison des unités"],
             tic: ["Icônes des villes", "Chaque ville reçoit une icône pour le type de ville (détection automatique)", "Des icônes supplémentaires sont disponibles pour la sélection manuelle"],
+            tic2: ["Détection automatique", ""],
             til: ["Liste de ville", "Ajoute les icônes de la ville à la liste de la ville"],
             tim: ["Carte", "Définit les icônes de la ville sur la carte stratégique"],
             tiw: ["Icônes Popup", ""],
@@ -107,6 +114,7 @@ LANG = {
             Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"],
             FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""],
             Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""],
+            Cic: ["Vue de la ville", "Le mode construction de la vue de la ville est sélectionné par défaut"],
 
             err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
         },
@@ -197,6 +205,7 @@ LANG = {
             tow: "BBCode ville",
             ingame_name: ["N'hésitez pas à me contacter si vous préférez être appeler par votre pseudo.", "Comme il y a beaucoup à faire, et que cela peut demander beaucoup de temps, je suis toujours très reconnaissant pour tout type d'aide. De ce fait, j'aimerai remercier tous ceux qui sont offert de l'aide sur ce projet, que ce soit par des donations, en partageant des connaissances, des conseils créatifs, en rapportant des problèmes, ou simplement par des messages d'encouragement."],
             raf: "En confirmant la page sera rafraîchir",
+            con: "Force unitaire: Effectif total des troupes de siège",
         },
         tutoriel: {
             tuto: "Informations utiles",
@@ -327,9 +336,10 @@ LANG = {
             enter_lang_name: 'Entrer un nom de langue',
             send: 'Générer message',
             name: 'Nom',
+            add_edit: 'Ajouter / modifier',
         },
         buttons: {
-            sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser"   //uw.DM.getl10n("notes").btn_save
+            sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser" //uw.DM.getl10n("notes").btn_save
         }
     },
 };
