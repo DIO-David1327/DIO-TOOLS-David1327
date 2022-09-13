@@ -53,12 +53,6 @@ LANG.ru = {
             //cat_other: "",
             //cat_Premium: "",
             cat_Quack: "Quack",
-
-            install: "Установить",
-            reminder: "Напомнить позже",
-            Available: "Доступна новая версия",
-            reqreload: "Требуется обновление",
-            reload: "Обновление",
         },
         Options: {
             //bir: ["Счётчик бирем", "Показывает число бирем во всех городах"],

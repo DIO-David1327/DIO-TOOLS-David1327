@@ -53,12 +53,6 @@ LANG = {
             //cat_other: "",
             //cat_Premium: "",
             cat_Quack: "Quack",
-
-            install: "Zainstaluj",
-            reminder: "Przypomnij później",
-            Available: "Dostępna nowa wersja",
-            reqreload: "Wymagane odświeżenie strony",
-            reload: "Odśwież",
         },
         Options: {
             //bir: ["Licznik birem", "Zlicza i sumuje biremy z miast"],
