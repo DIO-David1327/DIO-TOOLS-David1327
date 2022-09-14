@@ -6544,7 +6544,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             uw.NotificationType.DIO_TOOLS = "diotools";
             uw.NotificationType.DIO_TOOLS_V = "diotools_v";
 
-            var notifN = 28;
+            var notifN = 29;
             var titreN =
                 //	0; // nouvelles fonctionnalités
                 1; // Nouvelle version
