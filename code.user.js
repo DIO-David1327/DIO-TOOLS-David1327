@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28
+// @version		4.28.1
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -24,7 +24,7 @@
 // @license     GPL-3.0-only
 // ==/UserScript==
 
-var dio_version = '4.28';
+var dio_version = '4.29';
 
 /*******************************************************************************************************************************
  * Global stuff
@@ -4810,6 +4810,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_Rct: true,	// resCounter
         dio_BBt: true,	// BBtowninfo
         dio_Rtt: false,	// removeTooltipps
+        dio_Buo: true,	// BuildingOverview
+        dio_Cuc: true,	// cultureControl
 
         dio_err: false,	// Error Reports
         dio_her: true,	// Thrakische Eroberung
@@ -5225,27 +5227,35 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<table id="dio_Premium_table" class="content_category"><tr>' +
                     '<td><img src="' + Home_img + 'culture.png" alt="" ></td>' +
                     '<td><div id="dio_Cul" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cul")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "Cul")[1] + '</p><br></td>' +
+                    '<p>' + getTexts("Options", "Cul")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="' + Home_img + 'advancement-of-culture.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
                     '<td><div id="dio_Cup" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cup")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "Cup")[1] + '</p><br></td>' +
+                    '<p>' + getTexts("Options", "Cup")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="' + Home_img + 'culturepoints.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
                     '<td><div id="dio_Cuo" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cuo")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "Cuo")[1] + '</p><br></td>' +
+                    '<p>' + getTexts("Options", "Cuo")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="' + Home_img + 'caves.jpg" alt="" /></td>' +
                     '<td><div id="dio_Hio" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hio")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "Hio")[1] + '</p><br></td>' +
+                    '<p>' + getTexts("Options", "Hio")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="' + Home_img + 'resource-counter-1.png" alt="resource counter" /></td>' +
                     '<td><div id="dio_Rct" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Rct")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "Rct")[1] + '</p><br></td>' +
+                    '<p>' + getTexts("Options", "Rct")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="' + Home_img + 'overview-of-peasant-villages.jpg" alt="" /></td>' +
                     '<td><div id="dio_Ish" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ish")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Ish")[1] + '</p></td>' +
+                    '</tr><tr>' +
+                    '<td><img src="" alt="" /></td>' +
+                    '<td><div id="dio_Cuc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">Cuc' + getTexts("Options", "Cuc")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Cuc")[1] + '</p></td>' +
+                    '</tr><tr>' +
+                    '<td><img src="" alt="" /></td>' +
+                    '<td><div id="dio_Buo" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">Buo' + getTexts("Options", "Buo")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Buo")[1] + '</p></td>' +
                     '</tr></table>' +
 
                     // Quack
@@ -5553,6 +5563,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             case "dio_Rtt":
                 FEATURE = removetooltipps;
                 break;
+            case "dio_Buo":
+                FEATURE = BBtowninfo;
+                break;
+            case "dio_Cuc":
+                FEATURE = removetooltipps;
+                break;
 
             default:
                 activation = false;
@@ -5854,6 +5870,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_Cul) {
                         setTimeout(() => { cultureOverview.activate(); }, 100);
                     }
+                    if (DATA.options.dio_Cuc) {
+                        setTimeout(() => { cultureControl.activate(); }, 100);
+                    }
+                    if (DATA.options.dio_Buo) {
+                        setTimeout(() => { BuildingOverview.activate(); }, 100);
+                    }
 
                     // compatibility flask-tools ?
                     if (typeof (uw.FLASK_GAME) !== "undefined") {
@@ -5891,11 +5913,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }, 3000);*/
 
                     // Execute once to get alliance ratio
-                    /*if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
-                        if (wonder.ratio[AID] == -1 || !$.isNumeric(wonder.ratio[AID])) {
-                            setTimeout(() => { uw.getPointRatioFromAllianceProfile(); }, 5000);
-                        }
-                    }*/
+                    if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
+                        cache();
+                        setTimeout(() => { uw.getPointRatioFromCache() }, 10000);
+                    }
                 }
                 time_b = uw.Timestamp.client();
                 //console.log("Gebrauchte Zeit:" + (time_b - time_a));
@@ -6018,15 +6039,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         afterSimulation();
                     }
                     break;
+                case "/town_overviews/building_overview":
+                    if (DATA.options.dio_Buo) {
+                        BuildingOverview.init();
+                    }
+                    break;
                 case "/town_overviews/culture_overview":
                 case "/town_overviews/start_celebration":
                 case "/town_overviews/start_all_celebrations":
                     if (DATA.options.dio_Cul) {
                         cultureOverview.add();
                     }
+                    if (DATA.options.dio_Cuc) {
+                        cultureControl.init();
+                    }
                 // eslint no-fallthrough: "error"
                 case "/building_place/culture":
-                    console.log(2)
                     if (DATA.options.dio_Cup) {
                         cultureProgress.activate();
                     }
@@ -6369,6 +6397,35 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         if (isMacLike || isMac) { system = true }
         return system;
     };
+
+    function cache() {
+        var c, h = {}, k = {};
+        if ("object" != typeof uw.MM.DIO) { setTimeout(function() { cache(); }, 1E4);}
+        else {
+            /*try {
+                $.ajax({method:"get", url:"/data/players.txt"}).done(function(m) {
+                    try {
+                        $.each(m.split(/\r\n|\n/), function(C, K) {
+                            c = K.split(/,/);
+                            h[c[0]] = {id:c[0], name:decodeURIComponent(c[1] + ""), Points:decodeURIComponent(c[2] + "").replace(/\+/g, " "), alliance_id:c[2]};
+                        });
+                        uw.MM.DIO.cachePlayers = h;
+                    } catch (error) { errorHandling(error, "cache players done"); }
+                });
+            } catch (error) { errorHandling(error, "cache players"); }*/
+            try {
+                $.ajax({method:"get", url:"/data/alliances.txt", }).done(function(m) {
+                    try {
+                        $.each(m.split(/\r\n|\n/), function(C, K) {
+                            c = K.split(/,/);
+                            k[c[0]] = {id:c[0], name:decodeURIComponent(c[1] + ""), Points:decodeURIComponent(c[2] + "").replace(/\+/g, " ")};
+                        });
+                        uw.MM.DIO.cacheAlliances = k;
+                    } catch (error) { errorHandling(error, "cache alliances done"); }
+                });
+            } catch (error) { errorHandling(error, "cache alliances"); }
+        }
+    }
 
     // Error Handling / Remote diagnosis / Automatic bug reports
     function errorHandling(e, fn) {
@@ -9731,22 +9788,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      * getPointRatio: Default
      *******************************************************************************************************************************/
     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
-        function getPointRatioFromAllianceProfile() {
+        function getPointRatioFromCache() {
             if (AID) {
-                $.ajax({
-                    type: "GET",
-                    url: '/game/alliance?town_id=' + uw.Game.townId + '&action=profile&h=' + uw.Game.csrfToken + '&json=%7B%22alliance_id%22%3A' + AID + '%2C%22town_id%22%3A' + uw.Game.townId +
-                        '%2C%22nlreq_id%22%3A' + uw.Game.notification_last_requested_id + '%7D&_=' + uw.Game.server_time,
-                    success: function (text) {
-                        try {
-                            console.log(text)
-                            text = text.substr(text.indexOf("/li") + 14).substr(0, text.indexOf("\ "));
-                            var AP = parseInt(text, 10);
-                            wonder.ratio[AID] = 100 / AP * uw.Game.player_points;
-                            //saveValue(WID + "_wonder", JSON.stringify(wonder));
-                        } catch (error) { errorHandling(error, "getPointRatioFromAllianceProfile"); }
-                    }
-                });
+                if ("object" != typeof uw.MM.DIO) { setTimeout(function() { getPointRatioFromCache(); }, 1E4);}
+                else {
+                    try {
+                        var AP = uw.MM.DIO.cacheAlliances[uw.Game.alliance_id].Points;
+                        wonder.ratio[AID] = 100 / AP * uw.Game.player_points;
+                        saveValue(WID + "_wonder", JSON.stringify(wonder));
+                    } catch (error) { errorHandling(error, "getPointRatioFromCache"); }
+                }
             } else {
                 wonder.ratio[AID] = -1;
                 saveValue(WID + "_wonder", JSON.stringify(wonder));
@@ -12901,6 +12952,273 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      * ----------------------------------------------------------------------------------------------------------------------------
      *******************************************************************************************************************************/
 
+    var buil = uw.DM.getl10n("mass_recruit").sort_by.name, diff = ">"; // Recruiting Trade
+    var BuildingOverview = {
+        activate: () => {
+            $('<style id="dio_BuildingOverview_style"> ' +
+              '#dio_building_overview .option_s { margin:0px; cursor:pointer; } ' +
+              '#dio_building_overview .option_s.building_icon40x40 { margin:0px; cursor:pointer; border: 0.5px solid #000; } ' +
+              '#dio_building_overview .option_s:hover { filter:unset !important; -webkit-filter:unset !important; } ' +
+              '#dio_building_overview .option_s.resource { margin:0.7px; position: relative; display: block; float: left; text-align: right; } ' +
+              '#dio_building_overview .select_rec_buil .sel { filter:sepia(100%); -webkit-filter:sepia(100%); } ' +
+
+              '#dio_building_overview .option {color:#000; background:#FFEEC7; } ' +
+              '#dio_building_overview .option:hover {color:#fff; background:#328BF1; } ' +
+
+              '#dio_building_overview .select_rec_buil { position:absolute; top:20px; width:126px; display:none; } ' +
+              '#dio_building_overview .select_rec_perc { position:absolute; top:20px; width:17px; display:none; left:88px; } ' +
+
+              '#dio_building_overview .open { display:block !important; } ' +
+
+              '#dio_building_overview .item-list { max-height:none; } ' +
+
+              '#dio_building_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
+
+              '#dio_building_overview .dio_drop_rec_buil { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
+              '#dio_building_overview .dio_drop_rec_perc { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
+              '#place_defense .game_header bold { margin-bottom: 5px; } ' +
+
+              '#dio_building_sort_control #test.building_icon50x50 { left: -2px; top: -2px; position: absolute; border: 5px solid #fad588; cursor:pointer; } '+
+              '#dio_building_sort_control #test.resource { left: -3px; top: -2px; position: absolute; cursor: pointer; background-color: #fad588; border-left: 18px solid #fad588; border-right: 17px solid #fad588; height: 26px; transform: scale(0.9); }' +
+              '</style>').appendTo("head");
+
+            if ($('#building_overview_table_wrapper').length) { BuildingOverview.init(); }
+        },
+        init: () => {
+            try {
+                $("#fixed_table_header").parent().append('<div id="dio_building_sort_control" class="overview_search_bar">' +
+                                                         '<div id="dio_building_overview" class="dio_rec_trade">' +
+                                                         // DropDown-Button for unit
+                                                         '<div class="dio_drop_rec_buil dropdown default">' +
+                                                         '<div class="border-left"></div>' +
+                                                         '<div class="border-right"></div>' +
+                                                         '<div class="caption" name="' + buil + '">' + buil + '</div>' +
+                                                         '<div class="arrow"></div>' +
+                                                         '<div id="test"></div>' +
+                                                         '</div>' +
+                                                         '<div class="dio_drop_rec_perc dropdown default">' +
+                                                         // DropDown-Button for ratio
+                                                         '<div class="border-left"></div>' +
+                                                         '<div class="border-right"></div>' +
+                                                         '<div class="caption" name="' + diff + '">' + diff + '</div>' +
+                                                         '<div class="arrow"></div>' +
+                                                         '</div>' +
+                                                         '</div>' + BuildingOverview.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
+                                                         '<div id="dio_sortinit" class="button_order_by active"></div>' +
+                                                         '</div>');
+
+                // Select boxes for unit and ratio
+                $('<div id="dio_Select_boxes" class="select_rec_buil dropdown-list default active">' +
+                  '<div class="item-list">' +
+                  //Ship
+                  '<div class="option_s" name="' + uw.DM.getl10n("mass_recruit").sort_by.name + '">' + uw.DM.getl10n("mass_recruit").sort_by.name + '</div>' +
+                  '<div class="option_s resource wood_img" 	name="wood"></div>' +
+                  '<div class="option_s resource stone_img"	name="stone"></div>' +
+                  '<div class="option_s resource iron_img" 	name="iron"></div>' +
+                  '<div class="option_s resource pop_img" 	name="pop"></div>' +
+                  '<div class="option_s unit building_icon40x40 main" 		name="main"></div>' +
+                  '<div class="option_s unit building_icon40x40 hide" 		name="hide"></div>' +
+                  '<div class="option_s unit building_icon40x40 lumber"		name="lumber"></div>' +
+                  '<div class="option_s unit building_icon40x40 stoner"		name="stoner"></div>' +
+                  '<div class="option_s unit building_icon40x40 ironer"		name="ironer"></div>' +
+                  '<div class="option_s unit building_icon40x40 market" 	name="market"></div>' +
+                  '<div class="option_s unit building_icon40x40 docks"		name="docks"></div>' +
+                  '<div class="option_s unit building_icon40x40 barracks" 	name="barracks"></div>' +
+                  '<div class="option_s unit building_icon40x40 wall" 		name="wall"></div>' +
+                  '<div class="option_s unit building_icon40x40 storage"	name="storage"></div>' +
+                  '<div class="option_s unit building_icon40x40 farm" 		name="farm"></div>' +
+                  '<div class="option_s unit building_icon40x40 academy"	name="academy"></div>' +
+                  '<div class="option_s unit building_icon40x40 temple"		name="temple"></div>' +
+                  '<div class="option_s unit building_icon40x40 theater"	name="theater"></div>' +
+                  '<div class="option_s unit building_icon40x40 thermal"	name="thermal"></div>' +
+                  '<div class="option_s unit building_icon40x40 library"	name="library"></div>' +
+                  '<div class="option_s unit building_icon40x40 lighthouse" name="lighthouse"></div>' +
+                  '<div class="option_s unit building_icon40x40 tower" 		name="tower"></div>' +
+                  '<div class="option_s unit building_icon40x40 statue" 	name="statue"></div>' +
+                  '<div class="option_s unit building_icon40x40 oracle" 	name="oracle"></div>' +
+                  '<div class="option_s unit building_icon40x40 trade_office" name="trade_office"></div>' +
+                  '</div></div>').appendTo("#dio_building_overview.dio_rec_trade");
+
+                $('<div class="select_rec_perc dropdown-list default inactive">' +
+                  '<div class="item-list">' +
+                  '<div class="option sel" name=">">></div>' +
+                  '<div class="option" name="=">=</div>' +
+                  '<div class="option" name="<"><</div>' +
+                  '</div></div>').appendTo("#dio_building_overview.dio_rec_trade");
+
+
+                if (buil == uw.DM.getl10n("mass_recruit").sort_by.name) {}
+                else if ( buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
+                    $('#test').addClass("resource " + buil + "_img"); }
+                else {$('#test').addClass("building_icon50x50 " + buil); }
+
+                // click events of the drop menu
+                $('#dio_building_overview .select_rec_buil .option_s').each(function () {
+                    $(this).click(function (e) {
+                        $(".select_rec_buil .sel").toggleClass("sel");
+                        $("." + this.className.split(" ")[4]).toggleClass("sel");
+
+                        buil = $(this).attr("name");
+                        $('.dio_drop_rec_buil .caption').attr("name", buil);
+                        $('.dio_drop_rec_buil .caption').each(function () {
+                            this.innerHTML = buil;
+                        });
+
+                        $('#test').removeClass();
+                        if (buil == uw.DM.getl10n("mass_recruit").sort_by.name) {}
+                        else if ( buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
+                            $('#test').addClass("resource " + buil + "_img"); }
+                        else {$('#test').addClass("building_icon50x50 " + buil); }
+
+                        $($(this).parent().parent().get(0)).removeClass("open");
+                        $('.dio_drop_rec_buil .caption').change();
+
+                    });
+                });
+                $('#dio_building_overview .select_rec_perc .option').each(function () {
+                    $(this).click(function (e) {
+                        $(this).parent().find(".sel").toggleClass("sel");
+                        $(this).toggleClass("sel");
+
+                        diff = $(this).attr("name");
+                        $('.dio_drop_rec_perc .caption').attr("name", diff);
+                        $('.dio_drop_rec_perc .caption').each(function () {
+                            this.innerHTML = diff;
+                        });
+                        $($(this).parent().parent().get(0)).removeClass("open")
+                        $('.dio_drop_rec_perc .caption').change();
+                    });
+                });
+
+                // show & hide drop menus on click
+                $('#dio_building_overview .dio_drop_rec_buil').click(function (e) {
+                    if (!$($(e.target)[0].parentNode.parentNode.childNodes[2]).hasClass("open")) {
+                        $($(e.target)[0].parentNode.parentNode.childNodes[2]).addClass("open");
+                        $($(e.target)[0].parentNode.parentNode.childNodes[3]).removeClass("open");
+                    } else {
+                        $($(e.target)[0].parentNode.parentNode.childNodes[2]).removeClass("open");
+                    }
+                });
+                $('#dio_building_overview .dio_drop_rec_perc').click(function (e) {
+
+                    if (!$($(e.target)[0].parentNode.parentNode.childNodes[3]).hasClass("open")) {
+                        $($(e.target)[0].parentNode.parentNode.childNodes[3]).addClass("open");
+                        $($(e.target)[0].parentNode.parentNode.childNodes[2]).removeClass("open");
+                    } else {
+                        $($(e.target)[0].parentNode.parentNode.childNodes[3]).removeClass("open");
+                    }
+                });
+
+                $("#dio_building_overview").click(function (e) {
+                    var clicked = $(e.target), element = $('#' + this.id + ' .dropdown-list.open').get(0);
+                    if ((clicked[0].parentNode.className.split(" ")[1] !== "dropdown") && element) {
+                        $(element).removeClass("open");
+                    }
+                });
+                // hover arrow change
+                $('.dropdown').hover(function (e) {
+                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_over.src + "') no-repeat -1px -1px";
+                }, function (e) {
+                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_out.src + "') no-repeat -1px -1px";
+                });
+
+                $("#dio_building_overview .caption").attr("name", buil);
+
+                $('#dio_building_overview .dio_drop_rec_buil').tooltip(dio_icon + getTexts("labels", "rat"));
+
+                var selection, order;
+
+                $('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
+
+                function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
+
+                function setfilter(selection) {
+                    $('#building_overview>tbody>tr').show();
+                    if (isNumber($('#dio_sortfilterbox').val())) {
+                        var dif = $("#dio_building_overview .dio_drop_rec_perc")[0].innerText
+                        var numericfilter = parseInt($('#dio_sortfilterbox').val());
+                        $('#building_overview>tbody>tr').each(function (i, e) {
+                            var selectedSort = "";
+                            if (selection == 'a.gp_town_link') {
+                                selectedSort = $(e).find(selection).text();
+                                if (!(selectedSort.indexOf(numericfilter) >= 0)) {
+                                    $(e).hide();
+                                }
+                            } else {
+                                selectedSort = parseInt($(e).find(selection).text()) || 0;
+                            }
+                            if (numericfilter < selectedSort & dif == "<") { $(e).hide();}
+                            if (numericfilter != selectedSort & dif == "=") { $(e).hide(); }
+                            if (numericfilter > selectedSort & dif == ">") { $(e).hide(); }
+                        });
+                    } else {
+                        var namefilter = $('#dio_sortfilterbox').val();
+                        $('#building_overview>tbody>tr').each(function (i, e) {
+                            var townname = $(e).find('a.gp_town_link').text();
+                            if (namefilter.length > 0 && !(townname.indexOf(namefilter) >= 0)) { $(e).hide(); }
+                        });
+                    }
+                };
+
+                function sort(selection) {
+                    order = !order;
+                    switch (selection) {
+                        case uw.DM.getl10n("mass_recruit").sort_by.name:
+                            selection = 'a.gp_town_link';
+                            break;
+                        case "wood":
+                            selection = '.wood span.count';
+                            break;
+                        case "stone":
+                            selection = '.stone span.count';
+                            break;
+                        case "iron":
+                            selection = '.iron span.count';
+                            break;
+                        case "pop":
+                            selection = '.town_population span.count';
+                            break;
+                        default:
+                            selection = '.' + selection + ' a.current_level';
+                    }
+                    setfilter(selection);
+                    var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
+                    dio_ArrayUnsorted.sort(function (a, b) {
+                        if (selection != 'a.gp_town_link') {
+                            a = parseInt($(a).find(selection).text()) || 0;
+                            b = parseInt($(b).find(selection).text()) || 0;
+                        } else {
+                            a = $(a).find(selection).text().toLowerCase();
+                            b = $(b).find(selection).text().toLowerCase();
+                            if (order) { return a.localeCompare(b); }
+                            else { return b.localeCompare(a); }
+                        }
+                        if (order) { return b - a }
+                        else { return a - b }
+                    });
+                    for (var i = 0; i < dio_ArrayUnsorted.length; i++) {
+                        dio_ArrayUnsorted[i].parentNode.appendChild(dio_ArrayUnsorted[i]);
+                    }
+                }
+
+                $("#dio_sortinit").click(function () {
+                    sort($("#dio_building_overview .dio_drop_rec_buil")[0].innerText);
+                    $(this).toggleClass('active')
+                });
+
+            } catch (error) { errorHandling(error, "BuildingOverview (init)"); }
+        },
+        grepo_input: (Style, ID, Text) => {
+            return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="text" value="' + Text + '"></span></span></span></div>');
+        },
+        deactivate: () => {
+            $('#dio_BuildingOverview_style').remove();
+            $('#dio_building_sort_control').remove();
+            $('#dio_building_overview').remove();
+        },
+    };
+
+
     var cultureOverview = {
         timeout: null,
         activate: () => {
@@ -12984,13 +13302,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $(".dio_cultureBTN_wrapper_right").css({
                         "position": "absolute",
                         "top": "0px",
-                        "right": "0px"
+                        "right": "0px",
+                        "z-index": "2000"
                     });
                     $(".dio_cultureBTN_l, .dio_cultureBTN_r").css({
                         "cursor": "pointer",
                         "max-width": "40px",
                         "min-width": "25px",
-                        "height": "27px",
+                        //"height": "27px",
                         "float": "right",
                         "position": "relative",
                         "margin-left": "3px",
@@ -13227,6 +13546,154 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $("#dio-ProgressBar").remove();
             $("#dio-Bar").remove();
             $("#culture_points_overview_bottom #place_culture_bar, #place_container #place_culture_bar").css({ "display": "block" });
+        },
+    };
+
+    var cultureControl = {
+        activate: () => {
+            $('<style id="dio_cultureControl_style"> ' +
+              // style
+              '#dio_sortinit { margin: 3px 0 0 3px;} ' +
+              '#dio_culture_sort_control .border { border-bottom: 1px solid #222; left: -2px; position: absolute; right: -2px; top: 28px;} ' +
+              '#culture_overview_wrapper { top: 39px;} ' +
+              '#culture_overview_bottom { margin-top: 39px;} ' +
+              '#culture_overview_towns { border-top: 0px;} ' +
+              '.dio_res_plenty, .dio_res_rare { background: url(https://gpde.innogamescdn.com/images/game/layout/resources_deposit.png) no-repeat scroll 0 0; height: 10px; width: 10px; position: absolute; left: 29px;} ' +
+              '.dio_res_rare { background-position: 0 -10px;} ' +
+              '#culture_overview_towns.dio_resize .hide_buttons, #culture_overview_towns.dio_resize .spinner { top: 23px;} ' +
+              '</style>').appendTo("head");
+
+            if ($('#culture_points_overview_bottom').length) { cultureControl.init(); }
+        },
+        init: () => {
+            try {
+                var selection, order;
+                var sort_options = [
+                    ["name", uw.DM.getl10n("mass_recruit").sort_by.name],
+                    ["hours", uw.DM.getl10n("inventory").tooltip.hours],
+                    ["minutes", "minutes"],
+                ];
+                var diff_options = [
+                    [">", ">"],
+                    ["=", "="],
+                    ["<", "<"],
+                ];
+
+                function dateDiff(date1, date2){
+                    var diff = {}
+                    var tmp = date2 - date1;
+                    tmp = Math.floor(tmp/1000);
+                    diff.sec = tmp % 60;
+                    tmp = Math.floor((tmp-diff.sec)/60);
+                    diff.min = tmp % 60;
+                    tmp = Math.floor((tmp-diff.min)/60);
+                    diff.hour = tmp % 24;
+                    tmp = Math.floor((tmp-diff.hour)/24);
+                    diff.day = tmp;
+                    return diff;
+                }
+
+                $("#culture_overview_wrapper").parent().append('<div id="dio_culture_sort_control" class="overview_search_bar">' + cultureControl.grepo_dropdown("dio_sort_towns", sort_options) + cultureControl.grepo_dropdown("dio_diff_towns", diff_options) + cultureControl.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
+                    '<div id="dio_sortinit" class="button_order_by active"></div>');
+                $('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
+
+                function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
+
+                function setfilter(selection) {
+                    $('#culture_overview_towns>li').show();
+                    if (isNumber($('#dio_sortfilterbox').val())) {
+                        var regexpInS = RegExp(/eta/);
+                        var numericfilter = parseInt($('#dio_sortfilterbox').val());
+                        var diff = $("#dio_diff_towns").val();
+                        var date = $("#dio_sort_towns").val();
+                        $('#culture_overview_towns>li').each(function (i, e) {
+                            var selectedSort = "";
+                            if (regexpInS.test(selection)) {
+                                //try {selectedSort = new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000).getHours()} catch { selectedSort = -1 }
+
+                                try {
+                                    const diffIn = dateDiff(new Date(), new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000));
+                                    if (date != "minutes") { selectedSort = diffIn.hour }
+                                    else { selectedSort = (diffIn.min+ 60*diffIn.hour) }
+                                } catch { selectedSort = -1 }
+
+                            } else {
+                                selectedSort = $(e).find(selection).text();
+                                if (!(selectedSort.indexOf(numericfilter) >= 0)) {
+                                    $(e).hide();
+                                }
+                            }
+                            //if (numericfilter < selectedSort) { $(e).hide();}
+                            if (selectedSort != -1) {
+                                if (numericfilter < selectedSort & diff == "<") { $(e).hide();}
+                                if (numericfilter != selectedSort & diff == "=") { $(e).hide(); }
+                                if (numericfilter > selectedSort & diff == ">") { $(e).hide(); }
+                            }
+                            else {$(e).hide();}
+                        });
+                    } else {
+                        var namefilter = $('#dio_sortfilterbox').val();
+                        $('#culture_overview_towns>li').each(function (i, e) {
+                            var townname = $(e).find('a.gp_town_link').text();
+                            if (namefilter.length > 0 && !(townname.indexOf(namefilter) >= 0)) { $(e).hide(); }
+                        });
+                    }
+                };
+
+                function sort(selection) {
+                    order = !order;
+                    switch (selection) {
+                        case "hours":
+                        case "minutes":
+                            selection = 'span.eta';
+                            break;
+                        case "name":
+                            selection = 'a.gp_town_link';
+                            break;
+                    }
+                    setfilter(selection);
+                    var dio_ArrayUnsorted = $('#culture_overview_towns>li').get();
+                    dio_ArrayUnsorted.sort(function (a, b) {
+                        var regexpInS = RegExp(/eta/);
+                        if (regexpInS.test(selection)) {
+                            //try {console.log(parseInt($(a).find(selection)[0].dataset.timestamp)) || 0} catch { }
+                            try {a = parseInt($(a).find(selection)[0].dataset.timestamp) || 0} catch { a = 0 }
+                            try {b = parseInt($(b).find(selection)[0].dataset.timestamp) || 0} catch { b = 0 }
+                        } else {
+                            a = $(a).find(selection).text().toLowerCase();
+                            b = $(b).find(selection).text().toLowerCase();
+                            if (order) { return a.localeCompare(b); }
+                            else { return b.localeCompare(a); }
+                        }
+                        if (order) { return b - a }
+                        else { return a - b }
+                    });
+                    for (var i = 0; i < dio_ArrayUnsorted.length; i++) {
+                        dio_ArrayUnsorted[i].parentNode.appendChild(dio_ArrayUnsorted[i]);
+                    }
+                }
+
+                $("#dio_sortinit").click(function () {
+                    sort($("#dio_sort_towns").val());
+                    $(this).toggleClass('active')
+                });
+            } catch (error) { errorHandling(error, "cultureControl (init)"); }
+        },
+        grepo_dropdown: (ID, Options) => {
+            var str = '<span class="grepo_input"><span class="left"><span class="right"><select name="' + ID + '" id="' + ID + '" type="text">';
+            $.each(Options, function (a, b) {
+                if (b[1]) { str += '<option value="' + b[0] + '">' + b[1] + '</option>' }
+                else { str += '<option value="' + b + '">' + b + '</option>' }
+            });
+            str += '</select></span></span></span>';
+            return str;
+        },
+        grepo_input: (Style, ID, Text) => {
+            return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="text" value="' + Text + '"></span></span></span></div>');
+        },
+        deactivate: () => {
+            $('#dio_cultureControl_style').remove();
+            $('#dio_culture_sort_control').remove();
         },
     };
 
