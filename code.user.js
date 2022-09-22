@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.1
+// @version		4.28.2
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -72,6 +72,8 @@ if (GM && (uw.location.pathname.indexOf("game") >= 0)) {
         bullseyeUnit: loadValue(WID + "_bullseyeUnit", '{ "current_group" : -1 }'), // new
 
         worldWonder: loadValue(WID + "_wonder", '{ "ratio": {}, "storage": {}, "map": {} }'),
+
+        Overviews: loadValue("Overviews", '{ "Buildings": "", "Culture": "", "Gods": "" }'),
 
         // MARKET
         worldWonderTypes: loadValue(MID + "_wonderTypes", '{}')
@@ -5635,7 +5637,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     }
 
 
-    var autoTownTypes, manuTownTypes, manuTownAuto, population, sentUnitsArray, biriArray, wonder, wonderTypes;
+    var autoTownTypes, manuTownTypes, manuTownAuto, population, sentUnitsArray, biriArray, wonder, wonderTypes, Overviews;
 
     function setStyle() {
         // Settings
@@ -5677,9 +5679,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             wonder = DATA.worldWonder;
             wonderTypes = DATA.worldWonderTypes;
 
+            Overviews = DATA.Overviews
+
             var DIO_USER = { 'name': uw.Game.player_name, 'market': MID };
             saveValue("dio_user", JSON.stringify(DIO_USER));
 
+            if (Overviews.Culture == "") {
+                Overviews.Culture = uw.DM.getl10n("mass_recruit").sort_by.name;
+                Overviews.Culture_Dif = ">";
+                Overviews.Buildings = uw.DM.getl10n("mass_recruit").sort_by.name;
+                Overviews.Buildings_Dif = ">";
+                Overviews.Gods = uw.DM.getl10n("mass_recruit").sort_by.name;
+                saveValue("Overviews", JSON.stringify(Overviews));
+            }
 
             $.Observer(uw.GameEvents.game.load).subscribe('DIO_START', function (e, data) {
                 a();
@@ -6400,7 +6412,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     function cache() {
         var c, h = {}, k = {};
-        if ("object" != typeof uw.MM.DIO) { setTimeout(function() { cache(); }, 1E4);}
+        if ("object" != typeof uw.MM.DIO) { setTimeout(function () { cache(); }, 1E4); }
         else {
             /*try {
                 $.ajax({method:"get", url:"/data/players.txt"}).done(function(m) {
@@ -6414,11 +6426,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
             } catch (error) { errorHandling(error, "cache players"); }*/
             try {
-                $.ajax({method:"get", url:"/data/alliances.txt", }).done(function(m) {
+                $.ajax({ method: "get", url: "/data/alliances.txt", }).done(function (m) {
                     try {
-                        $.each(m.split(/\r\n|\n/), function(C, K) {
+                        $.each(m.split(/\r\n|\n/), function (C, K) {
                             c = K.split(/,/);
-                            k[c[0]] = {id:c[0], name:decodeURIComponent(c[1] + ""), Points:decodeURIComponent(c[2] + "").replace(/\+/g, " ")};
+                            k[c[0]] = { id: c[0], name: decodeURIComponent(c[1] + ""), Points: decodeURIComponent(c[2] + "").replace(/\+/g, " ") };
                         });
                         uw.MM.DIO.cacheAlliances = k;
                     } catch (error) { errorHandling(error, "cache alliances done"); }
@@ -9790,7 +9802,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
         function getPointRatioFromCache() {
             if (AID) {
-                if ("object" != typeof uw.MM.DIO) { setTimeout(function() { getPointRatioFromCache(); }, 1E4);}
+                if ("object" != typeof uw.MM.DIO) { setTimeout(function () { getPointRatioFromCache(); }, 1E4); }
                 else {
                     try {
                         var AP = uw.MM.DIO.cacheAlliances[uw.Game.alliance_id].Points;
@@ -12952,105 +12964,107 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      * ----------------------------------------------------------------------------------------------------------------------------
      *******************************************************************************************************************************/
 
-    var buil = uw.DM.getl10n("mass_recruit").sort_by.name, diff = ">"; // Recruiting Trade
     var BuildingOverview = {
         activate: () => {
             $('<style id="dio_BuildingOverview_style"> ' +
-              '#dio_building_overview .option_s { margin:0px; cursor:pointer; } ' +
-              '#dio_building_overview .option_s.building_icon40x40 { margin:0px; cursor:pointer; border: 0.5px solid #000; } ' +
-              '#dio_building_overview .option_s:hover { filter:unset !important; -webkit-filter:unset !important; } ' +
-              '#dio_building_overview .option_s.resource { margin:0.7px; position: relative; display: block; float: left; text-align: right; } ' +
-              '#dio_building_overview .select_rec_buil .sel { filter:sepia(100%); -webkit-filter:sepia(100%); } ' +
+                '#dio_building_overview .option_s { margin:0px; cursor:pointer; } ' +
+                '#dio_building_overview .option_s.building_icon40x40 { margin:0px; cursor:pointer; border: 0.5px solid #000; } ' +
+                '#dio_building_overview .option_s:hover { filter:unset !important; -webkit-filter:unset !important; } ' +
+                '#dio_building_overview .option_s.resource { margin:0.7px; position: relative; display: block; float: left; text-align: right; } ' +
+                '#dio_building_overview .select_rec_buil .sel { filter:sepia(100%); -webkit-filter:sepia(100%); } ' +
 
-              '#dio_building_overview .option {color:#000; background:#FFEEC7; } ' +
-              '#dio_building_overview .option:hover {color:#fff; background:#328BF1; } ' +
+                '#dio_building_overview .option {color:#000; background:#FFEEC7; } ' +
+                '#dio_building_overview .option:hover {color:#fff; background:#328BF1; } ' +
 
-              '#dio_building_overview .select_rec_buil { position:absolute; top:20px; width:126px; display:none; } ' +
-              '#dio_building_overview .select_rec_perc { position:absolute; top:20px; width:17px; display:none; left:88px; } ' +
+                '#dio_building_overview .select_rec_buil { position:absolute; top:20px; width:126px; display:none; } ' +
+                '#dio_building_overview .select_rec_perc { position:absolute; top:20px; width:17px; display:none; left:88px; } ' +
 
-              '#dio_building_overview .open { display:block !important; } ' +
+                '#dio_building_overview .open { display:block !important; } ' +
 
-              '#dio_building_overview .item-list { max-height:none; } ' +
+                '#dio_building_overview .item-list { max-height:none; } ' +
 
-              '#dio_building_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
+                '#dio_building_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
 
-              '#dio_building_overview .dio_drop_rec_buil { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
-              '#dio_building_overview .dio_drop_rec_perc { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
-              '#place_defense .game_header bold { margin-bottom: 5px; } ' +
+                '#dio_building_overview .dio_drop_rec_buil { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
+                '#dio_building_overview .dio_drop_rec_perc { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
+                '#place_defense .game_header bold { margin-bottom: 5px; } ' +
 
-              '#dio_building_sort_control #test.building_icon50x50 { left: -2px; top: -2px; position: absolute; border: 5px solid #fad588; cursor:pointer; } '+
-              '#dio_building_sort_control #test.resource { left: -3px; top: -2px; position: absolute; cursor: pointer; background-color: #fad588; border-left: 18px solid #fad588; border-right: 17px solid #fad588; height: 26px; transform: scale(0.9); }' +
-              '</style>').appendTo("head");
+                '#dio_building_sort_control #test.building_icon50x50 { left: -2px; top: -2px; position: absolute; border: 5px solid #fad588; cursor:pointer; } ' +
+                '#dio_building_sort_control #test.resource { left: -3px; top: -2px; position: absolute; cursor: pointer; background-color: #fad588; border-left: 18px solid #fad588; border-right: 17px solid #fad588; height: 26px; transform: scale(0.9); }' +
+                '</style>').appendTo("head");
 
             if ($('#building_overview_table_wrapper').length) { BuildingOverview.init(); }
         },
         init: () => {
+            var buil = Overviews.Buildings, diff = Overviews.Buildings_Dif;
             try {
                 $("#fixed_table_header").parent().append('<div id="dio_building_sort_control" class="overview_search_bar">' +
-                                                         '<div id="dio_building_overview" class="dio_rec_trade">' +
-                                                         // DropDown-Button for unit
-                                                         '<div class="dio_drop_rec_buil dropdown default">' +
-                                                         '<div class="border-left"></div>' +
-                                                         '<div class="border-right"></div>' +
-                                                         '<div class="caption" name="' + buil + '">' + buil + '</div>' +
-                                                         '<div class="arrow"></div>' +
-                                                         '<div id="test"></div>' +
-                                                         '</div>' +
-                                                         '<div class="dio_drop_rec_perc dropdown default">' +
-                                                         // DropDown-Button for ratio
-                                                         '<div class="border-left"></div>' +
-                                                         '<div class="border-right"></div>' +
-                                                         '<div class="caption" name="' + diff + '">' + diff + '</div>' +
-                                                         '<div class="arrow"></div>' +
-                                                         '</div>' +
-                                                         '</div>' + BuildingOverview.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
-                                                         '<div id="dio_sortinit" class="button_order_by active"></div>' +
-                                                         '</div>');
+                    '<div id="dio_building_overview" class="dio_rec_trade">' +
+                    // DropDown-Button for unit
+                    '<div class="dio_drop_rec_buil dropdown default">' +
+                    '<div class="border-left"></div>' +
+                    '<div class="border-right"></div>' +
+                    '<div class="caption" name="' + buil + '">' + buil + '</div>' +
+                    '<div class="arrow"></div>' +
+                    '<div id="test"></div>' +
+                    '</div>' +
+                    '<div class="dio_drop_rec_perc dropdown default">' +
+                    // DropDown-Button for ratio
+                    '<div class="border-left"></div>' +
+                    '<div class="border-right"></div>' +
+                    '<div class="caption" name="' + diff + '">' + diff + '</div>' +
+                    '<div class="arrow"></div>' +
+                    '</div>' +
+                    '</div>' + BuildingOverview.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
+                    '<div id="dio_sortinit" class="button_order_by active"></div>' +
+                    '</div>');
 
                 // Select boxes for unit and ratio
                 $('<div id="dio_Select_boxes" class="select_rec_buil dropdown-list default active">' +
-                  '<div class="item-list">' +
-                  //Ship
-                  '<div class="option_s" name="' + uw.DM.getl10n("mass_recruit").sort_by.name + '">' + uw.DM.getl10n("mass_recruit").sort_by.name + '</div>' +
-                  '<div class="option_s resource wood_img" 	name="wood"></div>' +
-                  '<div class="option_s resource stone_img"	name="stone"></div>' +
-                  '<div class="option_s resource iron_img" 	name="iron"></div>' +
-                  '<div class="option_s resource pop_img" 	name="pop"></div>' +
-                  '<div class="option_s unit building_icon40x40 main" 		name="main"></div>' +
-                  '<div class="option_s unit building_icon40x40 hide" 		name="hide"></div>' +
-                  '<div class="option_s unit building_icon40x40 lumber"		name="lumber"></div>' +
-                  '<div class="option_s unit building_icon40x40 stoner"		name="stoner"></div>' +
-                  '<div class="option_s unit building_icon40x40 ironer"		name="ironer"></div>' +
-                  '<div class="option_s unit building_icon40x40 market" 	name="market"></div>' +
-                  '<div class="option_s unit building_icon40x40 docks"		name="docks"></div>' +
-                  '<div class="option_s unit building_icon40x40 barracks" 	name="barracks"></div>' +
-                  '<div class="option_s unit building_icon40x40 wall" 		name="wall"></div>' +
-                  '<div class="option_s unit building_icon40x40 storage"	name="storage"></div>' +
-                  '<div class="option_s unit building_icon40x40 farm" 		name="farm"></div>' +
-                  '<div class="option_s unit building_icon40x40 academy"	name="academy"></div>' +
-                  '<div class="option_s unit building_icon40x40 temple"		name="temple"></div>' +
-                  '<div class="option_s unit building_icon40x40 theater"	name="theater"></div>' +
-                  '<div class="option_s unit building_icon40x40 thermal"	name="thermal"></div>' +
-                  '<div class="option_s unit building_icon40x40 library"	name="library"></div>' +
-                  '<div class="option_s unit building_icon40x40 lighthouse" name="lighthouse"></div>' +
-                  '<div class="option_s unit building_icon40x40 tower" 		name="tower"></div>' +
-                  '<div class="option_s unit building_icon40x40 statue" 	name="statue"></div>' +
-                  '<div class="option_s unit building_icon40x40 oracle" 	name="oracle"></div>' +
-                  '<div class="option_s unit building_icon40x40 trade_office" name="trade_office"></div>' +
-                  '</div></div>').appendTo("#dio_building_overview.dio_rec_trade");
+                    '<div class="item-list">' +
+                    //Ship
+                    '<div class="option_s" name="' + uw.DM.getl10n("mass_recruit").sort_by.name + '">' + uw.DM.getl10n("mass_recruit").sort_by.name + '</div>' +
+                    '<div class="option_s" name="' + uw.DM.getl10n("mass_recruit").sort_by.points + '">' + uw.DM.getl10n("mass_recruit").sort_by.points + '</div>' +
+                    '<div class="option_s resource wood_img" 	name="wood"></div>' +
+                    '<div class="option_s resource stone_img"	name="stone"></div>' +
+                    '<div class="option_s resource iron_img" 	name="iron"></div>' +
+                    '<div class="option_s resource pop_img" 	name="pop"></div>' +
+                    '<div class="option_s unit building_icon40x40 main" 		name="main"></div>' +
+                    '<div class="option_s unit building_icon40x40 hide" 		name="hide"></div>' +
+                    '<div class="option_s unit building_icon40x40 lumber"		name="lumber"></div>' +
+                    '<div class="option_s unit building_icon40x40 stoner"		name="stoner"></div>' +
+                    '<div class="option_s unit building_icon40x40 ironer"		name="ironer"></div>' +
+                    '<div class="option_s unit building_icon40x40 market" 	name="market"></div>' +
+                    '<div class="option_s unit building_icon40x40 docks"		name="docks"></div>' +
+                    '<div class="option_s unit building_icon40x40 barracks" 	name="barracks"></div>' +
+                    '<div class="option_s unit building_icon40x40 wall" 		name="wall"></div>' +
+                    '<div class="option_s unit building_icon40x40 storage"	name="storage"></div>' +
+                    '<div class="option_s unit building_icon40x40 farm" 		name="farm"></div>' +
+                    '<div class="option_s unit building_icon40x40 academy"	name="academy"></div>' +
+                    '<div class="option_s unit building_icon40x40 temple"		name="temple"></div>' +
+                    '<div class="option_s unit building_icon40x40 theater"	name="theater"></div>' +
+                    '<div class="option_s unit building_icon40x40 thermal"	name="thermal"></div>' +
+                    '<div class="option_s unit building_icon40x40 library"	name="library"></div>' +
+                    '<div class="option_s unit building_icon40x40 lighthouse" name="lighthouse"></div>' +
+                    '<div class="option_s unit building_icon40x40 tower" 		name="tower"></div>' +
+                    '<div class="option_s unit building_icon40x40 statue" 	name="statue"></div>' +
+                    '<div class="option_s unit building_icon40x40 oracle" 	name="oracle"></div>' +
+                    '<div class="option_s unit building_icon40x40 trade_office" name="trade_office"></div>' +
+                    '</div></div>').appendTo("#dio_building_overview.dio_rec_trade");
 
                 $('<div class="select_rec_perc dropdown-list default inactive">' +
-                  '<div class="item-list">' +
-                  '<div class="option sel" name=">">></div>' +
-                  '<div class="option" name="=">=</div>' +
-                  '<div class="option" name="<"><</div>' +
-                  '</div></div>').appendTo("#dio_building_overview.dio_rec_trade");
+                    '<div class="item-list">' +
+                    '<div class="option sel" name=">">></div>' +
+                    '<div class="option" name="=">=</div>' +
+                    '<div class="option" name="<"><</div>' +
+                    '</div></div>').appendTo("#dio_building_overview.dio_rec_trade");
 
 
-                if (buil == uw.DM.getl10n("mass_recruit").sort_by.name) {}
-                else if ( buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
-                    $('#test').addClass("resource " + buil + "_img"); }
-                else {$('#test').addClass("building_icon50x50 " + buil); }
+                if (buil == uw.DM.getl10n("mass_recruit").sort_by.name || buil == uw.DM.getl10n("mass_recruit").sort_by.points) { }
+                else if (buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
+                    $('#test').addClass("resource " + buil + "_img");
+                }
+                else { $('#test').addClass("building_icon50x50 " + buil); }
 
                 // click events of the drop menu
                 $('#dio_building_overview .select_rec_buil .option_s').each(function () {
@@ -13058,21 +13072,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         $(".select_rec_buil .sel").toggleClass("sel");
                         $("." + this.className.split(" ")[4]).toggleClass("sel");
 
-                        buil = $(this).attr("name");
+                        Overviews.Buildings = $(this).attr("name");
+                        buil = Overviews.Buildings;
                         $('.dio_drop_rec_buil .caption').attr("name", buil);
                         $('.dio_drop_rec_buil .caption').each(function () {
                             this.innerHTML = buil;
                         });
 
                         $('#test').removeClass();
-                        if (buil == uw.DM.getl10n("mass_recruit").sort_by.name) {}
-                        else if ( buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
-                            $('#test').addClass("resource " + buil + "_img"); }
-                        else {$('#test').addClass("building_icon50x50 " + buil); }
+                        if (buil == uw.DM.getl10n("mass_recruit").sort_by.name || buil == uw.DM.getl10n("mass_recruit").sort_by.points) { }
+                        else if (buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
+                            $('#test').addClass("resource " + buil + "_img");
+                        }
+                        else { $('#test').addClass("building_icon50x50 " + buil); }
 
                         $($(this).parent().parent().get(0)).removeClass("open");
                         $('.dio_drop_rec_buil .caption').change();
 
+                        saveValue("Overviews", JSON.stringify(Overviews));
                     });
                 });
                 $('#dio_building_overview .select_rec_perc .option').each(function () {
@@ -13080,13 +13097,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         $(this).parent().find(".sel").toggleClass("sel");
                         $(this).toggleClass("sel");
 
-                        diff = $(this).attr("name");
+                        Overviews.Buildings_Dif = $(this).attr("name");
+                        diff = Overviews.Buildings_Dif;
                         $('.dio_drop_rec_perc .caption').attr("name", diff);
                         $('.dio_drop_rec_perc .caption').each(function () {
                             this.innerHTML = diff;
                         });
                         $($(this).parent().parent().get(0)).removeClass("open")
                         $('.dio_drop_rec_perc .caption').change();
+
+                        saveValue("Overviews", JSON.stringify(Overviews));
                     });
                 });
 
@@ -13100,7 +13120,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 });
                 $('#dio_building_overview .dio_drop_rec_perc').click(function (e) {
-
                     if (!$($(e.target)[0].parentNode.parentNode.childNodes[3]).hasClass("open")) {
                         $($(e.target)[0].parentNode.parentNode.childNodes[3]).addClass("open");
                         $($(e.target)[0].parentNode.parentNode.childNodes[2]).removeClass("open");
@@ -13128,7 +13147,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 var selection, order;
 
-                $('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
+                //$('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
 
                 function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 
@@ -13144,10 +13163,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 if (!(selectedSort.indexOf(numericfilter) >= 0)) {
                                     $(e).hide();
                                 }
+                            } else if (selection == '.Points') {
+                                selectedSort = parseInt($(e).find(selection).text().split(" ")[0]) || 0;
                             } else {
                                 selectedSort = parseInt($(e).find(selection).text()) || 0;
                             }
-                            if (numericfilter < selectedSort & dif == "<") { $(e).hide();}
+                            if (numericfilter < selectedSort & dif == "<") { $(e).hide(); }
                             if (numericfilter != selectedSort & dif == "=") { $(e).hide(); }
                             if (numericfilter > selectedSort & dif == ">") { $(e).hide(); }
                         });
@@ -13159,12 +13180,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         });
                     }
                 };
-
+                var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
+                dio_ArrayUnsorted.sort(function (a, b) {
+                    $($(a).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
+                    $($(b).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
+                });
                 function sort(selection) {
                     order = !order;
                     switch (selection) {
                         case uw.DM.getl10n("mass_recruit").sort_by.name:
                             selection = 'a.gp_town_link';
+                            break;
+                        case uw.DM.getl10n("mass_recruit").sort_by.points:
+                            selection = '.Points';
                             break;
                         case "wood":
                             selection = '.wood span.count';
@@ -13184,10 +13212,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     setfilter(selection);
                     var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
                     dio_ArrayUnsorted.sort(function (a, b) {
-                        if (selection != 'a.gp_town_link') {
+                        if (selection = '.Points') {
+                            a = parseInt($(a).find(selection).text().split(" ")[0]) || 0;
+                            b = parseInt($(b).find(selection).text().split(" ")[0]) || 0;
+                        } else if (selection != 'a.gp_town_link') {
+                            console.log($(a).find(selection).text())
                             a = parseInt($(a).find(selection).text()) || 0;
                             b = parseInt($(b).find(selection).text()) || 0;
                         } else {
+                            console.log($(a).find(selection).text().toLowerCase())
                             a = $(a).find(selection).text().toLowerCase();
                             b = $(b).find(selection).text().toLowerCase();
                             if (order) { return a.localeCompare(b); }
@@ -13201,7 +13234,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
 
-                $("#dio_sortinit").click(function () {
+                $("#dio_sortinit").click(function (e) {
+                    //$($(e.target)[0].parentNode.parentNode.childNodes[2]).addClass("test");
+                    //console.log()
                     sort($("#dio_building_overview .dio_drop_rec_buil")[0].innerText);
                     $(this).toggleClass('active')
                 });
@@ -13552,26 +13587,30 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var cultureControl = {
         activate: () => {
             $('<style id="dio_cultureControl_style"> ' +
-              // style
-              '#dio_sortinit { margin: 3px 0 0 3px;} ' +
-              '#dio_culture_sort_control .border { border-bottom: 1px solid #222; left: -2px; position: absolute; right: -2px; top: 28px;} ' +
-              '#culture_overview_wrapper { top: 39px;} ' +
-              '#culture_overview_bottom { margin-top: 39px;} ' +
-              '#culture_overview_towns { border-top: 0px;} ' +
-              '.dio_res_plenty, .dio_res_rare { background: url(https://gpde.innogamescdn.com/images/game/layout/resources_deposit.png) no-repeat scroll 0 0; height: 10px; width: 10px; position: absolute; left: 29px;} ' +
-              '.dio_res_rare { background-position: 0 -10px;} ' +
-              '#culture_overview_towns.dio_resize .hide_buttons, #culture_overview_towns.dio_resize .spinner { top: 23px;} ' +
-              '</style>').appendTo("head");
+                // style
+                '#dio_sortinit { margin: 3px 0 0 3px;} ' +
+                '#dio_culture_sort_control .border { border-bottom: 1px solid #222; left: -2px; position: absolute; right: -2px; top: 28px;} ' +
+                '#culture_overview_wrapper { top: 39px;} ' +
+                '#culture_overview_bottom { margin-top: 39px;} ' +
+                '#culture_overview_towns { border-top: 0px;} ' +
+                '.dio_res_plenty, .dio_res_rare { background: url(https://gpde.innogamescdn.com/images/game/layout/resources_deposit.png) no-repeat scroll 0 0; height: 10px; width: 10px; position: absolute; left: 29px;} ' +
+                '.dio_res_rare { background-position: 0 -10px;} ' +
+                '#culture_overview_towns.dio_resize .hide_buttons, #culture_overview_towns.dio_resize .spinner { top: 23px;} ' +
+                '</style>').appendTo("head");
 
             if ($('#culture_points_overview_bottom').length) { cultureControl.init(); }
         },
         init: () => {
             try {
+
+                $('#dio_sort_towns').each(function () {
+                    this.val = Overviews.Culture;
+                });
                 var selection, order;
                 var sort_options = [
-                    ["name", uw.DM.getl10n("mass_recruit").sort_by.name],
                     ["hours", uw.DM.getl10n("inventory").tooltip.hours],
                     ["minutes", "minutes"],
+                    ["name", uw.DM.getl10n("mass_recruit").sort_by.name],
                 ];
                 var diff_options = [
                     [">", ">"],
@@ -13579,16 +13618,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     ["<", "<"],
                 ];
 
-                function dateDiff(date1, date2){
+                function dateDiff(date1, date2) {
                     var diff = {}
                     var tmp = date2 - date1;
-                    tmp = Math.floor(tmp/1000);
+                    tmp = Math.floor(tmp / 1000);
                     diff.sec = tmp % 60;
-                    tmp = Math.floor((tmp-diff.sec)/60);
+                    tmp = Math.floor((tmp - diff.sec) / 60);
                     diff.min = tmp % 60;
-                    tmp = Math.floor((tmp-diff.min)/60);
+                    tmp = Math.floor((tmp - diff.min) / 60);
                     diff.hour = tmp % 24;
-                    tmp = Math.floor((tmp-diff.hour)/24);
+                    tmp = Math.floor((tmp - diff.hour) / 24);
                     diff.day = tmp;
                     return diff;
                 }
@@ -13614,7 +13653,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 try {
                                     const diffIn = dateDiff(new Date(), new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000));
                                     if (date != "minutes") { selectedSort = diffIn.hour }
-                                    else { selectedSort = (diffIn.min+ 60*diffIn.hour) }
+                                    else { selectedSort = (diffIn.min + 60 * diffIn.hour) }
                                 } catch { selectedSort = -1 }
 
                             } else {
@@ -13625,11 +13664,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             }
                             //if (numericfilter < selectedSort) { $(e).hide();}
                             if (selectedSort != -1) {
-                                if (numericfilter < selectedSort & diff == "<") { $(e).hide();}
+                                if (numericfilter < selectedSort & diff == "<") { $(e).hide(); }
                                 if (numericfilter != selectedSort & diff == "=") { $(e).hide(); }
                                 if (numericfilter > selectedSort & diff == ">") { $(e).hide(); }
                             }
-                            else {$(e).hide();}
+                            else { $(e).hide(); }
                         });
                     } else {
                         var namefilter = $('#dio_sortfilterbox').val();
@@ -13657,8 +13696,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         var regexpInS = RegExp(/eta/);
                         if (regexpInS.test(selection)) {
                             //try {console.log(parseInt($(a).find(selection)[0].dataset.timestamp)) || 0} catch { }
-                            try {a = parseInt($(a).find(selection)[0].dataset.timestamp) || 0} catch { a = 0 }
-                            try {b = parseInt($(b).find(selection)[0].dataset.timestamp) || 0} catch { b = 0 }
+                            try { a = parseInt($(a).find(selection)[0].dataset.timestamp) || 0 } catch { a = 0 }
+                            try { b = parseInt($(b).find(selection)[0].dataset.timestamp) || 0 } catch { b = 0 }
                         } else {
                             a = $(a).find(selection).text().toLowerCase();
                             b = $(b).find(selection).text().toLowerCase();
@@ -13677,6 +13716,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     sort($("#dio_sort_towns").val());
                     $(this).toggleClass('active')
                 });
+
+
+                /*$("#dio_sort_towns").click(function () {
+                    Overviews.Culture = $("#dio_sort_towns").val();
+                    saveValue("Overviews", JSON.stringify(Overviews));
+                    console.log($("#dio_sort_towns").val())
+                    console.log(Overviews.Culture)
+                });*/
+
             } catch (error) { errorHandling(error, "cultureControl (init)"); }
         },
         grepo_dropdown: (ID, Options) => {
