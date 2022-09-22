@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.2
+// @version		4.28.3
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -13143,11 +13143,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 $("#dio_building_overview .caption").attr("name", buil);
 
-                $('#dio_building_overview .dio_drop_rec_buil').tooltip(dio_icon + getTexts("labels", "rat"));
+                //$('#dio_building_overview .dio_drop_rec_buil').tooltip(dio_icon + getTexts("labels", "rat"));
 
                 var selection, order;
 
-                //$('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
+                $('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
 
                 function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 
