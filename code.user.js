@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.4
+// @version		4.28.5
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -12991,6 +12991,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 '#dio_building_sort_control #test.building_icon50x50 { left: -2px; top: -2px; position: absolute; border: 5px solid #fad588; cursor:pointer; } ' +
                 '#dio_building_sort_control #test.resource { left: -3px; top: -2px; position: absolute; cursor: pointer; background-color: #fad588; border-left: 18px solid #fad588; border-right: 17px solid #fad588; height: 26px; transform: scale(0.9); }' +
+
+                '#fixed_table_header .testt { border-left: 2px solid rgb(255, 0, 0); border-right: 2px solid rgb(255, 0, 0); width: 38px; cursor: auto!important;}' +
+                '#fixed_table_header .building_header { cursor: pointer; }' +
                 '</style>').appendTo("head");
 
             if ($('#building_overview_table_wrapper').length) { BuildingOverview.init(); }
@@ -13059,12 +13062,46 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="option" name="<"><</div>' +
                     '</div></div>').appendTo("#dio_building_overview.dio_rec_trade");
 
+                Classtest(buil)
 
-                if (buil == uw.DM.getl10n("mass_recruit").sort_by.name || buil == uw.DM.getl10n("mass_recruit").sort_by.points) { }
-                else if (buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
-                    $('#test').addClass("resource " + buil + "_img");
+                $('#fixed_table_header').each(function () {
+                    $(this).click(function (e) {
+                        if ($(e.target)[0].id == "fixed_table_header" || $(e.target)[0].className.split(" ")[0] == "game_arrow_left" || $(e.target)[0].className.split(" ")[0] == "game_arrow_right") { }
+                        else {
+                            selection = $(e.target)[0].className.split(" ")[2];
+                            sort(selection);
+
+                            Overviews.Buildings = selection;
+                            buil = Overviews.Buildings;
+                            $('.dio_drop_rec_buil .caption').attr("name", buil);
+                            $('.dio_drop_rec_buil .caption').each(function () {
+                                this.innerHTML = buil;
+                            });
+
+                            $("#dio_sortinit").toggleClass('active')
+                            //$('#fixed_table_header .testt').removeClass("testt");
+                            //$(e.target).addClass("testt")
+
+
+                            Classtest(buil)
+
+                            saveValue("Overviews", JSON.stringify(Overviews));
+                        }
+                    });
+                });
+
+                function Classtest(buil) {
+                    $('#test').removeClass();
+                    if (buil == uw.DM.getl10n("mass_recruit").sort_by.name || buil == uw.DM.getl10n("mass_recruit").sort_by.points) { }
+                    else if (buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
+                        $('#test').addClass("resource " + buil + "_img");
+                    }
+                    else { $('#test').addClass("building_icon50x50 " + buil); }
+                    setTimeout(() => {
+                        $('#fixed_table_header .testt').removeClass("testt");
+                        $('#fixed_table_header .' + buil).addClass("testt")
+                    }, 50);
                 }
-                else { $('#test').addClass("building_icon50x50 " + buil); }
 
                 // click events of the drop menu
                 $('#dio_building_overview .select_rec_buil .option_s').each(function () {
@@ -13079,12 +13116,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             this.innerHTML = buil;
                         });
 
-                        $('#test').removeClass();
-                        if (buil == uw.DM.getl10n("mass_recruit").sort_by.name || buil == uw.DM.getl10n("mass_recruit").sort_by.points) { }
-                        else if (buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
-                            $('#test').addClass("resource " + buil + "_img");
-                        }
-                        else { $('#test').addClass("building_icon50x50 " + buil); }
+                        Classtest(buil)
 
                         $($(this).parent().parent().get(0)).removeClass("open");
                         $('.dio_drop_rec_buil .caption').change();
@@ -13216,11 +13248,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             a = parseInt($(a).find(selection).text().split(" ")[0]) || 0;
                             b = parseInt($(b).find(selection).text().split(" ")[0]) || 0;
                         } else if (selection != 'a.gp_town_link') {
-                            console.log($(a).find(selection).text())
+                            //console.log($(a).find(selection).text())
                             a = parseInt($(a).find(selection).text()) || 0;
                             b = parseInt($(b).find(selection).text()) || 0;
                         } else {
-                            console.log($(a).find(selection).text().toLowerCase())
+                            //console.log($(a).find(selection).text().toLowerCase())
                             a = $(a).find(selection).text().toLowerCase();
                             b = $(b).find(selection).text().toLowerCase();
                             if (order) { return a.localeCompare(b); }
