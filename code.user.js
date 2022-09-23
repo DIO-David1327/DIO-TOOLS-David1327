@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.5
+// @version		4.28.6
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -8247,8 +8247,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         '#grcrt_towns_list: { width: 180px; } ' +
 
         '#place_defense #dd_filter_type .arrow, .select_rec_unit .arrow, .dropdown.default .arrow {' +
-        'width: 18px !important; height: 17px !important; background: url("' + Home_img + 'drop-out.png") no-repeat 0px -1px !important;' +
-        'position: absolute; top: 2px !important; right: 3px; } ' +
+        'width: 18px; height: 17px ; background: url("' + Home_img + 'drop-out.png") no-repeat 0px -1px;' +
+        'top: 2px; right: 3px; } ' +
+
+        '#place_defense #dd_filter_type .arrow:hover, .select_rec_unit .arrow, .dropdown.default .arrow:hover {background: url("' + Home_img + 'drop-over.png") no-repeat 0px -1px; } ' +
 
         '</style>').appendTo('head');
 
@@ -12994,6 +12996,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 '#fixed_table_header .testt { border-left: 2px solid rgb(255, 0, 0); border-right: 2px solid rgb(255, 0, 0); width: 38px; cursor: auto!important;}' +
                 '#fixed_table_header .building_header { cursor: pointer; }' +
+
+                //sort
+                '#dio_sort { cursor: pointer; filter: contrast(200%); background-repeat: no-repeat; background-position: bottom right; }' +
+                '#dio_sort.sorting {background-image: url("' + Home_img + 'sort-both.png");}' +
+                '#dio_sort.sorting_asc {background-image: url("' + Home_img + 'sort-asc.png") !important;}' +
+                '#dio_sort.sorting_desc {background-image: url("' + Home_img + 'sort-desc.png") !important;}' +
+                '#dio_sort.sorting_asc_disabled {background-image: url("' + Home_img + 'sort-asc-disabled.png");}' +
+                '#dio_sort.sorting_desc_disabled {background-image: url("' + Home_img + 'sort-desc-disabled.png");}' +
                 '</style>').appendTo("head");
 
             if ($('#building_overview_table_wrapper').length) { BuildingOverview.init(); }
@@ -13064,14 +13074,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 Classtest(buil)
 
+                setTimeout(() => {
+                    $('#fixed_table_header .' + buil).addClass("testt")
+                    $('#fixed_table_header .building_icon40x40').append('<div id="dio_sort" class="sorting"></div>')
+                }, 50);
+
                 $('#fixed_table_header').each(function () {
                     $(this).click(function (e) {
-                        if ($(e.target)[0].id == "fixed_table_header" || $(e.target)[0].className.split(" ")[0] == "game_arrow_left" || $(e.target)[0].className.split(" ")[0] == "game_arrow_right") { }
+                        if ($(e.target)[0].id == "fixed_table_header" || $(e.target)[0].parentNode.className.split(" ")[0] == "game_arrow_left" || $(e.target)[0].parentNode.className.split(" ")[0] == "game_arrow_right") { }
                         else {
-                            selection = $(e.target)[0].className.split(" ")[2];
-                            sort(selection);
+                            selection = $(e.target)[0].parentNode.className.split(" ")[2];
+                            sort(selection, true);
 
-                            Overviews.Buildings = selection;
+                            /*Overviews.Buildings = selection;
                             buil = Overviews.Buildings;
                             $('.dio_drop_rec_buil .caption').attr("name", buil);
                             $('.dio_drop_rec_buil .caption').each(function () {
@@ -13083,7 +13098,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             //$(e.target).addClass("testt")
 
 
-                            Classtest(buil)
+                            Classtest(buil)*/
 
                             saveValue("Overviews", JSON.stringify(Overviews));
                         }
@@ -13097,10 +13112,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         $('#test').addClass("resource " + buil + "_img");
                     }
                     else { $('#test').addClass("building_icon50x50 " + buil); }
-                    setTimeout(() => {
-                        $('#fixed_table_header .testt').removeClass("testt");
-                        $('#fixed_table_header .' + buil).addClass("testt")
-                    }, 50);
+
+                    $('#fixed_table_header .testt').removeClass("testt");
+                    $('#fixed_table_header .' + buil).addClass("testt")
                 }
 
                 // click events of the drop menu
@@ -13175,7 +13189,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 $("#dio_building_overview .caption").attr("name", buil);
 
-                //$('#dio_building_overview .dio_drop_rec_buil').tooltip(dio_icon + getTexts("labels", "rat"));
+                $('#dio_building_overview .dio_drop_rec_buil').tooltip(dio_icon);
+                $('#dio_sort').tooltip(dio_icon);
 
                 var selection, order;
 
@@ -13217,7 +13232,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $($(a).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
                     $($(b).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
                 });
-                function sort(selection) {
+                function sort(selection, filter) {
                     order = !order;
                     switch (selection) {
                         case uw.DM.getl10n("mass_recruit").sort_by.name:
@@ -13241,13 +13256,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         default:
                             selection = '.' + selection + ' a.current_level';
                     }
-                    setfilter(selection);
+                    $('#fixed_table_header .building_icon40x40 #dio_sort').attr("Class", "");
+                    $('#fixed_table_header .building_icon40x40 #dio_sort').addClass('sorting')
+
+                    if (selection !== 'a.gp_town_link' || selection !== '.Points') {
+                        if (!order) {
+                            $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_desc");
+                            $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_asc");
+                        }
+                        else {
+                            $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_asc");
+                            $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_desc");
+                        }
+                    }
+
+                    if (!filter) setfilter(selection);
+
                     var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
                     dio_ArrayUnsorted.sort(function (a, b) {
                         if (selection == '.Points') {
                             a = parseInt($(a).find(selection).text().split(" ")[0]) || 0;
                             b = parseInt($(b).find(selection).text().split(" ")[0]) || 0;
-                        } else if (selection != 'a.gp_town_link') {
+                        } else if (selection !== 'a.gp_town_link') {
                             //console.log($(a).find(selection).text())
                             a = parseInt($(a).find(selection).text()) || 0;
                             b = parseInt($(b).find(selection).text()) || 0;
