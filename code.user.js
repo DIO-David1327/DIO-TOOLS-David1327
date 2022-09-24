@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.6
+// @version		4.28.7
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -5566,10 +5566,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FEATURE = removetooltipps;
                 break;
             case "dio_Buo":
-                FEATURE = BBtowninfo;
+                FEATURE = BuildingOverview;
                 break;
             case "dio_Cuc":
-                FEATURE = removetooltipps;
+                FEATURE = cultureControl;
                 break;
 
             default:
@@ -6299,8 +6299,35 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             str += ((group = null == group) || (group2 = null == group2) ? "" : '</optgroup>') + '</select></span></span></span>';
             return $(str);
         },
+        grepo_dropdown: (ID, Class, Options, sel) => {
+            var str = '<div id="' + ID + '" class="' + Class + ' dropdown-list default"><div class="item-list">';
+            $.each(Options, function (a, b, c) { //class, name, ><
+                console.log(sel)
+                if (b[2]) { str += '<div class="' + b[0] + (sel == null ? "" : (sel == b[1] ? " sel" : "")) + '" name="' + b[1] + '">' + (b[2] == true ? b[1] : b[2]) + '</div>' }
+                else if (b[1]) { str += '<div class="' + b[0] + (sel == null ? "" : (sel == b[1] ? " sel" : "")) + '" name="' + b[1] + '"></div>' }
+                else { str += '<div class="' + (sel == null ? "" : (sel == b[0] ? " sel" : "")) + '" name="' + b[0] + '"></div>' }
+            });
+            str += '</div></div>';
+            return str;
+        },
         grepo_submenu: (ID, Title) => {
             return $('<li><a id="' + ID + '" class="submenu_link" ><span class="left"><span class="right"><span class="middle" title="' + Title + '" style="color: #000;">' + Title + '</span></span></span></a></li>');
+        },
+        drop_menu(This, Class, onglet) {
+            $(This).parent().find(".sel").toggleClass("sel");
+            $(This).toggleClass("sel");
+
+            Overviews[onglet] = $(This).attr("name");
+            var buil = Overviews[onglet];
+            $(Class + ' .caption').attr("name", buil);
+            $(Class + ' .caption').each(function () {
+                this.innerHTML = buil;
+            });
+
+            $($(This).parent().parent().get(0)).removeClass("open");
+            $(Class + ' .caption').change();
+
+            saveValue("Overviews", JSON.stringify(Overviews));
         },
         daystamp: (start, end) => { //dio.daystamp(start, end)
             var daystamp = 1000 * 60 * 60 * 24, today = new Date((new Date()) % (daystamp * (365 + 1 / 4))), // without year
@@ -12971,15 +12998,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('<style id="dio_BuildingOverview_style"> ' +
                 '#dio_building_overview .option_s { margin:0px; cursor:pointer; } ' +
                 '#dio_building_overview .option_s.building_icon40x40 { margin:0px; cursor:pointer; border: 0.5px solid #000; } ' +
-                '#dio_building_overview .option_s:hover { filter:unset !important; -webkit-filter:unset !important; } ' +
+                '#dio_building_overview .option_s:hover { filter:unset !important; -webkit-filter:unset; } ' +
                 '#dio_building_overview .option_s.resource { margin:0.7px; position: relative; display: block; float: left; text-align: right; } ' +
-                '#dio_building_overview .select_rec_buil .sel { filter:sepia(100%); -webkit-filter:sepia(100%); } ' +
+                '#dio_building_overview #dio_Select_boxes .sel { color: #fff; background-color: #444444; } ' +
+                '#dio_building_overview #dio_Select_boxes .building_icon40x40.sel { filter:sepia(100000%); -webkit-filter:sepia(100000%); background-color: initial;} ' +
+                '#dio_building_overview #dio_Select_boxes .resource.sel { border-radius: 30%;} ' +
 
                 '#dio_building_overview .option {color:#000; background:#FFEEC7; } ' +
                 '#dio_building_overview .option:hover {color:#fff; background:#328BF1; } ' +
 
-                '#dio_building_overview .select_rec_buil { position:absolute; top:20px; width:126px; display:none; } ' +
-                '#dio_building_overview .select_rec_perc { position:absolute; top:20px; width:17px; display:none; left:88px; } ' +
+                '#dio_building_overview .select_rec { position:absolute; top:20px; width:126px; display:none; } ' +
+                '#dio_building_overview .select_rec_diff { position:absolute; top:20px; width:17px; display:none; left:88px; } ' +
 
                 '#dio_building_overview .open { display:block !important; } ' +
 
@@ -12987,12 +13016,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 '#dio_building_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
 
-                '#dio_building_overview .dio_drop_rec_buil { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
-                '#dio_building_overview .dio_drop_rec_perc { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
-                '#place_defense .game_header bold { margin-bottom: 5px; } ' +
+                '#dio_building_overview .dio_drop_Select { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
+                '#dio_building_overview .dio_drop_diff { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
 
+                '#dio_building_sort_control { left: -2px; top: -2px; } ' +
                 '#dio_building_sort_control #test.building_icon50x50 { left: -2px; top: -2px; position: absolute; border: 5px solid #fad588; cursor:pointer; } ' +
                 '#dio_building_sort_control #test.resource { left: -3px; top: -2px; position: absolute; cursor: pointer; background-color: #fad588; border-left: 18px solid #fad588; border-right: 17px solid #fad588; height: 26px; transform: scale(0.9); }' +
+                '#dio_building_sort_control #dio_button_sort{ margin: 2px 0 0 3px; } ' +
+                '#dio_building_sort_control #dio_button_filter { margin: 3px 0 0 3px; } ' +
 
                 '#fixed_table_header .testt { border-left: 2px solid rgb(255, 0, 0); border-right: 2px solid rgb(255, 0, 0); width: 38px; cursor: auto!important;}' +
                 '#fixed_table_header .building_header { cursor: pointer; }' +
@@ -13009,68 +13040,62 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             if ($('#building_overview_table_wrapper').length) { BuildingOverview.init(); }
         },
         init: () => {
-            var buil = Overviews.Buildings, diff = Overviews.Buildings_Dif;
             try {
+                var buil = Overviews.Buildings, diff = Overviews.Buildings_Dif;
+                var sort_options = [
+                    ["option_s", uw.DM.getl10n("mass_recruit").sort_by.name, true],
+                    ["option_s", uw.DM.getl10n("mass_recruit").sort_by.points, true],
+                    ["option_s resource wood_img", "wood"],
+                    ["option_s resource stone_img", "stone"],
+                    ["option_s resource iron_img", "iron"],
+                    ["option_s resource pop_img", "pop"],
+                    ["option_s unit building_icon40x40 main", "main"],
+                    ["option_s unit building_icon40x40 hide", "hide"],
+                    ["option_s unit building_icon40x40 lumber", "lumber"],
+                    ["option_s unit building_icon40x40 stoner", "stoner"],
+                    ["option_s unit building_icon40x40 ironer", "ironer"],
+                    ["option_s unit building_icon40x40 market", "market"],
+                    ["option_s unit building_icon40x40 docks", "docks"],
+                    ["option_s unit building_icon40x40 barracks", "barracks"],
+                    ["option_s unit building_icon40x40 wall", "wall"],
+                    ["option_s unit building_icon40x40 storage", "storage"],
+                    ["option_s unit building_icon40x40 farm", "farm"],
+                    ["option_s unit building_icon40x40 academy", "academy"],
+                    ["option_s unit building_icon40x40 temple", "temple"],
+                    ["option_s unit building_icon40x40 theater", "theater"],
+                    ["option_s unit building_icon40x40 thermal", "thermal"],
+                    ["option_s unit building_icon40x40 library", "library"],
+                    ["option_s unit building_icon40x40 lighthouse", "lighthouse"],
+                    ["option_s unit building_icon40x40 tower", "tower"],
+                    ["option_s unit building_icon40x40 statue", "statue"],
+                    ["option_s unit building_icon40x40 oracle", "oracle"],
+                    ["option_s unit building_icon40x40 trade_office", "trade_office"],
+                ];
+
+                var diff_options = [["option", ">", true], ["option", "=", true], ["option", "<", true],];
+
                 $("#fixed_table_header").parent().append('<div id="dio_building_sort_control" class="overview_search_bar">' +
                     '<div id="dio_building_overview" class="dio_rec_trade">' +
                     // DropDown-Button for unit
-                    '<div class="dio_drop_rec_buil dropdown default">' +
+                    '<div class="dio_drop_Select dropdown default">' +
                     '<div class="border-left"></div>' +
                     '<div class="border-right"></div>' +
                     '<div class="caption" name="' + buil + '">' + buil + '</div>' +
                     '<div class="arrow"></div>' +
                     '<div id="test"></div>' +
-                    '</div>' +
-                    '<div class="dio_drop_rec_perc dropdown default">' +
+                    '</div>' + dio.grepo_dropdown("dio_Select_boxes", "select_rec", sort_options, buil) +
+                    '<div class="dio_drop_diff dropdown default">' +
                     // DropDown-Button for ratio
                     '<div class="border-left"></div>' +
                     '<div class="border-right"></div>' +
                     '<div class="caption" name="' + diff + '">' + diff + '</div>' +
                     '<div class="arrow"></div>' +
-                    '</div>' +
+                    '</div>' + dio.grepo_dropdown("dio_Select_boxes", "select_rec_diff", diff_options, diff) +
                     '</div>' + BuildingOverview.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
-                    '<div id="dio_sortinit" class="button_order_by active"></div>' +
+                    '<div id="dio_button_sort" class="jump_button"></div>' +
+                    '<div id="dio_button_filter" class="button_order_by active"></div>' +
                     '</div>');
 
-                // Select boxes for unit and ratio
-                $('<div id="dio_Select_boxes" class="select_rec_buil dropdown-list default active">' +
-                    '<div class="item-list">' +
-                    //Ship
-                    '<div class="option_s" name="' + uw.DM.getl10n("mass_recruit").sort_by.name + '">' + uw.DM.getl10n("mass_recruit").sort_by.name + '</div>' +
-                    '<div class="option_s" name="' + uw.DM.getl10n("mass_recruit").sort_by.points + '">' + uw.DM.getl10n("mass_recruit").sort_by.points + '</div>' +
-                    '<div class="option_s resource wood_img" 	name="wood"></div>' +
-                    '<div class="option_s resource stone_img"	name="stone"></div>' +
-                    '<div class="option_s resource iron_img" 	name="iron"></div>' +
-                    '<div class="option_s resource pop_img" 	name="pop"></div>' +
-                    '<div class="option_s unit building_icon40x40 main" 		name="main"></div>' +
-                    '<div class="option_s unit building_icon40x40 hide" 		name="hide"></div>' +
-                    '<div class="option_s unit building_icon40x40 lumber"		name="lumber"></div>' +
-                    '<div class="option_s unit building_icon40x40 stoner"		name="stoner"></div>' +
-                    '<div class="option_s unit building_icon40x40 ironer"		name="ironer"></div>' +
-                    '<div class="option_s unit building_icon40x40 market" 	name="market"></div>' +
-                    '<div class="option_s unit building_icon40x40 docks"		name="docks"></div>' +
-                    '<div class="option_s unit building_icon40x40 barracks" 	name="barracks"></div>' +
-                    '<div class="option_s unit building_icon40x40 wall" 		name="wall"></div>' +
-                    '<div class="option_s unit building_icon40x40 storage"	name="storage"></div>' +
-                    '<div class="option_s unit building_icon40x40 farm" 		name="farm"></div>' +
-                    '<div class="option_s unit building_icon40x40 academy"	name="academy"></div>' +
-                    '<div class="option_s unit building_icon40x40 temple"		name="temple"></div>' +
-                    '<div class="option_s unit building_icon40x40 theater"	name="theater"></div>' +
-                    '<div class="option_s unit building_icon40x40 thermal"	name="thermal"></div>' +
-                    '<div class="option_s unit building_icon40x40 library"	name="library"></div>' +
-                    '<div class="option_s unit building_icon40x40 lighthouse" name="lighthouse"></div>' +
-                    '<div class="option_s unit building_icon40x40 tower" 		name="tower"></div>' +
-                    '<div class="option_s unit building_icon40x40 statue" 	name="statue"></div>' +
-                    '<div class="option_s unit building_icon40x40 oracle" 	name="oracle"></div>' +
-                    '<div class="option_s unit building_icon40x40 trade_office" name="trade_office"></div>' +
-                    '</div></div>').appendTo("#dio_building_overview.dio_rec_trade");
-
-                $('<div class="select_rec_perc dropdown-list default inactive">' +
-                    '<div class="item-list">' +
-                    '<div class="option sel" name=">">></div>' +
-                    '<div class="option" name="=">=</div>' +
-                    '<div class="option" name="<"><</div>' +
-                    '</div></div>').appendTo("#dio_building_overview.dio_rec_trade");
 
                 Classtest(buil)
 
@@ -13084,22 +13109,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if ($(e.target)[0].id == "fixed_table_header" || $(e.target)[0].parentNode.className.split(" ")[0] == "game_arrow_left" || $(e.target)[0].parentNode.className.split(" ")[0] == "game_arrow_right") { }
                         else {
                             selection = $(e.target)[0].parentNode.className.split(" ")[2];
-                            sort(selection, true);
-
-                            /*Overviews.Buildings = selection;
-                            buil = Overviews.Buildings;
-                            $('.dio_drop_rec_buil .caption').attr("name", buil);
-                            $('.dio_drop_rec_buil .caption').each(function () {
-                                this.innerHTML = buil;
-                            });
-
-                            $("#dio_sortinit").toggleClass('active')
-                            //$('#fixed_table_header .testt').removeClass("testt");
-                            //$(e.target).addClass("testt")
-
-
-                            Classtest(buil)*/
-
+                            if ($(e.target)[0].className.split(" ")[1] == undefined) sort(selection, true, true);
+                            else sort(selection, true);
                             saveValue("Overviews", JSON.stringify(Overviews));
                         }
                     });
@@ -13118,59 +13129,33 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
 
                 // click events of the drop menu
-                $('#dio_building_overview .select_rec_buil .option_s').each(function () {
+                $('#dio_building_overview .select_rec .option_s').each(function () {
                     $(this).click(function (e) {
-                        $(".select_rec_buil .sel").toggleClass("sel");
-                        $("." + this.className.split(" ")[4]).toggleClass("sel");
-
-                        Overviews.Buildings = $(this).attr("name");
-                        buil = Overviews.Buildings;
-                        $('.dio_drop_rec_buil .caption').attr("name", buil);
-                        $('.dio_drop_rec_buil .caption').each(function () {
-                            this.innerHTML = buil;
-                        });
-
-                        Classtest(buil)
-
-                        $($(this).parent().parent().get(0)).removeClass("open");
-                        $('.dio_drop_rec_buil .caption').change();
-
-                        saveValue("Overviews", JSON.stringify(Overviews));
+                        dio.drop_menu(this, '.dio_drop_Select', "Buildings")
+                        Classtest(Overviews.Buildings)
                     });
                 });
-                $('#dio_building_overview .select_rec_perc .option').each(function () {
+                $('#dio_building_overview .select_rec_diff .option').each(function () {
                     $(this).click(function (e) {
-                        $(this).parent().find(".sel").toggleClass("sel");
-                        $(this).toggleClass("sel");
-
-                        Overviews.Buildings_Dif = $(this).attr("name");
-                        diff = Overviews.Buildings_Dif;
-                        $('.dio_drop_rec_perc .caption').attr("name", diff);
-                        $('.dio_drop_rec_perc .caption').each(function () {
-                            this.innerHTML = diff;
-                        });
-                        $($(this).parent().parent().get(0)).removeClass("open")
-                        $('.dio_drop_rec_perc .caption').change();
-
-                        saveValue("Overviews", JSON.stringify(Overviews));
+                        dio.drop_menu(this, '.dio_drop_diff', "Buildings_Dif")
                     });
                 });
 
                 // show & hide drop menus on click
-                $('#dio_building_overview .dio_drop_rec_buil').click(function (e) {
-                    if (!$($(e.target)[0].parentNode.parentNode.childNodes[2]).hasClass("open")) {
-                        $($(e.target)[0].parentNode.parentNode.childNodes[2]).addClass("open");
-                        $($(e.target)[0].parentNode.parentNode.childNodes[3]).removeClass("open");
+                $('#dio_building_overview .dio_drop_Select').click(function (e) {
+                    if (!$($('.select_rec')).hasClass("open")) {
+                        $($('.select_rec')).addClass("open");
+                        $($('.select_rec_diff')).removeClass("open");
                     } else {
-                        $($(e.target)[0].parentNode.parentNode.childNodes[2]).removeClass("open");
+                        $($('.select_rec')).removeClass("open");
                     }
                 });
-                $('#dio_building_overview .dio_drop_rec_perc').click(function (e) {
-                    if (!$($(e.target)[0].parentNode.parentNode.childNodes[3]).hasClass("open")) {
-                        $($(e.target)[0].parentNode.parentNode.childNodes[3]).addClass("open");
-                        $($(e.target)[0].parentNode.parentNode.childNodes[2]).removeClass("open");
+                $('#dio_building_overview .dio_drop_diff').click(function (e) {
+                    if (!$($('.select_rec_diff')).hasClass("open")) {
+                        $($('.select_rec_perc')).addClass("open");
+                        $($('.select_rec')).removeClass("open");
                     } else {
-                        $($(e.target)[0].parentNode.parentNode.childNodes[3]).removeClass("open");
+                        $($('.select_rec_perc')).removeClass("open");
                     }
                 });
 
@@ -13189,19 +13174,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 $("#dio_building_overview .caption").attr("name", buil);
 
-                $('#dio_building_overview .dio_drop_rec_buil').tooltip(dio_icon);
+                $('#dio_building_overview .dio_drop_Select').tooltip(dio_icon);
                 $('#dio_sort').tooltip(dio_icon);
 
                 var selection, order;
 
-                $('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
+                $('#dio_button_sort').tooltip(dio_icon + getTexts("caves", "search_for"));
 
                 function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 
                 function setfilter(selection) {
                     $('#building_overview>tbody>tr').show();
                     if (isNumber($('#dio_sortfilterbox').val())) {
-                        var dif = $("#dio_building_overview .dio_drop_rec_perc")[0].innerText
+                        var dif = $("#dio_building_overview .dio_drop_diff")[0].innerText
                         var numericfilter = parseInt($('#dio_sortfilterbox').val());
                         $('#building_overview>tbody>tr').each(function (i, e) {
                             var selectedSort = "";
@@ -13232,8 +13217,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $($(a).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
                     $($(b).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
                 });
-                function sort(selection, filter) {
-                    order = !order;
+                function sort(selection, filter, Sort) {
+                    if (!Sort) order = !order;
                     switch (selection) {
                         case uw.DM.getl10n("mass_recruit").sort_by.name:
                             selection = 'a.gp_town_link';
@@ -13258,6 +13243,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     $('#fixed_table_header .building_icon40x40 #dio_sort').attr("Class", "");
                     $('#fixed_table_header .building_icon40x40 #dio_sort').addClass('sorting')
+                    if (!Sort) $("#dio_button_filter").toggleClass('active')
 
                     if (selection !== 'a.gp_town_link' || selection !== '.Points') {
                         if (!order) {
@@ -13271,18 +13257,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
 
                     if (!filter) setfilter(selection);
-
+                    //if (Sort) return
                     var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
                     dio_ArrayUnsorted.sort(function (a, b) {
                         if (selection == '.Points') {
                             a = parseInt($(a).find(selection).text().split(" ")[0]) || 0;
                             b = parseInt($(b).find(selection).text().split(" ")[0]) || 0;
                         } else if (selection !== 'a.gp_town_link') {
-                            //console.log($(a).find(selection).text())
                             a = parseInt($(a).find(selection).text()) || 0;
                             b = parseInt($(b).find(selection).text()) || 0;
                         } else {
-                            //console.log($(a).find(selection).text().toLowerCase())
                             a = $(a).find(selection).text().toLowerCase();
                             b = $(b).find(selection).text().toLowerCase();
                             if (order) { return a.localeCompare(b); }
@@ -13296,11 +13280,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
 
-                $("#dio_sortinit").click(function (e) {
-                    //$($(e.target)[0].parentNode.parentNode.childNodes[2]).addClass("test");
-                    //console.log()
-                    sort($("#dio_building_overview .dio_drop_rec_buil")[0].innerText);
-                    $(this).toggleClass('active')
+                $("#dio_button_filter").click(function (e) {
+                    sort($("#dio_building_overview .dio_drop_Select")[0].innerText, true);
+                });
+                $("#dio_button_sort").click(function (e) {
+                    sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
                 });
 
             } catch (error) { errorHandling(error, "BuildingOverview (init)"); }
@@ -13314,7 +13298,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('#dio_building_overview').remove();
         },
     };
-
 
     var cultureOverview = {
         timeout: null,
@@ -13380,7 +13363,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         '<div id="dio_cultureBTN_triumph_r" class="dio_cultureBTN_r dio_cultureBTN_triumph"></div><div id="dio_cultureBTN_olympicgames_r" class="dio_cultureBTN_r dio_cultureBTN_olympicgames"></div>' +
                         '<div id="dio_cultureBTN_cityfestival_r" class="dio_cultureBTN_r dio_cultureBTN_cityfestival"></div></div></div>');
 
-                    $("#culture_overview_wrapper").css({ "top": "35px", "height": "+=-35px" });
+                    if (!$("#dio_culture_sort_control").is(":visible")) $("#culture_overview_wrapper").css({ "top": "35px", "height": "+=-35px" });
                     $("#dio_cultureBTN_wrapper").css({
                         "color": "white",
                         "font-family": "Verdana",
@@ -13413,9 +13396,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         "border": "2px groove gray",
                         "background": "url(https://gpfr.innogamescdn.com/images/game/overviews/celebration_bg_new.png)"
                     });
-                    $(".dio_cultureBTN_cityfestival").css({ "background-position": "0 -109px" });
+                    $(".dio_cultureBTN_cityfestival").css({ "background-position": "0 -110px" });
                     $(".dio_cultureBTN_olympicgames").css({ "background-position": "0 -140px" });
-                    $(".dio_cultureBTN_triumph").css({ "background-position": "0 -110px" });
+                    $(".dio_cultureBTN_triumph").css({ "background-position": "0 -201px" });
                     $(".dio_cultureBTN_theather").css({ "background-position": "0 -170px" });
 
                     var dio_cultureBTN_r_clicked_last = "";
@@ -13493,7 +13476,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $("#dio_cultureBTN_wrapper").remove();
             clearTimeout(cultureOverview.timeout);
             cultureOverview.timeout = null;
-            $("#culture_overview_wrapper").css({ "top": "0px" });
+            if (!$("#dio_culture_sort_control").is(":visible")) $("#culture_overview_wrapper").css({ "top": "0px", "height": "+=35px" });
         },
     };
 
@@ -13648,37 +13631,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var cultureControl = {
         activate: () => {
-            $('<style id="dio_cultureControl_style"> ' +
-                // style
-                '#dio_sortinit { margin: 3px 0 0 3px;} ' +
-                '#dio_culture_sort_control .border { border-bottom: 1px solid #222; left: -2px; position: absolute; right: -2px; top: 28px;} ' +
-                '#culture_overview_wrapper { top: 39px;} ' +
-                '#culture_overview_bottom { margin-top: 39px;} ' +
-                '#culture_overview_towns { border-top: 0px;} ' +
-                '.dio_res_plenty, .dio_res_rare { background: url(https://gpde.innogamescdn.com/images/game/layout/resources_deposit.png) no-repeat scroll 0 0; height: 10px; width: 10px; position: absolute; left: 29px;} ' +
-                '.dio_res_rare { background-position: 0 -10px;} ' +
-                '#culture_overview_towns.dio_resize .hide_buttons, #culture_overview_towns.dio_resize .spinner { top: 23px;} ' +
+            $('<style id="dio_cultureOverview_style"> ' +
+                '#dio_culture_overview .option {color:#000; background:#FFEEC7; } ' +
+                '#dio_culture_overview .option:hover {color:#fff; background:#328BF1; } ' +
+
+                '#dio_culture_overview #dio_sort_towns { position:absolute; top:20px; width:126px; display:none; } ' +
+                '#dio_culture_overview #dio_diff_towns { position:absolute; top:20px; width:17px; display:none; left:88px; } ' +
+                '#dio_culture_overview .sel { color: #fff; background: #444444; } ' +
+
+                '#dio_culture_overview .open { display:block !important; } ' +
+
+                '#dio_culture_overview .item-list { max-height:none; } ' +
+
+                '#dio_culture_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
+
+                '#dio_culture_overview .dio_drop_Select { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
+                '#dio_culture_overview .dio_drop_diff { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
+
+                '#dio_culture_sort_control #dio_button_sort{ margin: 2px 0 0 3px; } ' +
+                '#dio_culture_sort_control #dio_button_filter { margin: 3px 0 0 3px; } ' +
+
+                '#fixed_table_header .building_header { cursor: pointer; }' +
                 '</style>').appendTo("head");
 
             if ($('#culture_points_overview_bottom').length) { cultureControl.init(); }
         },
         init: () => {
             try {
-
-                $('#dio_sort_towns').each(function () {
-                    this.val = Overviews.Culture;
-                });
+                if (!$("#dio_cultureBTN_wrapper").is(":visible")) $("#culture_overview_wrapper").css({ "top": "35px", "height": "+=-35px" });
+                var buil = Overviews.Culture, diff = Overviews.Culture_Dif;
                 var selection, order;
                 var sort_options = [
-                    ["hours", uw.DM.getl10n("inventory").tooltip.hours],
-                    ["minutes", "minutes"],
-                    ["name", uw.DM.getl10n("mass_recruit").sort_by.name],
+                    ["option", uw.DM.getl10n("mass_recruit").sort_by.name, true],
+                    ["option", uw.DM.getl10n("inventory").tooltip.hours, true],
+                    ["option", "Minutes", true],
                 ];
-                var diff_options = [
-                    [">", ">"],
-                    ["=", "="],
-                    ["<", "<"],
-                ];
+
+                var diff_options = [["option", ">", true], ["option", "=", true], ["option", "<", true],];
 
                 function dateDiff(date1, date2) {
                     var diff = {}
@@ -13694,9 +13683,73 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     return diff;
                 }
 
-                $("#culture_overview_wrapper").parent().append('<div id="dio_culture_sort_control" class="overview_search_bar">' + cultureControl.grepo_dropdown("dio_sort_towns", sort_options) + cultureControl.grepo_dropdown("dio_diff_towns", diff_options) + cultureControl.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
-                    '<div id="dio_sortinit" class="button_order_by active"></div>');
-                $('#dio_sortinit').tooltip(dio_icon + getTexts("caves", "search_for"));
+                $("#culture_overview_wrapper").parent().append('<div id="dio_culture_sort_control" class="overview_search_bar">' +
+                    '<div id="dio_culture_overview" class="dio_rec_trade">' +
+                    // DropDown-Button for unit
+                    '<div class="dio_drop_Select dropdown default">' +
+                    '<div class="border-left"></div>' +
+                    '<div class="border-right"></div>' +
+                    '<div class="caption" name="' + buil + '">' + buil + '</div>' +
+                    '<div class="arrow"></div>' +
+                    '<div id="test"></div>' +
+                    '</div>' + dio.grepo_dropdown("dio_sort_towns", "", sort_options, buil) +
+                    '<div class="dio_drop_diff dropdown default">' +
+                    // DropDown-Button for ratio
+                    '<div class="border-left"></div>' +
+                    '<div class="border-right"></div>' +
+                    '<div class="caption" name="' + diff + '">' + diff + '</div>' +
+                    '<div class="arrow"></div>' +
+                    '</div>' + dio.grepo_dropdown("dio_diff_towns", "", diff_options, diff) +
+                    '</div>' + cultureControl.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
+                    '<div id="dio_button_sort" class="jump_button"></div>' +
+                    '<div id="dio_button_filter" class="button_order_by active"></div>' +
+                    '</div>');
+
+                // click events of the drop menu
+                $('#dio_culture_overview #dio_sort_towns .option').each(function () {
+                    $(this).click(function (e) {
+                        dio.drop_menu(this, '.dio_drop_Select', "Culture")
+                    });
+                });
+                $('#dio_culture_overview #dio_diff_towns .option').each(function () {
+                    $(this).click(function (e) {
+                        dio.drop_menu(this, '.dio_drop_diff', "Culture_Dif")
+                    });
+                });
+
+                // show & hide drop menus on click
+                $('#dio_culture_overview .dio_drop_Select').click(function (e) {
+                    if (!$($('#dio_sort_towns')).hasClass("open")) {
+                        $($('#dio_sort_towns')).addClass("open");
+                        $($('#dio_diff_towns')).removeClass("open");
+                    } else {
+                        $($('#dio_sort_towns')).removeClass("open");
+                    }
+                });
+                $('#dio_culture_overview .dio_drop_diff').click(function (e) {
+                    if (!$($('#dio_diff_towns')).hasClass("open")) {
+                        $($('#dio_diff_towns')).addClass("open");
+                        $($('#dio_sort_towns')).removeClass("open");
+                    } else {
+                        $($('#dio_diff_towns')).removeClass("open");
+                    }
+                });
+
+                $("#dio_Culture_overview").click(function (e) {
+                    var clicked = $(e.target), element = $('#' + this.id + ' .dropdown-list.open').get(0);
+                    if ((clicked[0].parentNode.className.split(" ")[1] !== "dropdown") && element) {
+                        $(element).removeClass("open");
+                    }
+                });
+                // hover arrow change
+                $('.dropdown').hover(function (e) {
+                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_over.src + "') no-repeat -1px -1px";
+                }, function (e) {
+                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_out.src + "') no-repeat -1px -1px";
+                });
+
+
+                $('#dio_button_sort').tooltip(dio_icon + getTexts("caves", "search_for"));
 
                 function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 
@@ -13710,12 +13763,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         $('#culture_overview_towns>li').each(function (i, e) {
                             var selectedSort = "";
                             if (regexpInS.test(selection)) {
-                                //try {selectedSort = new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000).getHours()} catch { selectedSort = -1 }
-
                                 try {
                                     const diffIn = dateDiff(new Date(), new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000));
-                                    if (date != "minutes") { selectedSort = diffIn.hour }
-                                    else { selectedSort = (diffIn.min + 60 * diffIn.hour) }
+                                    if (date != "Minutes") selectedSort = diffIn.hour
+                                    else selectedSort = (diffIn.min + 60 * diffIn.hour)
                                 } catch { selectedSort = -1 }
 
                             } else {
@@ -13741,18 +13792,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 };
 
-                function sort(selection) {
-                    order = !order;
+                function sort(selection, filter, Sort) {
+                    if (!Sort) order = !order;
                     switch (selection) {
-                        case "hours":
-                        case "minutes":
+                        case uw.DM.getl10n("inventory").tooltip.hours:
+                        case "Minutes":
                             selection = 'span.eta';
                             break;
-                        case "name":
+                        case uw.DM.getl10n("mass_recruit").sort_by.name:
                             selection = 'a.gp_town_link';
                             break;
                     }
-                    setfilter(selection);
+                    if (!filter) setfilter(selection);
                     var dio_ArrayUnsorted = $('#culture_overview_towns>li').get();
                     dio_ArrayUnsorted.sort(function (a, b) {
                         var regexpInS = RegExp(/eta/);
@@ -13774,29 +13825,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
 
-                $("#dio_sortinit").click(function () {
-                    sort($("#dio_sort_towns").val());
-                    $(this).toggleClass('active')
+                $("#dio_button_filter").click(function (e) {
+                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, true);
+                });
+                $("#dio_button_sort").click(function (e) {
+                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true);
                 });
 
-
-                /*$("#dio_sort_towns").click(function () {
-                    Overviews.Culture = $("#dio_sort_towns").val();
-                    saveValue("Overviews", JSON.stringify(Overviews));
-                    console.log($("#dio_sort_towns").val())
-                    console.log(Overviews.Culture)
-                });*/
-
             } catch (error) { errorHandling(error, "cultureControl (init)"); }
-        },
-        grepo_dropdown: (ID, Options) => {
-            var str = '<span class="grepo_input"><span class="left"><span class="right"><select name="' + ID + '" id="' + ID + '" type="text">';
-            $.each(Options, function (a, b) {
-                if (b[1]) { str += '<option value="' + b[0] + '">' + b[1] + '</option>' }
-                else { str += '<option value="' + b + '">' + b + '</option>' }
-            });
-            str += '</select></span></span></span>';
-            return str;
         },
         grepo_input: (Style, ID, Text) => {
             return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="text" value="' + Text + '"></span></span></span></div>');
@@ -13804,6 +13840,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         deactivate: () => {
             $('#dio_cultureControl_style').remove();
             $('#dio_culture_sort_control').remove();
+            $('#dio_cultureOverview_style').remove();
+            if (!$("#dio_cultureBTN_wrapper").is(":visible")) $("#culture_overview_wrapper").css({ "top": "0px", "height": "+=35px" });
         },
     };
 
