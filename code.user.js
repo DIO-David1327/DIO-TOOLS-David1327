@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.9
+// @version		4.28.10
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -4812,7 +4812,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_Rct: true,	// resCounter
         dio_BBt: true,	// BBtowninfo
         dio_Rtt: false,	// removeTooltipps
-        dio_Buo: true,	// BuildingOverview
+        dio_Buc: true,	// buildingControl
         dio_Cuc: true,	// cultureControl
 
         dio_err: false,	// Error Reports
@@ -5256,7 +5256,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<p>' + getTexts("Options", "Cuc")[1] + '</p></td>' +
                     '</tr><tr>' +
                     '<td><img src="" alt="" /></td>' +
-                    '<td><div id="dio_Buo" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">Buo' + getTexts("Options", "Buo")[0] + '</div></div>' +
+                    '<td><div id="dio_Buc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">Buo' + getTexts("Options", "Buo")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Buo")[1] + '</p></td>' +
                     '</tr></table>' +
 
@@ -5565,8 +5565,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             case "dio_Rtt":
                 FEATURE = removetooltipps;
                 break;
-            case "dio_Buo":
-                FEATURE = BuildingOverview;
+            case "dio_Buc":
+                FEATURE = buildingControl;
                 break;
             case "dio_Cuc":
                 FEATURE = cultureControl;
@@ -5885,8 +5885,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_Cuc) {
                         setTimeout(() => { cultureControl.activate(); }, 100);
                     }
-                    if (DATA.options.dio_Buo) {
-                        setTimeout(() => { BuildingOverview.activate(); }, 100);
+                    if (DATA.options.dio_Buc) {
+                        setTimeout(() => { buildingControl.activate(); }, 100);
                     }
 
                     // compatibility flask-tools ?
@@ -6052,8 +6052,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     break;
                 case "/town_overviews/building_overview":
-                    if (DATA.options.dio_Buo) {
-                        BuildingOverview.init();
+                    if (DATA.options.dio_Buc) {
+                        buildingControl.init();
                     }
                     break;
                 case "/town_overviews/culture_overview":
@@ -6302,16 +6302,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         grepo_dropdown: (ID, Class, Options, sel) => {
             var str = '<div id="' + ID + '" class="' + Class + ' dropdown-list default"><div class="item-list">';
             $.each(Options, function (a, b, c) { //class, name, ><
-                console.log(sel)
                 if (b[2]) { str += '<div class="' + b[0] + (sel == null ? "" : (sel == b[1] ? " sel" : "")) + '" name="' + b[1] + '">' + (b[2] == true ? b[1] : b[2]) + '</div>' }
                 else if (b[1]) { str += '<div class="' + b[0] + (sel == null ? "" : (sel == b[1] ? " sel" : "")) + '" name="' + b[1] + '"></div>' }
                 else { str += '<div class="' + (sel == null ? "" : (sel == b[0] ? " sel" : "")) + '" name="' + b[0] + '"></div>' }
             });
             str += '</div></div>';
             return str;
-        },
-        grepo_submenu: (ID, Title) => {
-            return $('<li><a id="' + ID + '" class="submenu_link" ><span class="left"><span class="right"><span class="middle" title="' + Title + '" style="color: #000;">' + Title + '</span></span></span></a></li>');
         },
         drop_menu(This, Class, onglet) {
             $(This).parent().find(".sel").toggleClass("sel");
@@ -6328,6 +6324,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $(Class + ' .caption').change();
 
             saveValue("Overviews", JSON.stringify(Overviews));
+        },
+        drop_menus_open(open, remove) {
+            if (!$($(open)).hasClass("open")) {
+                $($(open)).addClass("open");
+                $($(remove)).removeClass("open");
+            } else {
+                $($(open)).removeClass("open");
+            }
+        },
+        grepo_submenu: (ID, Title) => {
+            return $('<li><a id="' + ID + '" class="submenu_link" ><span class="left"><span class="right"><span class="middle" title="' + Title + '" style="color: #000;">' + Title + '</span></span></span></a></li>');
         },
         daystamp: (start, end) => { //dio.daystamp(start, end)
             var daystamp = 1000 * 60 * 60 * 24, today = new Date((new Date()) % (daystamp * (365 + 1 / 4))), // without year
@@ -6390,6 +6397,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             } catch (error) {
                 return errorHandling(error, "clipboard");
             }
+        },
+        dateDiff(date1, date2) {
+            var diff = {}
+            var tmp = date2 - date1;
+            tmp = Math.floor(tmp / 1000);
+            diff.sec = tmp % 60;
+            tmp = Math.floor((tmp - diff.sec) / 60);
+            diff.min = tmp % 60;
+            tmp = Math.floor((tmp - diff.min) / 60);
+            diff.hour = tmp % 24;
+            tmp = Math.floor((tmp - diff.hour) / 24);
+            diff.day = tmp;
+            return diff;
         },
     };
 
@@ -8434,6 +8454,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 script.Quack = (typeof (uw.main_script) !== "undefined" ? true : false);
                 script.GrepoData = (typeof (uw.gd_version) !== "undefined" ? true : false);
             }, 10000);
+
+            uw.MM.DIO.input = function (e, b) {
+                if (b == "building") buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
+            }
 
             uw.MM.DIO.getPlayer.Groups = function () {
                 var town_groups_towns, town_groups, groups = {};
@@ -12986,20 +13010,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     };
 
     /*******************************************************************************************************************************
-     * culture Overview
+     * Building Overview
      * ----------------------------------------------------------------------------------------------------------------------------
      * | ● Culture overview : Add a counter for the party in the culture view. Quack function
      * | ● Culture Progress :
      * ----------------------------------------------------------------------------------------------------------------------------
      *******************************************************************************************************************************/
 
-    var BuildingOverview = {
+    var buildingControl = {
+        order: "",
         activate: () => {
-            $('<style id="dio_BuildingOverview_style"> ' +
+            $('<style id="dio_buildingControl_style"> ' +
                 '#dio_building_overview .option_s { margin:0px; cursor:pointer; } ' +
                 '#dio_building_overview .option_s.building_icon40x40 { margin:0px; cursor:pointer; border: 0.5px solid #000; } ' +
-                '#dio_building_overview .option_s:hover { filter:unset !important; -webkit-filter:unset; } ' +
                 '#dio_building_overview .option_s.resource { margin:0.7px; position: relative; display: block; float: left; text-align: right; } ' +
+                '#dio_building_overview .option_s:hover { filter:unset !important; -webkit-filter:unset; } ' +
+
                 '#dio_building_overview #dio_Select_boxes .sel { color: #fff; background-color: #444444; } ' +
                 '#dio_building_overview #dio_Select_boxes .building_icon40x40.sel { filter:sepia(100000%); -webkit-filter:sepia(100000%); background-color: initial;} ' +
                 '#dio_building_overview #dio_Select_boxes .resource.sel { border-radius: 30%;} ' +
@@ -13007,23 +13033,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_building_overview .option {color:#000; background:#FFEEC7; } ' +
                 '#dio_building_overview .option:hover {color:#fff; background:#328BF1; } ' +
 
-                '#dio_building_overview .select_rec { position:absolute; top:20px; width:126px; display:none; } ' +
+                '#dio_building_overview .select_rec { position:absolute; top:20px; width:128px; display:none; } ' +
                 '#dio_building_overview .select_rec_diff { position:absolute; top:20px; width:17px; display:none; left:88px; } ' +
 
                 '#dio_building_overview .open { display:block !important; } ' +
-
                 '#dio_building_overview .item-list { max-height:none; } ' +
+                '#dio_building_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; z-index: 1;} ' +
 
-                '#dio_building_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
-
-                '#dio_building_overview .dio_drop_Select { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
+                '#dio_building_overview .dio_drop_Select { width:81px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
                 '#dio_building_overview .dio_drop_diff { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
 
                 '#dio_building_sort_control { left: -2px; top: -2px; } ' +
                 '#dio_building_sort_control #test.building_icon50x50 { left: -2px; top: -2px; position: absolute; border: 5px solid #fad588; cursor:pointer; } ' +
-                '#dio_building_sort_control #test.resource { left: -3px; top: -2px; position: absolute; cursor: pointer; background-color: #fad588; border-left: 18px solid #fad588; border-right: 17px solid #fad588; height: 26px; transform: scale(0.9); }' +
-                '#dio_building_sort_control #dio_button_sort{ margin: 2px 0 0 3px; } ' +
+                '#dio_building_sort_control #test.resource { left: 12px; top: -4px; position: absolute; cursor: pointer; }' +
+                '#dio_building_sort_control #dio_button_sort{ margin: 2px 0 0 3px; cursor: pointer; } ' +
                 '#dio_building_sort_control #dio_button_filter { margin: 3px 0 0 3px; } ' +
+
+                '#dio_building_sort_control #dio_numberbox { display:none; width: 70px; } ' +
 
                 '#fixed_table_header .testt { border-left: 2px solid rgb(255, 0, 0); border-right: 2px solid rgb(255, 0, 0); width: 38px; cursor: auto!important;}' +
                 '#fixed_table_header .building_header { cursor: pointer; }' +
@@ -13031,20 +13057,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 //sort
                 '#dio_sort { cursor: pointer; filter: contrast(200%); background-repeat: no-repeat; background-position: bottom right; }' +
                 '#dio_sort.sorting {background-image: url("' + Home_img + 'sort-both.png");}' +
-                '#dio_sort.sorting_asc {background-image: url("' + Home_img + 'sort-asc.png") !important;}' +
-                '#dio_sort.sorting_desc {background-image: url("' + Home_img + 'sort-desc.png") !important;}' +
+                '#dio_sort.sorting_asc {background-image: url("' + Home_img + 'sort-desc-green.png") !important;}' +
+                '#dio_sort.sorting_desc {background-image: url("' + Home_img + 'sort-asc-green.png") !important;}' +
                 '#dio_sort.sorting_asc_disabled {background-image: url("' + Home_img + 'sort-asc-disabled.png");}' +
                 '#dio_sort.sorting_desc_disabled {background-image: url("' + Home_img + 'sort-desc-disabled.png");}' +
                 '</style>').appendTo("head");
 
-            if ($('#building_overview_table_wrapper').length) { BuildingOverview.init(); }
+            if ($('#building_overview_table_wrapper').length) { buildingControl.init(); }
         },
         init: () => {
             try {
                 var buil = Overviews.Buildings, diff = Overviews.Buildings_Dif;
                 var sort_options = [
                     ["option_s", uw.DM.getl10n("mass_recruit").sort_by.name, true],
-                    ["option_s", uw.DM.getl10n("mass_recruit").sort_by.points, true],
+                    ["option_s ok", uw.DM.getl10n("mass_recruit").sort_by.points, true],
                     ["option_s resource wood_img", "wood"],
                     ["option_s resource stone_img", "stone"],
                     ["option_s resource iron_img", "iron"],
@@ -13076,7 +13102,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 $("#fixed_table_header").parent().append('<div id="dio_building_sort_control" class="overview_search_bar">' +
                     '<div id="dio_building_overview" class="dio_rec_trade">' +
-                    // DropDown-Button for unit
+                    // DropDown-Button for filter
                     '<div class="dio_drop_Select dropdown default">' +
                     '<div class="border-left"></div>' +
                     '<div class="border-right"></div>' +
@@ -13085,17 +13111,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div id="test"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_Select_boxes", "select_rec", sort_options, buil) +
                     '<div class="dio_drop_diff dropdown default">' +
-                    // DropDown-Button for ratio
+                    // DropDown-Button for diff
                     '<div class="border-left"></div>' +
                     '<div class="border-right"></div>' +
                     '<div class="caption" name="' + diff + '">' + diff + '</div>' +
                     '<div class="arrow"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_Select_boxes", "select_rec_diff", diff_options, diff) +
-                    '</div>' + BuildingOverview.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
-                    '<div id="dio_button_sort" class="jump_button"></div>' +
+                    '</div>' + buildingControl.grepo_input(false, "margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML + buildingControl.grepo_input(true, "margin-top:0px; margin-left: -6px;", "dio_numberbox", "")[0].outerHTML +
+                    //'<div id="dio_button_sort" class="jump_button"></div>' +
                     '<div id="dio_button_filter" class="button_order_by active"></div>' +
                     '</div>');
-
 
                 Classtest(buil)
 
@@ -13109,8 +13134,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if ($(e.target)[0].id == "fixed_table_header" || $(e.target)[0].parentNode.className.split(" ")[0] == "game_arrow_left" || $(e.target)[0].parentNode.className.split(" ")[0] == "game_arrow_right") { }
                         else {
                             selection = $(e.target)[0].parentNode.className.split(" ")[2];
-                            if ($(e.target)[0].className.split(" ")[1] == undefined) sort(selection, true, true);
-                            else sort(selection, true);
+                            if ($(e.target)[0].className.split(" ")[1] == undefined) buildingControl.sort(selection, true, true);
+                            else buildingControl.sort(selection, true);
                             saveValue("Overviews", JSON.stringify(Overviews));
                         }
                     });
@@ -13118,53 +13143,50 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 function Classtest(buil) {
                     $('#test').removeClass();
+                    $(".dio_drop_Select .border-left").css({ "right": "auto", "left": "0", "z-index": 0 });
+                    $(".dio_drop_Select .caption").css({ "left": "auto", "width": "auto", });
                     if (buil == uw.DM.getl10n("mass_recruit").sort_by.name || buil == uw.DM.getl10n("mass_recruit").sort_by.points) { }
                     else if (buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
                         $('#test').addClass("resource " + buil + "_img");
+                        $(".dio_drop_Select .border-left").css({ "right": "19px", "left": "auto", "z-index": 1 });
+                        $(".dio_drop_Select .caption").css({ "left": "54px", "width": "3px", });
                     }
-                    else { $('#test').addClass("building_icon50x50 " + buil); }
+                    else {
+                        $('#test').addClass("building_icon50x50 " + buil);
+                        $(".dio_drop_Select .border-left").css({ "right": "19px", "left": "auto", "z-index": 1 });
+                    }
 
                     $('#fixed_table_header .testt').removeClass("testt");
                     $('#fixed_table_header .' + buil).addClass("testt")
+                    if (buil === uw.DM.getl10n("mass_recruit").sort_by.name) {
+                        $("#dio_sortfilterbox").css({ "display": "block" });
+                        $("#dio_numberbox").css({ "display": "none" });
+                    }
+                    else {
+                        $("#dio_sortfilterbox").css({ "display": "none" });
+                        $("#dio_numberbox").css({ "display": "block" });
+                    }
                 }
 
                 // click events of the drop menu
                 $('#dio_building_overview .select_rec .option_s').each(function () {
                     $(this).click(function (e) {
-                        dio.drop_menu(this, '.dio_drop_Select', "Buildings")
+                        dio.drop_menu(this, '.dio_drop_Select', "Buildings");
                         Classtest(Overviews.Buildings)
+                        buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
                     });
                 });
                 $('#dio_building_overview .select_rec_diff .option').each(function () {
                     $(this).click(function (e) {
-                        dio.drop_menu(this, '.dio_drop_diff', "Buildings_Dif")
+                        dio.drop_menu(this, '.dio_drop_diff', "Buildings_Dif");
+                        buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
                     });
                 });
 
                 // show & hide drop menus on click
-                $('#dio_building_overview .dio_drop_Select').click(function (e) {
-                    if (!$($('.select_rec')).hasClass("open")) {
-                        $($('.select_rec')).addClass("open");
-                        $($('.select_rec_diff')).removeClass("open");
-                    } else {
-                        $($('.select_rec')).removeClass("open");
-                    }
-                });
-                $('#dio_building_overview .dio_drop_diff').click(function (e) {
-                    if (!$($('.select_rec_diff')).hasClass("open")) {
-                        $($('.select_rec_diff')).addClass("open");
-                        $($('.select_rec')).removeClass("open");
-                    } else {
-                        $($('.select_rec_diff')).removeClass("open");
-                    }
-                });
+                $('#dio_building_overview .dio_drop_Select').click(function (e) { dio.drop_menus_open('.select_rec', '.select_rec_diff') });
+                $('#dio_building_overview .dio_drop_diff').click(function (e) { dio.drop_menus_open('.select_rec_diff', '.select_rec') });
 
-                $("#dio_building_overview").click(function (e) {
-                    var clicked = $(e.target), element = $('#' + this.id + ' .dropdown-list.open').get(0);
-                    if ((clicked[0].parentNode.className.split(" ")[1] !== "dropdown") && element) {
-                        $(element).removeClass("open");
-                    }
-                });
                 // hover arrow change
                 $('.dropdown').hover(function (e) {
                     $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_over.src + "') no-repeat -1px -1px";
@@ -13177,128 +13199,135 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#dio_building_overview .dio_drop_Select').tooltip(dio_icon);
                 $('#dio_sort').tooltip(dio_icon);
 
-                var selection, order;
+                var selection;
 
-                $('#dio_button_sort').tooltip(dio_icon + getTexts("caves", "search_for"));
-                $('#dio_button_filter').tooltip(uw.DM.getl10n("heroes").transfer.sort_by);
-
-                function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
-
-                function setfilter(selection) {
-                    $('#building_overview>tbody>tr').show();
-                    if (isNumber($('#dio_sortfilterbox').val())) {
-                        var dif = $("#dio_building_overview .dio_drop_diff")[0].innerText
-                        var numericfilter = parseInt($('#dio_sortfilterbox').val());
-                        $('#building_overview>tbody>tr').each(function (i, e) {
-                            var selectedSort = "";
-                            if (selection == 'a.gp_town_link') {
-                                selectedSort = $(e).find(selection).text();
-                                if (!(selectedSort.indexOf(numericfilter) >= 0)) {
-                                    $(e).hide();
-                                }
-                            } else if (selection == '.Points') {
-                                selectedSort = parseInt($(e).find(selection).text().split(" ")[0]) || 0;
-                            } else {
-                                selectedSort = parseInt($(e).find(selection).text()) || 0;
-                            }
-                            if (numericfilter < selectedSort & dif == "<") { $(e).hide(); }
-                            if (numericfilter != selectedSort & dif == "=") { $(e).hide(); }
-                            if (numericfilter > selectedSort & dif == ">") { $(e).hide(); }
-                        });
-                    } else {
-                        var namefilter = $('#dio_sortfilterbox').val();
-                        $('#building_overview>tbody>tr').each(function (i, e) {
-                            var townname = $(e).find('a.gp_town_link').text();
-                            if (namefilter.length > 0 && !(townname.indexOf(namefilter) >= 0)) { $(e).hide(); }
-                        });
-                    }
-                };
                 var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
                 dio_ArrayUnsorted.sort(function (a, b) {
                     $($(a).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
                     $($(b).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
                 });
-                function sort(selection, filter, Sort) {
-                    if (!Sort) order = !order;
-                    switch (selection) {
-                        case uw.DM.getl10n("mass_recruit").sort_by.name:
-                            selection = 'a.gp_town_link';
-                            break;
-                        case uw.DM.getl10n("mass_recruit").sort_by.points:
-                            selection = '.Points';
-                            break;
-                        case "wood":
-                            selection = '.wood span.count';
-                            break;
-                        case "stone":
-                            selection = '.stone span.count';
-                            break;
-                        case "iron":
-                            selection = '.iron span.count';
-                            break;
-                        case "pop":
-                            selection = '.town_population span.count';
-                            break;
-                        default:
-                            selection = '.' + selection + ' a.current_level';
-                    }
-                    $('#fixed_table_header .building_icon40x40 #dio_sort').attr("Class", "");
-                    $('#fixed_table_header .building_icon40x40 #dio_sort').addClass('sorting')
-                    if (!Sort) $("#dio_button_filter").toggleClass('active')
 
-                    if (selection !== 'a.gp_town_link' || selection !== '.Points') {
-                        if (!order) {
-                            $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_desc");
-                            $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_asc");
-                        }
-                        else {
-                            $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_asc");
-                            $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_desc");
-                        }
-                    }
+                $("#dio_button_filter").click(function (e) { buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, true); });
+                $("#dio_button_sort, #dio_sortfilterbox, #dio_numberbox").click(function (e) { buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true); });
 
-                    if (!filter) setfilter(selection);
-                    //if (Sort) return
-                    var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
-                    dio_ArrayUnsorted.sort(function (a, b) {
-                        if (selection == '.Points') {
-                            a = parseInt($(a).find(selection).text().split(" ")[0]) || 0;
-                            b = parseInt($(b).find(selection).text().split(" ")[0]) || 0;
-                        } else if (selection !== 'a.gp_town_link') {
-                            a = parseInt($(a).find(selection).text()) || 0;
-                            b = parseInt($(b).find(selection).text()) || 0;
-                        } else {
-                            a = $(a).find(selection).text().toLowerCase();
-                            b = $(b).find(selection).text().toLowerCase();
-                            if (order) { return a.localeCompare(b); }
-                            else { return b.localeCompare(a); }
-                        }
-                        if (order) { return b - a }
-                        else { return a - b }
-                    });
-                    for (var i = 0; i < dio_ArrayUnsorted.length; i++) {
-                        dio_ArrayUnsorted[i].parentNode.appendChild(dio_ArrayUnsorted[i]);
-                    }
-                }
-
-                $("#dio_button_filter").click(function (e) {
-                    sort($("#dio_building_overview .dio_drop_Select")[0].innerText, true);
-                });
-                $("#dio_button_sort").click(function (e) {
-                    sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
-                });
-
-            } catch (error) { errorHandling(error, "BuildingOverview (init)"); }
+                $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("mass_recruit").search_by);
+                $('#dio_button_filter').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
+            } catch (error) { errorHandling(error, "buildingControl (init)"); }
         },
-        grepo_input: (Style, ID, Text) => {
-            return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="text" value="' + Text + '"></span></span></span></div>');
+        sort(selection, filter, Sort) {
+            if (!Sort) buildingControl.order = !buildingControl.order;
+            switch (selection) {
+                case uw.DM.getl10n("mass_recruit").sort_by.name:
+                    selection = 'a.gp_town_link';
+                    break;
+                case uw.DM.getl10n("mass_recruit").sort_by.points:
+                    selection = '.Points';
+                    break;
+                case "wood":
+                    selection = '.wood span.count';
+                    break;
+                case "stone":
+                    selection = '.stone span.count';
+                    break;
+                case "iron":
+                    selection = '.iron span.count';
+                    break;
+                case "pop":
+                    selection = '.town_population span.count';
+                    break;
+                default:
+                    selection = '.' + selection + ' a.current_level';
+            }
+            $('#fixed_table_header .building_icon40x40 #dio_sort').attr("Class", "");
+            $('#fixed_table_header .building_icon40x40 #dio_sort').addClass('sorting')
+            if (!Sort) $("#dio_button_filter").toggleClass('active')
+
+            if (selection !== 'a.gp_town_link' || selection !== '.Points') {
+                if (!buildingControl.order) {
+                    $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_desc");
+                    $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_asc");
+                }
+                else {
+                    $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_asc");
+                    $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_desc");
+                }
+            }
+
+            if (!filter) buildingControl.setfilter(selection);
+            //if (Sort) return
+            var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
+            dio_ArrayUnsorted.sort(function (a, b) {
+                if (selection == '.Points') {
+                    a = parseInt($(a).find(selection).text().split(" ")[0]) || 0;
+                    b = parseInt($(b).find(selection).text().split(" ")[0]) || 0;
+                } else if (selection !== 'a.gp_town_link') {
+                    a = parseInt($(a).find(selection).text()) || 0;
+                    b = parseInt($(b).find(selection).text()) || 0;
+                } else {
+                    a = $(a).find(selection).text().toLowerCase();
+                    b = $(b).find(selection).text().toLowerCase();
+                    if (buildingControl.order) { return a.localeCompare(b); }
+                    else { return b.localeCompare(a); }
+                }
+                if (buildingControl.order) { return b - a }
+                else { return a - b }
+            });
+            for (var i = 0; i < dio_ArrayUnsorted.length; i++) {
+                dio_ArrayUnsorted[i].parentNode.appendChild(dio_ArrayUnsorted[i]);
+            }
+        },
+        setfilter(selection) {
+            function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
+            $('#building_overview>tbody>tr').show();
+            var uio, numericfilter;
+            if (selection == 'a.gp_town_link') uio = '#dio_sortfilterbox';
+            else uio = '#dio_numberbox';
+            if (isNumber($(uio).val())) {
+                var dif = $("#dio_building_overview .dio_drop_diff")[0].innerText
+                if (selection == 'a.gp_town_link') numericfilter = parseInt($('#dio_sortfilterbox').val());
+                else numericfilter = parseInt($('#dio_numberbox').val());
+                $('#building_overview>tbody>tr').each(function (i, e) {
+                    var selectedSort = "";
+                    if (selection == 'a.gp_town_link') {
+                        selectedSort = $(e).find(selection).text();
+                        if (!(selectedSort.indexOf(numericfilter) >= 0)) $(e).hide();
+                    } else if (selection == '.Points') {
+                        selectedSort = parseInt($(e).find(selection).text().split(" ")[0]) || 0;
+                    } else {
+                        selectedSort = parseInt($(e).find(selection).text()) || 0;
+                    }
+                    if (numericfilter < selectedSort & dif == "<") $(e).hide();
+                    if (numericfilter != selectedSort & dif == "=") $(e).hide();
+                    if (numericfilter > selectedSort & dif == ">") $(e).hide();
+                });
+            } else {
+                var namefilter = $('#dio_sortfilterbox').val();
+                $('#building_overview>tbody>tr').each(function (i, e) {
+                    var townname = $(e).find('a.gp_town_link').text();
+                    if (namefilter.length > 0 && !(townname.indexOf(namefilter) >= 0)) { $(e).hide(); }
+                });
+            }
+        },
+        grepo_input: (number, Style, ID, Text) => {
+            if (number) return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="number" min="0" placeholder="' + uw.DM.getl10n("mass_recruit").search_by + '" onkeyup="MM.DIO.input(this, \'building\');" style=""; value="' + Text + '"></span></span></span></div>');
+            else return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="search" placeholder="' + uw.DM.getl10n("mass_recruit").search_by + '" onkeyup="MM.DIO.input(this, \'building\');" style="height: 22px"; value="' + Text + '"></span></span></span></div>');
         },
         deactivate: () => {
-            $('#dio_BuildingOverview_style').remove();
+            $('#dio_buildingControl_style').remove();
             $('#dio_building_sort_control').remove();
             $('#dio_building_overview').remove();
         },
     };
+
+    /*******************************************************************************************************************************
+     * culture Overview
+     * ----------------------------------------------------------------------------------------------------------------------------
+     * | ● Culture overview : Add a counter for the party in the culture view. Quack function
+     * | ● culturePoints :
+     * | ● Culture Progress :
+     * | ● cultureControl :
+     * ----------------------------------------------------------------------------------------------------------------------------
+     *******************************************************************************************************************************/
 
     var cultureOverview = {
         timeout: null,
@@ -13649,7 +13678,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_culture_overview .dio_drop_Select { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
                 '#dio_culture_overview .dio_drop_diff { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
 
-                '#dio_culture_sort_control #dio_button_sort{ margin: 2px 0 0 3px; } ' +
+                '#dio_culture_sort_control #dio_button_sort{ margin: 2px 0 0 3px; cursor: pointer; } ' +
                 '#dio_culture_sort_control #dio_button_filter { margin: 3px 0 0 3px; } ' +
 
                 '#fixed_table_header .building_header { cursor: pointer; }' +
@@ -13669,20 +13698,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 ];
 
                 var diff_options = [["option", ">", true], ["option", "=", true], ["option", "<", true],];
-
-                function dateDiff(date1, date2) {
-                    var diff = {}
-                    var tmp = date2 - date1;
-                    tmp = Math.floor(tmp / 1000);
-                    diff.sec = tmp % 60;
-                    tmp = Math.floor((tmp - diff.sec) / 60);
-                    diff.min = tmp % 60;
-                    tmp = Math.floor((tmp - diff.min) / 60);
-                    diff.hour = tmp % 24;
-                    tmp = Math.floor((tmp - diff.hour) / 24);
-                    diff.day = tmp;
-                    return diff;
-                }
 
                 $("#culture_overview_wrapper").parent().append('<div id="dio_culture_sort_control" class="overview_search_bar">' +
                     '<div id="dio_culture_overview" class="dio_rec_trade">' +
@@ -13707,51 +13722,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</div>');
 
                 // click events of the drop menu
-                $('#dio_culture_overview #dio_sort_towns .option').each(function () {
-                    $(this).click(function (e) {
-                        dio.drop_menu(this, '.dio_drop_Select', "Culture")
-                    });
-                });
-                $('#dio_culture_overview #dio_diff_towns .option').each(function () {
-                    $(this).click(function (e) {
-                        dio.drop_menu(this, '.dio_drop_diff', "Culture_Dif")
-                    });
-                });
+                $('#dio_culture_overview #dio_sort_towns .option').each(function () { $(this).click(function (e) { dio.drop_menu(this, '.dio_drop_Select', "Culture") }); });
+                $('#dio_culture_overview #dio_diff_towns .option').each(function () { $(this).click(function (e) { dio.drop_menu(this, '.dio_drop_diff', "Culture_Dif") }); });
 
                 // show & hide drop menus on click
-                $('#dio_culture_overview .dio_drop_Select').click(function (e) {
-                    if (!$($('#dio_sort_towns')).hasClass("open")) {
-                        $($('#dio_sort_towns')).addClass("open");
-                        $($('#dio_diff_towns')).removeClass("open");
-                    } else {
-                        $($('#dio_sort_towns')).removeClass("open");
-                    }
-                });
-                $('#dio_culture_overview .dio_drop_diff').click(function (e) {
-                    if (!$($('#dio_diff_towns')).hasClass("open")) {
-                        $($('#dio_diff_towns')).addClass("open");
-                        $($('#dio_sort_towns')).removeClass("open");
-                    } else {
-                        $($('#dio_diff_towns')).removeClass("open");
-                    }
-                });
+                $('#dio_culture_overview .dio_drop_Select').click(function (e) { dio.drop_menus_open('#dio_sort_towns', '#dio_diff_towns') });
+                $('#dio_culture_overview .dio_drop_diff').click(function (e) { dio.drop_menus_open('#dio_diff_towns', '#dio_sort_towns') });
 
-                $("#dio_Culture_overview").click(function (e) {
-                    var clicked = $(e.target), element = $('#' + this.id + ' .dropdown-list.open').get(0);
-                    if ((clicked[0].parentNode.className.split(" ")[1] !== "dropdown") && element) {
-                        $(element).removeClass("open");
-                    }
-                });
                 // hover arrow change
                 $('.dropdown').hover(function (e) {
                     $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_over.src + "') no-repeat -1px -1px";
                 }, function (e) {
                     $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_out.src + "') no-repeat -1px -1px";
                 });
-
-
-                $('#dio_button_sort').tooltip(dio_icon + getTexts("caves", "search_for"));
-                $('#dio_button_filter').tooltip(uw.DM.getl10n("heroes").transfer.sort_by);
 
                 function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 
@@ -13766,22 +13749,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             var selectedSort = "";
                             if (regexpInS.test(selection)) {
                                 try {
-                                    const diffIn = dateDiff(new Date(), new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000));
+                                    const diffIn = dio.dateDiff(new Date(), new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000));
                                     if (date != "Minutes") selectedSort = diffIn.hour
                                     else selectedSort = (diffIn.min + 60 * diffIn.hour)
                                 } catch { selectedSort = -1 }
 
                             } else {
                                 selectedSort = $(e).find(selection).text();
-                                if (!(selectedSort.indexOf(numericfilter) >= 0)) {
-                                    $(e).hide();
-                                }
+                                if (!(selectedSort.indexOf(numericfilter) >= 0)) $(e).hide();
                             }
-                            //if (numericfilter < selectedSort) { $(e).hide();}
                             if (selectedSort != -1) {
-                                if (numericfilter < selectedSort & diff == "<") { $(e).hide(); }
-                                if (numericfilter != selectedSort & diff == "=") { $(e).hide(); }
-                                if (numericfilter > selectedSort & diff == ">") { $(e).hide(); }
+                                if (numericfilter < selectedSort & diff == "<") $(e).hide();
+                                if (numericfilter != selectedSort & diff == "=") $(e).hide();
+                                if (numericfilter > selectedSort & diff == ">") $(e).hide();
                             }
                             else { $(e).hide(); }
                         });
@@ -13827,17 +13807,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
 
-                $("#dio_button_filter").click(function (e) {
-                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, true);
-                });
-                $("#dio_button_sort").click(function (e) {
-                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true);
-                });
+                $("#dio_button_filter").click(function (e) { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, true); });
+                $("#dio_button_sort").click(function (e) { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true); });
+
+                $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("mass_recruit").search_by);
+                $('#dio_button_filter').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
 
             } catch (error) { errorHandling(error, "cultureControl (init)"); }
         },
         grepo_input: (Style, ID, Text) => {
-            return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="text" value="' + Text + '"></span></span></span></div>');
+            return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="search" value="' + Text + '"></span></span></span></div>');
         },
         deactivate: () => {
             $('#dio_cultureControl_style').remove();
