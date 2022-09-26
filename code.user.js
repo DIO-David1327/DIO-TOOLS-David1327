@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.10
+// @version		4.28.11
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -8455,10 +8455,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 script.GrepoData = (typeof (uw.gd_version) !== "undefined" ? true : false);
             }, 10000);
 
-            uw.MM.DIO.input = function (e, b) {
-                if (b == "building") buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
-            }
-
             uw.MM.DIO.getPlayer.Groups = function () {
                 var town_groups_towns, town_groups, groups = {};
 
@@ -13018,7 +13014,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var buildingControl = {
-        order: "",
         activate: () => {
             $('<style id="dio_buildingControl_style"> ' +
                 '#dio_building_overview .option_s { margin:0px; cursor:pointer; } ' +
@@ -13046,8 +13041,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_building_sort_control { left: -2px; top: -2px; } ' +
                 '#dio_building_sort_control #test.building_icon50x50 { left: -2px; top: -2px; position: absolute; border: 5px solid #fad588; cursor:pointer; } ' +
                 '#dio_building_sort_control #test.resource { left: 12px; top: -4px; position: absolute; cursor: pointer; }' +
-                '#dio_building_sort_control #dio_button_sort{ margin: 2px 0 0 3px; cursor: pointer; } ' +
-                '#dio_building_sort_control #dio_button_filter { margin: 3px 0 0 3px; } ' +
+                '#dio_building_sort_control #dio_button_sort { margin: 3px 0 0 3px; } ' +
 
                 '#dio_building_sort_control #dio_numberbox { display:none; width: 70px; } ' +
 
@@ -13067,7 +13061,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         init: () => {
             try {
-                var buil = Overviews.Buildings, diff = Overviews.Buildings_Dif;
+                var buil = Overviews.Buildings, diff = Overviews.Buildings_Dif, order, selection;
                 var sort_options = [
                     ["option_s", uw.DM.getl10n("mass_recruit").sort_by.name, true],
                     ["option_s ok", uw.DM.getl10n("mass_recruit").sort_by.points, true],
@@ -13118,8 +13112,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="arrow"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_Select_boxes", "select_rec_diff", diff_options, diff) +
                     '</div>' + buildingControl.grepo_input(false, "margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML + buildingControl.grepo_input(true, "margin-top:0px; margin-left: -6px;", "dio_numberbox", "")[0].outerHTML +
-                    //'<div id="dio_button_sort" class="jump_button"></div>' +
-                    '<div id="dio_button_filter" class="button_order_by active"></div>' +
+                    '<div id="dio_button_sort" class="button_order_by active"></div>' +
                     '</div>');
 
                 Classtest(buil)
@@ -13134,8 +13127,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if ($(e.target)[0].id == "fixed_table_header" || $(e.target)[0].parentNode.className.split(" ")[0] == "game_arrow_left" || $(e.target)[0].parentNode.className.split(" ")[0] == "game_arrow_right") { }
                         else {
                             selection = $(e.target)[0].parentNode.className.split(" ")[2];
-                            if ($(e.target)[0].className.split(" ")[1] == undefined) buildingControl.sort(selection, true, true);
-                            else buildingControl.sort(selection, true);
+                            if ($(e.target)[0].className.split(" ")[1] == undefined) sort(selection, true, true);
+                            else sort(selection, true);
                             saveValue("Overviews", JSON.stringify(Overviews));
                         }
                     });
@@ -13173,13 +13166,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $(this).click(function (e) {
                         dio.drop_menu(this, '.dio_drop_Select', "Buildings");
                         Classtest(Overviews.Buildings)
-                        buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
+                        sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
                     });
                 });
                 $('#dio_building_overview .select_rec_diff .option').each(function () {
                     $(this).click(function (e) {
                         dio.drop_menu(this, '.dio_drop_diff', "Buildings_Dif");
-                        buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
+                        sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
                     });
                 });
 
@@ -13199,118 +13192,119 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#dio_building_overview .dio_drop_Select').tooltip(dio_icon);
                 $('#dio_sort').tooltip(dio_icon);
 
-                var selection;
-
                 var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
                 dio_ArrayUnsorted.sort(function (a, b) {
                     $($(a).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
                     $($(b).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
                 });
 
-                $("#dio_button_filter").click(function (e) { buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, true); });
-                $("#dio_button_sort, #dio_sortfilterbox, #dio_numberbox").click(function (e) { buildingControl.sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true); });
+                function sort(selection, filter, Sort) {
+                    if (!Sort) order = !order;
+                    switch (selection) {
+                        case uw.DM.getl10n("mass_recruit").sort_by.name:
+                            selection = 'a.gp_town_link';
+                            break;
+                        case uw.DM.getl10n("mass_recruit").sort_by.points:
+                            selection = '.Points';
+                            break;
+                        case "wood":
+                            selection = '.wood span.count';
+                            break;
+                        case "stone":
+                            selection = '.stone span.count';
+                            break;
+                        case "iron":
+                            selection = '.iron span.count';
+                            break;
+                        case "pop":
+                            selection = '.town_population span.count';
+                            break;
+                        default:
+                            selection = '.' + selection + ' a.current_level';
+                    }
+                    $('#fixed_table_header .building_icon40x40 #dio_sort').attr("Class", "");
+                    $('#fixed_table_header .building_icon40x40 #dio_sort').addClass('sorting')
+                    if (!Sort) $("#dio_button_sort").toggleClass('active')
 
-                $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("mass_recruit").search_by);
-                $('#dio_button_filter').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
+                    if (selection !== 'a.gp_town_link' || selection !== '.Points') {
+                        if (!order) {
+                            $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_desc");
+                            $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_asc");
+                        }
+                        else {
+                            $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_asc");
+                            $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_desc");
+                        }
+                    }
+
+                    if (!filter) setfilter(selection);
+                    var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
+                    dio_ArrayUnsorted.sort(function (a, b) {
+                        if (selection == '.Points') {
+                            a = parseInt($(a).find(selection).text().split(" ")[0]) || 0;
+                            b = parseInt($(b).find(selection).text().split(" ")[0]) || 0;
+                        } else if (selection !== 'a.gp_town_link') {
+                            a = parseInt($(a).find(selection).text()) || 0;
+                            b = parseInt($(b).find(selection).text()) || 0;
+                        } else {
+                            a = $(a).find(selection).text().toLowerCase();
+                            b = $(b).find(selection).text().toLowerCase();
+                            if (order) { return a.localeCompare(b); }
+                            else { return b.localeCompare(a); }
+                        }
+                        if (order) { return b - a }
+                        else { return a - b }
+                    });
+                    for (var i = 0; i < dio_ArrayUnsorted.length; i++) {
+                        dio_ArrayUnsorted[i].parentNode.appendChild(dio_ArrayUnsorted[i]);
+                    }
+                };
+
+                function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
+
+                function setfilter(selection) {
+                    $('#building_overview>tbody>tr').show();
+                    var uio, numericfilter;
+                    if (selection == 'a.gp_town_link') uio = '#dio_sortfilterbox';
+                    else uio = '#dio_numberbox';
+                    if (isNumber($(uio).val())) {
+                        var dif = $("#dio_building_overview .dio_drop_diff")[0].innerText
+                        if (selection == 'a.gp_town_link') numericfilter = parseInt($('#dio_sortfilterbox').val());
+                        else numericfilter = parseInt($('#dio_numberbox').val());
+                        $('#building_overview>tbody>tr').each(function (i, e) {
+                            var selectedSort = "";
+                            if (selection == 'a.gp_town_link') {
+                                selectedSort = $(e).find(selection).text();
+                                if (!(selectedSort.indexOf(numericfilter) >= 0)) $(e).hide();
+                            } else if (selection == '.Points') {
+                                selectedSort = parseInt($(e).find(selection).text().split(" ")[0]) || 0;
+                            } else {
+                                selectedSort = parseInt($(e).find(selection).text()) || 0;
+                            }
+                            if (numericfilter < selectedSort & dif == "<") $(e).hide();
+                            if (numericfilter != selectedSort & dif == "=") $(e).hide();
+                            if (numericfilter > selectedSort & dif == ">") $(e).hide();
+                        });
+                    } else {
+                        var namefilter = $('#dio_sortfilterbox').val();
+                        $('#building_overview>tbody>tr').each(function (i, e) {
+                            var townname = $(e).find('a.gp_town_link').text();
+                            if (namefilter.length > 0 && !(townname.indexOf(namefilter) >= 0)) { $(e).hide(); }
+                        });
+                    }
+                };
+
+                $('#dio_numberbox, #dio_sortfilterbox').on("input", function () { sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true) },);
+
+                $("#dio_button_sort").click(function (e) { sort($("#dio_building_overview .dio_drop_Select")[0].innerText, true); });
+
+                $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
+
             } catch (error) { errorHandling(error, "buildingControl (init)"); }
         },
-        sort(selection, filter, Sort) {
-            if (!Sort) buildingControl.order = !buildingControl.order;
-            switch (selection) {
-                case uw.DM.getl10n("mass_recruit").sort_by.name:
-                    selection = 'a.gp_town_link';
-                    break;
-                case uw.DM.getl10n("mass_recruit").sort_by.points:
-                    selection = '.Points';
-                    break;
-                case "wood":
-                    selection = '.wood span.count';
-                    break;
-                case "stone":
-                    selection = '.stone span.count';
-                    break;
-                case "iron":
-                    selection = '.iron span.count';
-                    break;
-                case "pop":
-                    selection = '.town_population span.count';
-                    break;
-                default:
-                    selection = '.' + selection + ' a.current_level';
-            }
-            $('#fixed_table_header .building_icon40x40 #dio_sort').attr("Class", "");
-            $('#fixed_table_header .building_icon40x40 #dio_sort').addClass('sorting')
-            if (!Sort) $("#dio_button_filter").toggleClass('active')
-
-            if (selection !== 'a.gp_town_link' || selection !== '.Points') {
-                if (!buildingControl.order) {
-                    $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_desc");
-                    $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_asc");
-                }
-                else {
-                    $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_asc");
-                    $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_desc");
-                }
-            }
-
-            if (!filter) buildingControl.setfilter(selection);
-            //if (Sort) return
-            var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
-            dio_ArrayUnsorted.sort(function (a, b) {
-                if (selection == '.Points') {
-                    a = parseInt($(a).find(selection).text().split(" ")[0]) || 0;
-                    b = parseInt($(b).find(selection).text().split(" ")[0]) || 0;
-                } else if (selection !== 'a.gp_town_link') {
-                    a = parseInt($(a).find(selection).text()) || 0;
-                    b = parseInt($(b).find(selection).text()) || 0;
-                } else {
-                    a = $(a).find(selection).text().toLowerCase();
-                    b = $(b).find(selection).text().toLowerCase();
-                    if (buildingControl.order) { return a.localeCompare(b); }
-                    else { return b.localeCompare(a); }
-                }
-                if (buildingControl.order) { return b - a }
-                else { return a - b }
-            });
-            for (var i = 0; i < dio_ArrayUnsorted.length; i++) {
-                dio_ArrayUnsorted[i].parentNode.appendChild(dio_ArrayUnsorted[i]);
-            }
-        },
-        setfilter(selection) {
-            function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
-            $('#building_overview>tbody>tr').show();
-            var uio, numericfilter;
-            if (selection == 'a.gp_town_link') uio = '#dio_sortfilterbox';
-            else uio = '#dio_numberbox';
-            if (isNumber($(uio).val())) {
-                var dif = $("#dio_building_overview .dio_drop_diff")[0].innerText
-                if (selection == 'a.gp_town_link') numericfilter = parseInt($('#dio_sortfilterbox').val());
-                else numericfilter = parseInt($('#dio_numberbox').val());
-                $('#building_overview>tbody>tr').each(function (i, e) {
-                    var selectedSort = "";
-                    if (selection == 'a.gp_town_link') {
-                        selectedSort = $(e).find(selection).text();
-                        if (!(selectedSort.indexOf(numericfilter) >= 0)) $(e).hide();
-                    } else if (selection == '.Points') {
-                        selectedSort = parseInt($(e).find(selection).text().split(" ")[0]) || 0;
-                    } else {
-                        selectedSort = parseInt($(e).find(selection).text()) || 0;
-                    }
-                    if (numericfilter < selectedSort & dif == "<") $(e).hide();
-                    if (numericfilter != selectedSort & dif == "=") $(e).hide();
-                    if (numericfilter > selectedSort & dif == ">") $(e).hide();
-                });
-            } else {
-                var namefilter = $('#dio_sortfilterbox').val();
-                $('#building_overview>tbody>tr').each(function (i, e) {
-                    var townname = $(e).find('a.gp_town_link').text();
-                    if (namefilter.length > 0 && !(townname.indexOf(namefilter) >= 0)) { $(e).hide(); }
-                });
-            }
-        },
         grepo_input: (number, Style, ID, Text) => {
-            if (number) return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="number" min="0" placeholder="' + uw.DM.getl10n("mass_recruit").search_by + '" onkeyup="MM.DIO.input(this, \'building\');" style=""; value="' + Text + '"></span></span></span></div>');
-            else return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="search" placeholder="' + uw.DM.getl10n("mass_recruit").search_by + '" onkeyup="MM.DIO.input(this, \'building\');" style="height: 22px"; value="' + Text + '"></span></span></span></div>');
+            if (number) return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="number" min="0" placeholder="' + uw.DM.getl10n("mass_recruit").search_by + '" value="' + Text + '"></span></span></span></div>');
+            else return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="search" placeholder="' + uw.DM.getl10n("mass_recruit").search_by + '" style="height: 22px;" value="' + Text + '"></span></span></span></div>');
         },
         deactivate: () => {
             $('#dio_buildingControl_style').remove();
@@ -13668,18 +13662,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_culture_overview #dio_sort_towns { position:absolute; top:20px; width:126px; display:none; } ' +
                 '#dio_culture_overview #dio_diff_towns { position:absolute; top:20px; width:17px; display:none; left:88px; } ' +
                 '#dio_culture_overview .sel { color: #fff; background: #444444; } ' +
-
                 '#dio_culture_overview .open { display:block !important; } ' +
-
                 '#dio_culture_overview .item-list { max-height:none; } ' +
-
                 '#dio_culture_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
 
                 '#dio_culture_overview .dio_drop_Select { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
                 '#dio_culture_overview .dio_drop_diff { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
 
-                '#dio_culture_sort_control #dio_button_sort{ margin: 2px 0 0 3px; cursor: pointer; } ' +
-                '#dio_culture_sort_control #dio_button_filter { margin: 3px 0 0 3px; } ' +
+                '#dio_culture_sort_control #dio_button_sort { margin: 3px 0 0 3px; } ' +
 
                 '#fixed_table_header .building_header { cursor: pointer; }' +
                 '</style>').appendTo("head");
@@ -13710,15 +13700,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div id="test"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_sort_towns", "", sort_options, buil) +
                     '<div class="dio_drop_diff dropdown default">' +
-                    // DropDown-Button for ratio
+                    // DropDown-Button for diff
                     '<div class="border-left"></div>' +
                     '<div class="border-right"></div>' +
                     '<div class="caption" name="' + diff + '">' + diff + '</div>' +
                     '<div class="arrow"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_diff_towns", "", diff_options, diff) +
                     '</div>' + cultureControl.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
-                    '<div id="dio_button_sort" class="jump_button"></div>' +
-                    '<div id="dio_button_filter" class="button_order_by active"></div>' +
+                    '<div id="dio_button_sort" class="button_order_by active"></div>' +
                     '</div>');
 
                 // click events of the drop menu
@@ -13786,19 +13775,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             break;
                     }
                     if (!filter) setfilter(selection);
+                    $("#dio_button_sort").toggleClass('active')
                     var dio_ArrayUnsorted = $('#culture_overview_towns>li').get();
                     dio_ArrayUnsorted.sort(function (a, b) {
                         var regexpInS = RegExp(/eta/);
                         if (regexpInS.test(selection)) {
+                            console.log("text")
                             //try {console.log(parseInt($(a).find(selection)[0].dataset.timestamp)) || 0} catch { }
                             try { a = parseInt($(a).find(selection)[0].dataset.timestamp) || 0 } catch { a = 0 }
                             try { b = parseInt($(b).find(selection)[0].dataset.timestamp) || 0 } catch { b = 0 }
                         } else {
+                            console.log("text2")
                             a = $(a).find(selection).text().toLowerCase();
                             b = $(b).find(selection).text().toLowerCase();
                             if (order) { return a.localeCompare(b); }
                             else { return b.localeCompare(a); }
                         }
+                        console.log("text3")
                         if (order) { return b - a }
                         else { return a - b }
                     });
@@ -13807,16 +13800,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
 
-                $("#dio_button_filter").click(function (e) { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, true); });
-                $("#dio_button_sort").click(function (e) { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true); });
+                $('#dio_sortfilterbox').on("input", function () { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) },);
 
-                $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("mass_recruit").search_by);
-                $('#dio_button_filter').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
+                $("#dio_button_sort").click(function (e) { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, true); });
+
+                $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
 
             } catch (error) { errorHandling(error, "cultureControl (init)"); }
         },
         grepo_input: (Style, ID, Text) => {
-            return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="search" value="' + Text + '"></span></span></span></div>');
+            return $('<div class="input_box" style="' + Style + '"><span class="grepo_input"><span class="left"><span class="right"><input id="' + ID + '" type="search" placeholder="' + uw.DM.getl10n("mass_recruit").search_by + '" style="height: 22px;" value="' + Text + '"></span></span></span></div>');
         },
         deactivate: () => {
             $('#dio_cultureControl_style').remove();
