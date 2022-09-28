@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.12
+// @version		4.28.13
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -6461,17 +6461,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         var c, h = {}, k = {};
         if ("object" != typeof uw.MM.DIO) { setTimeout(function () { cache(); }, 1E4); }
         else {
-            /*try {
-                $.ajax({method:"get", url:"/data/players.txt"}).done(function(m) {
+            try {
+                $.ajax({ method: "get", url: "/data/players.txt" }).done(function (m) {
                     try {
-                        $.each(m.split(/\r\n|\n/), function(C, K) {
+                        $.each(m.split(/\r\n|\n/), function (C, K) {
                             c = K.split(/,/);
-                            h[c[0]] = {id:c[0], name:decodeURIComponent(c[1] + ""), Points:decodeURIComponent(c[2] + "").replace(/\+/g, " "), alliance_id:c[2]};
+                            h[decodeURIComponent(c[1] + "")] = { id: c[0], name: decodeURIComponent(c[1] + ""), Points: decodeURIComponent(c[2] + "").replace(/\+/g, " "), alliance_id: c[2] };
                         });
                         uw.MM.DIO.cachePlayers = h;
                     } catch (error) { errorHandling(error, "cache players done"); }
                 });
-            } catch (error) { errorHandling(error, "cache players"); }*/
+            } catch (error) { errorHandling(error, "cache players"); }
             try {
                 $.ajax({ method: "get", url: "/data/alliances.txt", }).done(function (m) {
                     try {
@@ -13192,12 +13192,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#dio_building_overview .dio_drop_Select').tooltip(dio_icon);
                 $('#dio_sort').tooltip(dio_icon);
 
-                var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
-                dio_ArrayUnsorted.sort(function (a, b) {
-                    $($(a).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
-                    $($(b).find('.towninfo_wrapper')[0].childNodes[3]).addClass("Points")
-                });
-
                 function sort(selection, filter, Sort) {
                     if (!Sort) order = !order;
                     switch (selection) {
@@ -13205,7 +13199,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             selection = 'a.gp_town_link';
                             break;
                         case uw.DM.getl10n("mass_recruit").sort_by.points:
-                            selection = '.Points';
+                            selection = '.towninfo_wrapper';
                             break;
                         case "wood":
                             selection = '.wood span.count';
@@ -13240,9 +13234,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (!filter) setfilter(selection);
                     var dio_ArrayUnsorted = $('#building_overview>tbody>tr').get();
                     dio_ArrayUnsorted.sort(function (a, b) {
-                        if (selection == '.Points') {
-                            a = parseInt($(a).find(selection).text().split(" ")[0]) || 0;
-                            b = parseInt($(b).find(selection).text().split(" ")[0]) || 0;
+                        if (selection == '.towninfo_wrapper') {
+                            a = parseInt($($(a).find(selection)[0].children[1]).text().split(" ")[0]) || 0;
+                            b = parseInt($($(b).find(selection)[0].children[1]).text().split(" ")[0]) || 0;
                         } else if (selection !== 'a.gp_town_link') {
                             a = parseInt($(a).find(selection).text()) || 0;
                             b = parseInt($(b).find(selection).text()) || 0;
@@ -13276,8 +13270,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             if (selection == 'a.gp_town_link') {
                                 selectedSort = $(e).find(selection).text();
                                 if (!(selectedSort.indexOf(numericfilter) >= 0)) $(e).hide();
-                            } else if (selection == '.Points') {
-                                selectedSort = parseInt($(e).find(selection).text().split(" ")[0]) || 0;
+                            } else if (selection == '.towninfo_wrapper') {
+                                selectedSort = parseInt($($(e).find(selection)[0].children[1]).text().split(" ")[0]) || 0;
                             } else {
                                 selectedSort = parseInt($(e).find(selection).text()) || 0;
                             }
@@ -13676,6 +13670,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             if ($('#culture_points_overview_bottom').length) { cultureControl.init(); }
         },
+        val: "",
         init: () => {
             try {
                 if (!$("#dio_cultureBTN_wrapper").is(":visible")) $("#culture_overview_wrapper").css({ "top": "35px", "height": "+=-35px" });
@@ -13706,7 +13701,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="caption" name="' + diff + '">' + diff + '</div>' +
                     '<div class="arrow"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_diff_towns", "", diff_options, diff) +
-                    '</div>' + cultureControl.grepo_input("margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML +
+                    '</div>' + cultureControl.grepo_input("margin-top:0px", "dio_sortfilterbox", cultureControl.val)[0].outerHTML +
                     '<div id="dio_button_sort" class="button_order_by active"></div>' +
                     '</div>');
 
@@ -13732,7 +13727,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (isNumber($('#dio_sortfilterbox').val())) {
                         var regexpInS = RegExp(/eta/);
                         var numericfilter = parseInt($('#dio_sortfilterbox').val());
-                        var diff = $("#dio_diff_towns").val();
+                        var diff = $(".dio_drop_diff")[0].innerText;
                         var date = $("#dio_sort_towns").val();
                         $('#culture_overview_towns>li').each(function (i, e) {
                             var selectedSort = "";
@@ -13748,6 +13743,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 if (!(selectedSort.indexOf(numericfilter) >= 0)) $(e).hide();
                             }
                             if (selectedSort != -1) {
+                                console.log(numericfilter, selectedSort, diff)
                                 if (numericfilter < selectedSort & diff == "<") $(e).hide();
                                 if (numericfilter != selectedSort & diff == "=") $(e).hide();
                                 if (numericfilter > selectedSort & diff == ">") $(e).hide();
@@ -13769,6 +13765,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         case uw.DM.getl10n("inventory").tooltip.hours:
                         case "Minutes":
                             selection = 'span.eta';
+                            //selection = '.celebration_wrapper.small';
+                            //$('a[class~="confirm"][class~="type_games"]')[4].parentNode.parentNode.parentNode.children[3].children[1].dataset.timestamp
                             break;
                         case uw.DM.getl10n("mass_recruit").sort_by.name:
                             selection = 'a.gp_town_link';
@@ -13779,13 +13777,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     var dio_ArrayUnsorted = $('#culture_overview_towns>li').get();
                     dio_ArrayUnsorted.sort(function (a, b) {
                         var regexpInS = RegExp(/eta/);
+                        //try {console.log($(a).find(selection)[0].children[1].children[3].children[1].dataset.timestamp) } catch { "" }
                         if (regexpInS.test(selection)) {
                             //console.log("text")
                             //try {console.log(parseInt($(a).find(selection)[0].dataset.timestamp)) || 0} catch { }
+                            //try { a = parseInt($(a).find(selection)[0].children[1].children[3].children[1].dataset.timestamp) || 0 } catch { a = 0 }
+                            //try { b = parseInt($(b).find(selection)[0].children[1].children[3].children[1].dataset.timestamp) || 0 } catch { b = 0 }
                             try { a = parseInt($(a).find(selection)[0].dataset.timestamp) || 0 } catch { a = 0 }
                             try { b = parseInt($(b).find(selection)[0].dataset.timestamp) || 0 } catch { b = 0 }
+                            //console.log($(b).find(selection))
                         } else {
-                            //console.log("text2")
                             a = $(a).find(selection).text().toLowerCase();
                             b = $(b).find(selection).text().toLowerCase();
                             if (order) { return a.localeCompare(b); }
@@ -13802,9 +13803,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 $('#dio_sortfilterbox').on("input", function () { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) },);
 
+                $('#dio_sort_towns, #dio_diff_towns').click(function () { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) },);
                 $("#dio_button_sort").click(function (e) { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, true); });
 
                 $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
+
+                $('a[class~="confirm"][class~="type_party"], a[class~="confirm"][class~="type_games"], a[class~="confirm"][class~="type_triumph"], a[class~="confirm"][class~="type_theater"]').on("click", function () {
+                    cultureControl.val = $('#dio_sortfilterbox').val()
+                    setTimeout(() => { fioo(); }, 500)
+                    function fioo() {
+                        //console.log("1")
+                        if (!$('.window_content.js-window-content .confirmation').is(":visible")) { setTimeout(() => { fio(); }, 500) }
+                        else setTimeout(() => { fioo() }, 500)
+                    }
+                    function fio() {
+                        //console.log("2")
+                        setTimeout(() => { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) }, 100);
+                        setTimeout(() => { cultureControl.val = ""; }, 1000);
+                        uw.TownOverviewWindowFactory.openCultureOverview();
+                    }
+                },);
 
             } catch (error) { errorHandling(error, "cultureControl (init)"); }
         },
@@ -14509,9 +14527,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             var mousePopupArray = {};
             mousePopupArray[getTexts("hotkeys", "city_select")] = [
                 [hotkeys.ImagesHotkeys.city_select],
-                ["<span style='display:block;margin-top:-2px'>&#8592;</span>", getTexts("hotkeys", "last_city")],
-                ["<span style='display:block;margin-top:-2px'>&#8594;</span>", getTexts("hotkeys", "next_city")],
-                ["<span style='display:block;font-size:9px;margin-top:2px'>Sp</span>", getTexts("hotkeys", "jump_city")] //&#8629;
+                ["<span style='margin-top:-2px'>←</span>", getTexts("hotkeys", "last_city")],
+                ["<span style='margin-top:-2px'>→</span>", getTexts("hotkeys", "next_city")],
+                ["↵", getTexts("hotkeys", "jump_city")] //&#8629;
             ];
             /*A, alliance
                 B, // reports (de)
@@ -14522,14 +14540,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 G, Grotte
                 H, heroes
                 I, // Culture (Agora) 73
-                J, //
-                K, // !!!
-                L, //
+                J, Entrepôt
+                K, Grotte
+                L, Marché
                 M, messages
                 N, notes
                 O, en=Caserne
                 P, Port ?PROFILE
-                Q, //
+                Q, Profile
                 R, Rapports
                 S, Senate
                 T, //Défense (Agora 84
@@ -14593,189 +14611,95 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
             $('#dio_BTN_HK').tooltip(mousePopupHTML);
 
-            $("#dio_BTN_HK").click(() => { hotkeys.add() });
+            $("#dio_BTN_HK").click(() => hotkeys.add());
             hotkeys.add();
         },
         add: () => {
             try {
-                var ctrlDown = false;
-
-                document.onkeyup = function (e) { if (e.keyCode == "17") ctrlDown = false; };
                 document.onkeydown = function (e) {
                     e = e || window.event;
                     var target = e.target.tagName.toLowerCase();
+                    function letter(letter) { return e.key == letter.toLowerCase() || e.key == letter.toUpperCase() }
 
-                    // Détection du CTRL pressé ou non
-                    if ((e.keyCode == "17" || e.keyCode == "91")) ctrlDown = true;
-
-                    // Si pas dans une case texte
-                    if (!$(e.target).is('textarea') && !$(e.target).is('input') && !ctrlDown) {
+                    // Si pas dans une case texte + détection du CTRL pressé ou non
+                    if (!$(e.target).is('textarea') && !$(e.target).is('input') && !e.ctrlKey && !e.metaKey && DATA.options.dio_Hot) {
                         // Flèches directionnelles
-                        /*if (e.keyCode == '37' || e.keyCode == '39') {
-                            setTimeout(function () {
-                                updateIcon();
-                                updatehides();
-                            }, 200);
-                        }*/
-                        if (((MID == 'fr') ? e.keyCode == "86" : e.keyCode == '67') && (DATA.options.dio_Hot)) {
+                        ///if (e.key == 'ArrowLeft' || e.key == 'ArrowRight') { }
+                        if ((MID == 'fr' ? e.code == "KeyV" : e.code == 'KeyC')) {
                             if (!$("#ui_box .bull_eye_buttons .city_overview").hasClass('checked')) {
                                 $("#ui_box .bull_eye_buttons .city_overview").click();
-                            } else {
-                                $("#ui_box .bull_eye_buttons .island_view").click();
-                            }
+                            } else { $("#ui_box .bull_eye_buttons .island_view").click(); }
                         }
                         // Agora !!!
-                        if (e.keyCode == '73' && (DATA.options.dio_Hot)) {
-                            uw.PlaceWindowFactory.openPlaceWindow('culture');
-                        }
+                        if (letter("i")) uw.PlaceWindowFactory.openPlaceWindow('culture');
                         // simulator
-                        if (e.keyCode == "85" && (DATA.options.dio_Hot)) {
-                            uw.PlaceWindowFactory.openPlaceWindow('simulator', open);
-                        }
+                        if (letter("u")) uw.PlaceWindowFactory.openPlaceWindow('simulator', open);
                         // Troupes en dehors
-                        if (e.keyCode == "89" && (DATA.options.dio_Hot)) {
-                            uw.PlaceWindowFactory.openPlaceWindow('units_beyond');
-                        }
+                        if (letter("y")) uw.PlaceWindowFactory.openPlaceWindow('units_beyond');
                         // Défense (Agora)
-                        if (e.keyCode == "84" && (DATA.options.dio_Hot)) {
-                            uw.PlaceWindowFactory.openPlaceWindow('index');
-                        }
+                        if (letter("t")) uw.PlaceWindowFactory.openPlaceWindow('index');
                         // Sénat
-                        if (e.keyCode == '83' && (DATA.options.dio_Hot)) {
-                            uw.MainWindowFactory.openMainWindow();
-                        }
+                        if (letter("s")) uw.MainWindowFactory.openMainWindow();
                         // Caserne
-                        if (((MID == 'fr') ? e.keyCode == "67" : e.keyCode == '79') && (DATA.options.dio_Hot)) {
-                            uw.BarracksWindowFactory.openBarracksWindow();
-                        }
+                        if ((MID == 'fr' ? letter("c") : letter("o"))) uw.BarracksWindowFactory.openBarracksWindow();
                         // Grotte
-                        if (e.keyCode == '71' && (DATA.options.dio_Hot)) {
-                            uw.HideWindowFactory.openHideWindow();
-                        }
+                        if (letter("g")) uw.HideWindowFactory.openHideWindow();
                         // Port
-                        if (e.keyCode == '80' && (DATA.options.dio_Hot)) {
-                            uw.DocksWindowFactory.openDocksWindow();
-                        }
-                        // Académie
-                        if (e.keyCode == "90" && (DATA.options.dio_Hot)) {
-                            uw.AcademyWindowFactory.openAcademyWindow();
-                        }
+                        if (letter("p")) uw.DocksWindowFactory.openDocksWindow();
+                        // Académie //Z
+                        if (letter("z")) uw.AcademyWindowFactory.openAcademyWindow();
                         // Rapports
-                        if (((MID == 'de') ? e.keyCode == "66" : e.keyCode == "82") && (DATA.options.dio_Hot)) {
-                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_REPORT, uw.DM.getl10n("layout").main_menu.items.reports || "Reports");
-                        }
+                        if ((MID == 'de' ? letter("b") : letter("r"))) uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_REPORT, uw.DM.getl10n("layout").main_menu.items.reports || "Reports");
                         // Forum
-                        if (e.keyCode == "70" && ((DATA.options.dio_Hot))) {
-                            uw.Layout.allianceForum.open();
-                        }
+                        if (letter("f")) uw.Layout.allianceForum.open();
                         //
-                        if (e.keyCode == "69" && (DATA.options.dio_Hot)) {
-                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS, getTexts("hotkeys", "settings"));
-                        }
-                        /*/ PROFILE
-                        if (e.keyCode == "80" && (DATA.options.dio_Hot)) {
-                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_PROFILE_EDIT, ' ');
-                        }*/
+                        if (letter("e")) uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS, getTexts("hotkeys", "settings"));
+                        // PROFILE //Q
+                        if (letter("q")) uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_PROFILE_EDIT, ' ');
                         // Remparts
-                        if (e.keyCode == "102" && (DATA.options.dio_Hot)) {
-                            uw.BuildingWindowFactory.open('wall');
-                        }
+                        if (letter("w")) uw.BuildingWindowFactory.open('wall');
                         // Ferme
-                        /*if (e.keyCode == "70" && (DATA.options.dio_Hot)) {
-                            uw.FarmWindowFactory.openFarmWindow();
-                        }*/
-                        /*/ Entrepôt
-                        if (e.keyCode == "69" && (DATA.options.dio_Hot)) {
-                           uw.BuildingWindowFactory.open('storage');
-                        }*/
+                        if (e.code == "Numpad1") uw.BuildingWindowFactory.open('farm');
+                        // Entrepôt
+                        if (letter("j")) uw.BuildingWindowFactory.open('storage');
                         // Scierie
-                        if (e.keyCode == "97" && (DATA.options.dio_Hot)) {
-                            uw.LumberWindowFactory.openLumberWindow();
-                        }
+                        if (e.code == "Numpad2") uw.LumberWindowFactory.openLumberWindow();
                         // Carrière
-                        if (e.keyCode == "98" && (DATA.options.dio_Hot)) {
-                            uw.StonerWindowFactory.openStonerWindow();
-                        }
+                        if (e.code == "Numpad3") uw.StonerWindowFactory.openStonerWindow();
                         // Grotte
-                        if (e.keyCode == "71" && (DATA.options.dio_Hot)) {
-                            uw.BuildingWindowFactory.open('hide');
-                        }
+                        if (letter("k")) uw.BuildingWindowFactory.open('hide');
                         // Mine d'argent
-                        if (e.keyCode == "99" && (DATA.options.dio_Hot)) {
-                            uw.IronerWindowFactory.openIronerWindow();
-                        }
+                        if (e.code == "Numpad4") uw.IronerWindowFactory.openIronerWindow();
                         // Marché
-                        if (e.keyCode == "100" && (DATA.options.dio_Hot)) {
-                            uw.MarketWindowFactory.openMarketWindow();
-                        }
+                        if (letter("l")) uw.MarketWindowFactory.openMarketWindow();
                         // ALLIANCE
-                        if (e.keyCode == "65" && (DATA.options.dio_Hot)) {
-                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_ALLIANCE);
-                        }
+                        if (letter("a")) uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_ALLIANCE);
                         // Messages
-                        if (((MID == 'de') ? e.keyCode == "78" : e.keyCode == "77") && (DATA.options.dio_Hot)) {
-                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_MESSAGE, uw.DM.getl10n("layout").main_menu.items.messages || "Messages")
-                        }
-                        // Forum
-                        if (e.keyCode == "70" && (DATA.options.dio_Hot)) {
-                            uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_ALLIANCEFORUM)
-                        }
-                        /*/ Rang
-                        if (e.keyCode == "82" && (DATA.options.dio_Hot)) {
-                            RankingWindowFactory.openRankingWindow();
-                        }*/
+                        if ((MID == 'de' ? letter("n") : letter("m"))) uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_MESSAGE, uw.DM.getl10n("layout").main_menu.items.messages || "Messages")
+                        // Rang
+                        if (e.code == "Numpad5") uw.RankingWindowFactory.openRankingWindow();
                         // RACOURCI Administrateur
-                        if (e.keyCode == "49" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openTradeOverview();
-                        }
-                        if (e.keyCode == "50" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openCommandOverview();
-                        }
-                        if (e.keyCode == "51" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openMassRecruitOverview();
-                        }
-                        if (e.keyCode == "52" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openUnitsOverview();
-                        }
-                        if (e.keyCode == "53" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openOuterUnitsOverview();
-                        }
-                        if (e.keyCode == "54" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openBuildingsOverview();
-                        }
-                        if (e.keyCode == "55" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openCultureOverview();
-                        }
-                        if (e.keyCode == "56" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openGodsOverview();
-                        }
-                        if (e.keyCode == "57" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openHidesOverview();
-                        }
-                        if (e.keyCode == "48" && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openTownGroupOverview();
-                        }
-                        if ((e.keyCode == "63" || e.keyCode == "219" || e.keyCode == "109" || e.keyCode == "189") && (DATA.options.dio_Hot)) {
-                            uw.TownOverviewWindowFactory.openTownsOverview();
-                        }
+                        if (e.code == "Digit1") uw.TownOverviewWindowFactory.openTradeOverview();
+                        if (e.code == "Digit2") uw.TownOverviewWindowFactory.openCommandOverview();
+                        if (e.code == "Digit3") uw.TownOverviewWindowFactory.openMassRecruitOverview();
+                        if (e.code == "Digit4") uw.TownOverviewWindowFactory.openUnitsOverview();
+                        if (e.code == "Digit5") uw.TownOverviewWindowFactory.openOuterUnitsOverview();
+                        if (e.code == "Digit6") uw.TownOverviewWindowFactory.openBuildingsOverview();
+                        if (e.code == "Digit7") uw.TownOverviewWindowFactory.openCultureOverview();
+                        if (e.code == "Digit8") uw.TownOverviewWindowFactory.openGodsOverview();
+                        if (e.code == "Digit9") uw.TownOverviewWindowFactory.openHidesOverview();
+                        if (e.code == "Digit0") uw.TownOverviewWindowFactory.openTownGroupOverview();
+                        if (e.key == "²" || e.code == "Minus" || e.keyCode == "63" || e.key == "-") uw.TownOverviewWindowFactory.openTownsOverview();
                         // Villages de paysans
-                        if (e.keyCode == "88" && (DATA.options.dio_Hot)) {
-                            uw.FarmTownOverviewWindowFactory.openFarmTownOverview();
-                        }
+                        if (letter("x")) uw.FarmTownOverviewWindowFactory.openFarmTownOverview();
                         // Plannificateur
-                        if ((e.keyCode == "192" || e.keyCode == "221" || e.keyCode == "187" || e.keyCode == "61") && (DATA.options.dio_Hot)) {
-                            uw.AttackPlannerWindowFactory.openAttackPlannerWindow();
-                        }
+                        if (e.key == "`" || e.code == "Equal") uw.AttackPlannerWindowFactory.openAttackPlannerWindow();
                         // Outil de réservation
-                        if (e.keyCode == "16" && (DATA.options.dio_Hot)) {
-                            uw.hOpenWindow.openReservationList(); void (0);
-                        }
+                        if (e.code == "ShiftRight") uw.hOpenWindow.openReservationList(); void (0);
                         // Notes
-                        if (((MID == 'de') ? e.keyCode == "77" : e.keyCode == "78") && (DATA.options.dio_Hot)) {
-                            uw.NotesWindowFactory.openNotesWindow();
-                        }
+                        if ((MID == 'de' ? letter("m") : letter("n"))) uw.NotesWindowFactory.openNotesWindow();
                         //
-                        if (e.keyCode == "13" && (DATA.options.dio_Hot)) {
+                        if (e.key == "Enter") {
                             uw.WMap.mapJump({
                                 'id': + uw.Game.townId,
                                 'ix': uw.WMap.islandPosition.x,
@@ -14783,15 +14707,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             });
                         }
                         //
-                        if (e.keyCode == "72" && $('.ui_heroes_overview_container').is(':visible') && (DATA.options.dio_Hot)) {
-                            uw.HeroesWindowFactory.openHeroesWindow();
-                        }
-                        if (e.keyCode == "38" && (DATA.options.dio_Hot) && $(e.target).find("ul#fto_town_list").length) {
-                            uw.farmingvillageshelper.switchTown("up");
-                        }
-                        if (e.keyCode == "40" && (DATA.options.dio_Hot) && $(e.target).find("ul#fto_town_list").length) {
-                            uw.farmingvillageshelper.switchTown("down");
-                        }
+                        if (letter("h") && $('.ui_heroes_overview_container').is(':visible')) uw.HeroesWindowFactory.openHeroesWindow();
+                        if (e.key == "ArrowUp" && $(e.target).find("ul#fto_town_list").length) uw.farmingvillageshelper.switchTown("up");
+                        if (e.key == "ArrowDown" && $(e.target).find("ul#fto_town_list").length) uw.farmingvillageshelper.switchTown("down");
                     }
                 }
             } catch (error) { errorHandling(error, "hotkeys"); }
@@ -15123,6 +15041,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             e = $(this)[0].outerHTML
                             i = e
                             $(this).hasClass("bbcodes_town") && (i = MessageExport.replaceTownNameById($(this).find("a"), i));
+                            //console.log(uw.MM.DIO.cacheAlliances[uw.MM.DIO.cachePlayers[$("#message_partner")[0].innerText.split(' ')[0]].alliance_id].name)
 
 
                             dio_messageExportTMP.find(".published_report").replaceWith("[report][/report]"); //replace reports
@@ -15140,7 +15059,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 return '[spoiler=' + $("b:first", this).text() + ']' + $(".bbcodes_spoiler_text", this).html() + '[/spoiler]';
                             });
                             dio_messageExportTMP.find(".bbcodes_quote").replaceWith(function () { //replace quotes
-                                return '[quote=' + $('.quote_author', this).text().replace(' ' + getTexts("messages", "écrit", true), '') + ']' + $(".quote_message", this).html() + '[/quote]';
+                                if ($('.quote_author', this)[0]) return '[quote=' + $('.quote_author', this).text().replace(' ' + getTexts("messages", "écrit", true), '') + ']' + $(".quote_message", this).html() + '[/quote]';
+                                else return '[quote=]' + $(".quote_message", this).html() + '[/quote]';
                             });
                             dio_messageExportTMP.find(".bbcodes_size").replaceWith(function () { //replace size
                                 return '[size=' + $(this)[0].style.fontSize + ']' + $(this).html() + '[/size]';
