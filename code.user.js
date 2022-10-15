@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.13
+// @version		4.28.14
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -24,7 +24,7 @@
 // @license     GPL-3.0-only
 // ==/UserScript==
 
-var dio_version = '4.29';
+var dio_version = GM.info.script.version;
 
 /*******************************************************************************************************************************
  * Global stuff
@@ -35,7 +35,7 @@ var uw = unsafeWindow || window, $ = uw.jQuery, DATA, GM;
 // GM-API?
 GM = (typeof GM_info === 'object');
 
-console.log('%c|= DIO-Tools-David1327 is active =|', 'color: green; font-size: 1em; font-weight: bolder; ');
+console.log('%c|= DIO-Tools-David1327 is active v' + dio_version + '=|', 'color: green; font-size: 1em; font-weight: bolder; ');
 
 function loadValue(name, default_val) {
     var value;
@@ -5690,6 +5690,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Overviews.Buildings = uw.DM.getl10n("mass_recruit").sort_by.name;
                 Overviews.Buildings_Dif = ">";
                 Overviews.Gods = uw.DM.getl10n("mass_recruit").sort_by.name;
+                //Overviews.hour = 0;
+                //Overviews.minute = 0;
                 saveValue("Overviews", JSON.stringify(Overviews));
             }
 
@@ -6254,6 +6256,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '.don.dio-left { background-position: left 0px; } ' +
                 '.don.dio-right { background-position: right -54px; } ' +
                 '.don.dio-middle { color: #33268a;padding: 0 4px;margin: 0 12px;background-position: 0 -27px;background-repeat: repeat-x;line-height: 25px;min-width: 10px;cursor: pointer;font-style: italic;font-size: 14px; } ' +
+                '#link_bug_report { width: 95px; top: 58px; left: 460px; } ' +
                 '</style>').appendTo('head');
 
             // Xmas -> 28 days
@@ -13055,6 +13058,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_sort.sorting_desc {background-image: url("' + Home_img + 'sort-asc-green.png") !important;}' +
                 '#dio_sort.sorting_asc_disabled {background-image: url("' + Home_img + 'sort-asc-disabled.png");}' +
                 '#dio_sort.sorting_desc_disabled {background-image: url("' + Home_img + 'sort-desc-disabled.png");}' +
+
+                '#dio_building_sort_control #suggestions { top: 24px; left: 135px; cursor: pointer; display: block; max-height: 100px; max-height: 100px; overflow: auto;}' +
+                '#dio_building_sort_control #suggestions .option:hover { color:#fff; background:#328BF1; } ' +
                 '</style>').appendTo("head");
 
             if ($('#building_overview_table_wrapper').length) { buildingControl.init(); }
@@ -13112,6 +13118,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="arrow"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_Select_boxes", "select_rec_diff", diff_options, diff) +
                     '</div>' + buildingControl.grepo_input(false, "margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML + buildingControl.grepo_input(true, "margin-top:0px; margin-left: -6px;", "dio_numberbox", "")[0].outerHTML +
+                    dio.grepo_dropdown("suggestions", "", "", "") +
                     '<div id="dio_button_sort" class="button_order_by active"></div>' +
                     '</div>');
 
@@ -13287,9 +13294,30 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         });
                     }
                 };
+                const cities = []
 
-                $('#dio_numberbox, #dio_sortfilterbox').on("input", function () { sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true) },);
+                let cities_town = uw.ITowns.towns;
+                $.each(cities_town, function (key, p) { cities.push({ name: p.name, points: p.getPoints() }); });
 
+                $('#suggestions').click(function (e) {
+                    $('#dio_sortfilterbox')[0].value = e.target.innerHTML;
+                    sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true)
+                    $('#suggestions')[0].innerHTML = "";
+                })
+                $('#place_defense').click(function () { $('#suggestions')[0].innerHTML = ""; })
+
+                function suggestion() {
+                    const Search1 = $('#dio_sortfilterbox').val();
+                    const result = cities.filter(item => item.name.toLowerCase().includes(Search1.toLowerCase()));
+                    let suggestion = '';
+                    if (Search1 != '') { result.forEach(resultItem => { suggestion += `<div class="option">${resultItem.name}</div>` }) }
+                    $('#suggestions')[0].innerHTML = suggestion;
+                    sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
+                }
+                $('#dio_sortfilterbox').on("input", function () { suggestion(); },);
+                $('#dio_numberbox').on("input", function () { sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true); },);
+
+                $("#dio_sortfilterbox").click(function (e) { setTimeout(() => { suggestion(); }, 10) });
                 $("#dio_button_sort").click(function (e) { sort($("#dio_building_overview .dio_drop_Select")[0].innerText, true); });
 
                 $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
@@ -13654,18 +13682,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_culture_overview .option:hover {color:#fff; background:#328BF1; } ' +
 
                 '#dio_culture_overview #dio_sort_towns { position:absolute; top:20px; width:126px; display:none; } ' +
-                '#dio_culture_overview #dio_diff_towns { position:absolute; top:20px; width:17px; display:none; left:88px; } ' +
+                '#dio_culture_overview #dio_diff_towns { position:absolute; top:20px; width:17px; display:none; left:138px; } ' +
                 '#dio_culture_overview .sel { color: #fff; background: #444444; } ' +
                 '#dio_culture_overview .open { display:block !important; } ' +
                 '#dio_culture_overview .item-list { max-height:none; } ' +
                 '#dio_culture_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
 
-                '#dio_culture_overview .dio_drop_Select { width:80px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
+                '#dio_culture_overview .dio_drop_Select { width:130px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
                 '#dio_culture_overview .dio_drop_diff { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
 
                 '#dio_culture_sort_control #dio_button_sort { margin: 3px 0 0 3px; } ' +
 
                 '#fixed_table_header .building_header { cursor: pointer; }' +
+
+                '#dio_time-picker { float: left; margin-left: 12px; }' +
+                '#dio_time-picker .hr, #dio_time-picker .min { background: none; font-size: 19px; border: none; display: block; }' +
+                '#dio_time-picker .hr-up, #dio_time-picker .hr-down, #dio_time-picker .min-up, #dio_time-picker .min-down { position: absolute; transform: translateX(-11px); border-left: 6px solid transparent; border-right: 6px solid transparent; cursor: pointer; }' +
+                '#dio_time-picker .hr-up, #dio_time-picker .min-up { top: 4px; border-bottom: 8px solid #AAA; }' +
+                '#dio_time-picker .hr-down, #dio_time-picker .min-down { top: 15px; border-top: 8px solid #AAA; }' +
+                '#dio_time-picker .min-down, #dio_time-picker .min-up { transform: translateX(57px); }' +
+
+                '#dio_culture_sort_control #suggestions { top: 24px; left: 183px; cursor: pointer; display: block; max-height: 100px; overflow: auto;}' +
+                '#dio_culture_sort_control #suggestions .option:hover { color:#fff; background:#328BF1; } ' +
+
+                '#dio_culture_sort_control .filterstop { width:20px; height:20px; background:url(https://www.tuto-de-david1327.com/medias/images/filter-stop.png) no-repeat; background-size:100%; margin: 3px; float: left; cursor: pointer; display: none;} ' +
+
                 '</style>').appendTo("head");
 
             if ($('#culture_points_overview_bottom').length) { cultureControl.init(); }
@@ -13674,12 +13715,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         init: () => {
             try {
                 if (!$("#dio_cultureBTN_wrapper").is(":visible")) $("#culture_overview_wrapper").css({ "top": "35px", "height": "+=-35px" });
-                var buil = Overviews.Culture, diff = Overviews.Culture_Dif;
+                var buil = Overviews.Culture, diff = Overviews.Culture_Dif, hour_time = Overviews.hour, minute_time = Overviews.minute;
                 var selection, order;
                 var sort_options = [
                     ["option", uw.DM.getl10n("mass_recruit").sort_by.name, true],
                     ["option", uw.DM.getl10n("inventory").tooltip.hours, true],
-                    ["option", "Minutes", true],
+                    ["option", uw.DM.getl10n("construction_queue").research_time.split(":")[0], true],
                 ];
 
                 var diff_options = [["option", ">", true], ["option", "=", true], ["option", "<", true],];
@@ -13702,11 +13743,103 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="arrow"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_diff_towns", "", diff_options, diff) +
                     '</div>' + cultureControl.grepo_input("margin-top:0px", "dio_sortfilterbox", cultureControl.val)[0].outerHTML +
+                    dio.grepo_dropdown("suggestions", "", "", "") +
                     '<div id="dio_button_sort" class="button_order_by active"></div>' +
+                    '<div id="dio_time-picker" data-time="00:00">' +
+                    '<div class="hr-up"></div>' +
+                    '<input type="time" class="hr">' +
+                    '<div class="hr-down"></div>' +
+                    '<div class="min-up"></div>' +
+                    '<div class="min-down"></div></div>' +
+                    '<div class="filterstop"></div>' +
                     '</div>');
 
+                const hr_element = '#dio_time-picker .hr', select = $("#dio_culture_overview .dio_drop_Select")[0].innerText;
+                let d = new Date(), hour, minute;
+
+                // EVENT LISTENERS
+                $('#dio_time-picker .hr-up').click(hour_up);
+                $('#dio_time-picker .hr-down').click(hour_down);
+
+                $('#dio_time-picker .min-up').click(minute_up);
+                $('#dio_time-picker .min-down').click(minute_down);
+
+                $(hr_element).on('change', time_change);
+
+                function time_change(e) {
+                    if ($(hr_element)[0].value !== '') {
+                        hour = e.target.value.split(":")[0];
+                        minute = e.target.value.split(":")[1];
+                        setTime();
+                    } else sort(select, false, true)
+                }
+
+                function hour_up() {
+                    hour++;
+                    if (hour > 23) hour = 0;
+                    setTime();
+                }
+                function hour_down() {
+                    hour--;
+                    if (hour < 0) hour = 23;
+                    setTime();
+                }
+
+                function minute_up() {
+                    minute++;
+                    if (minute > 59) {
+                        minute = 0;
+                        if (hour != 23) hour++;
+                        else hour = 0
+                    }
+                    setTime();
+                }
+                function minute_down() {
+                    minute--;
+                    if (minute < 0) {
+                        minute = 59;
+                        if (hour != 0) hour--;
+                        else hour = 23
+                    }
+                    setTime();
+                }
+
+                function setTime() {
+                    $(hr_element)[0].value = formatTime(hour) + ':' + formatTime(minute);
+                    $('#dio_time-picker')[0].dataset.time = formatTime(hour) + ':' + formatTime(minute);
+                    sort(select, false, true)
+                    if (select === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
+                        Overviews.hour = hour; Overviews.minute = minute;
+                        saveValue("Overviews", JSON.stringify(Overviews));
+                    }
+                }
+
+                function formatTime(time) {
+                    try { if (JSON.stringify(time).length < 2) time = '0' + time; } catch { return time }
+                    return time;
+                }
+                Classtest(buil);
+                function Classtest(buil) {
+                    if (buil === uw.DM.getl10n("mass_recruit").sort_by.name) {
+                        $("#dio_sortfilterbox").css({ "display": "block" });
+                        $("#dio_time-picker").css({ "display": "none" });
+                    }
+                    else {
+                        $("#dio_sortfilterbox").css({ "display": "none" });
+                        $("#dio_time-picker").css({ "display": "block" });
+                        if (buil === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
+                            if (hour_time > 0 || minute_time > 0 && buil === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) { hour = hour_time; minute = minute_time; }
+                            else {
+                                hour = 0; minute = 0; Overviews.hour = 0; Overviews.minute = 0;
+                                $(hr_element)[0].value = "";
+                                return saveValue("Overviews", JSON.stringify(Overviews));
+                            }
+                        } else { hour = d.getHours(); minute = d.getMinutes(); }
+                        setTime();
+                    }
+                }
                 // click events of the drop menu
-                $('#dio_culture_overview #dio_sort_towns .option').each(function () { $(this).click(function (e) { dio.drop_menu(this, '.dio_drop_Select', "Culture") }); });
+                $('#dio_culture_overview #dio_sort_towns .option').each(function () { $(this).click(function (e) { dio.drop_menu(this, '.dio_drop_Select', "Culture"); Classtest(Overviews.Culture) }); });
                 $('#dio_culture_overview #dio_diff_towns .option').each(function () { $(this).click(function (e) { dio.drop_menu(this, '.dio_drop_diff', "Culture_Dif") }); });
 
                 // show & hide drop menus on click
@@ -13714,7 +13847,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#dio_culture_overview .dio_drop_diff').click(function (e) { dio.drop_menus_open('#dio_diff_towns', '#dio_sort_towns') });
 
                 // hover arrow change
-                $('.dropdown').hover(function (e) {
+                $('#dio_culture_sort_control .dropdown').hover(function (e) {
                     $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_over.src + "') no-repeat -1px -1px";
                 }, function (e) {
                     $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_out.src + "') no-repeat -1px -1px";
@@ -13724,31 +13857,46 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 function setfilter(selection) {
                     $('#culture_overview_towns>li').show();
-                    if (isNumber($('#dio_sortfilterbox').val())) {
+                    var uio, numericfilter, filter, filterstop;
+                    if (selection == 'a.gp_town_link') {
+                        uio = isNumber($('#dio_sortfilterbox').val());
+                        if ($('#dio_sortfilterbox').val().length > 0) $("#dio_culture_sort_control .filterstop").css({ "display": "block" });
+                        else $("#dio_culture_sort_control .filterstop").css({ "display": "none" });
+                    }
+                    else {
+                        uio = $(hr_element)[0].value !== '';
+                        if (uio) $("#dio_culture_sort_control .filterstop").css({ "display": "block" });
+                        else $("#dio_culture_sort_control .filterstop").css({ "display": "none" });
+                    }
+                    if (uio) {
                         var regexpInS = RegExp(/eta/);
-                        var numericfilter = parseInt($('#dio_sortfilterbox').val());
+                        if (selection == 'a.gp_town_link') numericfilter = parseInt($('#dio_sortfilterbox').val());
+                        else numericfilter = $('#dio_time-picker')[0].dataset.time;
                         var diff = $(".dio_drop_diff")[0].innerText;
                         var date = $("#dio_sort_towns").val();
                         $('#culture_overview_towns>li').each(function (i, e) {
                             var selectedSort = "";
                             if (regexpInS.test(selection)) {
-                                try {
-                                    const diffIn = dio.dateDiff(new Date(), new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000));
-                                    if (date != "Minutes") selectedSort = diffIn.hour
-                                    else selectedSort = (diffIn.min + 60 * diffIn.hour)
-                                } catch { selectedSort = -1 }
-
+                                if (select === uw.DM.getl10n("inventory").tooltip.hours) {
+                                    try {
+                                        let selectedDate = new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000)
+                                        selectedSort = formatTime(selectedDate.getHours()) + ":" + formatTime(selectedDate.getMinutes())
+                                    } catch { selectedSort = formatTime(new Date().getHours()) + ":" + formatTime(new Date().getMinutes()) }
+                                } else {
+                                    try {
+                                        const diffIn = dio.dateDiff(new Date(), new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000));
+                                        selectedSort = parseInt(diffIn.min + 60 * diffIn.hour);
+                                    } catch { selectedSort = 0; }
+                                }
+                                if (select !== uw.DM.getl10n("inventory").tooltip.hours) filter = parseInt(minute) + 60 * parseInt(hour);
+                                else filter = numericfilter
+                                if (filter < selectedSort & diff == "<") $(e).hide();
+                                if (filter != selectedSort & diff == "=") $(e).hide();
+                                if (filter > selectedSort & diff == ">") $(e).hide();
                             } else {
                                 selectedSort = $(e).find(selection).text();
                                 if (!(selectedSort.indexOf(numericfilter) >= 0)) $(e).hide();
                             }
-                            if (selectedSort != -1) {
-                                console.log(numericfilter, selectedSort, diff)
-                                if (numericfilter < selectedSort & diff == "<") $(e).hide();
-                                if (numericfilter != selectedSort & diff == "=") $(e).hide();
-                                if (numericfilter > selectedSort & diff == ">") $(e).hide();
-                            }
-                            else { $(e).hide(); }
                         });
                     } else {
                         var namefilter = $('#dio_sortfilterbox').val();
@@ -13763,7 +13911,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (!Sort) order = !order;
                     switch (selection) {
                         case uw.DM.getl10n("inventory").tooltip.hours:
-                        case "Minutes":
+                        case uw.DM.getl10n("construction_queue").research_time.split(":")[0]:
                             selection = 'span.eta';
                             //selection = '.celebration_wrapper.small';
                             //$('a[class~="confirm"][class~="type_games"]')[4].parentNode.parentNode.parentNode.children[3].children[1].dataset.timestamp
@@ -13801,10 +13949,42 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 }
 
-                $('#dio_sortfilterbox').on("input", function () { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) },);
+                $('#dio_culture_sort_control .filterstop').click(function () {
+                    if (select === uw.DM.getl10n("mass_recruit").sort_by.name) { $('#dio_sortfilterbox')[0].value = ""; console.log(1) }
+                    else {
+                        $(hr_element)[0].value = "";
+                        if (buil === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
+                            Overviews.hour = 0; Overviews.minute = 0;
+                            saveValue("Overviews", JSON.stringify(Overviews));
+                        }
+                    }
+                    sort(select, false, true);
+                })
 
-                $('#dio_sort_towns, #dio_diff_towns').click(function () { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) },);
-                $("#dio_button_sort").click(function (e) { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, true); });
+                const cities = []
+
+                let cities_town = uw.ITowns.towns
+                $.each(cities_town, function (key, p) { cities.push({ name: p.name, points: p.getPoints() }); });
+
+                $('#suggestions').click(function (e) {
+                    $('#dio_sortfilterbox')[0].value = e.target.innerHTML;
+                    sort(select, false, true);
+                    $('#suggestions')[0].innerHTML = "";
+                })
+                $('#wrapper, culture_points_overview_bottom').click(function () { $('#suggestions')[0].innerHTML = ""; })
+
+                function suggestion() {
+                    const Search1 = $('#dio_sortfilterbox').val();
+                    const result = cities.filter(item => item.name.toLowerCase().includes(Search1.toLowerCase()));
+                    let suggestion = '';
+                    if (Search1 != '') { result.forEach(resultItem => { suggestion += `<div class="option">${resultItem.name}</div>` }) }
+                    $('#suggestions')[0].innerHTML = suggestion;
+                    sort(select, false, true);
+                }
+                $('#dio_sortfilterbox').on("input", function () { suggestion(); },);
+
+                $('#dio_sort_towns, #dio_diff_towns').click(function () { sort(select, false, true) },);
+                $("#dio_button_sort").click(function (e) { sort(select, true); });
 
                 $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
 
@@ -13818,7 +13998,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     function fio() {
                         //console.log("2")
-                        setTimeout(() => { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) }, 100);
+                        setTimeout(() => { sort(select, false, true) }, 100);
                         setTimeout(() => { cultureControl.val = ""; }, 1000);
                         uw.TownOverviewWindowFactory.openCultureOverview();
                     }
@@ -14523,14 +14703,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 if ($('.temple_commands').is(':visible')) { $('<style id="dio_MH_attsup_style">#MH_attsup {left:413px !important;}</style>').appendTo('head'); }
                 else { $('<style id="dio_MH_attsup_style">#MH_attsup {left:384px !important;}</style>').appendTo('head'); }
             }
-            var mousePopupHTML = '<span style="margin-bottom:3px; display:inline-block">' + dio_icon + '<b>' + getTexts("hotkeys", "hotkeys") + ':</b></span>';
+            var mousePopupHTML = '<div id="diotest" style="max-width: 205px; margin: 0 3px -10px 3px; border-right: 1px solid #B48F45; float: left; display:inline-block"><span style="margin-bottom:3px; display:inline-block">' + dio_icon + '<b>' + getTexts("hotkeys", "hotkeys") + ':</b></span>';
+            var mousePopupHTMLTEST = '</div><div style="max-width: 164px; margin:3px; float: left; display:inline-block"><span style="margin:8px; display:inline-block"></span>';
+            //var mousePopupHTML = '<table><tbody><tr><td><span style="margin-bottom:3px; display:inline-block">' + dio_icon + '<b>' + getTexts("hotkeys", "hotkeys") + ':</b></span>';
+            //var mousePopupHTMLTEST = '</td><td style=" margin:3px; float: left;"><span style="margin:10px; display:inline-block"></span></td></tr></tbody></table>';
+
+
             var mousePopupArray = {};
+            var mousePopupArrayTEST = {};
             mousePopupArray[getTexts("hotkeys", "city_select")] = [
                 [hotkeys.ImagesHotkeys.city_select],
                 ["<span style='margin-top:-2px'>←</span>", getTexts("hotkeys", "last_city")],
                 ["<span style='margin-top:-2px'>→</span>", getTexts("hotkeys", "next_city")],
                 ["↵", getTexts("hotkeys", "jump_city")] //&#8629;
-            ];
+            ]; //O, K, B
             /*A, alliance
                 B, // reports (de)
                 C, en=city_view (fr V) fr=Caserne
@@ -14541,7 +14727,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 H, heroes
                 I, // Culture (Agora) 73
                 J, Entrepôt
-                K, Grotte
+                K, ranking
                 L, Marché
                 M, messages
                 N, notes
@@ -14558,27 +14744,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 Y, // En dehors (Agora) 89
                 Z, Académie*/
             var Text_premium = uw.DM.getl10n("layout").premium_button.premium_menu;
+            var Text_layout = uw.DM.getl10n("layout").main_menu.items;
             mousePopupArray[getTexts("hotkeys", "menu")] = [
                 [hotkeys.ImagesHotkeys.menu],
-                ["S", getTexts("hotkeys", "Senate")],
                 [(MID == 'fr') ? "V" : "C", uw.DM.getl10n("town_index").window_title],
-                [(MID == 'de') ? "N" : "M", uw.DM.getl10n("layout").main_menu.items.messages],
-                [(MID == 'de') ? "B" : "R", uw.DM.getl10n("layout").main_menu.items.reports],
-                ["A", uw.DM.getl10n("layout").main_menu.items.alliance],
-                ["F", uw.DM.getl10n("layout").main_menu.items.allianceforum],
-                ["E", uw.DM.getl10n("layout").main_menu.items.settings],
+                [(MID == 'de') ? "N" : "M", Text_layout.messages],
+                [(MID == 'de') ? "B" : "R", Text_layout.reports],
+                ["A", Text_layout.alliance],
+                ["F", Text_layout.allianceforum],
+                ["K", Text_layout.ranking],
+                ["Q", Text_layout.profile],
                 [(MID == 'de') ? "M" : "N", uw.DM.getl10n("notes").window_title]
-            ];
-            mousePopupArray[uw.DM.getl10n("docks").buildings] = [
-                [hotkeys.ImagesHotkeys.city_select],
-                ["G", uw.DM.getl10n("hide").index.hide],
-                ["Z", "Académie"],
-                ["P", uw.DM.getl10n("layout").units.harbor],
-                [(MID == 'fr') ? "C" : "O", uw.DM.getl10n("layout").units.barracks],
-                ["T", uw.DM.getl10n("place").tabs[0] + " (Agora)"],
-                ["Y", Text_premium.outer_units + " (Agora)"],
-                ["U", getTexts("Options", "sim")[0] + " (Agora)"],
-                ["I", Text_premium.culture_overview + " (Agora)"]
             ];
             mousePopupArray[uw.DM.getl10n("advisor").curator] = [
                 [hotkeys.ImagesHotkeys.administrator],
@@ -14599,17 +14775,53 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 [(MID == 'de') ? "´" : "=", Text_premium.attack_planer],
                 ["X", Text_premium.farm_town_overview]
             ];
+            mousePopupArrayTEST[uw.DM.getl10n("docks").buildings] = [
+                [hotkeys.ImagesHotkeys.city_select],
+                ["S", getTexts("hotkeys", "Senate")],
+                ["G", uw.DM.getl10n("hide").index.hide],
+                ["Z", "Académie"],
+                ["P", uw.DM.getl10n("layout").units.harbor],
+                [(MID == 'fr') ? "C" : "O", uw.DM.getl10n("layout").units.barracks],
+                ["J", "Entrepôt"],
+                ["L", "Marché"],
+                ["W", "Remparts"],
+
+                //
+                //Q
+                //O.D.K.B
+            ];
+            mousePopupArrayTEST.Agora = [
+                [hotkeys.ImagesHotkeys.city_select],
+                ["T", uw.DM.getl10n("place").tabs[0]],
+                ["Y", Text_premium.outer_units],
+                ["U", getTexts("Options", "sim")[0]],
+                ["I", Text_premium.culture_overview]
+            ];
+            mousePopupArrayTEST[uw.DM.getl10n("layout").main_menu.items.settings] = [
+                [hotkeys.ImagesHotkeys.menu],
+                ["E", uw.DM.getl10n("layout").main_menu.items.settings],
+                ["D", "DIO-TOOLS"]
+            ];
             if ($('.ui_heroes_overview_container').is(':visible')) {
                 mousePopupArray[getTexts("hotkeys", "menu")].push(["H", getTexts("hotkeys", "council")]);
             }
 
             $.each(mousePopupArray, function (a, b) {
-                mousePopupHTML += '<p/><span style="margin-bottom:-11px;margin-top:-8px;border-bottom:1px solid #B48F45; width:100%;display:block"><span style="display:inline-block;height:17px;width:17px;vertical-align:middle;margin-right:5px;background-image:url(' + b[0] + ')"></span><span style="display:inline-block;height:17px;vertical-align:middle">' + a + ':</span></span><br/>';
+                mousePopupHTML += '<p/><span style="margin-bottom:-11px;margin-top:-8px;border-bottom:1px solid #B48F45; width:100%;display:block"><span style="display:inline-block;height:17px;width:17px;vertical-align:middle;margin-right:5px;background-image:url(' + b[0] + ')"></span><span style="display:inline-block;height:17px;vertical-align:middle;margin-right:5px;">' + a + ':</span></span><br/>';
                 $.each(b, function (c, d) {
-                    if (c != 0) mousePopupHTML += '<span style="display:inline-block;height:17px;width:17px;text-align:center;vertical-align:middle;margin-right:5px;background-image:url(' + hotkeys.ImagesHotkeys.key + ')"><span style="display:block;margin-top:-1px">' + d[0] + '</span></span><span style="display:inline-block;margin-bottom:1px;height:17px;vertical-align:middle">' + d[1] + '</span><br/>';
+                    if (c != 0) mousePopupHTML += '<span style="display:inline-block;height:17px;width:17px;text-align:center;vertical-align:middle;margin-right:5px;background-image:url(' + hotkeys.ImagesHotkeys.key + ')"><span style="display:block;margin-top:-1px">' + d[0] + '</span></span><span style="display:inline-block;margin-bottom:1px;height:17px;vertical-align:middle;margin-right:5px;">' + d[1] + '</span><br/>';
                 });
             });
-            $('#dio_BTN_HK').tooltip(mousePopupHTML);
+            $.each(mousePopupArrayTEST, function (a, b) {
+                mousePopupHTMLTEST += '<p/><span style="margin-bottom:-11px;margin-top:-8px;border-bottom:1px solid #B48F45; width:100%;display:block"><span style="display:inline-block;height:17px;width:17px;vertical-align:middle;margin-right:5px;background-image:url(' + b[0] + ')"></span><span style="display:inline-block;height:17px;vertical-align:middle">' + a + ':</span></span><br/>';
+                $.each(b, function (c, d) {
+                    if (c != 0) mousePopupHTMLTEST += '<span style="display:inline-block;height:17px;width:17px;text-align:center;vertical-align:middle;margin-right:5px;background-image:url(' + hotkeys.ImagesHotkeys.key + ')"><span style="display:block;margin-top:-1px">' + d[0] + '</span></span><span style="display:inline-block;margin-bottom:1px;height:17px;vertical-align:middle">' + d[1] + '</span><br/>';
+                });
+            });
+            //$('#dio_BTN_HK').tooltip(mousePopupHTML);
+            //$('#dio_BTN_HK').tooltip(mousePopupHTML + mousePopupHTMLTEST);
+            $('#dio_BTN_HK').mousePopup(new uw.MousePopup(mousePopupHTML + mousePopupHTMLTEST));
+
 
             $("#dio_BTN_HK").click(() => hotkeys.add());
             hotkeys.add();
@@ -14654,8 +14866,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if (letter("f")) uw.Layout.allianceForum.open();
                         //
                         if (letter("e")) uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_SETTINGS, getTexts("hotkeys", "settings"));
-                        // PROFILE //Q
-                        if (letter("q")) uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_PROFILE_EDIT, ' ');
+                        // PROFILE
+                        if (letter("q")) uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_PLAYER_PROFILE_EDIT);
                         // Remparts
                         if (letter("w")) uw.BuildingWindowFactory.open('wall');
                         // Ferme
@@ -14666,8 +14878,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if (e.code == "Numpad2") uw.LumberWindowFactory.openLumberWindow();
                         // Carrière
                         if (e.code == "Numpad3") uw.StonerWindowFactory.openStonerWindow();
-                        // Grotte
-                        if (letter("k")) uw.BuildingWindowFactory.open('hide');
                         // Mine d'argent
                         if (e.code == "Numpad4") uw.IronerWindowFactory.openIronerWindow();
                         // Marché
@@ -14677,7 +14887,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         // Messages
                         if ((MID == 'de' ? letter("n") : letter("m"))) uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_MESSAGE, uw.DM.getl10n("layout").main_menu.items.messages || "Messages")
                         // Rang
-                        if (e.code == "Numpad5") uw.RankingWindowFactory.openRankingWindow();
+                        if (letter("k")) uw.RankingWindowFactory.openRankingWindow();
                         // RACOURCI Administrateur
                         if (e.code == "Digit1") uw.TownOverviewWindowFactory.openTradeOverview();
                         if (e.code == "Digit2") uw.TownOverviewWindowFactory.openCommandOverview();
@@ -14710,6 +14920,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         if (letter("h") && $('.ui_heroes_overview_container').is(':visible')) uw.HeroesWindowFactory.openHeroesWindow();
                         if (e.key == "ArrowUp" && $(e.target).find("ul#fto_town_list").length) uw.farmingvillageshelper.switchTown("up");
                         if (e.key == "ArrowDown" && $(e.target).find("ul#fto_town_list").length) uw.farmingvillageshelper.switchTown("down");
+
+                        if (letter("d")) openSettings();
                     }
                 }
             } catch (error) { errorHandling(error, "hotkeys"); }
