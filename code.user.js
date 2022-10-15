@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.14
+// @version		4.28.15
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -13754,8 +13754,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="filterstop"></div>' +
                     '</div>');
 
-                const hr_element = '#dio_time-picker .hr', select = $("#dio_culture_overview .dio_drop_Select")[0].innerText;
-                let d = new Date(), hour, minute;
+                const hr_element = '#dio_time-picker .hr';
+                let d = new Date();
+                let hour, minute;
+                setTime();
 
                 // EVENT LISTENERS
                 $('#dio_time-picker .hr-up').click(hour_up);
@@ -13771,7 +13773,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         hour = e.target.value.split(":")[0];
                         minute = e.target.value.split(":")[1];
                         setTime();
-                    } else sort(select, false, true)
+                    } else sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true)
                 }
 
                 function hour_up() {
@@ -13807,8 +13809,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 function setTime() {
                     $(hr_element)[0].value = formatTime(hour) + ':' + formatTime(minute);
                     $('#dio_time-picker')[0].dataset.time = formatTime(hour) + ':' + formatTime(minute);
-                    sort(select, false, true)
-                    if (select === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
+                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true)
+                    if ($("#dio_culture_overview .dio_drop_Select")[0].innerText === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
                         Overviews.hour = hour; Overviews.minute = minute;
                         saveValue("Overviews", JSON.stringify(Overviews));
                     }
@@ -13877,7 +13879,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         $('#culture_overview_towns>li').each(function (i, e) {
                             var selectedSort = "";
                             if (regexpInS.test(selection)) {
-                                if (select === uw.DM.getl10n("inventory").tooltip.hours) {
+                                if ($("#dio_culture_overview .dio_drop_Select")[0].innerText === uw.DM.getl10n("inventory").tooltip.hours) {
                                     try {
                                         let selectedDate = new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000)
                                         selectedSort = formatTime(selectedDate.getHours()) + ":" + formatTime(selectedDate.getMinutes())
@@ -13888,7 +13890,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                         selectedSort = parseInt(diffIn.min + 60 * diffIn.hour);
                                     } catch { selectedSort = 0; }
                                 }
-                                if (select !== uw.DM.getl10n("inventory").tooltip.hours) filter = parseInt(minute) + 60 * parseInt(hour);
+                                if ($("#dio_culture_overview .dio_drop_Select")[0].innerText !== uw.DM.getl10n("inventory").tooltip.hours) filter = parseInt(minute) + 60 * parseInt(hour);
                                 else filter = numericfilter
                                 if (filter < selectedSort & diff == "<") $(e).hide();
                                 if (filter != selectedSort & diff == "=") $(e).hide();
@@ -13950,7 +13952,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 }
 
                 $('#dio_culture_sort_control .filterstop').click(function () {
-                    if (select === uw.DM.getl10n("mass_recruit").sort_by.name) { $('#dio_sortfilterbox')[0].value = ""; console.log(1) }
+                    if ($("#dio_culture_overview .dio_drop_Select")[0].innerText === uw.DM.getl10n("mass_recruit").sort_by.name) { $('#dio_sortfilterbox')[0].value = ""; console.log(1) }
                     else {
                         $(hr_element)[0].value = "";
                         if (buil === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
@@ -13958,7 +13960,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             saveValue("Overviews", JSON.stringify(Overviews));
                         }
                     }
-                    sort(select, false, true);
+                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true);
                 })
 
                 const cities = []
@@ -13968,7 +13970,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 $('#suggestions').click(function (e) {
                     $('#dio_sortfilterbox')[0].value = e.target.innerHTML;
-                    sort(select, false, true);
+                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true);
                     $('#suggestions')[0].innerHTML = "";
                 })
                 $('#wrapper, culture_points_overview_bottom').click(function () { $('#suggestions')[0].innerHTML = ""; })
@@ -13979,12 +13981,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     let suggestion = '';
                     if (Search1 != '') { result.forEach(resultItem => { suggestion += `<div class="option">${resultItem.name}</div>` }) }
                     $('#suggestions')[0].innerHTML = suggestion;
-                    sort(select, false, true);
+                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true);
                 }
                 $('#dio_sortfilterbox').on("input", function () { suggestion(); },);
 
-                $('#dio_sort_towns, #dio_diff_towns').click(function () { sort(select, false, true) },);
-                $("#dio_button_sort").click(function (e) { sort(select, true); });
+                $('#dio_sort_towns, #dio_diff_towns').click(function () { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) },);
+                $("#dio_button_sort").click(function (e) { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, true); });
 
                 $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
 
@@ -13998,7 +14000,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     function fio() {
                         //console.log("2")
-                        setTimeout(() => { sort(select, false, true) }, 100);
+                        setTimeout(() => { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) }, 100);
                         setTimeout(() => { cultureControl.val = ""; }, 1000);
                         uw.TownOverviewWindowFactory.openCultureOverview();
                     }
