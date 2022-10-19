@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.28.15
+// @version		4.28.16
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2022. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -5863,6 +5863,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_Cic) {
                         setTimeout(() => { city_btn_construction.activate(); }, 1000);
                     }
+                    if (DATA.options.dio_Tti) {
+                        setTimeout(() => { townTradeImprovement.activate(); }, 0);
+                    }
                     if (DATA.options.dio_Hio) {
                         setTimeout(() => { hidesOverview.activate(); }, 1000);
                     }
@@ -6176,9 +6179,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 case "/town_info/trading":
                     addTradeMarks(15, 18, 15, "red");
                     TownTabHandler(action.split("/")[2]);
-                    if (DATA.options.dio_Tti) {
-                        townTradeImprovement.add();
-                    }
+
                     break;
                 case "/town_info/info":
                 case "/town_info/attack":
@@ -6684,8 +6685,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('.diotools .icon').click(function () {
                     Notification.activate();
                     $(this).parent().find(".close").click();
+                    saveValue('notif', notifN + 1);
                 });
-                saveValue('notif', notifN + 1);
+                setTimeout(() => { $('#notification_area .diotools .icon').parent().find(".close").click() }, 1800000);
             }
 
             var version_latest = dio_version;
@@ -9443,7 +9445,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         reportsColor: function () {
             var b = uw.GPWindowMgr.getOpen(uw.Layout.wnd.TYPE_REPORT);
-            if (b.length == 0) return console.log("OK");
+            if (b.length == 0) return;
+            $('#report_list').on("mouseleave", function () { reports.reportsColor() });
             var wnd = b[b.length - 1];
             var c = wnd.getID();
             $("DIV#gpwnd_" + c + " #report_list li").each(function () {
@@ -10225,6 +10228,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 }
                                 if (!$(wndID + '.dio_btn_trade').get(0) && DATA.options.dio_per) {
                                     addPercentTrade(wndID, false);
+                                }
+                                if (!$(wndID + '.dio_send_cult').get(0) && $(wndID + '.town-capacity-indicator').get(0) && DATA.options.dio_Tti) {
+                                    townTradeImprovement.add(wndID, wnd);
                                 }
                             }
                             break;
@@ -11079,112 +11085,84 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var townTradeImprovement = {
         activate: function () {
+            $('<style id="dio_style_Improvement_trade" type="text/css">' +
+                '#dio_Improvement_trade .dio_trade { position: absolute; height: 16px; width: 22px; background-repeat: no-repeat; background-position: 0px -1px; } ' +
+                '#dio_Improvement_trade .dio_trade:hover { background-position: 0px -17px; } ' +
+                '#dio_Improvement_trade .dio_trade.dio_max { right: 105px; background-image: url(' + Home_img + 'trade-arrow.png);} ' +
+                '#dio_Improvement_trade .dio_trade.dio_send_cult { right: 85px; background-image: url(' + Home_img + 'trade-cult.png);} ' +
+                '#dio_Improvement_trade .dio_trade.dio_send_cult_reverse { left: 105px; background-image: url(' + Home_img + 'trade-cultr.png);} ' +
+                '</style>').appendTo('head');
         },
-        add: function () {
+        add: function (wndID, wnd) {
             try {
-                if (dio.wnd.find(".dio_needed").length > 0 || dio.wnd.find(".town-capacity-indicator").length == 0);
-                else {
-                    function getRes(res_type, wnd_id, mode) {
-                        var res = {};
-                        res.wnd = $("DIV#gpwnd_" + wnd_id);
-                        res.selector = res.wnd.find("#town_capacity_" + res_type);
-                        res.caption = {
-                            curr: parseInt(res.wnd.find("#big_progressbar .caption .curr").html()),
-                            max: parseInt(res.wnd.find("#big_progressbar .caption .max").html()),
-                            now: parseInt(res.wnd.find("#trade_type_" + res_type + " input").val())
-                        }
-                        res.amounts = {
-                            curr: parseInt(res.selector.find(".curr").html()) || 0,
-                            curr2: parseInt(res.selector.find(".curr2").html().substring(3)) || 0,
-                            curr3: parseInt(res.selector.find(".curr3").html().substring(3)) || 0,
-                            max: parseInt(res.selector.find(".max").html()) || 0
-                        }
-                        if (mode === "cult" || mode === "cultreverse") {
-                            res.amounts.max = (res_type === "stone") ? 18000 : 15000;
-                        }
-                        if (mode === "cultreverse") {
-                            var townrescurrent = $("div#ui_box div.ui_resources_bar div.indicator[data-type='" + res_type + "'] div.amount").text();
-                            res.needed = townrescurrent - res.amounts.max;
-                        } else {
-                            res.needed = res.amounts.max - res.amounts.curr - res.amounts.curr2;
-                        }
-                        return res;
+                function getRes(res_type, wnd_id, mode) {
+                    var res = {};
+                    res.wnd = $("DIV#gpwnd_" + wnd_id);
+                    res.selector = res.wnd.find("#town_capacity_" + res_type);
+                    res.caption = {
+                        curr: parseInt(res.wnd.find("#big_progressbar .caption .curr").html()),
+                        max: parseInt(res.wnd.find("#big_progressbar .caption .max").html()),
+                        now: parseInt(res.wnd.find("#trade_type_" + res_type + " input").val())
                     }
-
-                    dio.wnd.find(".tripple-progress-progressbar").each(function () {
-                        var res_type = this.id.split("_")[2];
-                        var res = getRes(res_type, dio.wndId);
-                        $(this).find(".amounts").append('<span class="dio_needed_' + res_type + '_' + dio.wndId + '"> &#9658; ' + res.needed + '</span>');
-                    });
-
-                    dio.wnd.find("#trade_tab").append(
-                        '<div id="dio_Improvement_trade">' +
-                        '<a id="dio_wood_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:200px"></a>' +
-                        '<a id="dio_stone_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:234px"></a>' +
-                        '<a id="dio_iron_' + dio.wndId + '_max" 	class="dio_trade dio_max" 		style="top:268px"></a>' +
-                        '<a id="dio_wood_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:200px"></a>' +
-                        '<a id="dio_stone_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:234px"></a>' +
-                        '<a id="dio_iron_' + dio.wndId + '_cult" 	class="dio_trade dio_send_cult" style="top:268px"></a>' +
-                        /*'<a id="dio_wood_'+dio.wndId+'_cultreverse" 	class="dio_trade dio_send_cult_reverse" style="top:200px"></a>' +
-                        '<a id="dio_stone_'+dio.wndId+'_cultreverse" 	class="dio_trade dio_send_cult_reverse" style="top:234px"></a>' +
-                        '<a id="dio_iron_'+dio.wndId+'_cultreverse" 	class="dio_trade dio_send_cult_reverse" style="top:268px"></a>'*/'</div>'
-                    );
-
-                    dio.wnd.find(".dio_send_cult").css({
-                        "right": "84px",
-                        "position": "absolute",
-                        "height": "16px",
-                        "width": "22px",
-                        "background-image": "url(" + Home_img + "trade-cult.png)",
-                        "background-repeat": "no-repeat",
-                        "background-position": "0px -1px"
-                    });
-                    dio.wnd.find(".dio_send_cult_reverse").css({
-                        "left": "105px",
-                        "position": "absolute",
-                        "height": "16px",
-                        "width": "22px",
-                        "background-image": "url(" + Home_img + "trade-cultr.png)",
-                        "background-repeat": "no-repeat",
-                        "background-position": "0px -1px"
-                    });
-                    dio.wnd.find(".dio_max").css({
-                        "right": "105px",
-                        "position": "absolute",
-                        "height": "16px",
-                        "width": "22px",
-                        "background-image": "url(" + Home_img + "trade-arrow.png)",
-                        "background-repeat": "no-repeat",
-                        "background-position": "0px -1px"
-                    });
-
-                    dio.wnd.find(".dio_trade").hover(
-                        function () { $(this).css({ "background-position": "0px -17px" }); },
-                        function () { $(this).css({ "background-position": "0px -1px" }); }
-                    );
-
-                    dio.wnd.find(".dio_trade").click(function () {
-                        var id = this.id.split("_");
-                        var res = getRes(id[1], id[2], id[3]);
-                        if (res.needed - res.amounts.curr3 <= 0 || res.caption.curr <= 0 || res.amounts.curr3 > 0) {
-                            res.send = 0;
-                        } else if (res.needed - res.amounts.curr3 > res.caption.curr) {
-                            res.send = res.caption.curr + res.amounts.curr3
-                        } else {
-                            res.send = res.needed;
-                        }
-                        res.wnd.find("#trade_type_" + id[1] + " input").val(res.send).select().blur();
-                    });
-
-                    // Tooltip
-                    $('.dio_max').tooltip(dio_icon + "max");
-                    $('.dio_send_cult').tooltip(dio_icon + getTexts("Quack", "cityfestivals"));
-                    //$('.dio_send_cult_reverse').tooltip(getTexts("Quack", "delete"));
+                    res.amounts = {
+                        curr: parseInt(res.selector.find(".curr").html()) || 0,
+                        curr2: parseInt(res.selector.find(".curr2").html().substring(3)) || 0,
+                        curr3: parseInt(res.selector.find(".curr3").html().substring(3)) || 0,
+                        max: parseInt(res.selector.find(".max").html()) || 0
+                    }
+                    if (mode === "cult" || mode === "cultreverse") {
+                        res.amounts.max = (res_type === "stone") ? 18000 : 15000;
+                    }
+                    if (mode === "cultreverse") {
+                        var townrescurrent = $("div#ui_box div.ui_resources_bar div.indicator[data-type='" + res_type + "'] div.amount").text();
+                        res.needed = townrescurrent - res.amounts.max;
+                    } else {
+                        res.needed = res.amounts.max - res.amounts.curr - res.amounts.curr2;
+                    }
+                    return res;
                 }
+
+                $(wndID + " .tripple-progress-progressbar").each(function () {
+                    var res_type = this.id.split("_")[2];
+                    var res = getRes(res_type, wnd);
+                    $(this).find(".amounts").append('<span id="dio_needed" class="dio_needed_' + res_type + '_' + wnd + '"> &#9658; ' + res.needed + '</span>');
+                });
+
+                $(wndID + " #trade_tab").append(
+                    '<div id="dio_Improvement_trade">' +
+                    '<a id="dio_wood_' + wnd + '_max" 	class="dio_trade dio_max" 		style="top:200px"></a>' +
+                    '<a id="dio_stone_' + wnd + '_max" 	class="dio_trade dio_max" 		style="top:234px"></a>' +
+                    '<a id="dio_iron_' + wnd + '_max" 	class="dio_trade dio_max" 		style="top:268px"></a>' +
+                    '<a id="dio_wood_' + wnd + '_cult" 	class="dio_trade dio_send_cult" style="top:200px"></a>' +
+                    '<a id="dio_stone_' + wnd + '_cult" 	class="dio_trade dio_send_cult" style="top:234px"></a>' +
+                    '<a id="dio_iron_' + wnd + '_cult" 	class="dio_trade dio_send_cult" style="top:268px"></a>' +
+                        /*'<a id="dio_wood_'+wnd+'_cultreverse" 	class="dio_trade dio_send_cult_reverse" style="top:200px"></a>' +
+                        '<a id="dio_stone_'+wnd+'_cultreverse" 	class="dio_trade dio_send_cult_reverse" style="top:234px"></a>' +
+                        '<a id="dio_iron_'+wnd+'_cultreverse" 	class="dio_trade dio_send_cult_reverse" style="top:268px"></a>'*/'</div>'
+                );
+
+                $(wndID + " .dio_trade").click(function () {
+                    var id = this.id.split("_");
+                    var res = getRes(id[1], id[2], id[3]);
+                    if (res.needed - res.amounts.curr3 <= 0 || res.caption.curr <= 0 || res.amounts.curr3 > 0) {
+                        res.send = 0;
+                    } else if (res.needed - res.amounts.curr3 > res.caption.curr) {
+                        res.send = res.caption.curr + res.amounts.curr3
+                    } else {
+                        res.send = res.needed;
+                    }
+                    res.wnd.find("#trade_type_" + id[1] + " input").val(res.send).select().blur();
+                });
+
+                // Tooltip
+                $('.dio_max').tooltip(dio_icon + "max");
+                $('.dio_send_cult').tooltip(dio_icon + getTexts("Quack", "cityfestivals"));
             } catch (error) { errorHandling(error, "townTradeImprovement"); }
         },
         deactivate: function () {
+            $('.tripple-progress-progressbar #dio_needed').remove();
             $('#dio_Improvement_trade').remove();
+            $('#dio_style_Improvement_trade').remove();
         },
     };
 
@@ -13037,20 +13015,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_building_overview .open { display:block !important; } ' +
                 '#dio_building_overview .item-list { max-height:none; } ' +
                 '#dio_building_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; z-index: 1;} ' +
+                '#dio_building_overview .arrow:hover { background:url(' + drop_over.src + ') no-repeat -1px -1px;} ' +
 
                 '#dio_building_overview .dio_drop_Select { width:81px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
                 '#dio_building_overview .dio_drop_diff { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
 
                 '#dio_building_sort_control { left: -2px; top: -2px; } ' +
-                '#dio_building_sort_control #test.building_icon50x50 { left: -2px; top: -2px; position: absolute; border: 5px solid #fad588; cursor:pointer; } ' +
-                '#dio_building_sort_control #test.resource { left: 12px; top: -4px; position: absolute; cursor: pointer; }' +
+                '#dio_building_sort_control #dio_select.building_icon50x50 { left: -2px; top: -2px; position: absolute; border: 5px solid #fad588; cursor:pointer; } ' +
+                '#dio_building_sort_control #dio_select.resource { left: 12px; top: -4px; position: absolute; cursor: pointer; }' +
                 '#dio_building_sort_control #dio_button_sort { margin: 3px 0 0 3px; } ' +
-
                 '#dio_building_sort_control #dio_numberbox { display:none; width: 70px; } ' +
-
-                '#fixed_table_header .testt { border-left: 2px solid rgb(255, 0, 0); border-right: 2px solid rgb(255, 0, 0); width: 38px; cursor: auto!important;}' +
-                '#fixed_table_header .building_header { cursor: pointer; }' +
-
                 //sort
                 '#dio_sort { cursor: pointer; filter: contrast(200%); background-repeat: no-repeat; background-position: bottom right; }' +
                 '#dio_sort.sorting {background-image: url("' + Home_img + 'sort-both.png");}' +
@@ -13058,16 +13032,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_sort.sorting_desc {background-image: url("' + Home_img + 'sort-asc-green.png") !important;}' +
                 '#dio_sort.sorting_asc_disabled {background-image: url("' + Home_img + 'sort-asc-disabled.png");}' +
                 '#dio_sort.sorting_desc_disabled {background-image: url("' + Home_img + 'sort-desc-disabled.png");}' +
-
+                '#fixed_table_header .dio_sel { border-left: 2px solid rgb(255, 0, 0); border-right: 2px solid rgb(255, 0, 0); width: 38px; cursor: auto!important;}' +
+                '#fixed_table_header .building_header { cursor: pointer; }' +
+                //suggestions
                 '#dio_building_sort_control #suggestions { top: 24px; left: 135px; cursor: pointer; display: block; max-height: 100px; max-height: 100px; overflow: auto;}' +
                 '#dio_building_sort_control #suggestions .option:hover { color:#fff; background:#328BF1; } ' +
                 '</style>').appendTo("head");
-
             if ($('#building_overview_table_wrapper').length) { buildingControl.init(); }
         },
         init: () => {
             try {
-                var buil = Overviews.Buildings, diff = Overviews.Buildings_Dif, order, selection;
+                var buil = Overviews.Buildings, diff = Overviews.Buildings_Dif, selection;
                 var sort_options = [
                     ["option_s", uw.DM.getl10n("mass_recruit").sort_by.name, true],
                     ["option_s ok", uw.DM.getl10n("mass_recruit").sort_by.points, true],
@@ -13108,7 +13083,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="border-right"></div>' +
                     '<div class="caption" name="' + buil + '">' + buil + '</div>' +
                     '<div class="arrow"></div>' +
-                    '<div id="test"></div>' +
+                    '<div id="dio_select"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_Select_boxes", "select_rec", sort_options, buil) +
                     '<div class="dio_drop_diff dropdown default">' +
                     // DropDown-Button for diff
@@ -13119,15 +13094,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</div>' + dio.grepo_dropdown("dio_Select_boxes", "select_rec_diff", diff_options, diff) +
                     '</div>' + buildingControl.grepo_input(false, "margin-top:0px", "dio_sortfilterbox", "")[0].outerHTML + buildingControl.grepo_input(true, "margin-top:0px; margin-left: -6px;", "dio_numberbox", "")[0].outerHTML +
                     dio.grepo_dropdown("suggestions", "", "", "") +
-                    '<div id="dio_button_sort" class="button_order_by active"></div>' +
+                    '<div id="dio_button_sort" class="button_order_by"></div>' +
                     '</div>');
 
                 Classtest(buil)
 
                 setTimeout(() => {
-                    $('#fixed_table_header .' + buil).addClass("testt")
+                    $('#fixed_table_header .' + buil).addClass("dio_sel")
                     $('#fixed_table_header .building_icon40x40').append('<div id="dio_sort" class="sorting"></div>')
+                    sort($("#dio_building_overview .dio_drop_Select")[0].innerText, false, true);
                 }, 50);
+
+                if (Overviews.Buildings_order) $("#dio_button_sort").addClass('active')
 
                 $('#fixed_table_header').each(function () {
                     $(this).click(function (e) {
@@ -13142,22 +13120,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
 
                 function Classtest(buil) {
-                    $('#test').removeClass();
+                    $('#dio_select').removeClass();
                     $(".dio_drop_Select .border-left").css({ "right": "auto", "left": "0", "z-index": 0 });
                     $(".dio_drop_Select .caption").css({ "left": "auto", "width": "auto", });
                     if (buil == uw.DM.getl10n("mass_recruit").sort_by.name || buil == uw.DM.getl10n("mass_recruit").sort_by.points) { }
                     else if (buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
-                        $('#test').addClass("resource " + buil + "_img");
+                        $('#dio_select').addClass("resource " + buil + "_img");
                         $(".dio_drop_Select .border-left").css({ "right": "19px", "left": "auto", "z-index": 1 });
                         $(".dio_drop_Select .caption").css({ "left": "54px", "width": "3px", });
                     }
                     else {
-                        $('#test').addClass("building_icon50x50 " + buil);
+                        $('#dio_select').addClass("building_icon50x50 " + buil);
                         $(".dio_drop_Select .border-left").css({ "right": "19px", "left": "auto", "z-index": 1 });
                     }
 
-                    $('#fixed_table_header .testt').removeClass("testt");
-                    $('#fixed_table_header .' + buil).addClass("testt")
+                    $('#fixed_table_header .dio_sel').removeClass("dio_sel");
+                    $('#fixed_table_header .' + buil).addClass("dio_sel")
                     if (buil === uw.DM.getl10n("mass_recruit").sort_by.name) {
                         $("#dio_sortfilterbox").css({ "display": "block" });
                         $("#dio_numberbox").css({ "display": "none" });
@@ -13187,20 +13165,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#dio_building_overview .dio_drop_Select').click(function (e) { dio.drop_menus_open('.select_rec', '.select_rec_diff') });
                 $('#dio_building_overview .dio_drop_diff').click(function (e) { dio.drop_menus_open('.select_rec_diff', '.select_rec') });
 
-                // hover arrow change
-                $('.dropdown').hover(function (e) {
-                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_over.src + "') no-repeat -1px -1px";
-                }, function (e) {
-                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_out.src + "') no-repeat -1px -1px";
-                });
-
                 $("#dio_building_overview .caption").attr("name", buil);
 
                 $('#dio_building_overview .dio_drop_Select').tooltip(dio_icon);
                 $('#dio_sort').tooltip(dio_icon);
 
                 function sort(selection, filter, Sort) {
-                    if (!Sort) order = !order;
+                    if (!Sort) { Overviews.Buildings_order = !Overviews.Buildings_order; saveValue("Overviews", JSON.stringify(Overviews)); $("#dio_button_sort").toggleClass('active') }
                     switch (selection) {
                         case uw.DM.getl10n("mass_recruit").sort_by.name:
                             selection = 'a.gp_town_link';
@@ -13225,10 +13196,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     $('#fixed_table_header .building_icon40x40 #dio_sort').attr("Class", "");
                     $('#fixed_table_header .building_icon40x40 #dio_sort').addClass('sorting')
-                    if (!Sort) $("#dio_button_sort").toggleClass('active')
 
                     if (selection !== 'a.gp_town_link' || selection !== '.Points') {
-                        if (!order) {
+                        if (!Overviews.Buildings_order) {
                             $(selection.split(" ")[0] + ' #dio_sort').removeClass("sorting_desc");
                             $(selection.split(" ")[0] + ' #dio_sort').addClass("sorting_asc");
                         }
@@ -13250,10 +13220,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         } else {
                             a = $(a).find(selection).text().toLowerCase();
                             b = $(b).find(selection).text().toLowerCase();
-                            if (order) { return a.localeCompare(b); }
+                            if (Overviews.Buildings_order) { return a.localeCompare(b); }
                             else { return b.localeCompare(a); }
                         }
-                        if (order) { return b - a }
+                        if (Overviews.Buildings_order) { return b - a }
                         else { return a - b }
                     });
                     for (var i = 0; i < dio_ArrayUnsorted.length; i++) {
@@ -13686,27 +13656,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_culture_overview .sel { color: #fff; background: #444444; } ' +
                 '#dio_culture_overview .open { display:block !important; } ' +
                 '#dio_culture_overview .item-list { max-height:none; } ' +
+                // arrow
                 '#dio_culture_overview .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
+                '#dio_culture_overview .arrow:hover { background:url(' + drop_over.src + ') no-repeat -1px -1px; } ' +
 
                 '#dio_culture_overview .dio_drop_Select { width:130px; float: left; margin: 2px 0 2px 2px; overflow: inherit; } ' +
                 '#dio_culture_overview .dio_drop_diff { width:40px; float: left; margin: 2px 0 2px 5px; } ' +
-
-                '#dio_culture_sort_control #dio_button_sort { margin: 3px 0 0 3px; } ' +
-
-                '#fixed_table_header .building_header { cursor: pointer; }' +
-
+                //time
                 '#dio_time-picker { float: left; margin-left: 12px; }' +
                 '#dio_time-picker .hr, #dio_time-picker .min { background: none; font-size: 19px; border: none; display: block; }' +
                 '#dio_time-picker .hr-up, #dio_time-picker .hr-down, #dio_time-picker .min-up, #dio_time-picker .min-down { position: absolute; transform: translateX(-11px); border-left: 6px solid transparent; border-right: 6px solid transparent; cursor: pointer; }' +
                 '#dio_time-picker .hr-up, #dio_time-picker .min-up { top: 4px; border-bottom: 8px solid #AAA; }' +
                 '#dio_time-picker .hr-down, #dio_time-picker .min-down { top: 15px; border-top: 8px solid #AAA; }' +
                 '#dio_time-picker .min-down, #dio_time-picker .min-up { transform: translateX(57px); }' +
-
+                //suggestions
                 '#dio_culture_sort_control #suggestions { top: 24px; left: 183px; cursor: pointer; display: block; max-height: 100px; overflow: auto;}' +
                 '#dio_culture_sort_control #suggestions .option:hover { color:#fff; background:#328BF1; } ' +
-
+                //button sort
+                '#dio_culture_sort_control #dio_button_sort { margin: 3px 0 0 3px; } ' +
+                //button filterstop
                 '#dio_culture_sort_control .filterstop { width:20px; height:20px; background:url(https://www.tuto-de-david1327.com/medias/images/filter-stop.png) no-repeat; background-size:100%; margin: 3px; float: left; cursor: pointer; display: none;} ' +
-
                 '</style>').appendTo("head");
 
             if ($('#culture_points_overview_bottom').length) { cultureControl.init(); }
@@ -13716,7 +13685,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             try {
                 if (!$("#dio_cultureBTN_wrapper").is(":visible")) $("#culture_overview_wrapper").css({ "top": "35px", "height": "+=-35px" });
                 var buil = Overviews.Culture, diff = Overviews.Culture_Dif, hour_time = Overviews.hour, minute_time = Overviews.minute;
-                var selection, order;
+                var selection;
                 var sort_options = [
                     ["option", uw.DM.getl10n("mass_recruit").sort_by.name, true],
                     ["option", uw.DM.getl10n("inventory").tooltip.hours, true],
@@ -13733,7 +13702,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="border-right"></div>' +
                     '<div class="caption" name="' + buil + '">' + buil + '</div>' +
                     '<div class="arrow"></div>' +
-                    '<div id="test"></div>' +
                     '</div>' + dio.grepo_dropdown("dio_sort_towns", "", sort_options, buil) +
                     '<div class="dio_drop_diff dropdown default">' +
                     // DropDown-Button for diff
@@ -13744,7 +13712,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '</div>' + dio.grepo_dropdown("dio_diff_towns", "", diff_options, diff) +
                     '</div>' + cultureControl.grepo_input("margin-top:0px", "dio_sortfilterbox", cultureControl.val)[0].outerHTML +
                     dio.grepo_dropdown("suggestions", "", "", "") +
-                    '<div id="dio_button_sort" class="button_order_by active"></div>' +
+                    '<div id="dio_button_sort" class="button_order_by"></div>' +
                     '<div id="dio_time-picker" data-time="00:00">' +
                     '<div class="hr-up"></div>' +
                     '<input type="time" class="hr">' +
@@ -13754,10 +13722,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="filterstop"></div>' +
                     '</div>');
 
-                const hr_element = '#dio_time-picker .hr';
-                let d = new Date();
-                let hour, minute;
-                setTime();
+                if (Overviews.Culture_order) $("#dio_button_sort").addClass('active')
+
+                const hr_element = '#dio_time-picker .hr', selec = "#dio_culture_overview .dio_drop_Select";
+                let d = new Date(), hour, minute;
 
                 // EVENT LISTENERS
                 $('#dio_time-picker .hr-up').click(hour_up);
@@ -13773,7 +13741,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         hour = e.target.value.split(":")[0];
                         minute = e.target.value.split(":")[1];
                         setTime();
-                    } else sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true)
+                    } else sort(false, true)
                 }
 
                 function hour_up() {
@@ -13809,8 +13777,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 function setTime() {
                     $(hr_element)[0].value = formatTime(hour) + ':' + formatTime(minute);
                     $('#dio_time-picker')[0].dataset.time = formatTime(hour) + ':' + formatTime(minute);
-                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true)
-                    if ($("#dio_culture_overview .dio_drop_Select")[0].innerText === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
+                    sort(false, true)
+                    if ($(selec)[0].innerText === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
                         Overviews.hour = hour; Overviews.minute = minute;
                         saveValue("Overviews", JSON.stringify(Overviews));
                     }
@@ -13848,13 +13816,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#dio_culture_overview .dio_drop_Select').click(function (e) { dio.drop_menus_open('#dio_sort_towns', '#dio_diff_towns') });
                 $('#dio_culture_overview .dio_drop_diff').click(function (e) { dio.drop_menus_open('#dio_diff_towns', '#dio_sort_towns') });
 
-                // hover arrow change
-                $('#dio_culture_sort_control .dropdown').hover(function (e) {
-                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_over.src + "') no-repeat -1px -1px";
-                }, function (e) {
-                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_out.src + "') no-repeat -1px -1px";
-                });
-
                 function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 
                 function setfilter(selection) {
@@ -13879,7 +13840,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         $('#culture_overview_towns>li').each(function (i, e) {
                             var selectedSort = "";
                             if (regexpInS.test(selection)) {
-                                if ($("#dio_culture_overview .dio_drop_Select")[0].innerText === uw.DM.getl10n("inventory").tooltip.hours) {
+                                if ($(selec)[0].innerText === uw.DM.getl10n("inventory").tooltip.hours) {
                                     try {
                                         let selectedDate = new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000)
                                         selectedSort = formatTime(selectedDate.getHours()) + ":" + formatTime(selectedDate.getMinutes())
@@ -13890,7 +13851,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                         selectedSort = parseInt(diffIn.min + 60 * diffIn.hour);
                                     } catch { selectedSort = 0; }
                                 }
-                                if ($("#dio_culture_overview .dio_drop_Select")[0].innerText !== uw.DM.getl10n("inventory").tooltip.hours) filter = parseInt(minute) + 60 * parseInt(hour);
+                                if ($(selec)[0].innerText !== uw.DM.getl10n("inventory").tooltip.hours) filter = parseInt(minute) + 60 * parseInt(hour);
                                 else filter = numericfilter
                                 if (filter < selectedSort & diff == "<") $(e).hide();
                                 if (filter != selectedSort & diff == "=") $(e).hide();
@@ -13909,8 +13870,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 };
 
-                function sort(selection, filter, Sort) {
-                    if (!Sort) order = !order;
+                function sort(filter, Sort) {
+                    selection = $(selec)[0].innerText;
+                    if (!Sort) { Overviews.Culture_order = !Overviews.Culture_order; saveValue("Overviews", JSON.stringify(Overviews)); $("#dio_button_sort").toggleClass('active') };
                     switch (selection) {
                         case uw.DM.getl10n("inventory").tooltip.hours:
                         case uw.DM.getl10n("construction_queue").research_time.split(":")[0]:
@@ -13923,7 +13885,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             break;
                     }
                     if (!filter) setfilter(selection);
-                    $("#dio_button_sort").toggleClass('active')
+
                     var dio_ArrayUnsorted = $('#culture_overview_towns>li').get();
                     dio_ArrayUnsorted.sort(function (a, b) {
                         var regexpInS = RegExp(/eta/);
@@ -13939,20 +13901,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         } else {
                             a = $(a).find(selection).text().toLowerCase();
                             b = $(b).find(selection).text().toLowerCase();
-                            if (order) { return a.localeCompare(b); }
+                            if (Overviews.Culture_order) { return a.localeCompare(b); }
                             else { return b.localeCompare(a); }
                         }
                         //console.log("text3")
-                        if (order) { return b - a }
+                        if (Overviews.Culture_order) { return b - a }
                         else { return a - b }
                     });
                     for (var i = 0; i < dio_ArrayUnsorted.length; i++) {
                         dio_ArrayUnsorted[i].parentNode.appendChild(dio_ArrayUnsorted[i]);
                     }
+                    $("#culture_overview_wrapper").scrollTop(200)
+                    $("#culture_overview_wrapper").scrollTop(0)
                 }
 
                 $('#dio_culture_sort_control .filterstop').click(function () {
-                    if ($("#dio_culture_overview .dio_drop_Select")[0].innerText === uw.DM.getl10n("mass_recruit").sort_by.name) { $('#dio_sortfilterbox')[0].value = ""; console.log(1) }
+                    if ($(selec)[0].innerText === uw.DM.getl10n("mass_recruit").sort_by.name) { $('#dio_sortfilterbox')[0].value = ""; console.log(1) }
                     else {
                         $(hr_element)[0].value = "";
                         if (buil === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
@@ -13960,7 +13924,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             saveValue("Overviews", JSON.stringify(Overviews));
                         }
                     }
-                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true);
+                    sort(false, true);
                 })
 
                 const cities = []
@@ -13970,7 +13934,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 $('#suggestions').click(function (e) {
                     $('#dio_sortfilterbox')[0].value = e.target.innerHTML;
-                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true);
+                    sort(false, true);
                     $('#suggestions')[0].innerHTML = "";
                 })
                 $('#wrapper, culture_points_overview_bottom').click(function () { $('#suggestions')[0].innerHTML = ""; })
@@ -13981,12 +13945,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     let suggestion = '';
                     if (Search1 != '') { result.forEach(resultItem => { suggestion += `<div class="option">${resultItem.name}</div>` }) }
                     $('#suggestions')[0].innerHTML = suggestion;
-                    sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true);
+                    sort(false, true);
                 }
                 $('#dio_sortfilterbox').on("input", function () { suggestion(); },);
 
-                $('#dio_sort_towns, #dio_diff_towns').click(function () { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) },);
-                $("#dio_button_sort").click(function (e) { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, true); });
+                $('#dio_sort_towns, #dio_diff_towns').click(function () { sort(false, true) },);
+                $("#dio_button_sort").click(function (e) { sort(true); });
 
                 $('#dio_button_sort').tooltip(dio_icon + uw.DM.getl10n("heroes").transfer.sort_by.split(":")[0]);
 
@@ -14000,11 +13964,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                     function fio() {
                         //console.log("2")
-                        setTimeout(() => { sort($("#dio_culture_overview .dio_drop_Select")[0].innerText, false, true) }, 100);
+                        setTimeout(() => { sort(false, true) }, 100);
                         setTimeout(() => { cultureControl.val = ""; }, 1000);
                         uw.TownOverviewWindowFactory.openCultureOverview();
                     }
                 },);
+                sort(false, true)
 
             } catch (error) { errorHandling(error, "cultureControl (init)"); }
         },
