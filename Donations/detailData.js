@@ -1,5 +1,4 @@
 var data_month = ([
-    ['2021/11', 15, 66.85],
     ['2021/12', 15, 9.36],
     ['2022/01', 15, 15.8],
     ['2022/02', 15, 13.86],
@@ -11,9 +10,10 @@ var data_month = ([
     ['2022/08', 15, 2.22],
     ['2022/09', 15, 5],
     ['2022/10', 15, 16.24],
+    ['2022/11', 15, 2.22],
 ]);
 
-var date = '23/10/2022'
+var date = '04/11/2022'
 
 var detailData = {
     '2020/01': [
@@ -116,6 +116,8 @@ var detailData = {
         { 'dat': '2022-09-12', 'inc': 5, 'who': 'Laurent R', 'pays': ['FR', 'France', 'France'] },
     ], '2022/10': [
         { 'dat': '2022-10-04', 'inc': 2.22, 'who': 'adriano g', 'pays': ['IT', 'Italie', 'Italy'] },
-        { 'dat': '2022-10-23', 'inc': 14.02, 'who': 'Davryll', 'pays': ['', ' ', ''] },
+        { 'dat': '2022-10-23', 'inc': 14.02, 'who': 'Davryll', 'pays': ['GB', 'Royaume-Uni', 'United Kingdom'] },
+    ], '2022/11': [
+        { 'dat': '2022-11-04', 'inc': 2.22, 'who': 'adriano g', 'pays': ['IT', 'Italie', 'Italy'] },
     ],
 };
