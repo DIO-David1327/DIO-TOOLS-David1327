@@ -5720,8 +5720,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var SentUnits = {
         activate: () => {
             $.Observer(uw.GameEvents.command.send_unit).subscribe('DIO_SEND_UNITS', function (e, data) {
-                // We handle revolt in the same pool as a regular attack.
-                if (data.sending_type === "revolt") data.sending_type = "attack";
+                if (data.sending_type === "revolt"){
+                    // We handle revolt in the same pool as a regular attack.
+                    data.sending_type = "attack";
+                }
+
                 for (var z in data.params) {
                     if (data.params.hasOwnProperty(z) && (data.sending_type !== "")) {
                         if (uw.GameData.units[z]) {
