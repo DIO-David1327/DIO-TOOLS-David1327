@@ -1,7 +1,7 @@
 //////////////////////////////////////////////
 //      French Translation by eclat49       //
 //////////////////////////////////////////////
-LANG = {
+LANGadd = {
     fr: {
         Notification: {
             //A: "",
@@ -115,6 +115,8 @@ LANG = {
             FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""],
             Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""],
             Cic: ["Vue de la ville", "Le mode construction de la vue de la ville est sélectionné par défaut"],
+            Cuc: ["Filtrage de l'aperçu de culture (administrateur)", "Permettre le tri des villes."],
+            Buc: ["Filtrage de l'aperçu des bâtiments (administrateur)", "Permettre le tri des villes."],
 
             err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
         },

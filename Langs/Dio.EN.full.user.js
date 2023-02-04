@@ -1,7 +1,7 @@
 //////////////////////////////////////////////
 //      English Translation                 //
 //////////////////////////////////////////////
-LANG = {
+LANGadd = {
     en: {
         Notification: {
             //A: "",
@@ -114,6 +114,8 @@ LANG = {
             FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""],
             Mole: ["Not compatible to activate in the parameters of Mole Hole", ""],
             Cic: ["City view", "City view construction mode is selected by default"],
+            Cuc: ["Culture overview filtering (Administrator)", "Allow sorting of cities."],
+            Buc: ["Building overview filtering (Administrator)", "Allow sorting of cities."],
 
             err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."],
             //her: ["Thracian Conquest", "Downsizing of the map of the Thracian conquest."],
