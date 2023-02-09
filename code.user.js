@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.29
+// @version		4.30
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2023. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -11,7 +11,6 @@
 // @match		https://*.tuto-de-david1327.com/*
 // @updateURL   https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js
 // @downloadURL	https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js
-// @resource    Version_dio https://dio-david1327.github.io/DIO-TOOLS-David1327/Version.js
 // @require		https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @icon		https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-bussi2.gif
 // @icon64		https://www.tuto-de-david1327.com/medias/images/dio-tools-david1327.jpg
@@ -133,16 +132,17 @@ function appendScript() {
         time_a = uw.Timestamp.client();
         dioscript.textContent = DIO_GAME.toString().replace(/uw\./g, "") + "\n DIO_GAME('" + dio_version + "', " + GMM + ", '" + JSON.stringify(DATA).replace(/'/g, "##") + "', " + time_a + ");";
         document.body.appendChild(dioscript);
-
-        var DIO_Version = document.createElement('script');
-        DIO_Version.type = 'text/javascript';
-        DIO_Version.innerHTML = GM_getResourceText('Version_dio');
-        document.getElementsByTagName('head')[0].appendChild(DIO_Version);
     } else setTimeout(() => { appendScript(); }, 500);
 }
 
 if (location.host === "www.tuto-de-david1327.com") { DIO_PAGE(); } // PAGE
-else if ((uw.location.pathname.indexOf("game") >= 0) && GMM) { appendScript(); } // GAME
+else if ((uw.location.pathname.indexOf("game") >= 0) && GMM) {
+    setTimeout(() => { appendScript(); }, 100);
+    try {
+        $('<script src="https://dio-david1327.github.io/DIO-TOOLS-David1327/Version.js"></script>').appendTo("head");
+        $('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
+    } catch (error) { console.log(error, '<script>') }
+} // GAME
 else { DIO_FORUM(); }
 
 function DIO_PAGE() {
@@ -581,7 +581,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         if (gm) { uw.deleteValueGM(name); }
         else { localStorage.removeItem(name); }
     }
-    $('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
 
 
     /*******************************************************************************************************************************
@@ -786,7 +785,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_Cul: true,	// cultureOverview
         dio_Cup: true,	// cultureProgress
         dio_Cuo: true,	// culturePoints
-        dio_Hot: (system() ? (false) : (true)), // hotkeys
+        dio_Hot: true, // hotkeys
         dio_Isl: true,	// islandFarmingVillages
         dio_Ish: true,	// farmingvillageshelper
         dio_Hio: true,	// hidesOverview
@@ -812,7 +811,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         dio_bbb: false,
         dio_ccc: false,
         dio_ddd: false,
-        dio_eee: false
+        dio_eee: false,
+
+        dio_tro: false,
     };
 
     if (!uw.Game.features.end_game_type == "end_game_type_world_wonder") {
@@ -1558,6 +1559,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 FEATURE = cultureControl;
                 break;
 
+
+            case "dio_tro":
+                FEATURE = Save_troops;
+                break;
+
             default:
                 activation = false;
                 break;
@@ -1766,6 +1772,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_scr) setTimeout(() => { MouseWheelZoom.activate(); }, 0);
                     if (DATA.options.dio_sim) setTimeout(() => { Simulator.activate(); }, 0);
                     if (DATA.options.dio_sen) setTimeout(() => { SentUnits.activate(); }, 0);
+                    if (DATA.options.dio_tro) setTimeout(() => { Save_troops.activate(); }, 0);
                     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
                         if (DATA.options.dio_wwc) setTimeout(() => { WorldWonderCalculator.activate(); }, 0);
                     }
@@ -1828,8 +1835,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 action = url[0].substr(5) + "/" + url[1].split(/&/)[1].substr(7);
             }
 
-            if (PID == 84367 || PID == 104769 || PID == 1577066) {
-                console.log(action);
+            if (PID == 84367 || PID == 104769 || PID == 1577066 || PID == 100144) {
+                console.log("action=>", action);
             }
 
             var wnd = uw.GPWindowMgr.getFocusedWindow() || false;
@@ -1840,6 +1847,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             //console.log(action)
             switch (action) {
+                case "/map_data/get_chunks":
+                    if (DATA.options.dio_tim) Map.add();
+                    break;
                 case "/notify/fetch":
                     if (uw.WM.isOpened("notes")) {
                         if (!$('.notes_container .bb_button_wrapper .dio_smiley_button').get(0) & $(".notes_container .bb_button_wrapper").length) {
@@ -1847,8 +1857,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             if (DATA.options.dio_bbc) addForm("/frontend_bridge/execute");
                         }
                     }
+                    if (DATA.options.dio_tim) Map.add();
+                    if (DATA.options.dio_tic) updateIcon()
                     break;
                 case "/frontend_bridge/fetch": // Daily Reward
+                    if (DATA.options.dio_tim) Map.add();
                     if (DATA.options.dio_Rew) Reward.activate();
                     if (DATA.options.dio_Rtt) dio.removeTooltipps("place"); dio.removeTooltipps("sidebar");
                 ///if (DATA.options.dio_Hid) hidesIndexIron.add();
@@ -2459,23 +2472,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             uw.NotificationType.DIO_TOOLS = "diotools";
             uw.NotificationType.DIO_TOOLS_V = "diotools_v";
 
-            var notifN = 29;
+            var notifN = 31;
             var titreN =
-                0; // nouvelles fonctionnalités
-            //	1; // Nouvelle version
+                //    0; // nouvelles fonctionnalités
+                1; // Nouvelle version
             //	2; // ""
             var featureN =
                 //	0; // nouvelles fonctionnalités
-                1; // nouvelles fonctionnalités + titre
-            //	2; // ""
+                //    1; // nouvelles fonctionnalités + titre
+                2; // ""
 
             var titre = [getTexts("Settings", "Feature"), getTexts("Settings", "Feature2"), ""];
             var feature = [getTexts("Settings", "Feature"), getTexts("Settings", "Feature") + ' (' + getTexts("Options", "Buc")[0] + ')', ""];
 
             var notif = DATA.notification, notiff = DATA.notiff;
-            console.log(DATA.notification)
+            //console.log(DATA.notification)
             if (notiff !== 0 && dio_version === version_latest) { saveValue('notiff', 0); }
-            if (notif <= notifN/* || david1327*/ && notiff <= 7) {
+            if (notif <= notifN || david1327 && notiff <= 7) {
                 Notification.create(titre[titreN], feature[featureN], "DIO_TOOLS", "#3f0"); //;
 
                 // Click Event
@@ -2596,57 +2609,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(' + Home_img + 'gpcl-tip.png) no-repeat;font-weight: bold;">News and changes</div>' +
 
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- Building overview filtering (admin):<span style="font-size:18px;"></span></span></span></span><br />' +
-                    '-&gt;&nbsp;It is now possible to filter in the overview of buildings a search bar has also been added (idea from @Arphox)<br />' +
-                    '<img alt="Capture d ecran 2022 11 04 172641" height="88" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-11-04-172641.png" width="242" /></p>' +
+                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;"></span></span></span></p>' +
 
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- Crop preview filtering (admin):<span style="font-size:18px;"></span></span></span></span><br />' +
-                    '-&gt;&nbsp;It is now possible to sort cities<br />' +
-                    '-&gt; For hours filtering, I still have difficulties, I&#39;m working on it this function is seen to be improved (idea from @Arphox)<br />' +
-                    '<img alt="Capture d ecran 2022 10 14 203655" height="84" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-10-14-203655.png" width="270" /></p>' +
+                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- Saving Troops<span style="font-size:18px;">&nbsp;:</span></span></span></span><br />' +
+                    '-&gt; Many people thought it was a feature when it was a bug, after several requests you can still enable it by checking the box.<br />' +
+                    '<img alt="Capture d ecran 2023 02 09 200802" class="rounded" height="128" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-02-09-200802.png" width="389" /></p>' +
 
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- Smilies:<span style="font-size:18px;"></span></span></span></span><br />' +
-                    '-&gt; <span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif">New dialog for the official forum and for the game<br />' +
-                    '-&gt; It is now possible to use all smileys no more waiting for Easter or Christmas (idea from @Count Davryll)<br />' +
-                    '-&gt; Many smileys have been added<br />' +
-                    '-&gt; Added smileys in notes (thanks to @Buffysara for pointing this out a very long time ago)</span></span></span><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></span></span></span></span></span></span><br />' +
-                    '<img alt="Capture d ecran 2022 10 31 213309" height="184" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2022-10-31-213309.png" width="402" /></p>' +
+                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- City icons (map):<span style="font-size:18px;"></span></span></span></span><br />' +
+                    '-&gt; Refresh has been changed to less resent the browser<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
 
-                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- Icons of cities:<span style="font-size:18px;"></span></span></span></span><br />' +
-                    '-&gt; Optimization carried out the game is less slowed down. (Thanks to @Neriss for finding the solution)<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
-
-                    '<p><span style="font-size:18px;"></span><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- <span style="font-size:18px;">Keyboard shortcuts for Windows:</span></span></span></span><br />' +
-                    '-&gt; <span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif">The function has been optimized (thanks to @Neriss)<br />' +
-                    '-&gt; It is also easier to use them with a Mac (to be confirmed)<br />' +
-                    '-&gt; Shortcuts have been added<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11.0pt"><span style="line-height:107%"><span style="font-family:&quot;Calibri&quot;,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><span style="font-size:11.0pt"><span style="line-height:107%"><span style="font-family:&quot;Calibri&quot;,sans-serif"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br />' +
-                    '<img alt="Capture d ecran 2023 02 03 200138" class="rounded" height="650" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-02-03-200138.png" width="331" /></p>' +
-
-                    '<p><span style="font-size:18px;"></span><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- Recruitment Trade:<span style="font-size:18px;"></span></span></span></span><br />' +
-                    '-&gt; <span style="font-size:11.0pt"><span style="line-height:107%"><span style="font-family:&quot;Calibri&quot;,sans-serif">Added cave (user request)<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></span></span></span><span style="font-size:18px;"></span></p>' +
-
-                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- - Script optimization:<span style="font-size:18px;"></span></span></span></span><br />' +
-                    '-&gt; Simplified function.<br />' +
-                    '-&gt; Translation compress.<br />' +
-                    '-&gt; Image optimization using the images already present in the game<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
+                    '<p><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
 
                     '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
 
                     '<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
 
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;">- </span><span style="font-size:18px;"> World&#39;s wonder :</span></span><br />' +
-                    '-&gt; The percentage was not calculated on the resources sent (thanks to @peupeu17 for reporting)<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span><br />' +
-                    '&nbsp;<img alt="Capture d ecran 2023 02 03 200600" class="rounded" height="112" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-02-03-200600.png" width="369" /></p>' +
+                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"></span></span><span style="color:#c0392b;"><span style="font-size:18px;">- </span><span style="font-size:18px;"> Troop Speed:</span></span><br />' +
+                    '-&gt; Following the last update the duplicate function<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span><br />' +
+                    '&nbsp;<img alt="Capture d ecran 2023 02 09 200707" class="rounded" height="71" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-02-09-200707.png" width="323" /></p>' +
 
-                    '<p><span style="font-size:18px;"></span><span style="color:#c0392b;"><span style="font-size:18px;">-&nbsp;</span><span style="font-size:18px;">Resource Trade for Festivals:</span></span><br />' +
-                    '&nbsp;-&gt; <span style="font-size:11.0pt"><span style="line-height:107%"><span style="font-family:&quot;Calibri&quot;,sans-serif">Buttons disappeared when switching trade windows. (thanks to @Arphox for reporting)</span></span></span><span style="font-size:11.0pt"><span style="line-height:107%"><span style="font-family:&quot;Calibri&quot;,sans-serif"> </span></span></span></p>' +
+                    '<p><span style="color:#c0392b;"><span style="font-size:18px;">- </span><span style="font-size:18px;"> Keyboard shortcuts:</span></span><br />' +
+                    '-&gt; The Alt key was not excluded</p>' +
 
-                    '<p><span style="font-size:18px;"></span><span style="color:#c0392b;"><span style="font-size:18px;">-&nbsp;</span><span style="font-size:18px;">BBcode of the city:</span></span><br />' +
-                    '&nbsp;-&gt; <span style="font-size:11.0pt"><span style="line-height:107%"><span style="font-family:&quot;Calibri&quot;,sans-serif">The BB-code of the city name was not updating when changing the city (thanks to @Neriss for fixing the problem)</span></span></span></p>' +
-
-                    '<p><span style="font-size:18px;"></span><span style="color:#c0392b;"><span style="font-size:18px;">- Attack button:</span><span style="font-size:18px;"></span></span><br />' +
-                    '&nbsp;-&gt; <span style="font-size:11.0pt"><span style="line-height:107%"><span style="font-family:&quot;Calibri&quot;,sans-serif">Attack button stays grayed out when sending revolt type attack (thanks to @Arphox for fixing the issue).</span></span></span><span style="font-size:18px;"></span></p>' +
-
-                    '<p style="margin-bottom:11px"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif">=&gt; The script is already adapted for the next changes of arrows in messages and reports</span></span></span></p>' +
 
                     '<div style="height: 30px;background: url(' + Home_img + 'gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
 
@@ -3575,7 +3559,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         timeout: null,
         // TODO: activate aufspliten in activate und add
         activate: () => {
-            Map.timeout = setInterval(() => { Map.add(); }, 800);
+            //Map.timeout = setInterval(() => { Map.add(); }, 800);
 
             //style
             $("<style id='dio_townicons_map' type='text/css'>" +
@@ -3586,6 +3570,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 "#minimap_click_layer { display:none; }" +
                 "</style>").appendTo("head");
             Map.add();
+            $("#ui_box > div.topleft_navigation_area > div.coords_box > div.btn_jump_to_coordination.circle_button.jump_to_coordination > div, #ui_box > div.topleft_navigation_area > div.bull_eye_buttons > div.btn_jump_to_town.circle_button.jump_to_town > div, #minimap_canvas, #map").click(() => {
+                setTimeout(() => { Map.add(); }, 100);
+            });
+            $("#minimap_canvas").dblclick(() => {
+                setTimeout(() => { Map.add(); console.log("test") }, 500);
+            });
         },
         add: () => {
             try {
@@ -5718,10 +5708,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             break;
                         case "support":
                         case "attack":
-                            if (DATA.options.dio_way) {
-                                if (!($('.js-casted-powers-viewport .unit_movement_boost').get(0) || $(wndID + '.short_duration').get(0))) {
-                                    ShortDuration.add(wndID, action, false);
-                                } else if (action == "attack") { ShortDuration.add(wndID, action, true); }
+                            if (DATA.options.dio_way && !($('.js-casted-powers-viewport .unit_movement_boost').get(0) || $(wndID + '.short_duration').get(0))) {
+                                ShortDuration.add(wndID, action);
                             } else $("#dio_short_duration_stylee").remove();
                             if (DATA.options.dio_sen) {
                                 SentUnits.add(wndID, action);
@@ -5752,6 +5740,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      * ● Sent units box
      *******************************************************************************************************************************/
 
+    var Save_troops = {
+        activate: () => {
+            $.Observer(uw.GameEvents.command.send_unit).subscribe('DIO_SEND_UNITS', function (e, data) {
+                // We handle revolt in the same pool as a regular attack.
+
+                if (data.sending_type === "attack" || data.sending_type === "support") data.sending_type = "revolt";
+                for (var z in data.params) {
+                    if (data.params.hasOwnProperty(z) && (data.sending_type !== "")) {
+                        if (uw.GameData.units[z]) {
+                            sentUnitsArray[data.sending_type][z]
+                        }
+                    }
+                }
+            });
+        },
+        deactivate: () => {
+            $.Observer(uw.GameEvents.command.send_unit).unsubscribe('DIO_SEND_UNITS');
+        },
+    }
+
     var SentUnits = {
         activate: () => {
             $.Observer(uw.GameEvents.command.send_unit).subscribe('DIO_SEND_UNITS', function (e, data) {
@@ -5772,7 +5780,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_table_box .troops { padding: 6px 0px 6px 6px; } ' +
                 '#dio_table_box .troops hr { width: 172px;border: 1px solid rgb(185, 142, 93);margin: 3px 0px 2px -1px; } ' +
                 '.attack_support_window .additional_info_wrapper { margin-top: -8px; } ' +
+                '#dio_tro { position: absolute; bottom: -2px;}' +
                 '</style>').appendTo("head");
+
+
         },
         deactivate: () => {
             $.Observer(uw.GameEvents.command.send_unit).unsubscribe('DIO_SEND_UNITS');
@@ -5787,10 +5798,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '.attack_support_window .send_units_form .button_wrapper { text-align:left; padding-left:70px; }' +
                 //'#btn_attack_town { margin-left: 55px; } ' +
                 '#gt_delete { display: none; }' +
-                '.attack_support_window .additional_info_wrapper .town_info_duration_pos_alt { min-height: 50px;; } ' +
+                '.attack_support_window .additional_info_wrapper .town_info_duration_pos_alt { min-height: 50px; } ' +
                 '.attack_support_window .additional_info_wrapper .town_info_duration_pos { min-height: 62px!important; } ' +
 
                 '</style>').appendTo(wndID + '.attack_support_window');
+
+            if (!$(wndID + ' #dio_tro').get(0)) {
+                $(wndID + '.attack_support_window').before('<div id="dio_tro" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption"></div></div>');
+            }
 
             if ((uw.ITowns.getTown(uw.Game.townId).researches().attributes.breach == true || uw.ITowns.getTown(uw.Game.townId).researches().attributes.stone_storm == true) & DATA.options.dio_sen) {
                 $('<style id="dio_SentUnits_breach_style">' +
@@ -5828,6 +5843,27 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     sentUnitsArray[action] = {};
                     SentUnits.update(action);
                 });
+
+
+                $(wndID + '#dio_tro').tooltip(dio_icon + "BETA save sent troops (revolt, attack, support)");
+
+                $(wndID + "#dio_tro.checkbox_new").click(function () {
+                    $(this).toggleClass("checked").toggleClass("disabled").toggleClass("green");
+                    toggleActivation("dio_tro");
+
+                    DATA.options[this.id] = $(this).hasClass("checked");
+
+                    saveValue("options", JSON.stringify(DATA.options));
+                });
+
+                for (var e in DATA.options) {
+                    if (e === "dio_tro") {
+                        if (DATA.options.hasOwnProperty(e)) {
+                            if (DATA.options[e] === true) { $(wndID + "#" + e).addClass("checked").addClass("green"); }
+                            else { $("#" + e).addClass("disabled"); }
+                        }
+                    }
+                }
             }
         },
         update: (action) => {
@@ -5871,6 +5907,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 '.attack_support_window .additional_info_wrapper { margin-top: -8px; } ' +
                 '.attack_support_window .send_units_form .attack_type_wrapper .attack_table_box { margin-top: -2px;}' +
+                '.attack_support_window .way_duration, ' +
+                '.attack_support_window .arrival_time { padding:0px 0px 0px 0px; background:none!important;; } ' +
                 '</style>').appendTo('head');
         },
         deactivate: () => {
@@ -5878,46 +5916,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $("#dio_short_duration_stylee").remove();
             $("#dio_duration").remove();
         },
-        add: (wndID, action, boost) => {
+        add: (wndID, action) => {
             try {
-                if (boost) {
-                    $('<style id="dio_short_duration_stylee">' +
-                        '.attack_support_window .additional_info_wrapper .nightbonus { position: absolute; left: 242px; top: 45px; } ' +
-                        '.attack_support_window .fight_bonus.morale { position: absolute; left: 238px; top: 23px; } ' +
-                        '.attack_support_window span.max_booty { margin-left: -2px; } ' +
-                        '.attack_support_window .way_duration, ' +
-                        '.attack_support_window .arrival_time { padding:0px 0px 0px 0px; background:none; } ' +
-                        '</style>').appendTo(wndID + '.attack_support_window');
+                $('<style id="dio_short_duration_stylee">' +
+                    '.attack_support_window .additional_info_wrapper .nightbonus { position: absolute; left: 242px; top: 45px; } ' +
+                    '.attack_support_window .fight_bonus.morale { position: absolute; left: 238px; top: 23px; } ' +
+                    '.attack_support_window span.max_booty { margin-left: -2px; } ' +
+                    '</style>').appendTo(wndID + '.attack_support_window');
 
-                    $('<table class="dio_duration">' +
-                        '<tr><td class="way_icon"></td><td class="dio_way"></td><td class="arrival_icon"></td><td class="dio_arrival"></td><td colspan="2" class="dio_night"></td></tr>' +
-                        '<tr class="short_duration_row" style="color:darkgreen">' +
-                        '<tr class="hades_duration_row" style="color:#774b33">' +
+                $('<table class="dio_duration">' +
+                    '<tr><td class="way_icon"></td><td class="dio_way"></td><td class="arrival_icon"></td><td class="dio_arrival"></td><td colspan="2" class="dio_night"></td></tr>' +
+                    '<tr class="short_duration_row" style="color:darkgreen">' +
+                    '<td>&nbsp;╚&gt;&nbsp;</td><td><span class="short_duration">~0:00:00</span></td>' +
+                    '<td>&nbsp;&nbsp;&nbsp;╚&gt;</td><td><span class="short_arrival">~00:00:00</span></td>' +
+                    '<td class="short_icon"></td><td></td></tr>' +
+                    (action == "attack" ? '<tr class="hades_duration_row" style="color:#774b33">' +
                         '<td>&nbsp;╚&gt;&nbsp;</td><td><span class="hades_duration">~0:00:00</span></td>' +
                         '<td>&nbsp;&nbsp;&nbsp;╚&gt;</td><td><span class="hades_visibility">~00:00:00 </span></td>' +
-                        '<td class="power_icon45x45 power cap_of_invisibility"></td><td></td></tr>' +
-                        '</table>').prependTo(wndID + ".duration_container");
-                } else {
-                    $('<style id="dio_short_duration_stylee">' +
-                        '.attack_support_window .additional_info_wrapper .nightbonus { position: absolute; left: 242px; top: 45px; } ' +
-                        '.attack_support_window .fight_bonus.morale { position: absolute; left: 238px; top: 23px; } ' +
-                        '.attack_support_window span.max_booty { margin-left: -2px; } ' +
-                        '.attack_support_window .way_duration, ' +
-                        '.attack_support_window .arrival_time { padding:0px 0px 0px 0px; background:none; } ' +
-                        '</style>').appendTo(wndID + '.attack_support_window');
-
-                    $('<table class="dio_duration">' +
-                        '<tr><td class="way_icon"></td><td class="dio_way"></td><td class="arrival_icon"></td><td class="dio_arrival"></td><td colspan="2" class="dio_night"></td></tr>' +
-                        '<tr class="short_duration_row" style="color:darkgreen">' +
-                        '<td>&nbsp;╚&gt;&nbsp;</td><td><span class="short_duration">~0:00:00</span></td>' +
-                        '<td>&nbsp;&nbsp;&nbsp;╚&gt;</td><td><span class="short_arrival">~00:00:00</span></td>' +
-                        '<td class="short_icon"></td><td></td></tr>' +
-                        (action == "attack" ? '<tr class="hades_duration_row" style="color:#774b33">' +
-                            '<td>&nbsp;╚&gt;&nbsp;</td><td><span class="hades_duration">~0:00:00</span></td>' +
-                            '<td>&nbsp;&nbsp;&nbsp;╚&gt;</td><td><span class="hades_visibility">~00:00:00 </span></td>' +
-                            '<td class="power_icon45x45 power cap_of_invisibility"></td><td></td></tr>' : "") +
-                        '</table>').prependTo(wndID + ".duration_container");
-                }
+                        '<td class="power_icon45x45 power cap_of_invisibility"></td><td></td></tr>' : "") +
+                    '</table>').prependTo(wndID + ".duration_container");
+                //}
                 $(wndID + ".nightbonus").appendTo(wndID + ".dio_night");
                 $(wndID + '.way_duration').appendTo(wndID + ".dio_way");
                 $(wndID + ".arrival_time").appendTo(wndID + ".dio_arrival");
@@ -5927,15 +5945,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $(wndID + '.hades_duration_row').tooltip(dio_icon + getTexts("labels", "cap_of_invisibility"));
 
                 // Detection of changes
-                ShortDuration.change(wndID, action, boost);
-                ShortDuration.calculate(wndID, action, boost);
+                ShortDuration.change(wndID, action);
+                ShortDuration.calculate(wndID, action);
 
             } catch (error) { errorHandling(error, "addShortDuration"); }
         },
-        change: (wndID, action, boost) => {
+        change: (wndID, action) => {
             var duration = new MutationObserver(function (mutations) {
                 mutations.forEach(function (mutation) {
-                    if (mutation.addedNodes[0]) ShortDuration.calculate(wndID, action, boost);
+                    if (mutation.addedNodes[0]) ShortDuration.calculate(wndID, action);
                 });
             });
             if ($(wndID + '.way_duration').get(0)) {
@@ -5946,7 +5964,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 });
             }
         },
-        calculate: (wndID, action, boost) => {
+        calculate: (wndID, action) => {
             try {
                 var setup_time = 900 / uw.Game.game_speed,
                     duration_time = $(wndID + '.duration_container .way_duration').get(0).innerHTML.replace("~", "").split(":"),
@@ -5955,7 +5973,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     arrival_time_short, arrival_time_hades,
                     h, m, s,
                     atalanta_factor = 0;
-                console.log(setup_time)
+                //console.log(setup_time)
 
                 var hasCartography = uw.ITowns.getTown(uw.Game.townId).getResearches().get("cartography");
                 var hasMeteorology = uw.ITowns.getTown(uw.Game.townId).getResearches().get("meteorology");
@@ -5978,20 +5996,36 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 duration_time_short = ((duration_time - setup_time) * (1 + atalanta_factor)) / (1 + 0.3 + atalanta_factor) + setup_time;
                 duration_time_hades = (duration_time) / 10;
 
-                if (!boost) {
-                    h = Math.floor(duration_time_short / 3600);
-                    m = Math.floor((duration_time_short - h * 3600) / 60);
-                    s = Math.floor(duration_time_short - h * 3600 - m * 60);
+                h = Math.floor(duration_time_short / 3600);
+                m = Math.floor((duration_time_short - h * 3600) / 60);
+                s = Math.floor(duration_time_short - h * 3600 - m * 60);
 
-                    if (h < 10) { h = "0" + h; }
-                    if (m < 10) { m = "0" + m; }
-                    if (s < 10) { s = "0" + s; }
+                if (h < 10) { h = "0" + h; }
+                if (m < 10) { m = "0" + m; }
+                if (s < 10) { s = "0" + s; }
 
-                    $(wndID + '.short_duration').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
+                $(wndID + '.short_duration').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
 
-                    // Ankunftszeit errechnen
-                    arrival_time_short = Math.round((Timestamp.server() + uw.Game.server_gmt_offset)) + duration_time_short;
+                // Ankunftszeit errechnen
+                arrival_time_short = Math.round((Timestamp.server() + uw.Game.server_gmt_offset)) + duration_time_short;
 
+
+                h = Math.floor(arrival_time_short / 3600);
+                m = Math.floor((arrival_time_short - h * 3600) / 60);
+                s = Math.floor(arrival_time_short - h * 3600 - m * 60);
+
+                h %= 24;
+
+                if (h < 10) { h = "0" + h; }
+                if (m < 10) { m = "0" + m; }
+                if (s < 10) { s = "0" + s; }
+
+                $(wndID + '.short_arrival').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
+
+                clearInterval(arrival_interval[wndID]);
+
+                arrival_interval[wndID] = setInterval(function () {
+                    arrival_time_short += 1;
 
                     h = Math.floor(arrival_time_short / 3600);
                     m = Math.floor((arrival_time_short - h * 3600) / 60);
@@ -6003,30 +6037,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (m < 10) { m = "0" + m; }
                     if (s < 10) { s = "0" + s; }
 
-                    $(wndID + '.short_arrival').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
-
-                    clearInterval(arrival_interval[wndID]);
-
-                    arrival_interval[wndID] = setInterval(function () {
-                        arrival_time_short += 1;
-
-                        h = Math.floor(arrival_time_short / 3600);
-                        m = Math.floor((arrival_time_short - h * 3600) / 60);
-                        s = Math.floor(arrival_time_short - h * 3600 - m * 60);
-
-                        h %= 24;
-
-                        if (h < 10) { h = "0" + h; }
-                        if (m < 10) { m = "0" + m; }
-                        if (s < 10) { s = "0" + s; }
-
-                        if ($(wndID + '.short_arrival').get(0)) {
-                            $(wndID + '.short_arrival').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
-                        } else {
-                            clearInterval(arrival_interval[wndID]);
-                        }
-                    }, 1000);
-                }
+                    if ($(wndID + '.short_arrival').get(0)) {
+                        $(wndID + '.short_arrival').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
+                    } else {
+                        clearInterval(arrival_interval[wndID]);
+                    }
+                }, 1000);
                 if (action == "attack") {
                     h = Math.floor(duration_time_hades / 3600);
                     m = Math.floor((duration_time_hades - h * 3600) / 60);
@@ -10227,7 +10243,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     function letter(letter) { return e.key == letter.toLowerCase() || e.key == letter.toUpperCase() }
 
                     // Si pas dans une case texte + détection du CTRL pressé ou non
-                    if (!$(e.target).is('textarea') && !$(e.target).is('input') && !e.ctrlKey && !e.metaKey && DATA.options.dio_Hot) {
+                    if (!$(e.target).is('textarea') && !$(e.target).is('input') && !e.ctrlKey && !e.metaKey && !e.altKey && DATA.options.dio_Hot) {
                         // Flèches directionnelles
                         ///if (e.key == 'ArrowLeft' || e.key == 'ArrowRight') { }
                         if ((MID == 'fr' ? e.code == "KeyV" : e.code == 'KeyC')) {
