@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.30
+// @version		4.31
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2023. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -137,11 +137,12 @@ function appendScript() {
 
 if (location.host === "www.tuto-de-david1327.com") { DIO_PAGE(); } // PAGE
 else if ((uw.location.pathname.indexOf("game") >= 0) && GMM) {
-    setTimeout(() => { appendScript(); }, 100);
     try {
         $('<script src="https://dio-david1327.github.io/DIO-TOOLS-David1327/Version.js"></script>').appendTo("head");
         $('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
     } catch (error) { console.log(error, '<script>') }
+    appendScript();
+    //setTimeout(() => { appendScript(); }, 100);
 } // GAME
 else { DIO_FORUM(); }
 
@@ -2472,7 +2473,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             uw.NotificationType.DIO_TOOLS = "diotools";
             uw.NotificationType.DIO_TOOLS_V = "diotools_v";
 
-            var notifN = 31;
+            var notifN = 32;
             var titreN =
                 //    0; // nouvelles fonctionnalités
                 1; // Nouvelle version
@@ -2607,29 +2608,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<center style="text-align: left;"><span style="color:#006400;"><strong><span style="font-size:20px;"></span><span style="font-size:20px;">Join me on discord</span><span style="font-size:20px;"></span> -&gt;&nbsp;</strong><span><br />' +
                     '<span style="text-decoration: underline;"><span style="color: #008000;"><strong><a href="https://discord.gg/Q7WXtmRNRW">https://discord.gg/Q7WXtmRNRW</a></strong></span></span></span></span></center>' +
 
-                    '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(' + Home_img + 'gpcl-tip.png) no-repeat;font-weight: bold;">News and changes</div>' +
-
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;"></span></span></span></p>' +
-
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- Saving Troops<span style="font-size:18px;">&nbsp;:</span></span></span></span><br />' +
-                    '-&gt; Many people thought it was a feature when it was a bug, after several requests you can still enable it by checking the box.<br />' +
-                    '<img alt="Capture d ecran 2023 02 09 200802" class="rounded" height="128" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-02-09-200802.png" width="389" /></p>' +
-
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"><span style="font-size:18px;">- City icons (map):<span style="font-size:18px;"></span></span></span></span><br />' +
-                    '-&gt; Refresh has been changed to less resent the browser<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
-
-                    '<p><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
-
                     '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
 
                     '<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
 
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"></span></span><span style="color:#c0392b;"><span style="font-size:18px;">- </span><span style="font-size:18px;"> Troop Speed:</span></span><br />' +
-                    '-&gt; Following the last update the duplicate function<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span><br />' +
-                    '&nbsp;<img alt="Capture d ecran 2023 02 09 200707" class="rounded" height="71" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-02-09-200707.png" width="323" /></p>' +
+                    '<p><span style="color:#c0392b;"><span style="font-size:18px;">- </span><span style="font-size:18px;"> Recruiting trade :</span></span><br />' +
+                    '-&gt; Following the last update of grepolis superimposition of the sending of the wood with the choice of the troops<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif">.<br />' +
+                    '-&gt; Before fixing the problem<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></span></span></span><br />' +
+                    '<img alt="Capture d ecran 2023 03 01 215621" class="rounded" height="157" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-03-01-215621.png" width="440" /></p>' +
 
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;">- </span><span style="font-size:18px;"> Keyboard shortcuts:</span></span><br />' +
-                    '-&gt; The Alt key was not excluded</p>' +
+                    '<p><br />' +
+                    '-&gt; After correcting the problem<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span><br />' +
+                    '&nbsp;<img alt="Capture d ecran 2023 03 01 214912" class="rounded" height="250" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-03-01-214912.png" width="483" /></p>' +
+
+                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"></span></span><span style="color:#c0392b;"><span style="font-size:18px;">- Fixed a script launch issue</span><span style="font-size:18px;"></span></span></p>' +
+
+                    '<p style="margin-bottom:11px"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
+
+                    '<div style="height: 30px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
 
 
                     '<div style="height: 30px;background: url(' + Home_img + 'gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
@@ -6118,7 +6114,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     /*******************************************************************************************************************************
      * ● Recruiting Trade
      * *****************************************************************************************************************************/
-    var trade_count = 0, unit = "FS", percent = "0.0"; // Recruiting Trade
+    var trade_count = 0, unit = "FS", unit2 = uw.GameData.units.attack_ship.name, percent = "0.0"; // Recruiting Trade
 
     // TODO: Funktion umformen, Style anpassen!
     var RecruitingTrade = {
@@ -6131,20 +6127,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_recruiting_trade .option {color:#000; background:#FFEEC7; } ' +
                 '#dio_recruiting_trade .option:hover {color:#fff; background:#328BF1; } ' +
 
-                '#dio_recruiting_trade { position:absolute; left:30px; top:70px; z-index: 200px; } ' +
-                '#dio_recruiting_trade .select_rec_unit { position:absolute; top:20px; width:147px; display:none; left:-31px; } ' +
-                '#dio_recruiting_trade .select_rec_perc { position:absolute; top:20px; width:50px; display:none; left:50px; } ' +
+                '#dio_recruiting_trade .select_rec_unit { position:absolute; display:none; } ' +
+                '#dio_recruiting_trade .select_rec_perc { display:none; margin: 22px 0 0 -55px; } ' +
 
-                '#dio_recruiting_trade .open { display:block !important; } ' +
+                '#dio_recruiting_trade .select_rec_unit.open { display:block !important; } ' +
+                '#dio_recruiting_trade .select_rec_perc.open { display: inline-table !important; } ' +
 
                 '#dio_recruiting_trade .item-list { max-height:237px; } ' +
 
                 '#dio_recruiting_trade .arrow { width:18px; height:18px; background:url(' + drop_out.src + ') no-repeat -1px -1px; position:absolute; } ' +
 
-                '#trade_tab .content { height:320px;  } ' +
+                '#dio_recruiting_trade .dio_drop_rec_unit .caption { padding: 4px 20px 0 2px; } ' +
 
-                '#dio_recruiting_trade .dio_drop_rec_unit { position:absolute; display:block; width:50px; overflow:visible; } ' +
-                '#dio_recruiting_trade .dio_drop_rec_perc { position:absolute; display:block; width:55px; left:49px; color:#000; } ' +
+                '#dio_recruiting_trade .dio_drop_rec_unit { width: auto; left: 10px; } ' +
+                '#dio_recruiting_trade .dio_drop_rec_perc { width: 55px; } ' +
+
+                '#dio_recruiting_trade .dio_rec_count { display: none; } ' +
 
                 '</style>').appendTo('head');
         },
@@ -6155,21 +6153,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         add: (wndID) => {
             var max_amount;
 
-            $('<div id="dio_recruiting_trade" class="dio_rec_trade">' +
-                // DropDown-Button for unit
-                '<div class="dio_drop_rec_unit dropdown default">' +
-                '<div class="border-left"></div>' +
-                '<div class="border-right"></div>' +
-                '<div class="caption" name="' + unit + '">' + unit + '</div>' +
-                '<div class="arrow"></div>' +
-                '</div>' +
-                '<div class="dio_drop_rec_perc dropdown default">' +
+            $(wndID + "#duration_container").before('<div id="dio_recruiting_trade" class="dio_rec_trade">' +
                 // DropDown-Button for ratio
+                '<div class="dio_drop_rec_perc dropdown default">' +
                 '<div class="border-left"></div>' +
                 '<div class="border-right"></div>' +
                 '<div class="caption" name="' + percent + '">' + Math.round(percent * 100) + '%</div>' +
                 '<div class="arrow"></div>' +
-                '</div><span class="dio_rec_count">(' + trade_count + ')</span></div>').appendTo(wndID + ".content"); //<span class="dio_rec_count">(' + trade_count + ')</span></div>
+                '</div>' +
+                // DropDown-Button for unit
+                '<div class="dio_drop_rec_unit dropdown default">' +
+                '<div class="border-left"></div>' +
+                '<div class="border-right"></div>' +
+                '<div class="caption" name="' + unit + '">' + unit2 + '</div>' +
+                '<div class="arrow"></div>' +
+                '</div><span class="dio_rec_count">(' + trade_count + ')</span></div>'); //<span class="dio_rec_count">(' + trade_count + ')</span></div>
 
             // Select boxes for unit and ratio
             $('<div id="dio_Select_boxes" class="select_rec_unit dropdown-list default active">' +
@@ -6217,7 +6215,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '<div id="diofestivals" 	class="option_s unit index_unit place_image morale" 			name="FE"></div>' +			// City festival
                 '</div></div>').appendTo(wndID + ".dio_rec_trade");
 
-            $('<div class="select_rec_perc dropdown-list default inactive">' +
+            $(wndID + ".dio_drop_rec_perc").after('<div class="select_rec_perc dropdown-list default inactive">' +
                 '<div class="item-list">' +
                 '<div class="option sel" name="0.0">&nbsp;&nbsp;0%</div>' +
                 '<div class="option" name="0.01">&nbsp;&nbsp;1%</div>' +
@@ -6233,7 +6231,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '<div class="option" name="0.25">25%</div>' +
                 '<div class="option" name="0.33">33%</div>' +
                 '<div class="option" name="0.50">50%</div>' +
-                '</div></div>').appendTo(wndID + ".dio_rec_trade");
+                '</div></div>');
 
             $(wndID + ".dio_rec_trade [name='" + unit + "']").toggleClass("sel");
 
@@ -6244,9 +6242,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $("." + this.className.split(" ")[4]).toggleClass("sel");
 
                     unit = $(this).attr("name");
+                    unit2 = ratio[unit].name;
                     $('.dio_drop_rec_unit .caption').attr("name", unit);
                     $('.dio_drop_rec_unit .caption').each(function () {
-                        this.innerHTML = unit;
+                        this.innerHTML = unit2;
                     });
                     $($(this).parent().parent().get(0)).removeClass("open");
                     $('.dio_drop_rec_unit .caption').change();
@@ -6268,22 +6267,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
 
             // show & hide drop menus on click
-            $(wndID + '.dio_drop_rec_perc').click(function (e) {
-                if (!$($(e.target)[0].parentNode.parentNode.childNodes[4]).hasClass("open")) {
-                    $($(e.target)[0].parentNode.parentNode.childNodes[4]).addClass("open");
-                    $($(e.target)[0].parentNode.parentNode.childNodes[3]).removeClass("open");
-                } else {
-                    $($(e.target)[0].parentNode.parentNode.childNodes[4]).removeClass("open");
-                }
-            });
-            $(wndID + '.dio_drop_rec_unit').click(function (e) {
-                if (!$($(e.target)[0].parentNode.parentNode.childNodes[3]).hasClass("open")) {
-                    $($(e.target)[0].parentNode.parentNode.childNodes[3]).addClass("open");
-                    $($(e.target)[0].parentNode.parentNode.childNodes[4]).removeClass("open");
-                } else {
-                    $($(e.target)[0].parentNode.parentNode.childNodes[3]).removeClass("open");
-                }
-            });
+            $(wndID + '.dio_drop_rec_perc').click(function (e) { dio.drop_menus_open(wndID + '.select_rec_perc', wndID + '.select_rec_unit') });
+            $(wndID + '.dio_drop_rec_unit').click(function (e) { dio.drop_menus_open(wndID + '.select_rec_unit', wndID + '.select_rec_perc') });
 
             $(wndID).click(function (e) {
                 var clicked = $(e.target), element = $('#' + this.id + ' .dropdown-list.open').get(0);
@@ -6342,11 +6327,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 SR: res("spartoi"),			// Spartoi
                 CY: res("calydonian_boar"),	// Calydonian boar
                 //Other
-                WA: { w: 0.2286, s: 1, i: 0.6714 },	 // City wall Lv 5
-                WA2: { w: 0.0762, s: 1, i: 0.7491 }, // City wall Lv 15
-                HI: res(false, 1621, 2000, 2980),	 // City hide Lv 5
-                HI2: res(false, 3991, 4000, 5560), // City hide Lv 10
-                FE: { w: 0.8333, s: 1, i: 0.8333 },	 // City festival
+                WA: { w: 0.2286, s: 1, i: 0.6714, name: uw.GameData.buildings.wall.name + " Lv 5" },	 // City wall Lv 5
+                WA2: { w: 0.0762, s: 1, i: 0.7491, name: uw.GameData.buildings.wall.name + " Lv 15" }, // City wall Lv 15
+                HI: res(false, 1621, 2000, 2980, uw.DM.getl10n("hide").index.hide + " Lv 5"),	 // City hide Lv 5
+                HI2: res(false, 3991, 4000, 5560, uw.DM.getl10n("hide").index.hide + " Lv 10"), // City hide Lv 10
+                FE: { w: 0.8333, s: 1, i: 0.8333, name: getTexts("Quack", "cityfestivals") },	 // City festival
             };
 
 
@@ -6432,16 +6417,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('#diohide2').tooltip(uw.DM.getl10n("hide").index.hide + " Lv 10");
             $('#diofestivals').tooltip(getTexts("Quack", "cityfestivals"));
         },
-        resources: (res, W, S, I) => {
+        resources: (res, W, S, I, name) => {
             let w, s, i, a;
             if (res) {
                 a = uw.GameData.units[res].resources;
                 w = a.wood; s = a.stone; i = a.iron;
                 a = Math.max(w, s, i);
+                name = uw.GameData.units[res].name;
             }
             else { w = W; s = S; i = I; a = w + s + i; }
             w = w / a; s = s / a; i = i / a;
-            return ({ w: w, s: s, i: i });
+            return ({ w: w, s: s, i: i, name: name });
         },
     };
 
@@ -6642,11 +6628,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var townTradeImprovement = {
         activate: () => {
             $('<style id="dio_style_Improvement_trade" type="text/css">' +
+                '#dio_Improvement_trade { position: relative; top: -259px; left: 59px; } ' +
                 '#dio_Improvement_trade .dio_trade { position: absolute; height: 16px; width: 22px; background-repeat: no-repeat; background-position: 0px -1px; } ' +
                 '#dio_Improvement_trade .dio_trade:hover { background-position: 0px -17px; } ' +
                 '#dio_Improvement_trade .dio_trade.dio_max { right: 105px; background-image: url(' + Home_img + 'trade-arrow.png);} ' +
                 '#dio_Improvement_trade .dio_trade.dio_send_cult { right: 85px; background-image: url(' + Home_img + 'trade-cult.png);} ' +
                 '#dio_Improvement_trade .dio_trade.dio_send_cult_reverse { left: 105px; background-image: url(' + Home_img + 'trade-cultr.png);} ' +
+                '.q_trade { display: none; } ' +
                 '</style>').appendTo('head');
         },
         add: (wndID, wnd) => {
@@ -6684,7 +6672,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $(this).find(".amounts").append('<span id="dio_needed" class="dio_needed_' + res_type + '_' + wnd + '"> &#9658; ' + res.needed + '</span>');
                 });
 
-                $(wndID + " #trade_tab").append(
+                $($(wndID + "#trade > div > div.content > .town-capacity-indicator")[2]).before(
                     '<div id="dio_Improvement_trade">' +
                     '<a id="dio_wood_' + wnd + '_max" 	class="dio_trade dio_max" 		style="top:200px"></a>' +
                     '<a id="dio_stone_' + wnd + '_max" 	class="dio_trade dio_max" 		style="top:234px"></a>' +
