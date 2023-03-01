@@ -6131,7 +6131,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_recruiting_trade .select_rec_perc { display:none; margin: 22px 0 0 -55px; } ' +
 
                 '#dio_recruiting_trade .select_rec_unit.open { display:block !important; } ' +
-                '#dio_recruiting_trade .select_rec_perc.open { display: inline-table !important; } ' +
+                '#dio_recruiting_trade .select_rec_perc.open { display: initial !important; } ' +
 
                 '#dio_recruiting_trade .item-list { max-height:237px; } ' +
 
