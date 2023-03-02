@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.31
+// @version		4.32
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2023. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -2473,7 +2473,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             uw.NotificationType.DIO_TOOLS = "diotools";
             uw.NotificationType.DIO_TOOLS_V = "diotools_v";
 
-            var notifN = 32;
+            var notifN = 33;
             var titreN =
                 //    0; // nouvelles fonctionnalités
                 1; // Nouvelle version
@@ -2613,19 +2613,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
 
                     '<p><span style="color:#c0392b;"><span style="font-size:18px;">- </span><span style="font-size:18px;"> Recruiting trade :</span></span><br />' +
-                    '-&gt; Following the last update of grepolis superimposition of the sending of the wood with the choice of the troops<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif">.<br />' +
-                    '-&gt; Before fixing the problem<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></span></span></span><br />' +
-                    '<img alt="Capture d ecran 2023 03 01 215621" class="rounded" height="157" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-03-01-215621.png" width="440" /></p>' +
-
-                    '<p><br />' +
-                    '-&gt; After correcting the problem<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span><br />' +
-                    '&nbsp;<img alt="Capture d ecran 2023 03 01 214912" class="rounded" height="250" src="https://www.tuto-de-david1327.com/medias/images/capture-d-ecran-2023-03-01-214912.png" width="483" /></p>' +
-
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;"></span></span><span style="color:#c0392b;"><span style="font-size:18px;">- Fixed a script launch issue</span><span style="font-size:18px;"></span></span></p>' +
-
-                    '<p style="margin-bottom:11px"><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
-
-                    '<div style="height: 30px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
+                    '-&gt; Following the latest update of DIO-TOOLS the function prevent the loading of other functions<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><br />' +
+                    '-&gt; Thanks to everyone who reported me</span></span></span><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
 
 
                     '<div style="height: 30px;background: url(' + Home_img + 'gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
@@ -6114,7 +6103,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     /*******************************************************************************************************************************
      * ● Recruiting Trade
      * *****************************************************************************************************************************/
-    var trade_count = 0, unit = "FS", unit2 = uw.GameData.units.attack_ship.name, percent = "0.0"; // Recruiting Trade
+    try {
+        var trade_count = 0, unit = "FS", unit2 = "", percent = "0.0"; // Recruiting Trade
+        if (typeof (uw.GameData.units.attack_ship) == "undefined") { unit2 = "Attack ship"; setTimeout(() => { unit2 = uw.GameData.units.attack_ship.name }, 200); } else unit2 = uw.GameData.units.attack_ship.name;
+    } catch (error) { errorHandling(error, "RecruitingTrade 1"); }
 
     // TODO: Funktion umformen, Style anpassen!
     var RecruitingTrade = {
@@ -6153,271 +6145,274 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('#dio_recruiting_trade').remove();
         },
         add: (wndID) => {
-            var max_amount;
+            try {
+                var max_amount;
 
-            $(wndID + "#duration_container").before('<div id="dio_recruiting_trade" class="dio_rec_trade">' +
-                // DropDown-Button for ratio
-                '<div class="dio_drop_rec_perc dropdown default">' +
-                '<div class="border-left"></div>' +
-                '<div class="border-right"></div>' +
-                '<div class="caption" name="' + percent + '">' + Math.round(percent * 100) + '%</div>' +
-                '<div class="arrow"></div>' +
-                '</div>' +
-                // DropDown-Button for unit
-                '<div class="dio_drop_rec_unit dropdown default">' +
-                '<div class="border-left"></div>' +
-                '<div class="border-right"></div>' +
-                '<div class="caption" name="' + unit + '">' + unit2 + '</div>' +
-                '<div class="arrow"></div>' +
-                '</div><span class="dio_rec_count">(' + trade_count + ')</span></div>'); //<span class="dio_rec_count">(' + trade_count + ')</span></div>
+                $(wndID + "#duration_container").before('<div id="dio_recruiting_trade" class="dio_rec_trade">' +
+                    // DropDown-Button for ratio
+                    '<div class="dio_drop_rec_perc dropdown default">' +
+                    '<div class="border-left"></div>' +
+                    '<div class="border-right"></div>' +
+                    '<div class="caption" name="' + percent + '">' + Math.round(percent * 100) + '%</div>' +
+                    '<div class="arrow"></div>' +
+                    '</div>' +
+                    // DropDown-Button for unit
+                    '<div class="dio_drop_rec_unit dropdown default">' +
+                    '<div class="border-left"></div>' +
+                    '<div class="border-right"></div>' +
+                    '<div class="caption" name="' + unit + '">' + unit2 + '</div>' +
+                    '<div class="arrow"></div>' +
+                    '</div><span class="dio_rec_count">(' + trade_count + ')</span></div>'); //<span class="dio_rec_count">(' + trade_count + ')</span></div>
 
-            // Select boxes for unit and ratio
-            $('<div id="dio_Select_boxes" class="select_rec_unit dropdown-list default active">' +
-                '<div class="item-list">' +
-                //Ship
-                '<div id="dioattack_ship" class="option_s unit index_unit unit_icon40x40 attack_ship" 		name="FS"></div>' +			// Light ship
-                '<div id="diobireme"		class="option_s unit index_unit unit_icon40x40 bireme" 			name="BI"></div>' +			// Bireme
-                '<div id="diotrireme" 	class="option_s unit index_unit unit_icon40x40 trireme" 			name="TR"></div>' +			// Trireme
-                '<div id="diotransporter" class="option_s unit index_unit unit_icon40x40 big_transporter" 	name="BT"></div>' +			// Transport boat
-                '<div id="diosmall_trans" class="option_s unit index_unit unit_icon40x40 small_transporter" name="BE"></div>' +			// Fast transport ship
-                '<div id="diocolonize" 	class="option_s unit index_unit unit_icon40x40 colonize_ship" 		name="CE"></div>' +			// Colony ship
-                '<div id="diodemolition" 	class="option_s unit index_unit unit_icon40x40 demolition_ship" name="DS"></div>' +			// Fire ship
-                //Troop
-                '<div id="diosword" 		class="option_s unit index_unit unit_icon40x40 sword" 			name="SK"></div>' +			// Swordsman
-                '<div id="dioslinger" 	class="option_s unit index_unit unit_icon40x40 slinger" 			name="SL"></div>' +			// Slinger
-                '<div id="dioarcher" 		class="option_s unit index_unit unit_icon40x40 archer" 			name="BS"></div>' +			// Archer
-                '<div id="diohoplite" 	class="option_s unit index_unit unit_icon40x40 hoplite" 			name="HO"></div>' +			// Hoplite
-                '<div id="diorider" 		class="option_s unit index_unit unit_icon40x40 rider" 			name="RE"></div>' +			// Horseman
-                '<div id="diochariot" 	class="option_s unit index_unit unit_icon40x40 chariot" 			name="SW"></div>' +			// Chariot
-                '<div id="diocatapult" 	class="option_s unit index_unit unit_icon40x40 catapult" 			name="CA"></div>' +			// catapult
-                //Fly
-                '<div id="diocentaur" 	class="option_s unit index_unit unit_icon40x40 centaur" 			name="CT"></div>' +			// Centaur
-                '<div id="diocerberus" 	class="option_s unit index_unit unit_icon40x40 cerberus" 			name="CB"></div>' +			// Cerberus
-                '<div id="diozyklop" 		class="option_s unit index_unit unit_icon40x40 zyklop" 			name="CL"></div>' +			// Cyclop
-                '<div id="diofury" 		class="option_s unit index_unit unit_icon40x40 fury" 				name="EY"></div>' +			// Erinys
-                '<div id="diomedusa" 		class="option_s unit index_unit unit_icon40x40 medusa" 			name="MD"></div>' +			// Medusa
-                '<div id="diominotaur" 	class="option_s unit index_unit unit_icon40x40 minotaur" 			name="MT"></div>' +			// Minotaur
-                '<div id="diosea_monster" class="option_s unit index_unit unit_icon40x40 sea_monster" 		name="HD"></div>' +			// Hydra
-                '<div id="dioharpy" 		class="option_s unit index_unit unit_icon40x40 harpy" 			name="HP"></div>' +			// Harpy
-                '<div id="diomanticore" 	class="option_s unit index_unit unit_icon40x40 manticore" 		name="MN"></div>' +			// Manticore
-                '<div id="diopegasus" 	class="option_s unit index_unit unit_icon40x40 pegasus" 			name="PG"></div>' +			// Pegasus
-                '<div id="diogriffin" 	class="option_s unit index_unit unit_icon40x40 griffin" 			name="GF"></div>' +			// Griffin
-                '<div id="diocalydonian" 	class="option_s unit index_unit unit_icon40x40 calydonian_boar" name="CY"></div>' +			// Calydonian boar
-                ((uw.Game.gods_active.aphrodite) ? (
-                    '<div id="diosiren" 	class="option_s unit index_unit unit_icon40x40 siren" 			name="SE"></div>' +			// Siren
-                    '<div id="diosatyr" 	class="option_s unit index_unit unit_icon40x40 satyr" 			name="ST"></div>') : "") +	// Satyr
-                ((uw.Game.gods_active.ares) ? (
-                    '<div id="dioladon" 	class="option_s unit index_unit unit_icon40x40 ladon" 			name="LD"></div>' +			// Ladon
-                    '<div id="diospartoi" 	class="option_s unit index_unit unit_icon40x40 spartoi" 		name="SR"></div>') : "") +	// Spartoi
-                //Other
-                '<div id="diowall" 		class="option_s unit index_unit place_image wall_level" 			name="WA"></div>' +			// City wall Lv 5
-                '<div id="diowall2" 		class="option_s unit index_unit place_image wall_level" 		name="WA2"></div>' +		// City wall Lv 15
-                '<div id="diohide" 		class="option_s unit index_unit building_icon40x40 hide" 			name="HI"></div>' +			// City hide Lv 5
-                '<div id="diohide2" 		class="option_s unit index_unit building_icon40x40 hide" 		name="HI2"></div>' +		// City hide Lv 15
-                '<div id="diofestivals" 	class="option_s unit index_unit place_image morale" 			name="FE"></div>' +			// City festival
-                '</div></div>').appendTo(wndID + ".dio_rec_trade");
+                // Select boxes for unit and ratio
+                $('<div id="dio_Select_boxes" class="select_rec_unit dropdown-list default active">' +
+                    '<div class="item-list">' +
+                    //Ship
+                    '<div id="dioattack_ship" class="option_s unit index_unit unit_icon40x40 attack_ship" 		name="FS"></div>' +			// Light ship
+                    '<div id="diobireme"		class="option_s unit index_unit unit_icon40x40 bireme" 			name="BI"></div>' +			// Bireme
+                    '<div id="diotrireme" 	class="option_s unit index_unit unit_icon40x40 trireme" 			name="TR"></div>' +			// Trireme
+                    '<div id="diotransporter" class="option_s unit index_unit unit_icon40x40 big_transporter" 	name="BT"></div>' +			// Transport boat
+                    '<div id="diosmall_trans" class="option_s unit index_unit unit_icon40x40 small_transporter" name="BE"></div>' +			// Fast transport ship
+                    '<div id="diocolonize" 	class="option_s unit index_unit unit_icon40x40 colonize_ship" 		name="CE"></div>' +			// Colony ship
+                    '<div id="diodemolition" 	class="option_s unit index_unit unit_icon40x40 demolition_ship" name="DS"></div>' +			// Fire ship
+                    //Troop
+                    '<div id="diosword" 		class="option_s unit index_unit unit_icon40x40 sword" 			name="SK"></div>' +			// Swordsman
+                    '<div id="dioslinger" 	class="option_s unit index_unit unit_icon40x40 slinger" 			name="SL"></div>' +			// Slinger
+                    '<div id="dioarcher" 		class="option_s unit index_unit unit_icon40x40 archer" 			name="BS"></div>' +			// Archer
+                    '<div id="diohoplite" 	class="option_s unit index_unit unit_icon40x40 hoplite" 			name="HO"></div>' +			// Hoplite
+                    '<div id="diorider" 		class="option_s unit index_unit unit_icon40x40 rider" 			name="RE"></div>' +			// Horseman
+                    '<div id="diochariot" 	class="option_s unit index_unit unit_icon40x40 chariot" 			name="SW"></div>' +			// Chariot
+                    '<div id="diocatapult" 	class="option_s unit index_unit unit_icon40x40 catapult" 			name="CA"></div>' +			// catapult
+                    //Fly
+                    '<div id="diocentaur" 	class="option_s unit index_unit unit_icon40x40 centaur" 			name="CT"></div>' +			// Centaur
+                    '<div id="diocerberus" 	class="option_s unit index_unit unit_icon40x40 cerberus" 			name="CB"></div>' +			// Cerberus
+                    '<div id="diozyklop" 		class="option_s unit index_unit unit_icon40x40 zyklop" 			name="CL"></div>' +			// Cyclop
+                    '<div id="diofury" 		class="option_s unit index_unit unit_icon40x40 fury" 				name="EY"></div>' +			// Erinys
+                    '<div id="diomedusa" 		class="option_s unit index_unit unit_icon40x40 medusa" 			name="MD"></div>' +			// Medusa
+                    '<div id="diominotaur" 	class="option_s unit index_unit unit_icon40x40 minotaur" 			name="MT"></div>' +			// Minotaur
+                    '<div id="diosea_monster" class="option_s unit index_unit unit_icon40x40 sea_monster" 		name="HD"></div>' +			// Hydra
+                    '<div id="dioharpy" 		class="option_s unit index_unit unit_icon40x40 harpy" 			name="HP"></div>' +			// Harpy
+                    '<div id="diomanticore" 	class="option_s unit index_unit unit_icon40x40 manticore" 		name="MN"></div>' +			// Manticore
+                    '<div id="diopegasus" 	class="option_s unit index_unit unit_icon40x40 pegasus" 			name="PG"></div>' +			// Pegasus
+                    '<div id="diogriffin" 	class="option_s unit index_unit unit_icon40x40 griffin" 			name="GF"></div>' +			// Griffin
+                    '<div id="diocalydonian" 	class="option_s unit index_unit unit_icon40x40 calydonian_boar" name="CY"></div>' +			// Calydonian boar
+                    ((uw.Game.gods_active.aphrodite) ? (
+                        '<div id="diosiren" 	class="option_s unit index_unit unit_icon40x40 siren" 			name="SE"></div>' +			// Siren
+                        '<div id="diosatyr" 	class="option_s unit index_unit unit_icon40x40 satyr" 			name="ST"></div>') : "") +	// Satyr
+                    ((uw.Game.gods_active.ares) ? (
+                        '<div id="dioladon" 	class="option_s unit index_unit unit_icon40x40 ladon" 			name="LD"></div>' +			// Ladon
+                        '<div id="diospartoi" 	class="option_s unit index_unit unit_icon40x40 spartoi" 		name="SR"></div>') : "") +	// Spartoi
+                    //Other
+                    '<div id="diowall" 		class="option_s unit index_unit place_image wall_level" 			name="WA"></div>' +			// City wall Lv 5
+                    '<div id="diowall2" 		class="option_s unit index_unit place_image wall_level" 		name="WA2"></div>' +		// City wall Lv 15
+                    '<div id="diohide" 		class="option_s unit index_unit building_icon40x40 hide" 			name="HI"></div>' +			// City hide Lv 5
+                    '<div id="diohide2" 		class="option_s unit index_unit building_icon40x40 hide" 		name="HI2"></div>' +		// City hide Lv 15
+                    '<div id="diofestivals" 	class="option_s unit index_unit place_image morale" 			name="FE"></div>' +			// City festival
+                    '</div></div>').appendTo(wndID + ".dio_rec_trade");
 
-            $(wndID + ".dio_drop_rec_perc").after('<div class="select_rec_perc dropdown-list default inactive">' +
-                '<div class="item-list">' +
-                '<div class="option sel" name="0.0">&nbsp;&nbsp;0%</div>' +
-                '<div class="option" name="0.01">&nbsp;&nbsp;1%</div>' +
-                '<div class="option" name="0.02">&nbsp;&nbsp;2%</div>' +
-                '<div class="option" name="0.04">&nbsp;&nbsp;4%</div>' +
-                '<div class="option" name="0.05">&nbsp;&nbsp;5%</div>' +
-                '<div class="option" name="0.06">&nbsp;&nbsp;6%</div>' +
-                '<div class="option" name="0.08">&nbsp;&nbsp;8%</div>' +
-                '<div class="option" name="0.10">10%</div>' +
-                '<div class="option" name="0.14">14%</div>' +
-                '<div class="option" name="0.17">17%</div>' +
-                '<div class="option" name="0.20">20%</div>' +
-                '<div class="option" name="0.25">25%</div>' +
-                '<div class="option" name="0.33">33%</div>' +
-                '<div class="option" name="0.50">50%</div>' +
-                '</div></div>');
+                $(wndID + ".dio_drop_rec_perc").after('<div class="select_rec_perc dropdown-list default inactive">' +
+                    '<div class="item-list">' +
+                    '<div class="option sel" name="0.0">&nbsp;&nbsp;0%</div>' +
+                    '<div class="option" name="0.01">&nbsp;&nbsp;1%</div>' +
+                    '<div class="option" name="0.02">&nbsp;&nbsp;2%</div>' +
+                    '<div class="option" name="0.04">&nbsp;&nbsp;4%</div>' +
+                    '<div class="option" name="0.05">&nbsp;&nbsp;5%</div>' +
+                    '<div class="option" name="0.06">&nbsp;&nbsp;6%</div>' +
+                    '<div class="option" name="0.08">&nbsp;&nbsp;8%</div>' +
+                    '<div class="option" name="0.10">10%</div>' +
+                    '<div class="option" name="0.14">14%</div>' +
+                    '<div class="option" name="0.17">17%</div>' +
+                    '<div class="option" name="0.20">20%</div>' +
+                    '<div class="option" name="0.25">25%</div>' +
+                    '<div class="option" name="0.33">33%</div>' +
+                    '<div class="option" name="0.50">50%</div>' +
+                    '</div></div>');
 
-            $(wndID + ".dio_rec_trade [name='" + unit + "']").toggleClass("sel");
+                $(wndID + ".dio_rec_trade [name='" + unit + "']").toggleClass("sel");
 
-            // click events of the drop menu
-            $(wndID + ' .select_rec_unit .option_s').each(function () {
-                $(this).click(function (e) {
-                    $(".select_rec_unit .sel").toggleClass("sel");
-                    $("." + this.className.split(" ")[4]).toggleClass("sel");
+                // click events of the drop menu
+                $(wndID + ' .select_rec_unit .option_s').each(function () {
+                    $(this).click(function (e) {
+                        $(".select_rec_unit .sel").toggleClass("sel");
+                        $("." + this.className.split(" ")[4]).toggleClass("sel");
 
-                    unit = $(this).attr("name");
-                    unit2 = ratio[unit].name;
-                    $('.dio_drop_rec_unit .caption').attr("name", unit);
-                    $('.dio_drop_rec_unit .caption').each(function () {
-                        this.innerHTML = unit2;
+                        unit = $(this).attr("name");
+                        unit2 = ratio[unit].name;
+                        $('.dio_drop_rec_unit .caption').attr("name", unit);
+                        $('.dio_drop_rec_unit .caption').each(function () {
+                            this.innerHTML = unit2;
+                        });
+                        $($(this).parent().parent().get(0)).removeClass("open");
+                        $('.dio_drop_rec_unit .caption').change();
                     });
-                    $($(this).parent().parent().get(0)).removeClass("open");
-                    $('.dio_drop_rec_unit .caption').change();
                 });
-            });
-            $(wndID + ' .select_rec_perc .option').each(function () {
-                $(this).click(function (e) {
-                    $(this).parent().find(".sel").toggleClass("sel");
-                    $(this).toggleClass("sel");
+                $(wndID + ' .select_rec_perc .option').each(function () {
+                    $(this).click(function (e) {
+                        $(this).parent().find(".sel").toggleClass("sel");
+                        $(this).toggleClass("sel");
 
-                    percent = $(this).attr("name");
-                    $('.dio_drop_rec_perc .caption').attr("name", percent);
-                    $('.dio_drop_rec_perc .caption').each(function () {
-                        this.innerHTML = Math.round(percent * 100) + "%";
+                        percent = $(this).attr("name");
+                        $('.dio_drop_rec_perc .caption').attr("name", percent);
+                        $('.dio_drop_rec_perc .caption').each(function () {
+                            this.innerHTML = Math.round(percent * 100) + "%";
+                        });
+                        $($(this).parent().parent().get(0)).removeClass("open")
+                        $('.dio_drop_rec_perc .caption').change();
                     });
-                    $($(this).parent().parent().get(0)).removeClass("open")
-                    $('.dio_drop_rec_perc .caption').change();
                 });
-            });
 
-            // show & hide drop menus on click
-            $(wndID + '.dio_drop_rec_perc').click(function (e) { dio.drop_menus_open(wndID + '.select_rec_perc', wndID + '.select_rec_unit') });
-            $(wndID + '.dio_drop_rec_unit').click(function (e) { dio.drop_menus_open(wndID + '.select_rec_unit', wndID + '.select_rec_perc') });
+                // show & hide drop menus on click
+                $(wndID + '.dio_drop_rec_perc').click(function (e) { dio.drop_menus_open(wndID + '.select_rec_perc', wndID + '.select_rec_unit') });
+                $(wndID + '.dio_drop_rec_unit').click(function (e) { dio.drop_menus_open(wndID + '.select_rec_unit', wndID + '.select_rec_perc') });
 
-            $(wndID).click(function (e) {
-                var clicked = $(e.target), element = $('#' + this.id + ' .dropdown-list.open').get(0);
-                if ((clicked[0].parentNode.className.split(" ")[1] !== "dropdown") && element) {
-                    $(element).removeClass("open");
-                }
-            });
+                $(wndID).click(function (e) {
+                    var clicked = $(e.target), element = $('#' + this.id + ' .dropdown-list.open').get(0);
+                    if ((clicked[0].parentNode.className.split(" ")[1] !== "dropdown") && element) {
+                        $(element).removeClass("open");
+                    }
+                });
 
-            // hover arrow change
-            $(wndID + '.dropdown').hover(function (e) {
-                $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_over.src + "') no-repeat -1px -1px";
-            }, function (e) {
-                $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_out.src + "') no-repeat -1px -1px";
-            });
+                // hover arrow change
+                $(wndID + '.dropdown').hover(function (e) {
+                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_over.src + "') no-repeat -1px -1px";
+                }, function (e) {
+                    $(e.target)[0].parentNode.childNodes[3].style.background = "url('" + drop_out.src + "') no-repeat -1px -1px";
+                });
 
-            $(wndID + ".dio_drop_rec_unit .caption").attr("name", unit);
-            $(wndID + ".dio_drop_rec_perc .caption").attr("name", percent);
+                $(wndID + ".dio_drop_rec_unit .caption").attr("name", unit);
+                $(wndID + ".dio_drop_rec_perc .caption").attr("name", percent);
 
-            $(wndID + '.dio_drop_rec_unit').tooltip(dio_icon + getTexts("labels", "rat"));
-            $(wndID + '.dio_drop_rec_perc').tooltip(dio_icon + getTexts("labels", "shr"));
+                $(wndID + '.dio_drop_rec_unit').tooltip(dio_icon + getTexts("labels", "rat"));
+                $(wndID + '.dio_drop_rec_perc').tooltip(dio_icon + getTexts("labels", "shr"));
 
-            var res = RecruitingTrade.resources;
-            var ratio = {
-                //MO: RecruitingTrade.addd(""),
+                var res = RecruitingTrade.resources;
+                var ratio = {
+                    //MO: RecruitingTrade.addd(""),
+                    //Ship
+                    FS: res("attack_ship"),		// Light ship
+                    BI: res("bireme"),			// Bireme
+                    TR: res("trireme"),			// Trireme
+                    BT: res("big_transporter"),	// Transport boat
+                    BE: res("small_transporter"),// Fast transport ship
+                    CE: res("colonize_ship"),	// Colony ship
+                    DS: res("demolition_ship"),	// Fire ship
+                    //Troop
+                    SK: res("sword"),			// Swordsman
+                    SL: res("slinger"),			// Slinger
+                    BS: res("archer"),			// Archer
+                    HO: res("hoplite"),			// Hoplite
+                    RE: res("rider"),			// Horseman
+                    SW: res("chariot"),			// Chariot
+                    CA: res("catapult"),		// Catapult
+                    //Fly
+                    CT: res("centaur"),			// Centaur
+                    CB: res("cerberus"),		// Cerberus
+                    CL: res("zyklop"),			// Cyclop
+                    EY: res("fury"),			// Erinys
+                    MD: res("medusa"),			// Medusa
+                    MT: res("minotaur"),		// Minotaur
+                    HD: res("sea_monster"),		// Hydra
+                    HP: res("harpy"),			// Harpy
+                    MN: res("manticore"),		// Manticore
+                    PG: res("pegasus"),			// Pegasus
+                    GF: res("griffin"),			// Griffin
+                    SE: res("siren"),			// Siren
+                    ST: res("satyr"),			// Satyr
+                    LD: res("ladon"),			// Ladon
+                    SR: res("spartoi"),			// Spartoi
+                    CY: res("calydonian_boar"),	// Calydonian boar
+                    //Other
+                    WA: { w: 0.2286, s: 1, i: 0.6714, name: uw.GameData.buildings.wall.name + " Lv 5" },	 // City wall Lv 5
+                    WA2: { w: 0.0762, s: 1, i: 0.7491, name: uw.GameData.buildings.wall.name + " Lv 15" }, // City wall Lv 15
+                    HI: res(false, 1621, 2000, 2980, uw.DM.getl10n("hide").index.hide + " Lv 5"),	 // City hide Lv 5
+                    HI2: res(false, 3991, 4000, 5560, uw.DM.getl10n("hide").index.hide + " Lv 10"), // City hide Lv 10
+                    FE: { w: 0.8333, s: 1, i: 0.8333, name: getTexts("Quack", "cityfestivals") },	 // City festival
+                };
+
+
+                if ($('#town_capacity_wood .max').get(0)) { max_amount = parseInt($('#town_capacity_wood .max').get(0).innerHTML, 10); }
+                else { max_amount = 25500; }
+
+                $(wndID + '.caption').change(function (e) {
+                    if (!(($(this).attr('name') === unit) || ($(this).attr('name') === percent))) { $('.dio_rec_count').get(0).innerHTML = "(" + trade_count + ")"; }
+
+                    var tmp = $(this).attr('name');
+
+                    if ($(this).parent().attr('class').split(" ")[0] === "dio_drop_rec_unit") { unit = tmp; }
+                    else { percent = tmp; }
+
+                    var max = (max_amount - 100) / 1000;
+                    addTradeMarks(max * ratio[unit].w, max * ratio[unit].s, max * ratio[unit].i, "lime");
+
+                    var part = (max_amount - 1000) * parseFloat(percent); // -1000 als Puffer (sonst Überlauf wegen Restressies, die nicht eingesetzt werden können, vorallem bei FS und Biremen)
+                    var rArray = uw.ITowns.getTown(uw.Game.townId).getCurrentResources();
+                    var tradeCapacity = uw.ITowns.getTown(uw.Game.townId).getAvailableTradeCapacity();
+
+                    var wood = ratio[unit].w * part;
+                    var stone = ratio[unit].s * part;
+                    var iron = ratio[unit].i * part;
+
+                    if ((wood > rArray.wood) || (stone > rArray.stone) || (iron > rArray.iron) || ((wood + stone + iron) > tradeCapacity)) {
+                        wood = stone = iron = 0;
+                        $('.dio_drop_rec_perc .caption').css({ color: '#f00' });
+                    } else {
+                        $('.' + e.target.parentNode.parentNode.className + ' .dio_drop_rec_perc .caption').css({ color: '#000' });
+                    }
+                    $("#trade_type_wood [type='text']").select().val(wood).blur();
+                    $("#trade_type_stone [type='text']").select().val(stone).blur();
+                    $("#trade_type_iron [type='text']").select().val(iron).blur();
+                });
+
+                $('#trade_button').click(() => {
+                    trade_count++;
+                    $('.dio_rec_count').get(0).innerHTML = "(" + trade_count + ")";
+                });
+
+                $(wndID + '.dio_drop_rec_perc .caption').change();
+
+                // Tooltip \\
+                const units = uw.GameData.units;
                 //Ship
-                FS: res("attack_ship"),		// Light ship
-                BI: res("bireme"),			// Bireme
-                TR: res("trireme"),			// Trireme
-                BT: res("big_transporter"),	// Transport boat
-                BE: res("small_transporter"),// Fast transport ship
-                CE: res("colonize_ship"),	// Colony ship
-                DS: res("demolition_ship"),	// Fire ship
+                $('#dioattack_ship').tooltip(units.attack_ship.name);
+                $('#diobireme').tooltip(units.bireme.name);
+                $('#diotrireme').tooltip(units.trireme.name);
+                $('#diotransporter').tooltip(units.big_transporter.name);
+                $('#diosmall_trans').tooltip(units.small_transporter.name);
+                $('#diocolonize').tooltip(units.colonize_ship.name);
+                $('#diodemolition').tooltip(units.demolition_ship.name);
+                $('#diosword').tooltip(units.sword.name);
                 //Troop
-                SK: res("sword"),			// Swordsman
-                SL: res("slinger"),			// Slinger
-                BS: res("archer"),			// Archer
-                HO: res("hoplite"),			// Hoplite
-                RE: res("rider"),			// Horseman
-                SW: res("chariot"),			// Chariot
-                CA: res("catapult"),		// Catapult
+                $('#dioslinger').tooltip(units.slinger.name);
+                $('#dioarcher').tooltip(units.archer.name);
+                $('#diohoplite').tooltip(units.hoplite.name);
+                $('#diorider').tooltip(units.rider.name);
+                $('#diochariot').tooltip(units.chariot.name);
+                $('#diocatapult').tooltip(units.catapult.name);
                 //Fly
-                CT: res("centaur"),			// Centaur
-                CB: res("cerberus"),		// Cerberus
-                CL: res("zyklop"),			// Cyclop
-                EY: res("fury"),			// Erinys
-                MD: res("medusa"),			// Medusa
-                MT: res("minotaur"),		// Minotaur
-                HD: res("sea_monster"),		// Hydra
-                HP: res("harpy"),			// Harpy
-                MN: res("manticore"),		// Manticore
-                PG: res("pegasus"),			// Pegasus
-                GF: res("griffin"),			// Griffin
-                SE: res("siren"),			// Siren
-                ST: res("satyr"),			// Satyr
-                LD: res("ladon"),			// Ladon
-                SR: res("spartoi"),			// Spartoi
-                CY: res("calydonian_boar"),	// Calydonian boar
+                $('#diocentaur').tooltip(units.centaur.name);
+                $('#diocerberus').tooltip(units.cerberus.name);
+                $('#diozyklop').tooltip(units.zyklop.name);
+                $('#diofury').tooltip(units.fury.name);
+                $('#diomedusa').tooltip(units.medusa.name);
+                $('#diominotaur').tooltip(units.minotaur.name);
+                $('#diosea_monster').tooltip(units.sea_monster.name);
+                $('#dioharpy').tooltip(units.harpy.name);
+                $('#diomanticore').tooltip(units.manticore.name);
+                $('#diopegasus').tooltip(units.pegasus.name);
+                $('#diogriffin').tooltip(units.griffin.name);
+                $('#diocalydonian').tooltip(units.calydonian_boar.name);
+                $('#diospartoi').tooltip(units.spartoi.name);
+                $('#diosatyr').tooltip(units.satyr.name);
+                $('#dioladon').tooltip(units.ladon.name);
+                $('#diosiren').tooltip(units.siren.name);
                 //Other
-                WA: { w: 0.2286, s: 1, i: 0.6714, name: uw.GameData.buildings.wall.name + " Lv 5" },	 // City wall Lv 5
-                WA2: { w: 0.0762, s: 1, i: 0.7491, name: uw.GameData.buildings.wall.name + " Lv 15" }, // City wall Lv 15
-                HI: res(false, 1621, 2000, 2980, uw.DM.getl10n("hide").index.hide + " Lv 5"),	 // City hide Lv 5
-                HI2: res(false, 3991, 4000, 5560, uw.DM.getl10n("hide").index.hide + " Lv 10"), // City hide Lv 10
-                FE: { w: 0.8333, s: 1, i: 0.8333, name: getTexts("Quack", "cityfestivals") },	 // City festival
-            };
+                $('#diowall').tooltip(uw.GameData.buildings.wall.name + " Lv 5");
+                $('#diowall2').tooltip(uw.GameData.buildings.wall.name + " Lv 15");
+                $('#diohide').tooltip(uw.DM.getl10n("hide").index.hide + " Lv 5");
+                $('#diohide2').tooltip(uw.DM.getl10n("hide").index.hide + " Lv 10");
+                $('#diofestivals').tooltip(getTexts("Quack", "cityfestivals"));
 
-
-            if ($('#town_capacity_wood .max').get(0)) { max_amount = parseInt($('#town_capacity_wood .max').get(0).innerHTML, 10); }
-            else { max_amount = 25500; }
-
-            $(wndID + '.caption').change(function (e) {
-                if (!(($(this).attr('name') === unit) || ($(this).attr('name') === percent))) { $('.dio_rec_count').get(0).innerHTML = "(" + trade_count + ")"; }
-
-                var tmp = $(this).attr('name');
-
-                if ($(this).parent().attr('class').split(" ")[0] === "dio_drop_rec_unit") { unit = tmp; }
-                else { percent = tmp; }
-
-                var max = (max_amount - 100) / 1000;
-                addTradeMarks(max * ratio[unit].w, max * ratio[unit].s, max * ratio[unit].i, "lime");
-
-                var part = (max_amount - 1000) * parseFloat(percent); // -1000 als Puffer (sonst Überlauf wegen Restressies, die nicht eingesetzt werden können, vorallem bei FS und Biremen)
-                var rArray = uw.ITowns.getTown(uw.Game.townId).getCurrentResources();
-                var tradeCapacity = uw.ITowns.getTown(uw.Game.townId).getAvailableTradeCapacity();
-
-                var wood = ratio[unit].w * part;
-                var stone = ratio[unit].s * part;
-                var iron = ratio[unit].i * part;
-
-                if ((wood > rArray.wood) || (stone > rArray.stone) || (iron > rArray.iron) || ((wood + stone + iron) > tradeCapacity)) {
-                    wood = stone = iron = 0;
-                    $('.dio_drop_rec_perc .caption').css({ color: '#f00' });
-                } else {
-                    $('.' + e.target.parentNode.parentNode.className + ' .dio_drop_rec_perc .caption').css({ color: '#000' });
-                }
-                $("#trade_type_wood [type='text']").select().val(wood).blur();
-                $("#trade_type_stone [type='text']").select().val(stone).blur();
-                $("#trade_type_iron [type='text']").select().val(iron).blur();
-            });
-
-            $('#trade_button').click(() => {
-                trade_count++;
-                $('.dio_rec_count').get(0).innerHTML = "(" + trade_count + ")";
-            });
-
-            $(wndID + '.dio_drop_rec_perc .caption').change();
-
-            // Tooltip \\
-            const units = uw.GameData.units;
-            //Ship
-            $('#dioattack_ship').tooltip(units.attack_ship.name);
-            $('#diobireme').tooltip(units.bireme.name);
-            $('#diotrireme').tooltip(units.trireme.name);
-            $('#diotransporter').tooltip(units.big_transporter.name);
-            $('#diosmall_trans').tooltip(units.small_transporter.name);
-            $('#diocolonize').tooltip(units.colonize_ship.name);
-            $('#diodemolition').tooltip(units.demolition_ship.name);
-            $('#diosword').tooltip(units.sword.name);
-            //Troop
-            $('#dioslinger').tooltip(units.slinger.name);
-            $('#dioarcher').tooltip(units.archer.name);
-            $('#diohoplite').tooltip(units.hoplite.name);
-            $('#diorider').tooltip(units.rider.name);
-            $('#diochariot').tooltip(units.chariot.name);
-            $('#diocatapult').tooltip(units.catapult.name);
-            //Fly
-            $('#diocentaur').tooltip(units.centaur.name);
-            $('#diocerberus').tooltip(units.cerberus.name);
-            $('#diozyklop').tooltip(units.zyklop.name);
-            $('#diofury').tooltip(units.fury.name);
-            $('#diomedusa').tooltip(units.medusa.name);
-            $('#diominotaur').tooltip(units.minotaur.name);
-            $('#diosea_monster').tooltip(units.sea_monster.name);
-            $('#dioharpy').tooltip(units.harpy.name);
-            $('#diomanticore').tooltip(units.manticore.name);
-            $('#diopegasus').tooltip(units.pegasus.name);
-            $('#diogriffin').tooltip(units.griffin.name);
-            $('#diocalydonian').tooltip(units.calydonian_boar.name);
-            $('#diospartoi').tooltip(units.spartoi.name);
-            $('#diosatyr').tooltip(units.satyr.name);
-            $('#dioladon').tooltip(units.ladon.name);
-            $('#diosiren').tooltip(units.siren.name);
-            //Other
-            $('#diowall').tooltip(uw.GameData.buildings.wall.name + " Lv 5");
-            $('#diowall2').tooltip(uw.GameData.buildings.wall.name + " Lv 15");
-            $('#diohide').tooltip(uw.DM.getl10n("hide").index.hide + " Lv 5");
-            $('#diohide2').tooltip(uw.DM.getl10n("hide").index.hide + " Lv 10");
-            $('#diofestivals').tooltip(getTexts("Quack", "cityfestivals"));
+            } catch (error) { errorHandling(error, "RecruitingTrade"); }
         },
         resources: (res, W, S, I, name) => {
             let w, s, i, a;
