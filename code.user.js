@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.32
+// @version		4.32.1
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2023. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -12,6 +12,7 @@
 // @updateURL   https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js
 // @downloadURL	https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js
 // @require		https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
+// @resource clipboard	https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js
 // @icon		https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-bussi2.gif
 // @icon64		https://www.tuto-de-david1327.com/medias/images/dio-tools-david1327.jpg
 // @copyright	2013+, DIONY and 2019+, David1327
@@ -23,18 +24,25 @@
 // @license     GPL-3.0-only
 // ==/UserScript==
 
-var dio_version = GM.info.script.version;
+let dio_version = GM.info.script.version;
 
 /*******************************************************************************************************************************
  * Global stuff
  *******************************************************************************************************************************/
 
-var uw = unsafeWindow || window, $ = uw.jQuery, DATA, GMM;
+let uw = unsafeWindow || window, $ = uw.jQuery, DATA, GMM, url_dev;
 
 // GM-API?
-GMM = (typeof GM_info === 'object');
+if (GM.info.scriptHandler == "Greasemonkey") GMM = false
+else GMM = (typeof GM_info === 'object');
 
-console.log('%c|= ' + GM.info.script.name + ' is active v' + dio_version + ' (' + GM.info.scriptHandler + ' v' + GM.info.version + ') =|', 'color: green; font-size: 1em; font-weight: bolder; ');
+//GMM = true;
+//GMM = false;
+
+//url_dev = true;
+url_dev = false;
+
+console.log('%c|= ' + GM.info.script.name + ' is active v' + dio_version + ' (' + GM.info.scriptHandler + ' v' + GM.info.version + ') [GMM ' + GMM + '] =|', 'color: green; font-size: 1em; font-weight: bolder; ');
 
 function loadValue(name, default_val) {
     var value;
@@ -46,7 +54,7 @@ function loadValue(name, default_val) {
 }
 
 // LOAD DATA
-if (GMM && (uw.location.pathname.indexOf("game") >= 0)) {
+if ((uw.location.pathname.indexOf("game") >= 0)) {
     var WID = uw.Game.world_id, MID = uw.Game.market_id, AID = uw.Game.alliance_id;
 
     DATA = {
@@ -91,33 +99,6 @@ if (GMM && (uw.location.pathname.indexOf("game") >= 0)) {
 // GM: EXPORT FUNCTIONS
 uw.saveValueGM = function (name, val) { setTimeout(() => { GM_setValue(name, val); }, 0); };
 uw.deleteValueGM = function (name) { setTimeout(() => { GM_deleteValue(name); }, 0); };
-/*uw.calculateConcaveHull = function () {
-    var contour = [
-        new poly2tri.Point(100, 100),
-        new poly2tri.Point(100, 300),
-        new poly2tri.Point(300, 300),
-        new poly2tri.Point(300, 100)
-    ];
-
-    var swctx = new poly2tri.SweepContext(contour);
-
-    swctx.triangulate();
-    var triangles = swctx.getTriangles();
-
-    // console.debug(triangles);
-    return triangles;
-};
-
-if (typeof exportFunction == 'function') {
-    // Firefox > 30
-    //uw.DATA = cloneInto(DATA, unsafeWindow);
-    exportFunction(uw.saveValueGM, unsafeWindow, { defineAs: "saveValueGM" });
-    exportFunction(uw.deleteValueGM, unsafeWindow, { defineAs: "deleteValueGM" });
-    exportFunction(uw.calculateConcaveHull, unsafeWindow, { defineAs: "calculateConcaveHull" });
-} else {
-    // Firefox < 30, Chrome, Opera, ...
-    //uw.DATA = DATA;
-}*/
 
 var time_a, time_b;
 
@@ -125,21 +106,25 @@ var time_a, time_b;
 function appendScript() {
     //console.log("GM-API: " + gm_bool);
     if (document.getElementsByTagName('body')[0]) {
+        const scriptclipboard = document.createElement("script");
+        scriptclipboard.textContent = GM_getResourceText("clipboard");
+        document.body.appendChild(scriptclipboard);
+
         var dioscript = document.createElement('script');
         dioscript.type = 'text/javascript';
         dioscript.id = 'diotools';
 
         time_a = uw.Timestamp.client();
-        dioscript.textContent = DIO_GAME.toString().replace(/uw\./g, "") + "\n DIO_GAME('" + dio_version + "', " + GMM + ", '" + JSON.stringify(DATA).replace(/'/g, "##") + "', " + time_a + ");";
+        dioscript.textContent = DIO_GAME.toString().replace(/uw\./g, "") + "\n DIO_GAME('" + dio_version + "', " + GMM + ", '" + JSON.stringify(DATA).replace(/'/g, "##") + "', " + time_a + ", " + url_dev + ");";
         document.body.appendChild(dioscript);
     } else setTimeout(() => { appendScript(); }, 500);
 }
 
 if (location.host === "www.tuto-de-david1327.com") { DIO_PAGE(); } // PAGE
-else if ((uw.location.pathname.indexOf("game") >= 0) && GMM) {
+else if ((uw.location.pathname.indexOf("game") >= 0)) {
     try {
         $('<script src="https://dio-david1327.github.io/DIO-TOOLS-David1327/Version.js"></script>').appendTo("head");
-        $('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
+        //$('<script src="http://localhost:4000/test.js"></script>').appendTo("head");
     } catch (error) { console.log(error, '<script>') }
     appendScript();
     //setTimeout(() => { appendScript(); }, 100);
@@ -172,7 +157,7 @@ function DIO_FORUM() {
         });
     }
 
-    let DIO = true, MID = document.location.host.split(".")[0];
+    let DIO = true, MID = document.location.host.split(".")[0], lang = navigator.language.split("-")[0];
     let smileyArray = {};
     let SmileyBox = {
         loading_error: false,
@@ -301,43 +286,37 @@ function DIO_FORUM() {
         loadSmileys: () => {
             try {
                 // Replace german sign smilies
-                if (MID == "de") {
+                if (MID == "de" || lang == "de") {
                     smileyArray.standard.push("land-germany", "land-germany2", "land-germany3", "land-germany-kings");
                     smileyArray.other.push("dagegen2", "dafuer2");
-                    smileyArray.people[2] = "mttao-deutschland";
-                    smileyArray.people[3] = "schal-deutschland";
+                    smileyArray.people.unshift("mttao-deutschland", "schal-deutschland");
                 }
-                if (MID == "fr") {
+                if (MID == "fr" || lang == "fr") {
                     smileyArray.standard.push("land-france", "land-france2", "land-france3");
-                    smileyArray.people[2] = "mttao-frankreich";
-                    smileyArray.people[3] = "schal-frankreich";
+                    smileyArray.people.unshift("mttao-frankreich", "schal-frankreich");
                 }
-                if (MID == "it") {
+                if (MID == "it" || lang == "it") {
                     smileyArray.standard.push("land-italy", "land-italy2", "land-italy3");
-                    smileyArray.people[2] = "mttao-italien";
-                    smileyArray.people[3] = "schal-italien";
+                    smileyArray.people.unshift("mttao-italien", "schal-italien");
                 }
-                if (MID == "ro") {
+                if (MID == "ro" || lang == "ro") {
                     smileyArray.standard.push("land-romania", "land-romania2", "land-romania3");
-                    smileyArray.people[3] = "mttao-rumaenien";
+                    smileyArray.people.unshift("mttao-rumaenien");
                 }
-                if (MID == "br") {
+                if (MID == "br" || lang == "br") {
                     smileyArray.standard.push("land-portugal", "land-portugal2", "land-portugal3");
-                    smileyArray.people[2] = "mttao-portugal";
-                    smileyArray.people[3] = "schal-portugal";
+                    smileyArray.people.unshift("mttao-portugal", "schal-portugal");
                 }
-                if (MID == "pl") {
+                if (MID == "pl" || lang == "pl") {
                     smileyArray.standard.push("land-poland", "land-poland2", "land-poland3");
-                    smileyArray.people[3] = "mttao-polen";
+                    smileyArray.people.unshift("mttao-polen");
                 }
-                if (MID == "es") {
+                if (MID == "es" || lang == "es") {
                     smileyArray.standard.push("land-spain", "land-spain2", "land-spain3");
-                    smileyArray.people[2] = "mttao-spanien";
-                    smileyArray.people[3] = "schal-spanien";
+                    smileyArray.people.unshift("mttao-spanien", "schal-spanien");
                 }
-                if (MID == "sk") {
-                    smileyArray.people[2] = "mttao-slowakei";
-                    smileyArray.people[3] = "schal-slowakei";
+                if (MID == "sk" || lang == "sk") {
+                    smileyArray.people.unshift("mttao-slowakei", "schal-slowakei");
                 }
                 for (var a = 1; a < 10; a++) {
                     smileyArray.Buchstaben.push("_rate0" + a);
@@ -502,12 +481,12 @@ function DIO_FORUM() {
             } catch (error) { console.log(e) }
         },
         SmilieActivate: () => {
-            if ($("#xfSmilie-1").length & !$('#dio_smiley_butt-1').length) { SmileyBox.add("xfSmilie-1") };
-            if ($("#xfSmilie-2").length & !$('#dio_smiley_butt-2').length) { SmileyBox.add("xfSmilie-2") };
-            if ($("#xfSmilie-3").length & !$('#dio_smiley_butt-3').length) { SmileyBox.add("xfSmilie-3") };
-            if ($("#xfSmilie-4").length & !$('#dio_smiley_butt-4').length) { SmileyBox.add("xfSmilie-4") };
-            if ($("#xfSmilie-5").length & !$('#dio_smiley_butt-5').length) { SmileyBox.add("xfSmilie-5") };
-            if ($("#xfSmilie-6").length & !$('#dio_smiley_butt-6').length) { SmileyBox.add("xfSmilie-6") };
+            if ($("#xfSmilie-1").length & !$('#dio_smiley_butt-1').length) SmileyBox.add("xfSmilie-1");
+            if ($("#xfSmilie-2").length & !$('#dio_smiley_butt-2').length) SmileyBox.add("xfSmilie-2");
+            if ($("#xfSmilie-3").length & !$('#dio_smiley_butt-3').length) SmileyBox.add("xfSmilie-3");
+            if ($("#xfSmilie-4").length & !$('#dio_smiley_butt-4').length) SmileyBox.add("xfSmilie-4");
+            if ($("#xfSmilie-5").length & !$('#dio_smiley_butt-5').length) SmileyBox.add("xfSmilie-5");
+            if ($("#xfSmilie-6").length & !$('#dio_smiley_butt-6').length) SmileyBox.add("xfSmilie-6");
         },
     };
     setTimeout(() => {
@@ -518,19 +497,23 @@ function DIO_FORUM() {
 }
 
 
-function DIO_GAME(dio_version, gm, DATA, time_a) {
+function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
     var MutationObserver = uw.MutationObserver || window.MutationObserver,
 
-        WID, MID, AID, PID, LID, Points, pName, tName;
-    var Home = "https://www.tuto-de-david1327.com/";
-    var Home_img = "https://www.tuto-de-david1327.com/medias/images/";
-    var updateversion = dio_version.replace(/\./g, "-");
-    var dio_sprite = Home_img + "dio-sprite-5.png"; // https://www.tuto-de-david1327.com/medias/images/dio-sprite-5.png
-    var dio_spritetest = "https://www.tuto-de-david1327.com/medias/images/town-icons-test-54.png"
+        WID, MID, AID, PID, LID, Points, pName, tName, Home_url,
+        dio_sprite, updateversion;
+
+    Home_url = "https://dio-david1327.github.io";
+    if (url_dev) Home_url = "http://localhost:4000";
+    updateversion = dio_version.replace(/\./g, "-");
+    dio_sprite = Home_url + "/img/dio/logo/dio-sprite-5.png"; // https://www.tuto-de-david1327.com/medias/images/dio-sprite-5.png
+
+
+    var Home = "https://www.tuto-de-david1327.com/", Home_img = "https://www.tuto-de-david1327.com/medias/images/";
 
     //dio_icon
-    var dio_img = Home_img + "icon.gif"; //Home_img + "icon.gif"
+    var dio_img = Home_url + "/img/dio/logo/icon.gif"; //Home_img + "icon.gif"
     var dio_icon = '<div class="dio_icon b"></div>';
 
     if (uw.location.pathname.indexOf("game") >= 0) {
@@ -697,7 +680,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             console.log(e)
             $.ajax({
                 type: "GET",
-                url: "https://dio-david1327.github.io/TEST-1/Langs/Dio." + e.toUpperCase() + ".js",
+                url: Home_url + "/TEST-1/Langs/Dio." + e.toUpperCase() + ".js",
                 dataType: "script",
                 //cache: true,
                 success: function() {LANG[e] = uw.LANGG[e]},
@@ -705,7 +688,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             })
         }
     
-        //$('<script src="https://dio-david1327.github.io/TEST-1/Langs/Dio.FR.js"></script>').appendTo("head");
+        //$('<script src="' + Home_url + '/TEST-1/Langs/Dio.FR.js"></script>').appendTo("head");
         */
 
 
@@ -847,7 +830,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         '</style>').appendTo("head");
     function getLatestVersion() {
         var version_latest = "??";
-        try { version_latest = uw.dio_latest_version; } catch (error) { errorHandling(error, "dio_latest_version"); }
+        try { version_latest = uw.dio_latest_version; } catch (error) { errorHandling(error, "dio_latest_version (getLatestVersion)"); }
         var v_info = $('#dio_version_info');
         try {
             if (version_text === '') {
@@ -894,11 +877,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         '#dio_settings ::-webkit-scrollbar-thumb { background-color: rgba(87, 121, 45, 0.5); border-radius: 3px; } ' +
         '#dio_settings ::-webkit-scrollbar-thumb:hover { background-color: rgba(87, 121, 45, 0.8); } ' +
         /* Button Up */
-        '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url(' + Home_img + 'scroll-up-green.png);} ' +
-        '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url(' + Home_img + 'scroll-up-green-hover.png);} ' +
+        '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url(' + Home_url + '/img/dio/btn/scroll-up-green.png);} ' +
+        '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url(' + Home_url + '/img/dio/btn/scroll-up-green-hover.png);} ' +
         /* Button Down */
-        '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url(' + Home_img + 'scroll-down-green.png);} ' +
-        '#dio_settings ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url(' + Home_img + 'scroll-down-green-hover.png);} ' +
+        '#dio_settings ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url(' + Home_url + '/img/dio/btn/scroll-down-green.png);} ' +
+        '#dio_settings ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url(' + Home_url + '/img/dio/btn/scroll-down-green-hover.png);} ' +
 
         '#dio_settings table tr :first-child { text-align:center; vertical-align:top; } ' +
 
@@ -943,7 +926,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         '#dio_hall table td.laurel.blue { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 100%; height:18px; width:18px; } ' +
         '#dio_settings .radiobutton .disabled { color: #000000; } ' +
 
-        '#dio_settings .défaut_s { background:url(' + Home_img + 'reset-icon.png) no-repeat; width:30px; height:30px; position: absolute; bottom: -19px; left: 3px; z-index: 100; cursor:pointer;} ' +
+        '#dio_settings .défaut_s { background:url(' + Home_url + '/img/dio/btn/reset-icon.png) no-repeat; width:30px; height:30px; position: absolute; bottom: -19px; left: 3px; z-index: 100; cursor:pointer;} ' +
         '</style>').appendTo('head');
 
     function settings() {
@@ -992,7 +975,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div style="float: right; margin-right: 90px;" id="tuto2"><a target="_blank" style="color:white">BUG</a></div></div>' +
 
                     // Check latest version
-                    '<div id="dio_version_info"><img src="' + Home_img + 'restricted.gif" /></div>' +
+                    '<div id="dio_version_info"><img src="' + Home_url + '/img/dio/logo/restricted.gif" /></div>' +
 
                     // Donate button
                     '<div id="dio_donate_btn" style="position:absolute; right: 50px;top: 28px;">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
@@ -1018,24 +1001,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<DIV class="content">' +
                     // Units tab
                     '<table id="dio_units_table" class="content_category visible"><tr>' +
-                    '<td><img src="' + Home_img + 'available-units.90px.png" alt="available_units" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/available-units.90px.png" alt="available_units" /></td>' +
                     '<td><div id="dio_ava" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "ava")[0] + '</div></div><br>' +
                     '<div id="dio_ava2" style="display:none; margin-top: 5px;" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "ava2")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "ava")[1] + '</p>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'unites-envoyees.90px.png" alt="sent_units" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/unites-envoyees.90px.png" alt="sent_units" /></td>' +
                     '<td><div id="dio_sen" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sen")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "sen")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'force-unitaire.90px.png" alt="unit_strength" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/force-unitaire.90px.png" alt="unit_strength" /></td>' +
                     '<td><div id="dio_str" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "str")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "str")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'transport-capacity.png" alt="transport_capacity" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/transport-capacity.png" alt="transport_capacity" /></td>' +
                     '<td><div id="dio_tra" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tra")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tra")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'comparaison-des-unites.90px.png" alt="unit_comparison" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/comparaison-des-unites.90px.png" alt="unit_comparison" /></td>' +
                     '<td><div id="dio_com" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "com")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "com")[1] + '  ' +
                     '<a href=' + getTexts("link", "UnitComparison") + ' target="_blank">' + getTexts("Settings", "Learn_more") + '</a></p></td>' +
@@ -1047,7 +1030,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     // Icons tab
                     '<table id="dio_icons_table" class="content_category"><tr>' +
-                    '<td><img src="' + Home_img + 'icones-des-villes.90px.png" alt="townicons" style="transform: scale(1.25); margin-top: 10px;" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/icones-des-villes.90px.png" alt="townicons" style="transform: scale(1.25); margin-top: 10px;" /></td>' +
                     '<td><div id="dio_tic" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tic")[0] + '</div></div><br>' +
                     '<div id="dio_tic2" style="display:none; margin-top: 5px;" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tic2")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tic")[1] + '</p>' +
@@ -1069,12 +1052,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div class="dio_icon_small townicon_wo"></div>' +
                     '</td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'liste-de-ville.90px.png" alt="townlist" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/liste-de-ville.90px.png" alt="townlist" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
                     '<td>' + (typeof (uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "til")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "FLASK")[0] + '</p>') : (
                         '<div id="dio_til" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "til")[0] + '</div></div>')) +
                     '<p>' + getTexts("Options", "til")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'map.90px.png" alt="map" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/map.90px.png" alt="map" /></td>' +
                     '<td><div id="dio_tim" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tim")[0] + '</div></div><div id="dio_tiw" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tiw")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tim")[1] + '</p>' +
                     '<table id="Town_Popup" width="60%" style="display:none;"><tr>' +
@@ -1084,7 +1067,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<td width="20%"><div id="dio_tir" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "rec") + '</div></div></td>' +
                     '</tr></table></td>' +
                     '</td></tr><tr>' +
-                    '<td><img src="' + Home_img + 'bbcode-ville.jpg" alt="map" style="transform: scale(1.25); margin: 10px 12px 16px 2px;" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/bbcode-ville.jpg" alt="map" style="transform: scale(1.25); margin: 10px 12px 16px 2px;" /></td>' +
                     '<td><div id="dio_Tow" class="checkbox_new"><div class="cbx_icon" style="top: -1px;"></div><div class="cbx_caption">' + getTexts("Options", "tow")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tow")[1] + '</p></td>' +
                     '</tr><tr>' +
@@ -1095,7 +1078,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     // Forum tab
                     '<table id="dio_forum_table" class="content_category"><tr>' +
-                    '<td><img src="' + Home_img + 'smiley-box.90px.png" alt="dio_smiley_box" ></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/smiley-box.90px.png" alt="dio_smiley_box" ></td>' +
                     '<td><div id="dio_sml" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sml")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "sml")[1] + '</p>' +
                     '<img src="' + Home_img + 'smiley-emoticons-mttao-wassermann.gif" /> <img src="' + Home_img + 'smiley-emoticons-cigrqlp2odi2kqo24.gif" /> ' +
@@ -1104,26 +1087,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<img src="' + Home_img + 'smiley-emoticons-cigrmpfofys5xtiks.gif" alt="" />' + //'<img src="' + Home_img + 'smiley-emoticons-i-lovo-grepolis.gif" />'+
                     '<br><br><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'formulaire-de-defense.90px.png" alt="def_formular" ></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/formulaire-de-defense.90px.png" alt="def_formular" ></td>' +
                     '<td><div id="dio_bbc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "bbc")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "bbc")[1] + '</p><br><img src="' + Home_img + 'formulaire-de-defense-1.png" alt="" style="max-width:none !important;" /></td>' +
+                    '<p>' + getTexts("Options", "bbc")[1] + '</p><br><img src="' + Home_url + '/img/dio/settings/formulaire-de-defense.png" alt="" style="max-width:none !important;" /></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'deletemultiple.png" alt="def_formular" ></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/deletemultiple.png" alt="def_formular" ></td>' +
                     '<td><div id="dio_Fdm" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Fdm")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Fdm")[1] + '</p><br></td>' +
                     '</tr></table>' +
 
                     // Trade tab
                     '<table id="dio_trade_table" class="content_category"><tr>' +
-                    '<td><img src="' + Home_img + 'recruiting-trade.90px.png" alt="recruiting_trade" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/recruiting-trade.90px.png" alt="recruiting_trade" /></td>' +
                     '<td><div id="dio_rec" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "rec")[0] + '</div></div>' +
-                    '<p>' + getTexts("Options", "rec")[1] + '</p><br><img src="' + Home_img + 'commerce-de-pourcentage.png" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:none;" /></td>' +
+                    '<p>' + getTexts("Options", "rec")[1] + '</p><br><img src="' + Home_url + '/img/dio/settings/commerce-de-pourcentage.png" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:none;" /></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'percentage-trade.png" alt="percentage_trade" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/percentage-trade.png" alt="percentage_trade" /></td>' +
                     '<td><div id="dio_per" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "per")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "per")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'towntradeimprovement.jpg" alt="" style="border: 2px solid rgb(158, 133, 78);"/></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/towntradeimprovement.jpg" alt="" style="border: 2px solid rgb(158, 133, 78);"/></td>' +
                     '<td><div id="dio_Tti" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Tti")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Tti")[1] + '</p></td>' +
                     '</tr><tr>' +
@@ -1131,24 +1114,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     // Layout tab
                     '<table id="dio_layout_table" class="content_category"><tr>' +
-                    '<td><img src="' + Home_img + 'simulateur.png" alt="simulator" ></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/simulateur.png" alt="simulator" ></td>' +
                     '<td><div id="dio_sim" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sim")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "sim")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'barre-de-taches.png" alt="taskbar" ></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/barre-de-taches.png" alt="taskbar" ></td>' +
                     '<td><div id="dio_tsk" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "tsk")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "tsk")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'popup-de-faveur.90px.png" alt="favor_popup" ></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/popup-de-faveur.90px.png" alt="favor_popup" ></td>' +
                     '<td><div id="dio_pop" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "pop")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "pop")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'contextmenu.90px.png" alt="contextmenu" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/contextmenu.90px.png" alt="contextmenu" /></td>' +
                     '<td><div id="dio_con" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "con")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "con")[1] + '</p></td>' +
                     '</tr>' +
                     ((Browser !== 'Firefox') ? ('<tr>' +
-                        '<td><img src="' + Home_img + 'scrollbar-2.png" alt="scrollbar" style="border: 1px solid rgb(158, 133, 78);"/></td>' +
+                        '<td><img src="' + Home_url + '/img/dio/settings/scrollbar.png" alt="scrollbar" style="border: 1px solid rgb(158, 133, 78);"/></td>' +
                         '<td><div id="dio_Scr" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Scr")[0] + '</div></div>' +
                         '<p>' + getTexts("Options", "Scr")[1] + '</p>' +
                         '<table id="scrollbar" width="90%" class="radiobutton horizontal rbtn_visibility" style="display:none;"><tr>' +
@@ -1160,7 +1143,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         '</tr></table></td>' +
                         '</tr>') : "") +
                     '<tr>' +
-                    '<td><img src="' + Home_img + 'boites-d-activites.90px.png" alt="activity_boxes" ></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/boites-d-activites.90px.png" alt="activity_boxes" ></td>' +
                     '<td><div id="dio_act" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "act")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "act")[1] + '</p></td>' +
                     '</tr><tr>' +
@@ -1171,16 +1154,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     //reports
                     '<table id="dio_reports_table" class="content_category"><tr>' +
-                    '<td><img src="' + Home_img + 'troop-speed.png" style="border: 1px solid rgb(158, 133, 78);" alt="troop_speed" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/troop-speed.png" style="border: 1px solid rgb(158, 133, 78);" alt="troop_speed" /></td>' +
                     '<td><div id="dio_way" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "way")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "way")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'conquered-counter.png" style="border: 1px solid rgb(158, 133, 78);" alt="conquer_counter" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/conquered-counter.png" style="border: 1px solid rgb(158, 133, 78);" alt="conquer_counter" /></td>' +
                     '<td><div id="dio_cnt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "cnt")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "cnt")[1] + '</p>' +
-                    '<img src="' + Home_img + 'conquests-2.png" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:400px;" ><br></td>' +
+                    '<img src="' + Home_url + '/img/dio/settings/conquests.png" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:400px;" ><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'sans-surcharge.png" alt="" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/sans-surcharge.png" alt="" style="border: 1px solid rgb(158, 133, 78);" /></td>' +
 
                     '<td>' + (typeof (uw.FLASK_GAME) !== "undefined" ? ('<div class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Sel")[0] + '</div></div><p style="font-weight: bold;">' + getTexts("Options", "FLASK")[0] + '</p>') : (
                         '<div id="dio_Sel" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Sel")[0] + '</div></div>')) +
@@ -1189,11 +1172,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                     // Other Stuff tab
                     '<table id="dio_other_table" class="content_category"><tr>' +
-                    '<td><img src="' + Home_img + 'mousewheel-zoom.png" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/mousewheel-zoom.png" alt="" /></td>' +
                     '<td><div id="dio_scr" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "scr")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "scr")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'bbcode-button.png" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/bbcode-button.png" alt="" /></td>' +
                     '<td><div id="dio_BBt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "BBt")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "BBt")[1] + '</p><br></td>' +
                     '</tr><tr>' +
@@ -1206,56 +1189,56 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<p>' + getTexts("Options", "err")[1] + '</p></td>' +*/
                     //((Game.features.is_domination_active = false) ? (
                     ((uw.Game.features.end_game_type == "end_game_type_world_wonder") ? (
-                        '<td><img src="' + Home_img + 'temple-d-artemiss.gif" alt="share" /></td>' +
+                        '<td><img src="' + Home_url + '/img/dio/settings/temple-d-artemiss.gif" alt="share" /></td>' +
                         '<td><div id="dio_wwc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Settings", "cat_wonders") + getTexts("Options", "wwc")[0] + '</div></div>' +
                         '<p>' + getTexts("Options", "wwc")[1] + '</p><br/>' +
-                        '<img src="' + Home_img + 'merveille-du-monde.png" alt="share_calculator" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:none;" ></td>' +
+                        '<img src="' + Home_url + '/img/dio/settings/merveille-du-monde.png" alt="share_calculator" style="border: 2px solid rgb(158, 133, 78); max-height:none; max-width:none;" ></td>' +
                         '</tr><tr>') : "") +
                     '</tr></table>' +
 
                     // Premium
                     '<table id="dio_Premium_table" class="content_category"><tr>' +
-                    '<td><img src="' + Home_img + 'culture.png" alt="" ></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/culture.png" alt="" ></td>' +
                     '<td><div id="dio_Cul" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cul")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cul")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'advancement-of-culture.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/advancement-of-culture.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
                     '<td><div id="dio_Cup" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cup")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cup")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'culturepoints.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/culturepoints.png" style="border: 1px solid rgb(158, 133, 78);" alt="advancement of culture" /></td>' +
                     '<td><div id="dio_Cuo" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cuo")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cuo")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'caves.jpg" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/caves.jpg" alt="" /></td>' +
                     '<td><div id="dio_Hio" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hio")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Hio")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'resource-counter-1.png" alt="resource counter" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/resource-counter.png" alt="resource counter" /></td>' +
                     '<td><div id="dio_Rct" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Rct")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Rct")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'overview-of-peasant-villages.jpg" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/overview-of-peasant-villages.jpg" alt="" /></td>' +
                     '<td><div id="dio_Ish" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ish")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Ish")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'culture-filtering.png" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/culture-filtering.png" alt="" /></td>' +
                     '<td><div id="dio_Cuc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cuc")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cuc")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'building-filtering.png" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/building-filtering.png" alt="" /></td>' +
                     '<td><div id="dio_Buc" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Buc")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Buc")[1] + '</p></td>' +
                     '</tr></table>' +
 
                     // Quack
                     '<table id="dio_Quack_table" class="content_category"><tr>' +
-                    '<td><img src="' + Home_img + 'bb-code-messages.png" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/bb-code-messages.png" alt="" /></td>' +
                     '<td><div id="dio_Mse" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Mse")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Mse")[1] + '  ' +
                     '<a href=' + getTexts("link", "MessageExport") + ' target="_blank">' + getTexts("Settings", "Learn_more") + '</a></p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'hotkeys.png" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/hotkeys.png" alt="" /></td>' +
                     '<td><div id="dio_Hot" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hot")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Hot")[1] + '</p><br></td>' +
                     '</tr><tr>' +
@@ -1267,7 +1250,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<td><div id="dio_Hid" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Hid")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Hid")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'city-view-button-1.png" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/city-view-button.png" alt="" /></td>' +
                     '<td><div id="dio_Cib" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Cib")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "Cib")[1] + '</p></td>' +
                     '</tr><tr>' +
@@ -1294,7 +1277,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:right">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '</div>' +
 
@@ -1577,7 +1560,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     function tooltip_settings() {
         var tooltip_str = "DIO-Tools-David1327: " + getTexts("hotkeys", "settings") + "<br/> v" + dio_version + " [" + (DATA.test.lang ? (DATA.test.lang === "zz" ? "EN" : (DATA.test.lang).toUpperCase()) : (MID === "zz" ? "EN" : MID)) + "]";
-        var version_latest = "??"; try { version_latest = uw.dio_latest_version; } catch (error) { errorHandling(error, "dio_latest_version"); }
+        var version_latest = "??"; try { version_latest = uw.dio_latest_version; } catch (error) { }
         if (version_latest !== "??") {
             if (dio_version < version_latest) { tooltip_str += "<br/>" + getTexts("Settings", 'version_old'); }
             else if (dio_version > version_latest) { tooltip_str += "<br/>" + getTexts("Settings", 'version_dev') }
@@ -1636,7 +1619,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         // Settings
         $('<style id="dio_settings_style" type="text/css">' +
             '#dio_bg_david1327{ background: url(' + dio_sprite + '); background-position: -211px -300px; height: 20px; width: 412px; left: 410px; top: 280px; position: absolute; transform: rotate(90deg);} ' +
-            '#dio_bg_medusa { background:url(' + Home_img + 'medusa-transp.png) no-repeat; height: 510px; width: 380px; right: -10px; top:6px; z-index: -1; position: absolute;} ' +
+            '#dio_bg_medusa { background:url(' + Home_url + '/img/dio/logo/medusa-transp.png) no-repeat; height: 510px; width: 380px; right: -10px; top:6px; z-index: -1; position: absolute;} ' +
             '.dio_overflow  { overflow: hidden; } ' +
             '#dio_icon  { width:15px; vertical-align:middle; margin-top:-2px; } ' +
             '#quackicon { width:15px !important; vertical-align:middle !important; margin-top:-2px; height:12px !important; } ' +
@@ -1807,9 +1790,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     setTimeout(() => { HolidaySpecial.activate(); }, 0);
                     setTimeout(() => { dio.style(); }, 0);
 
+                    cache();
                     // Execute once to get alliance ratio
                     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
-                        cache();
                         setTimeout(() => { uw.getPointRatioFromCache() }, 10000);
                     }
                 }
@@ -1836,7 +1819,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 action = url[0].substr(5) + "/" + url[1].split(/&/)[1].substr(7);
             }
 
-            if (PID == 84367 || PID == 104769 || PID == 1577066 || PID == 100144) {
+            if (PID == 84367 || PID == 104769 || PID == 1577066 || PID == 100144 || david1327) {
                 console.log("action=>", action);
             }
 
@@ -1864,7 +1847,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 case "/frontend_bridge/fetch": // Daily Reward
                     if (DATA.options.dio_tim) Map.add();
                     if (DATA.options.dio_Rew) Reward.activate();
-                    if (DATA.options.dio_Rtt) dio.removeTooltipps("place"); dio.removeTooltipps("sidebar");
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps();
                 ///if (DATA.options.dio_Hid) hidesIndexIron.add();
                 // eslint no-fallthrough: "error"
                 case "/frontend_bridge/execute":
@@ -1882,36 +1865,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     break;
                 case "/building_barracks/index":
                 case "/building_barracks/build":
+                case "/building_barracks/cancel":
+                case "/building_barracks/units":
                     if (DATA.options.dio_str) UnitStrength.Barracks.add();
-                    if (DATA.options.dio_Rtt) {
-                        dio.removeTooltipps("barracks");
-                        dio.removeTooltipps("hero90x90");
-                    }
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps();
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps("barracks");
                     break;
                 case "/building_docks/index":
-                    if (DATA.options.dio_Rtt) {
-                        dio.removeTooltipps("docks");
-                        dio.removeTooltipps("hero90x90");
-                    }
-                    break;
-                case "/building_barracks/cancel":
                 case "/building_docks/build":
                 case "/building_docks/cancel":
-                case "/building_barracks/units":
-                    if (DATA.options.dio_Rtt) {
-                        dio.removeTooltipps("docks");
-                        dio.removeTooltipps("barracks");
-                        dio.removeTooltipps("hero90x90");
-                    }
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps();
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps("docks");
                     break;
                 case "/building_place/index":
                 case "/building_place/units_beyond":
-                    if (DATA.options.dio_Rtt) dio.removeTooltipps("agora");
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps();
                     //addTransporterBackButtons();
                     break;
                 case "/building_place/simulator":
                     if (DATA.options.dio_sim) setStrengthSimulator();
-                    if (DATA.options.dio_Rtt) dio.removeTooltipps("simulator");
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps();
                     break;
                 case "/building_place/simulate":
                 case "/building_place/insertSurvivesDefUnitsAsNewDefender":
@@ -1942,10 +1915,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 case "/island_info/index":
                     if (DATA.options.dio_Isl) islandFarmingVillages.activate();
                     break;
+                case "/message/view":
+                    markMessage();
+                // eslint no-fallthrough: "error"
                 case "/message/new":
                 case "/message/forward":
-                case "/message/view":
                     if (DATA.options.dio_Mse) MessageExport.add();
+                    break;
+                case '/message/default':
+                case '/message/index':
+                case '/message/create':
+                case '/message/reply':
+                    markMessages();
                 // eslint no-fallthrough: "error"
                 case "/alliance_forum/forum":
                 case "/player_memo/load_memo_content":
@@ -2017,7 +1998,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_Sel & typeof (uw.FLASK_GAME) == "undefined") {
                         selectunitshelper.activate();
                     }
-                    if (DATA.options.dio_Rtt) dio.removeTooltipps("town_info");
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps("attack");
                     break;
                 case "/report/index":
                 case "/report/default":
@@ -2046,6 +2027,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (DATA.options.dio_Hio) hidesOverview.init();
                     if (DATA.options.dio_Hid) setTimeout(() => { hidesIndexIron.add(); }, 100);
                     break;
+                case "/farm_town_info/attack":
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps();
+                    break;
+                case "/building_wall/index":
+                    if (DATA.options.dio_Rtt) dio.removeTooltipps("wall");
+                    break;
             }
         });
     }
@@ -2062,7 +2049,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var dio = {
         style: () => {
             $('<style id="createButton">' + //style="color: #fc6;"
-                '.don { height: 26px; display: block; background: url(' + Home_img + 'donate-btn.png) 0 0 no-repeat; position: relative; z-index: -1; } ' +
+                '.don { height: 26px; display: block; background: url(' + Home_url + '/img/dio/btn/donate-btn.png) 0 0 no-repeat; position: relative; z-index: -1; } ' +
                 '.don.dio-left { background-position: left 0px; } ' +
                 '.don.dio-right { background-position: right -54px; } ' +
                 '.don.dio-middle { color: #33268a;padding: 0 4px;margin: 0 12px;background-position: 0 -27px;background-repeat: repeat-x;line-height: 25px;min-width: 10px;cursor: pointer;font-style: italic;font-size: 14px; } ' +
@@ -2104,7 +2091,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             };
             str += (group = null == group ? "" : '</optgroup>') + (group2 = null == group2 ? "" : '<optgroup label="' + group2 + '">');
             $.each(Options, (a, b) => {
-                if (LANG[b]) { option_image = '' + Home_img + 'flag.16.' + b + '.png'; }
+                if (LANG[b]) { option_image = '' + Home_url + '/img/flag/flag.16.' + b + '.png'; }
                 else { option_image = ""; }
                 var option_name = (LANG[b]) ? b.toUpperCase() : b;
                 str += '<option style="background: url(' + option_image + ') no-repeat scroll left center #EEDDBB; padding-left: 22px" value="' + b + '">' + option_name + '</option>'
@@ -2158,58 +2145,47 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             return ID;
         },
         removeTooltipps: (type) => {
-            var a;
-            switch (type) {
-                case "agora":
-                    a = dio.wnd.find(".place_unit");
-                    break;
-                case "barracks":
-                case "docks":
-                    a = dio.wnd.find("#units DIV");
-                    break;
-                case "place":
-                    a = $(".classic_window.place .supporters_list").find(".units_list DIV");
-                    break;
-                case "sidebar":
-                    a = $("#ui_box").find(".units_wrapper DIV");
-                    break;
-                case "town_info":
-                    a = dio.wnd.find(".unit_icon40x40");
-                    break;
-                case "simulator":
-                    a = dio.wnd.find(".index_unit");
-                    break;
-                case "hero90x90":
-                    a = dio.wnd.find("#unit_order_unit_big_image");
-                    break;
-            }
-            a.each((index) => {
-                $(this).off('mouseenter mouseleave');
-            });
+            setTimeout(() => {
+                var a;
+                switch (type) {
+                    case "attack":
+                        a = $(".unit_icon40x40");
+                        break;
+                    case "wall":
+                        a = $(".unit_icon50x50");
+                        break;
+                    case "barracks":
+                    case "docks":
+                        a = $(".thin_frame");
+                        break;
+                    default: a = $(".unit")
+                }
+                $(a).off('mouseenter mouseleave');
+            }, 50);
         },
         clipboard: (IDbutton, input, error, Text) => {
-            try {
-                var clipboard = new uw.ClipboardJS(IDbutton);
-                clipboard.on("success", () => {
-                    setTimeout(() => {
-                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                        if (input !== null) {
-                            $(IDbutton).css({ "display": "none" })
-                            $(input).css({ "display": "none" })
+            //try {
+            var clipboard = new uw.ClipboardJS(IDbutton);
+            clipboard.on("success", () => {
+                setTimeout(() => {
+                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                    if (input !== null) {
+                        $(IDbutton).css({ "display": "none" })
+                        $(input).css({ "display": "none" })
+                    }
+                    if (Text !== null) {
+                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
+                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
                         }
-                        if (Text !== null) {
-                            if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
-                                uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
-                            }
-                        }
-                    }, 50)
-                });
-                clipboard.on('error', (e) => {
-                    return uw.HumanMessage.error(dio_icon + getTexts("messages", "cli")); errorHandling(e, "clipboard error");
-                });
-            } catch (error) {
-                return errorHandling(error, "clipboard");
-            }
+                    }
+                }, 50)
+            });
+            clipboard.on('error', (e) => {
+                return uw.HumanMessage.error(dio_icon + getTexts("messages", "cli")); errorHandling(e, "clipboard error");
+            });
+            //} catch (error) {
+            //return errorHandling(error, "clipboard");
+            //}
         },
         dateDiff(date1, date2) {
             var diff = {}
@@ -2223,6 +2199,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             tmp = Math.floor((tmp - diff.hour) / 24);
             diff.day = tmp;
             return diff;
+        },
+        lang() {
+            let lang;
+            if (DATA.test.lang) lang = DATA.test.lang
+            else lang = MID
+            if (lang == "zz") lang = "en"
+            return lang;
         },
     };
 
@@ -2279,7 +2262,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     try {
                         $.each(m.split(/\r\n|\n/), function (C, K) {
                             c = K.split(/,/);
-                            h[decodeURIComponent(c[1] + "")] = { id: c[0], name: decodeURIComponent(c[1] + ""), Points: decodeURIComponent(c[2] + "").replace(/\+/g, " "), alliance_id: c[2] };
+                            h[decodeURIComponent(c[1] + "")] = { id: c[0], name: decodeURIComponent(c[1] + ""), Points: c[3], alliance_id: c[2], Rank: c[4], Cities: c[5] };
                         });
                         uw.MM.DIO.cachePlayers = h;
                     } catch (error) { errorHandling(error, "cache players done"); }
@@ -2290,7 +2273,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     try {
                         $.each(m.split(/\r\n|\n/), function (C, K) {
                             c = K.split(/,/);
-                            k[c[0]] = { id: c[0], name: decodeURIComponent(c[1] + ""), Points: decodeURIComponent(c[2] + "").replace(/\+/g, " ") };
+                            k[c[0]] = { id: c[0], name: decodeURIComponent(c[1] + ""), Points: c[2], Players: c[4], Rank: c[5], Cities: c[3] };
                         });
                         uw.MM.DIO.cacheAlliances = k;
                     } catch (error) { errorHandling(error, "cache alliances done"); }
@@ -2439,6 +2422,101 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         return number;
     }
 
+    /* TEST*/
+    var friendly_allies = [];
+    var enemy_allies = [];
+    function encodeString(input) {
+        var output;
+        output = input.replace(/ /g, '+');
+        output = output.replace(/\*/g, '%2A');
+        output = output.replace(/\=/g, '%3D');
+        output = output.replace(/Ł/g, '%C5%81');
+        output = output.replace(/ł/g, '%C5%82');
+        output = output.replace(/Ą/g, '%C4%84');
+        output = output.replace(/ą/g, '%C4%85');
+        output = output.replace(/Ę/g, '%C4%98');
+        output = output.replace(/ę/g, '%C4%99');
+        output = output.replace(/Ć/g, '%C4%86');
+        output = output.replace(/ć/g, '%C4%87');
+        output = output.replace(/Ó/g, '%C3%93');
+        output = output.replace(/ó/g, '%C3%B3');
+        output = output.replace(/Ń/g, '%C5%83');
+        output = output.replace(/ń/g, '%C5%84');
+        output = output.replace(/Ś/g, '%C5%9A');
+        output = output.replace(/ś/g, '%C5%9B');
+        output = output.replace(/Ź/g, '%C5%B9');
+        output = output.replace(/ź/g, '%C5%BA');
+        output = output.replace(/Ż/g, '%C5%BB');
+        output = output.replace(/ż/g, '%C5%BC');
+        return output;
+    }
+    function getAllianceName(allianceNumber) {
+        if (allianceNumber == - 1) return getTexts('labels', 'no_ally');
+        if (allianceNumber == 0) return getTexts('labels', 'no_ally');
+        return uw.MM.DIO.cacheAlliances[allianceNumber].name;
+    }
+
+    function getAllianceNumber(player) {
+        player = encodeString(player);
+        if (player == "") return - 1;
+        if (uw.MM.DIO.cachePlayers[player] == undefined) return - 1;
+        if (uw.MM.DIO.cachePlayers[player].alliance_id == "") return 0;
+        return uw.MM.DIO.cachePlayers[player].alliance_id;
+    }
+
+    function markMessage() {
+        cache();
+        $('<style id="dio_aa">' +
+            // Style
+            '#dio-alliance_link { margin-left: 6px; } ' +
+            '#dio-alliance_link .flag { height: 10px; left: -4px; margin-left: 4px; position: relative; display: inline-block; } ' +
+            '#dio-alliance_link .flag div { left: -2px; top: -2px; position: absolute; width: 14px; height: 16px; background-image: url(' + Home_url + '/img/flag/alliance-flag.png); } ' +
+            '</style>').appendTo('head');
+        var sender = $('#message_partner .gp_player_link').text();
+        var sender_ally = getAllianceNumber(sender);
+        if (sender_ally == 0 || sender_ally == - 1) return
+        if (sender_ally == AID) {
+            $('#message_partner .gp_player_link').after('<span id="dio-alliance_link"><div class="flag town" style="background-color: blue;"><div></div></div><a class="gp_alliance_link" onclick="Layout.allianceProfile.open(\'' + getAllianceName(sender_ally) + '\',' + sender_ally + ')">' + getAllianceName(sender_ally) + '</a><span></span></span>');
+        } else if (uw.MM.DIO.AlliancePact().ENEMY[sender_ally]) {
+            $('#message_partner .gp_player_link').after('<span id="dio-alliance_link"><div class="flag town" style="background-color: rgb(255 0 0 / 95%);"><div></div></div><a class="gp_alliance_link" onclick="Layout.allianceProfile.open(\'' + getAllianceName(sender_ally) + '\',' + sender_ally + ')">' + getAllianceName(sender_ally) + '</a><span></span></span>');
+        } else if (uw.MM.DIO.AlliancePact().PACT[sender_ally]) {
+            $('#message_partner .gp_player_link').after('<span id="dio-alliance_link"><div class="flag town" style="background-color: rgb(0 200 80);"><div></div></div><a class="gp_alliance_link" onclick="Layout.allianceProfile.open(\'' + getAllianceName(sender_ally) + '\',' + sender_ally + ')">' + getAllianceName(sender_ally) + '</a><span></span></span>');
+        } else {
+            $('#message_partner .gp_player_link').after('<span id="dio-alliance_link"><div class="flag town" style="background-color: #BB5511;;"><div></div></div><a class="gp_alliance_link" onclick="Layout.allianceProfile.open(\'' + getAllianceName(sender_ally) + '\',' + sender_ally + ')">' + getAllianceName(sender_ally) + '</a><span></span></span>');
+        }
+        if ($('.MHbbcADD').length) $('#dio-alliance_link').css('display', 'none');
+        $('#dio-alliance_link').tooltip(dio_icon)
+    }
+    function markMessages() {
+        cache();
+        $('<style id="dio_aa">' +
+            // Style
+            '#dio-alliance_link { margin-left: 6px; } ' +
+            '#dio-alliance_link .flag { height: 10px; left: -4px; margin-left: 4px; position: relative; display: inline-block; } ' +
+            '#dio-alliance_link .flag div { left: -2px; top: -2px; position: absolute; width: 14px; height: 16px; background-image: url(' + Home_url + '/img/flag/alliance-flag.png); } ' +
+            '</style>').appendTo('head');
+        $('.message_item').each(function () {
+            var sender = $(this).find('.gp_player_link').text();
+            var sender_ally = getAllianceNumber(sender);
+            if (sender_ally == 0 || sender_ally == - 1) return
+            if ($(this).find('#dio-alliance_link').length < 1 && !$('.MHbbcADD').length) {
+                if (sender_ally == AID) {
+                    $(this).find('.gp_player_link').after('<span id="dio-alliance_link"><div class="flag town" style="background-color: blue;"><div></div></div><a class="gp_alliance_link" onclick="Layout.allianceProfile.open(\'' + getAllianceName(sender_ally) + '\',' + sender_ally + ')">' + getAllianceName(sender_ally) + '</a><span></span></span>');
+                    $(this).find('#dio-alliance_link').tooltip(dio_icon)
+                } else if (uw.MM.DIO.AlliancePact().ENEMY[sender_ally]) {
+                    $(this).find('.gp_player_link').after('<span id="dio-alliance_link"><div class="flag town" style="background-color: rgb(255 0 0 / 95%);"><div></div></div><a class="gp_alliance_link" onclick="Layout.allianceProfile.open(\'' + getAllianceName(sender_ally) + '\',' + sender_ally + ')">' + getAllianceName(sender_ally) + '</a><span></span></span>');
+                    $(this).find('#dio-alliance_link').tooltip(dio_icon)
+                } else if (uw.MM.DIO.AlliancePact().PACT[sender_ally]) {
+                    $(this).find('.gp_player_link').after('<span id="dio-alliance_link"><div class="flag town" style="background-color: rgb(0 200 80);"><div></div></div><a class="gp_alliance_link" onclick="Layout.allianceProfile.open(\'' + getAllianceName(sender_ally) + '\',' + sender_ally + ')">' + getAllianceName(sender_ally) + '</a><span></span></span>');
+                    $(this).find('#dio-alliance_link').tooltip(dio_icon)
+                } else {
+                    $(this).find('.gp_player_link').after('<span id="dio-alliance_link"><div class="flag town" style="background-color: #BB5511;;"><div></div></div><a class="gp_alliance_link" onclick="Layout.allianceProfile.open(\'' + getAllianceName(sender_ally) + '\',' + sender_ally + ')">' + getAllianceName(sender_ally) + '</a><span></span></span>');
+                    $(this).find('#dio-alliance_link').tooltip(dio_icon)
+                }
+            }
+        });
+    }
+
     // Notification
     var Notification = {
         REMINDER: false,
@@ -2462,11 +2540,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#NotifText table td.value { text-align: right; } ' +
 
                 '#NotifText table td.laurel.green { background: url("/images/game/ally/founder.png") no-repeat; height:17px; width:17px; background-size:100%; } ' +
-                '#NotifText table td.laurel.green2 { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 0%; height:17px; width:17px; } ' +
-                '#NotifText table td.laurel.bronze { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 25%; height:17px; width:17px; } ' +
-                '#NotifText table td.laurel.silver { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 50%; height:17px; width:17px; } ' +
-                '#NotifText table td.laurel.gold { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 75%; height:17px; width:17px; } ' +
-                '#NotifText table td.laurel.blue { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 100%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.green2 { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 0%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.bronze { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 25%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.silver { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 50%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.gold { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 75%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.blue { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 100%; height:17px; width:17px; } ' +
                 '</style>').appendTo('head');
 
             // NotificationType
@@ -2504,19 +2582,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
             var version_latest = dio_version;
             var update = DATA.update;
-            try { version_latest = uw.dio_latest_version; } catch (error) { errorHandling(error, "dio_latest_version"); }
+            setTimeout(() => {
+                try { version_latest = uw.dio_latest_version; } catch (error) { errorHandling(error, "dio_latest_version (Notification.update)"); }
 
-            if (update !== 0 && dio_version === version_latest) { saveValue('update', 0); }
-            if (dio_version < version_latest && update <= 7) {
-                Notification.create(getTexts("Settings", "version_old"), getTexts("Settings", "Available"), "DIO_TOOLS_V", "#f22");
+                if (update !== 0 && dio_version === version_latest) { saveValue('update', 0); }
+                if (dio_version < version_latest && update <= 7) {
+                    Notification.create(getTexts("Settings", "version_old"), getTexts("Settings", "Available"), "DIO_TOOLS_V", "#f22");
 
-                // Click Event
-                $('.diotools_v .icon').click(function () {
-                    Notification.update();
-                    $(this).parent().find(".close").click();
-                });
-                saveValue('update', update + 1);
-            }
+                    // Click Event
+                    $('.diotools_v .icon').click(function () {
+                        Notification.update();
+                        $(this).parent().find(".close").click();
+                    });
+                    saveValue('update', update + 1);
+                }
+            }, 1000);
         },
         update: () => {
             if (Notification.REMINDER == false) {
@@ -2584,10 +2664,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
 
                     '</div>' +
 
@@ -2596,38 +2676,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div id="dio_donate_btn" style="position:relative; right: -94px; top: 484px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
-                HTML_tab1 += grepoGameBorder + getTexts("Settings", "Update") + '</div>';
+                HTML_tab1 += grepoGameBorder + /*getTexts("Settings", "Update") +*/ 'News</div>';
 
                 //
                 var version = dio_version[2] += dio_version[3]
                 var beforeversion = dio_version.replace(version, version - 1);
                 beforeversion = beforeversion.split(".")[0] + "." + beforeversion.split(".")[1]
                 if (DATA.error[beforeversion]) { deleteValue("error"); }
-                HTML_tab1 += '<div id="NotifText">' +
-                    //'<p>- '+ getTexts("Notification", "A") +'.</p>' +
-                    '<center style="text-align: left;"><span style="color:#006400;"><strong><span style="font-size:20px;"></span><span style="font-size:20px;">Join me on discord</span><span style="font-size:20px;"></span> -&gt;&nbsp;</strong><span><br />' +
-                    '<span style="text-decoration: underline;"><span style="color: #008000;"><strong><a href="https://discord.gg/Q7WXtmRNRW">https://discord.gg/Q7WXtmRNRW</a></strong></span></span></span></span></center>' +
-
-                    '<div style="height: 45px;padding: 25px 0px 0px 110px;font-size: 18px;color: #FFF;background: url(https://www.tuto-de-david1327.com/medias/images/gpcl-bug.png) no-repeat;font-weight: bold;">Bug fixes</div>' +
-
-                    '<p><span style="font-size:18px;"></span><span style="font-size:18px;"></span><span style="font-size:18px;"></span></p>' +
-
-                    '<p><span style="color:#c0392b;"><span style="font-size:18px;">- </span><span style="font-size:18px;"> Recruiting trade :</span></span><br />' +
-                    '-&gt; Following the latest update of DIO-TOOLS the function prevent the loading of other functions<span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"><br />' +
-                    '-&gt; Thanks to everyone who reported me</span></span></span><span style="font-size:11pt"><span style="line-height:107%"><span style="font-family:Calibri,sans-serif"></span></span></span></p>' +
-
-
-                    '<div style="height: 30px;background: url(' + Home_img + 'gpcl-line.png) no-repeat;font-weight: bold;">&nbsp;</div>' +
-
-                    '<p>Please feel free to report any bugs and <a href="' + getTexts("link", "Update") + '" target="_blank">comment</a> on this update!</p>' +
-
-                    '<p><br />' +
-                    '<p>To see all the modifications I invite you to go to this link<br />' +
-                    '<a href="https://github.com/DIO-David1327/DIO-TOOLS-David1327/compare/' + beforeversion + '...' + dio_version + '">https://github.com/DIO-David1327/DIO-TOOLS-David1327/compare/' + beforeversion + '...' + dio_version.split(".")[0] + "." + dio_version.split(".")[1] + '</a></p>' +
-                    '<p><br />' +
-                    'Good evening and good game.<br />' +
-                    'Regards,</p>';
-
+                if (dio.lang() == "fr") HTML_tab1 += '<iframe src="' + Home_url + '/fr/grepo/News.html " scrolling="auto" style="border:none;width: -moz-available;width: -webkit-fill-available;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
+                else HTML_tab1 += '<iframe src="' + Home_url + '/en/grepo/News.html " scrolling="auto" style="border:none;width: -webkit-fill-available;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
                 return HTML_tab1;
 
             }
@@ -2643,15 +2700,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
 
                     '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 92px;">' +
-                    '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href="https://dio-david1327.github.io/Donations.html" target="_blank"></a>' +
+                    '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href="' + Home_url + '/Donations.html" target="_blank"></a>' +
                     '<div id="dio_donate_btn" style="position:relative; right: -94px; top: 484px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
@@ -2667,10 +2724,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 reste = (donNb - 4 * don)
                 if (reste < 0) reste = 0
 
-                HTML_tab2 += '<div id="NotifText">' +
-                    '<iframe src="https://dio-david1327.github.io/Donations-grepo.html" scrolling="auto" style="border:none; overflow:hidden; height: 260px; width: 795px;" allowTransparency="true"></iframe>' + //scrolling="no"
+                HTML_tab2 += '<div id="NotifText">';
 
-                    '<p>' + getTexts("labels", "ingame_name")[0] + '</p>' +
+                if (dio.lang() == "fr") HTML_tab2 += '<iframe src="' + Home_url + '/fr/grepo/Donations.html" scrolling="auto" style="border:none; overflow:hidden; height: 260px; width: 795px;" allowTransparency="true"></iframe>'; //scrolling="no"
+                else HTML_tab2 += '<iframe src="' + Home_url + '/en/grepo/Donations.html" scrolling="auto" style="border:none; overflow:hidden; height: 260px; width: 795px;" allowTransparency="true"></iframe>'; //scrolling="no";
+
+                HTML_tab2 += '<p>' + getTexts("labels", "ingame_name")[0] + '</p>' +
                     '<p>' + getTexts("labels", "ingame_name")[1] + '</p>' +
                     '<table style="float:left; margin-right: 8px; margin-left: -5px;">' +
                     '<tr><th colspan="3">' + getTexts("labels", "donat") + '</th></tr>' +
@@ -2725,7 +2784,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '</div>' +
 
@@ -2744,12 +2803,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<div id="langdiv" sel="0">'; // style="opacity:0.30;"
 
                 $.each(LANG, function (a) {
-                    if (a != "AUTO") { HTML_tab3 += '<img value="' + a + '" src="' + Home_img + 'flag.16.' + a + '.png" style="margin:0 5px;">'; }
+                    if (a != "AUTO") { HTML_tab3 += '<img value="' + a + '" src="' + Home_url + '/img/flag/flag.16.' + a + '.png" style="margin:0 5px;">'; }
                 });
 
                 HTML_tab3 += '</div>' +
                     '<li>' + getTexts("translations", "trans_infotext2") + '</li>' +
-                    '<img src="' + Home_img + 'translations-tuto-1.png" style="margin:0 5px;">' +
+                    '<img src="' + Home_url + '/img/dio/add/translations-tuto.png" style="margin:0 5px;">' +
                     '<li>' + getTexts("translations", "trans_infotext3") +
                     '<li>' + getTexts("translations", "trans_infotext4") + '</li>' +
                     '<div>' + dio.createButton(getTexts("translations", "send")) + '</div></li>' +
@@ -2757,13 +2816,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<li>' + getTexts("translations", "trans_infotext6") + '</li>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "forum") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "cat_forum") + '</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "cat_forum") + '</span></a>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "Translations") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '<a id="link_forum" href="https://discord.gg/Q7WXtmRNRW" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>Discord</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>Discord</span></a>' +
 
                     '</ul><div style="margin-top:30px"><b>' + getTexts("translations", "credits") + ':</b><ul style="list-style:square outside;">';
 
@@ -2786,7 +2845,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                         var translation_table = "";
                         for (var d = 0; d < translations.length; d++) {
-                            translation_table += '<tr class="translation"><td style="list-style:square outside;padding-right: 5px"></td><td><img src="' + Home_img + 'flag.16.' + translations[d][0] + '.png" style="margin:0 5px;"></td><td>' + translations[d][0] + ':</td><td class="value">' + translations[d][1] + '</td></tr>';
+                            translation_table += '<tr class="translation"><td style="list-style:square outside;padding-right: 5px"></td><td><img src="' + Home_url + '/img/flag/flag.16.' + translations[d][0] + '.png" style="margin:0 5px;"></td><td>' + translations[d][0] + ':</td><td class="value">' + translations[d][1] + '</td></tr>';
                         }
                         return translation_table;
                     })() +
@@ -2811,7 +2870,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
 
                     '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home + 'medias/album/lien-1-png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
 
                     '</div>' +
 
@@ -3054,7 +3113,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     langHTML_tab3 += '<div style="margin-top: 5px; padding: 5px; border: 1px solid #B48F45"><div><b>' + getTexts("translations", "trans") + ': </b><b id="diolang">' + lang_tab3.toUpperCase() + '</b>';
                     if ($(this).val() === getTexts("translations", "add_lang")) {
                         langHTML_tab3 += '</div></div>';
-                    } else langHTML_tab3 += '<img src="' + Home_img + 'flag.48.' + lang_tab3 + '.png" style="margin: 0 5px; position: relative; top: -13px; float: right; right: -13px;"></div></div>';
+                    } else langHTML_tab3 += '<img src="' + Home_url + '/img/flag/flag.48.' + lang_tab3 + '.png" style="margin: 0 5px; position: relative; top: -13px; float: right; right: -13px;"></div></div>';
 
                     if ($(this).val() === getTexts("translations", "info")) {
                         BBwnd.setContent(inhalte.dioset_tab3);
@@ -3118,7 +3177,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     dio.grepo_submenu("dioset_tab4", "BUG")[0].outerHTML +
                     dio.grepo_submenu("dioset_tab3", getTexts("translations", "translations"))[0].outerHTML +
                     dio.grepo_submenu("dioset_tab2", getTexts("labels", "donat"))[0].outerHTML +
-                    dio.grepo_submenu("dioset_tab1", getTexts("Settings", "Update"))[0].outerHTML + '</ul>');
+                    dio.grepo_submenu("dioset_tab1", /*getTexts("Settings", "Update")*/"News")[0].outerHTML + '</ul>');
             }
             $("#diomenu_settings_tabs li a").removeClass("active");
             if (dio.bug) {
@@ -3293,6 +3352,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     /*******************************************************************************************************************************
      * Town icon
      *******************************************************************************************************************************/
+    let dio_icon_small = Home_url + "/img/dio/btn/town-icons.png";
     var TownIcons = {
         timeout: null,
         types: {
@@ -3410,7 +3470,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '#town_icon hr { width:265px; margin:0px 0px 7px 0px; position:relative; top:3px; border:0px; border-top:2px dotted #000; float:left} ' +
                     '#town_icon .auto_s { width:160px; height:16px; float:left; margin-right: 3px;} ' +
                     '#town_icon .dio_icon.b { width: 26px; height: 22px; float: right; margin: 0;  margin-right: 3px;} ' +
-                    '#town_icon .défaut_s { background:url(' + Home_img + 'arrows-20px-1.png) no-repeat; width:17px; height:17px; float: right; margin-right: 3px;} ' +
+                    '#town_icon .défaut_s { background:url(' + Home_url + '/img/dio/btn/arrows-20px.png) no-repeat; width:17px; height:17px; float: right; margin-right: 3px;} ' +
 
                     // Quickbar modification
                     '.ui_quickbar .left, .ui_quickbar .right { width:46%; } ' +
@@ -3531,7 +3591,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var style_str = '<style id="dio_townicons" type="text/css">';
     for (var s in TownIcons.types) {
         if (TownIcons.types.hasOwnProperty(s)) {
-            style_str += '.townicon_' + s + ' { background:url(' + dio_spritetest + ') ' + (TownIcons.types[s] * -25) + 'px -26px repeat;float:left;} ';
+            style_str += '.townicon_' + s + ' { background:url(' + dio_icon_small + ') ' + (TownIcons.types[s] * -25) + 'px -26px repeat;float:left;} ';
         }
     }
     style_str += '</style>';
@@ -3568,7 +3628,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 for (var e in autoTownTypes) {
                     if (autoTownTypes.hasOwnProperty(e)) {
                         $("#mini_t" + e + ", #town_flag_" + e + " .flagpole").css({
-                            "background": "rgb(255, 187, 0) url(" + dio_spritetest + ") repeat",
+                            "background": "rgb(255, 187, 0) url(" + dio_icon_small + ") repeat",
                             "background-position": (TownIcons.types[(manuTownTypes[e] || autoTownTypes[e])] * -25) + "px -27px",
                         });
                     }
@@ -3633,7 +3693,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_town_popup .spy_text { line-height: 2.3em; float:left; } ' +
 
                 // fury Icon
-                '#dio_town_popup .fury_icon { width:22px; height:15px; background: url(' + Home_img + 'fury.png) no-repeat; margin-left:2px; display: inline-block; vertical-align: middle; background-size: 75%;} ' +
+                '#dio_town_popup .fury_icon { width:22px; height:15px; background: url(' + Home_url + '/img/dio/logo/fury.png) no-repeat; margin-left:2px; display: inline-block; vertical-align: middle; background-size: 75%;} ' +
 
                 // support Icon
                 '#dio_town_popup .support_icon { width:16px; height:16px; background: url(' + Home_img + 'support-16px.png); margin: 1px; margin-bottom: 2px; display: inline-block; vertical-align: middle; background-size: 100%;} ' +
@@ -4018,10 +4078,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         '#grcrt_towns_list: { width: 180px; } ' +
 
         '#place_defense #dd_filter_type .arrow, .select_rec_unit .arrow, .dropdown.default .arrow {' +
-        'width: 18px; height: 17px ; background: url("' + Home_img + 'drop-out.png") no-repeat 0px -1px;' +
+        'width: 18px; height: 17px ; background: url("' + Home_url + '/img/dio/btn/drop-out.png") no-repeat 0px -1px;' +
         'top: 2px; right: 3px; } ' +
 
-        '#place_defense #dd_filter_type .arrow:hover, .select_rec_unit .arrow, .dropdown.default .arrow:hover {background: url("' + Home_img + 'drop-over.png") no-repeat 0px -1px; } ' +
+        '#place_defense #dd_filter_type .arrow:hover, .select_rec_unit .arrow, .dropdown.default .arrow:hover {background: url("' + Home_url + '/img/dio/btn/drop-over.png") no-repeat 0px -1px; } ' +
 
         '</style>').appendTo('head');
 
@@ -4147,7 +4207,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     function addFunctionToITowns() {
         try {
             var version_latest = "??";
-            try { version_latest = uw.dio_latest_version; } catch (error) { errorHandling(error, "dio_latest_version"); }
+
+            setTimeout(() => { try { uw.MM.DIO.info_dio.latest_version = uw.dio_latest_version; } catch (error) { errorHandling(error, "dio_latest_version (addFunctionToITowns)"); } }, 1000);
+
             // Copy function and prevent an error
             uw.MM.DIO = {
                 getPlayer: {},
@@ -4271,6 +4333,39 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     }
                 });
                 return heros;
+            };
+
+            uw.MM.DIO.AlliancePact = function () {
+                var ENEMY = {}, PACT = {}, AlliancePact = {};
+
+                function attributes(Relation, a) {
+                    if (a.attributes.alliance_1_id == AID) {
+                        Relation[a.attributes.alliance_2_id] = {
+                            id: a.attributes.alliance_2_id,
+                            town: a.attributes.alliance_2_name,
+                        }
+                    } else {
+                        Relation[a.attributes.alliance_1_id] = {
+                            id: a.attributes.alliance_1_id,
+                            town: a.attributes.alliance_1_name,
+                        }
+                    }
+                }
+                $.each(uw.MM.getOnlyCollectionByName("AlliancePact").models, function (h, a) {
+                    if (!a.getInvitationPending()) {
+                        switch (a.getRelation()) {
+                            case "war":
+                                attributes(ENEMY, a);
+                                break;
+                            case "peace":
+                                attributes(PACT, a);
+                                break;
+                        }
+                    };
+                });
+                AlliancePact.ENEMY = ENEMY;
+                AlliancePact.PACT = PACT;
+                return AlliancePact;
             };
 
             uw.ITowns.townGroups.getGroupsDIO = function () {
@@ -4406,28 +4501,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             for (var townId in UnitCounter.units.total[groupId]) {
                 if (UnitCounter.units.total[groupId].hasOwnProperty(townId) && townId !== "all") {
                     var unitId;
-
                     // Einheiten gesamt
                     for (unitId in UnitCounter.units.total[groupId][townId]) {
                         if (UnitCounter.units.total[groupId][townId].hasOwnProperty(unitId)) {
                             UnitCounter.units.total[groupId].all[unitId] = (UnitCounter.units.total[groupId].all[unitId] || 0) + UnitCounter.units.total[groupId][townId][unitId];
                         }
                     }
-
                     // Einheiten verfügbar
                     for (unitId in UnitCounter.units.available[groupId][townId]) {
                         if (UnitCounter.units.available[groupId][townId].hasOwnProperty(unitId)) {
                             UnitCounter.units.available[groupId].all[unitId] = (UnitCounter.units.available[groupId].all[unitId] || 0) + UnitCounter.units.available[groupId][townId][unitId];
                         }
                     }
-
                     // Einheiten außerhalb
                     for (unitId in UnitCounter.units.outer[groupId][townId]) {
                         if (UnitCounter.units.outer[groupId][townId].hasOwnProperty(unitId)) {
                             UnitCounter.units.outer[groupId].all[unitId] = (UnitCounter.units.outer[groupId].all[unitId] || 0) + UnitCounter.units.outer[groupId][townId][unitId];
                         }
                     }
-
                     // Einheiten außerhalb
                     for (unitId in UnitCounter.units.support[groupId][townId]) {
                         if (UnitCounter.units.support[groupId][townId].hasOwnProperty(unitId)) {
@@ -4567,7 +4658,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 // Available units button
                 '#dio_btn_available_units { top:84px; left:120px; z-index:15; position:absolute; } ' +
                 '#dio_btn_available_units .ico_available_units { margin:5px 0px 0px 4px; width:24px; height:24px; ' +
-                'background:url(' + Home_img + 'couteau.png) no-repeat 0px 0px;background-size:100%; filter:url(#Hue1); -webkit-filter:hue-rotate(100deg);  } ' +
+                'background:url(' + Home_url + '/img/dio/logo/couteau.png) no-repeat 0px 0px;background-size:100%; filter:url(#Hue1); -webkit-filter:hue-rotate(100deg);  } ' +
 
                 '</style>').appendTo('head');
             if (uw.Game.gods_active.aphrodite || uw.Game.gods_active.ares) { createWindowType("DIO_UNITS", (LANG.hasOwnProperty(LID) ? getTexts("Options", "ava")[0] : default_title), 430, 315, true, [240, 70]); }
@@ -4901,7 +4992,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 // Button
                 '#dio_comparison_button { top:51px; left:120px; z-index:11; position:absolute; } ' +
                 '#dio_comparison_button .ico_comparison { margin:5px 0px 0px 4px; width:24px; height:24px; z-index: 15;' +
-                'background:url(' + Home_img + 'casque.png) no-repeat 0px 0px; background-size:100%; filter:url(#Hue1); -webkit-filter:hue-rotate(60deg); } ' +
+                'background:url(' + Home_url + '/img/dio/logo/casque.png) no-repeat 0px 0px; background-size:100%; filter:url(#Hue1); -webkit-filter:hue-rotate(60deg); } ' +
                 '#dio_comparison_button.checked .ico_comparison { margin-top:6px; } ' +
 
                 // Window
@@ -5687,18 +5778,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             }
                             break;
                         case "info":
-                            if (DATA.options.dio_BBt) {
-                                BBtowninfo.towninfo(wnd);
-                            }
+                            if (DATA.options.dio_BBt) BBtowninfo.towninfo(wnd);
                             break;
                         case "support":
                         case "attack":
                             if (DATA.options.dio_way && !($('.js-casted-powers-viewport .unit_movement_boost').get(0) || $(wndID + '.short_duration').get(0))) {
                                 ShortDuration.add(wndID, action);
                             } else $("#dio_short_duration_stylee").remove();
-                            if (DATA.options.dio_sen) {
-                                SentUnits.add(wndID, action);
-                            }
+                            if (DATA.options.dio_sen) SentUnits.add(wndID, action);
                             break;
                         case "rec_mark":
                             break;
@@ -5728,16 +5815,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var Save_troops = {
         activate: () => {
             $.Observer(uw.GameEvents.command.send_unit).subscribe('DIO_SEND_UNITS', function (e, data) {
-                // We handle revolt in the same pool as a regular attack.
 
-                if (data.sending_type === "attack" || data.sending_type === "support") data.sending_type = "revolt";
-                for (var z in data.params) {
-                    if (data.params.hasOwnProperty(z) && (data.sending_type !== "")) {
-                        if (uw.GameData.units[z]) {
-                            sentUnitsArray[data.sending_type][z]
-                        }
-                    }
-                }
+                // Copier les valeurs actuelles des champs de saisie
+                var inputValues = $(".town_info_input").map(function () {
+                    return $(this).val();
+                }).get();
+                // Restaurer les valeurs des champs de saisie
+                setTimeout(() => {
+                    $(".town_info_input").each(function (index) {
+                        $(this).val(inputValues[index]);
+                    });
+                }, 200);
             });
         },
         deactivate: () => {
@@ -5748,8 +5836,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     var SentUnits = {
         activate: () => {
             $.Observer(uw.GameEvents.command.send_unit).subscribe('DIO_SEND_UNITS', function (e, data) {
-                // We handle revolt in the same pool as a regular attack.
-                if (data.sending_type === "revolt") data.sending_type = "attack";
+
+                // We handle revolt in the same pool as a regular attack & portal olympus
+                if (data.sending_type === "revolt" || data.sending_type === "portal_attack_olympus") data.sending_type = "attack";
+                if (data.sending_type === "portal_support_olympus") data.sending_type = "support";
                 for (var z in data.params) {
                     if (data.params.hasOwnProperty(z) && (data.sending_type !== "")) {
                         if (uw.GameData.units[z]) {
@@ -5758,6 +5848,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         }
                     }
                 }
+                SentUnits.update(data.sending_type);
             });
             $('<style id="dio_SentUnits_style"> ' +
                 '#dio_table_box .icon_sent { height: 20px; margin-top: -2px; width: 20px; background-position-y: -26px; padding-left: 0px; margin-left: 0px; } ' +
@@ -5778,7 +5869,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             $('#dio_SentUnits_breach_style').remove();
         },
         add: (wndID, action) => {
-
             $('<style id="dio_SentUnits_modif_style">' +
                 '.attack_support_window .send_units_form .button_wrapper { text-align:left; padding-left:70px; }' +
                 //'#btn_attack_town { margin-left: 55px; } ' +
@@ -5829,7 +5919,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     SentUnits.update(action);
                 });
 
-
                 $(wndID + '#dio_tro').tooltip(dio_icon + "BETA save sent troops (revolt, attack, support)");
 
                 $(wndID + "#dio_tro.checkbox_new").click(function () {
@@ -5855,20 +5944,26 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             try {
                 // Remove old unit list
                 $('.sent_units_box.' + action + ' .units_list').each(function () { this.innerHTML = ""; });
+
+                function appendUnitIcon(unit, count) {
+                    $('.sent_units_box.' + action + ' .units_list').each(function () {
+                        $(this).append('<div class="unit_icon25x25 ' + unit +
+                            (count >= 1000 ? (count >= 10000 ? " five_digit_number" : " four_digit_number") : "") + '">' +
+                            '<span class="count text_shadow">' + count + '</span>' +
+                            '</div>');
+                    });
+                }
+
                 // Add new unit list
                 for (var x in sentUnitsArray[action]) {
                     if (sentUnitsArray[action].hasOwnProperty(x)) {
                         if ((sentUnitsArray[action][x] || 0) > 0) {
-                            $('.sent_units_box.' + action + ' .units_list').each(function () {
-                                $(this).append('<div class="unit_icon25x25 ' + x +
-                                    (sentUnitsArray[action][x] >= 1000 ? (sentUnitsArray[action][x] >= 10000 ? " five_digit_number" : " four_digit_number") : "") + '">' +
-                                    '<span class="count text_shadow">' + sentUnitsArray[action][x] + '</span>' +
-                                    '</div>');
-                            });
+                            appendUnitIcon(x, sentUnitsArray[action][x]);
                         }
                     }
                 }
                 saveValue(WID + "_sentUnits", JSON.stringify(sentUnitsArray));
+
             } catch (error) { errorHandling(error, "updateSentUnitsBox"); }
         }
     };
@@ -5884,7 +5979,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '.attack_support_window .way_icon { padding:30px 0px 0px 30px; background:transparent url(https://gp' + LID + '.innogamescdn.com/images/game/towninfo/traveltime.png) no-repeat 0 0; } ' +
                 '.attack_support_window .arrival_icon { padding:30px 0px 0px 30px; background:transparent url(https://gp' + LID + '.innogamescdn.com/images/game/towninfo/arrival.png) no-repeat 0 0; } ' +
 
-                '.attack_support_window .short_icon { background: url(https://666kb.com/i/ck2c7eohpyfa3yczt.png) 11px -1px / 21px no-repeat; filter: hue-rotate(50deg); -webkit-filter: hue-rotate(50deg); margin: 100px; width: 27px; transform: translateX(-7px); } ' +
+                '.attack_support_window .short_icon { background: url(' + Home_url + '/img/dio/logo/short_icon.png) 11px -1px / 21px no-repeat; filter: hue-rotate(50deg); -webkit-filter: hue-rotate(50deg); margin: 100px; width: 27px; transform: translateX(-7px); } ' +
                 '.attack_support_window .dio_duration .power_icon45x45.cap_of_invisibility { transform: scale(0.4); margin: -12px -20px -13px -20px; width: 44px; } ' +
 
                 '.attack_support_window .additional_info_wrapper .town_info_duration_pos_alt { min-height: 50px;; } ' +
@@ -6088,14 +6183,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
     // TODO: Umstellen!
     // Preload images for drop down arrow buttons
     var drop_over = new Image();
-    drop_over.src = Home_img + "drop-over.png";
+    drop_over.src = Home_url + "/img/dio/btn/drop-over.png";
     var drop_out = new Image();
-    drop_out.src = Home_img + "drop-out.png";
+    drop_out.src = Home_url + "/img/dio/btn/drop-out.png";
 
     function changeDropDownButton() {
         $('<style id="dio_style_arrow" type="text/css">' +
             '#dd_filter_type .arrow, .select_rec_unit .arrow, .dropdown.default .arrow {' +
-            'width: 18px !important; height: 17px !important; background: url("' + Home_img + 'drop-out.png") no-repeat 0px -1px !important;' +
+            'width: 18px !important; height: 17px !important; background: url("' + Home_url + '/img/dio/btn/drop-out.png") no-repeat 0px -1px !important;' +
             'position: absolute; top: 2px !important; right: 3px; } ' +
             '</style>').appendTo('head');
     }
@@ -6443,12 +6538,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     $('#trade_tab .c_' + color).each(function () {
                         this.remove();
                     });
-                    $('#trade_tab .progress').each(function () {
-                        if ($("p", this).length < 3) {
-                            if ($(this).parent().get(0).id != "big_progressbar") {
+
+                    var progressBarList = $('#trade_tab .progress');
+                    for (var i = 0; i < progressBarList.length; i++) {
+                        var progressBar = progressBarList[i];
+                        if ($("p", progressBar).length < 3) {
+                            if ($(progressBar).parent().get(0).id != "big_progressbar") {
                                 limit = 1000 * (242 / parseInt(max_amount, 10));
 
-                                switch ($(this).parent().get(0).id.split("_")[2]) {
+                                switch ($(progressBar).parent().get(0).id.split("_")[2]) {
                                     case "wood":
                                         limit = limit * woodmark;
                                         break;
@@ -6459,10 +6557,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                         limit = limit * ironmark;
                                         break;
                                 }
-                                $('<p class="c_' + color + '"style="position:absolute;left: ' + limit + 'px; background:' + color + ';width:2px;height:100%;margin:0px"></p>').appendTo(this);
+                                $('<p class="c_' + color + '"style="position:absolute;left: ' + limit + 'px; background:' + color + ';width:2px;height:100%;margin:0px"></p>').appendTo(progressBar);
                             }
                         }
-                    });
+                    }
                 }
             }
         }
@@ -6511,7 +6609,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             top: '-3px',
             float: 'left',
             position: 'relative',
-            background: 'url("' + Home_img + 'echange.png") no-repeat'
+            background: 'url("' + Home_url + '/img/dio/btn/echange.png") no-repeat'
         });
     }
 
@@ -6628,9 +6726,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_Improvement_trade { position: relative; top: -259px; left: 59px; } ' +
                 '#dio_Improvement_trade .dio_trade { position: absolute; height: 16px; width: 22px; background-repeat: no-repeat; background-position: 0px -1px; } ' +
                 '#dio_Improvement_trade .dio_trade:hover { background-position: 0px -17px; } ' +
-                '#dio_Improvement_trade .dio_trade.dio_max { right: 105px; background-image: url(' + Home_img + 'trade-arrow.png);} ' +
-                '#dio_Improvement_trade .dio_trade.dio_send_cult { right: 85px; background-image: url(' + Home_img + 'trade-cult.png);} ' +
-                '#dio_Improvement_trade .dio_trade.dio_send_cult_reverse { left: 105px; background-image: url(' + Home_img + 'trade-cultr.png);} ' +
+                '#dio_Improvement_trade .dio_trade.dio_max { right: 105px; background-image: url(' + Home_url + '/img/dio/btn/trade-arrow.png);} ' +
+                '#dio_Improvement_trade .dio_trade.dio_send_cult { right: 85px; background-image: url(' + Home_url + '/img/dio/btn/trade-cult.png);} ' +
+                '#dio_Improvement_trade .dio_trade.dio_send_cult_reverse { left: 105px; background-image: url(' + Home_url + '/img/dio/btn/trade-cultr.png);} ' +
                 '.q_trade { display: none; } ' +
                 '</style>').appendTo('head');
         },
@@ -6997,7 +7095,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     //'<a id="dio_Port" style="position: absolute; width: 60px; height: 26px;"></a>' +
                     '<div id="dio_transporter" class="cont">' +
                     '<table style=" margin:0px;"><tr align="center" >' +
-                    '<td><img id="dio_ship_img" class="ico" src="' + Home_img + 'mini-bateau.png"></td>' +
+                    '<td><img id="dio_ship_img" class="ico" src="' + Home_url + '/img/dio/logo/mini-bateau.png"></td>' +
                     '<td><span id="dio_ship" class="bold text_shadow"></span></td></tr>' +
                     '<tr align="center"><td></td>' +
                     '<td><span id="dio_ship-def" class="bold text_shadow"></span></td></tr>' +
@@ -7025,12 +7123,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $("#dio_tr_recruit").click(() => { TransportCapacity.update(); });
                 $("#dio_transporter").toggleClick(
                     function () {
-                        $("#dio_ship_img").get(0).src = Home_img + "mini-bateau-red.png";
+                        $("#dio_ship_img").get(0).src = Home_url + "/img/dio/logo/mini-bateau-red.png";
                         shipsize = true
                         TransportCapacity.update();
                     },
                     function () {
-                        $("#dio_ship_img").get(0).src = Home_img + "mini-bateau.png";
+                        $("#dio_ship_img").get(0).src = Home_url + "/img/dio/logo/mini-bateau.png";
                         shipsize = false
                         TransportCapacity.update();
                     }
@@ -7478,7 +7576,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             });
 
             $(bbcodeBarId + ' .dio_bbcode_option').css({
-                background: 'url("' + Home_img + 'bbcodebarid.png")',
+                background: 'url("' + Home_url + '/img/dio/logo/bbcodebarid.png")',
                 display: 'block',
                 float: 'left',
                 width: '22px',
@@ -7558,7 +7656,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 move_icon: 'https://gp' + LID + '.innogamescdn.com/images/game/unit_overview/', // '?',
 
-                bordure: Home_img + 'transition-mini.png' // Home_img + 'bordure.png'
+                bordure: Home_url + '/img/dio/logo/transition-mini.png' // Home_img + 'bordure.png'
             };
 
             $('<div class="dio_bb_def_chooser">' +
@@ -7752,11 +7850,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '.dio_smiley_box ::-webkit-scrollbar-thumb { background-color: rgba(87, 121, 45, 0.5); border-radius: 3px; } ' +
                 '.dio_smiley_box ::-webkit-scrollbar-thumb:hover { background-color: rgba(87, 121, 45, 0.8); } ' +
                 /* Button Up */
-                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url(' + Home_img + 'scroll-up-green.png);} ' +
-                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url(' + Home_img + 'scroll-up-green-hover.png);} ' +
+                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url(' + Home_url + '/img/dio/btn/scroll-up-green.png);} ' +
+                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url(' + Home_url + '/img/dio/btn/scroll-up-green-hover.png);} ' +
                 /* Button Down */
-                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url(' + Home_img + 'scroll-down-green.png);} ' +
-                '.dio_smiley_box ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url(' + Home_img + 'scroll-down-green-hover.png);} ' +
+                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url(' + Home_url + '/img/dio/btn/scroll-down-green.png);} ' +
+                '.dio_smiley_box ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url(' + Home_url + '/img/dio/btn/scroll-down-green-hover.png);} ' +
 
                 // Smiley page link
                 '.dio_smiley_box .box_footer { text-align:center; margin-top:4px; } ' +
@@ -7836,43 +7934,37 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         loadSmileys: () => {
             try {
                 // Replace german sign smilies
-                if (MID == "de") {
+                if (MID == "de" || dio.lang() == "de") {
                     smileyArray.standard.push("land-germany", "land-germany2", "land-germany3", "land-germany-kings");
                     smileyArray.other.push("dagegen2", "dafuer2");
-                    smileyArray.people[2] = "mttao-deutschland";
-                    smileyArray.people[3] = "schal-deutschland";
+                    smileyArray.people.unshift("mttao-deutschland", "schal-deutschland");
                 }
-                if (MID == "fr") {
+                if (MID == "fr" || dio.lang() == "fr") {
                     smileyArray.standard.push("land-france", "land-france2", "land-france3");
-                    smileyArray.people[2] = "mttao-frankreich";
-                    smileyArray.people[3] = "schal-frankreich";
+                    smileyArray.people.unshift("mttao-frankreich", "schal-frankreich");
                 }
-                if (MID == "it") {
+                if (MID == "it" || dio.lang() == "it") {
                     smileyArray.standard.push("land-italy", "land-italy2", "land-italy3");
-                    smileyArray.people[2] = "mttao-italien";
-                    smileyArray.people[3] = "schal-italien";
+                    smileyArray.people.unshift("mttao-italien", "schal-italien");
                 }
-                if (MID == "ro") {
+                if (MID == "ro" || dio.lang() == "ro") {
                     smileyArray.standard.push("land-romania", "land-romania2", "land-romania3");
-                    smileyArray.people[3] = "mttao-rumaenien";
+                    smileyArray.people.unshift("mttao-rumaenien");
                 }
-                if (MID == "br") {
+                if (MID == "br" || dio.lang() == "br") {
                     smileyArray.standard.push("land-portugal", "land-portugal2", "land-portugal3");
-                    smileyArray.people[2] = "mttao-portugal";
-                    smileyArray.people[3] = "schal-portugal";
+                    smileyArray.people.unshift("mttao-portugal", "schal-portugal");
                 }
-                if (MID == "pl") {
+                if (MID == "pl" || dio.lang() == "pl") {
                     smileyArray.standard.push("land-poland", "land-poland2", "land-poland3");
-                    smileyArray.people[3] = "mttao-polen";
+                    smileyArray.people.unshift("mttao-polen");
                 }
-                if (MID == "es") {
+                if (MID == "es" || dio.lang() == "es") {
                     smileyArray.standard.push("land-spain", "land-spain2", "land-spain3");
-                    smileyArray.people[2] = "mttao-spanien";
-                    smileyArray.people[3] = "schal-spanien";
+                    smileyArray.people.unshift("mttao-spanien", "schal-spanien");
                 }
-                if (MID == "sk") {
-                    smileyArray.people[2] = "mttao-slowakei";
-                    smileyArray.people[3] = "schal-slowakei";
+                if (MID == "sk" || dio.lang() == "sk") {
+                    smileyArray.people.unshift("mttao-slowakei", "schal-slowakei");
                 }
                 for (var a = 1; a < 101; a++) {
                     smileyArray.Geburtstag.push("_geburtstagswedler-" + a);
@@ -8068,7 +8160,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     '<tr align="center"><td>+</td>' + prod_row + '</tr>' +
                     '</table></div>');
 
-                tooltip_fury = $('<div id"tooltip"><table><tr align="center"><td><img src="' + Home_img + 'fury.png"></td>' + fury_row + '</tr></table></div>');
+                tooltip_fury = $('<div id"tooltip"><table><tr align="center"><td><img src="' + Home_url + '/img/dio/logo/fury.png"></td>' + fury_row + '</tr></table></div>');
 
                 //Update 2.231
                 $('#dio_FavorPopup').tooltip(tooltip_str);
@@ -8180,8 +8272,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('<style id="dio_plusmenustyle" type="text/css">' +
                     '.displayImp {display: block !important;}' +
                     '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
-                    '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(' + Home_img + 'draghandle.png)}' +
-                    '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(' + Home_img + 'plusback.png)}' +
+                    '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(' + Home_url + '/img/dio/btn/draghandle.png)}' +
+                    '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(' + Home_url + '/img/dio/btn/plusback.png)}' +
                     '#toolbar_activity_recruits_list {min-width: 113px;}' +
                     '.dropdown-list .item_no_results, .dropdown-list.ui-draggable>div {cursor:text!important;}' +
                     '</style>').appendTo('head');
@@ -8288,13 +8380,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
             // Style
             $('<style id="dio_townbb_style"> ' +
                 // Button
-                '#dio_townbb { background: url("' + Home_img + 'logo-grepolis.png") -23px 0px!important; position:absolute; height: 22px; width: 21px; top:26px; left:184px; z-index:5002; } ' +
-                '#dio_townbb:hover { background: url("' + Home_img + 'logo-grepolis.png") -23px -23px!important; position:absolute; height: 22px; width: 21px; top:26px; left:184px; z-index:5002; } ' +
-                '#dio_townbb_logo { background: url("' + Home_img + 'logo-vile-2.png"); position: absolute; height: 30px; width: 30px; left:180px; top:27px; z-index:5001; } ' +
+                '#dio_townbb { background: url("' + Home_url + '/img/dio/btn/logo-grepolis.png") -23px 0px!important; position:absolute; height: 22px; width: 21px; top:26px; left:184px; z-index:5002; } ' +
+                '#dio_townbb:hover { background: url("' + Home_url + '/img/dio/btn/logo-grepolis.png") -23px -23px!important; position:absolute; height: 22px; width: 21px; top:26px; left:184px; z-index:5002; } ' +
+                '#dio_townbb_logo { background: url("' + Home_url + '/img/dio/btn/logo-vile.png"); position: absolute; height: 30px; width: 30px; left:180px; top:27px; z-index:5001; } ' +
                 // Style
                 '#input_townbb { background-color: #ffe2a0; display: none; position: absolute; left: 23px; top: 29px; width: 153px; height: 12px; text-align: center; z-index: 6; } ' +
                 // clipboard
-                '#dio_townbb-clipboard { background: url(' + Home_img + 'icon-add-to-clipboard.png); background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 6; top:29px ;left: 167px; display: none;} ' +
+                '#dio_townbb-clipboard { background: url("' + Home_url + '/img/dio/btn/icon-clipboard.png"); background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 6; top:29px ;left: 167px; display: none;} ' +
                 '</style>').appendTo("head");
         },
         deactivate: () => {
@@ -8330,6 +8422,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         if (DATA.options.dio_tic) updateIcon()
         if (DATA.options.dio_Tow) Townbb.update();
         if (DATA.options.dio_tra) setTimeout(() => { TransportCapacity.update(); }, 20)
+        if (DATA.options.dio_Rtt) dio.removeTooltipps();
     };
 
     let townName = $('div.town_name.js-townname-caption.js-rename-caption.ui-game-selectable')[0];
@@ -8351,9 +8444,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '.dio_BBplayer { background: url(https://gp' + LID + '.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -28px; height: 22px; width: 21px; } ' +
                 '.dio_BBalliance { background: url(https://gp' + LID + '.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -5px; height: 22px; width: 21px; } ' +
                 // clipboard
-                '.dio_clipboard-player { background: url(' + Home_img + 'icon-add-to-clipboard.png) #ffedc5; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
-                '.dio_clipboard-alliance { background: url(' + Home_img + 'icon-add-to-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
-                '.dio_clipboard-town { background: url(' + Home_img + 'icon-add-to-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+                '.dio_clipboard-player { background: url(' + Home_url + '/img/dio/btn/icon-clipboard.png) #ffedc5; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+                '.dio_clipboard-alliance { background: url(' + Home_url + '/img/dio/btn/icon-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+                '.dio_clipboard-town { background: url(' + Home_url + '/img/dio/btn/icon-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
                 // Style (text)
                 '.input_BBplayer { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
                 '.input_BBalliance { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
@@ -8507,11 +8600,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 '#dio_building_sort_control #dio_numberbox { display:none; width: 70px; } ' +
                 //sort
                 '#dio_sort { cursor: pointer; filter: contrast(200%); background-repeat: no-repeat; background-position: bottom right; }' +
-                '#dio_sort.sorting {background-image: url("' + Home_img + 'sort-both.png");}' +
-                '#dio_sort.sorting_asc {background-image: url("' + Home_img + 'sort-desc-green.png") !important;}' +
-                '#dio_sort.sorting_desc {background-image: url("' + Home_img + 'sort-asc-green.png") !important;}' +
-                '#dio_sort.sorting_asc_disabled {background-image: url("' + Home_img + 'sort-asc-disabled.png");}' +
-                '#dio_sort.sorting_desc_disabled {background-image: url("' + Home_img + 'sort-desc-disabled.png");}' +
+                '#dio_sort.sorting {background-image: url("' + Home_url + '/img/dio/btn/sort-both.png");}' +
+                '#dio_sort.sorting_asc {background-image: url("' + Home_url + '/img/dio/btn/sort-desc-green.png") !important;}' +
+                '#dio_sort.sorting_desc {background-image: url("' + Home_url + '/img/dio/btn/sort-asc-green.png") !important;}' +
+                '#dio_sort.sorting_asc_disabled {background-image: url("' + Home_url + '/img/dio/btn/sort-asc-disabled.png");}' +
+                '#dio_sort.sorting_desc_disabled {background-image: url("' + Home_url + '/img/dio/btn/sort-desc-disabled.png");}' +
                 '#fixed_table_header .dio_sel { border-left: 2px solid rgb(255, 0, 0); border-right: 2px solid rgb(255, 0, 0); width: 38px; cursor: auto!important;}' +
                 '#fixed_table_header .building_header { cursor: pointer; }' +
                 //suggestions
@@ -9504,7 +9597,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 // style
                 '#joe_hides_sort_control { display: none;} ' +
                 '#dio_hides_sort_control { z-index: 3001;} ' +
-                '#dio_button_table_resize { background-image: url("' + Home_img + 'button-table-resize.png"); background-repeat: no-repeat; display: block !important; float: left; width: 22px; height: 23px; margin-right: 5px; margin-top: 2px; cursor: pointer;} ' +
+                '#dio_button_table_resize { background-image: url("' + Home_url + '/img/dio/btn/button-table-resize.png"); background-repeat: no-repeat; display: block !important; float: left; width: 22px; height: 23px; margin-right: 5px; margin-top: 2px; cursor: pointer;} ' +
                 '#dio_button_table_resize:hover { background-position: 0px -23px !important;} ' +
                 '#dio_button_table_resize.active { background-position: 0px -46px !important;} ' +
                 '#dio_sortinit { margin: 3px 0 0 3px;} ' +
@@ -9698,7 +9791,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=messages]').removeClass("first");
                 //$('#ui_box .nui_main_menu .middle .content ul li[data-option-id=GRM_button]').addClass("messages main_menu_item first");
                 $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=messages]').before('<div id="dio_cityview_style"><li data-option-id="dio_cityview" class="messages main_menu_item first"><span class="content_wrapper"><span class="button_wrapper" style="opacity: 1;">' +
-                    '<span class="button"><span class="icon" style="background:url(' + Home_img + 'city-view.png) no-repeat -36px -0px"></span>' +
+                    '<span class="button"><span class="icon" style="background:url(' + Home_url + '/img/dio/logo/city-view.png) no-repeat -36px -0px"></span>' +
                     '<span class="indicator" style="display: none;">0</span></span></span><span class="name_wrapper" style="opacity: 1;"><span class="name">' + getTexts("grepo_mainmenu", "island_view") + '</span></span></span></li></div>');
 
                 if ($("#GRM_button").is(":visible")) {
@@ -9709,24 +9802,31 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
                 function dio_island_overview() {
                     $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview] .icon').css({
-                        "background": "url(" + Home_img + "city-view.png) no-repeat -36px -0px",
-                        "top": "8px",
-                        "left": "5px"
+                        'background': 'url(' + Home_url + '/img/dio/logo/city-view.png) no-repeat -36px -0px',
+                        'top': '8px',
+                        'left': '5px'
                     });
                     $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview] .name').text(getTexts("grepo_mainmenu", "island_view"));
                 }
                 function dio_city_overview() {
                     $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview] .icon').css({
-                        "background": "url(" + Home_img + "city-view.png) no-repeat -3px 1px",
-                        "top": "6px",
-                        "left": "6px"
+                        'background': 'url(' + Home_url + '/img/dio/logo/city-view.png) no-repeat -3px 1px',
+                        'top': '6px',
+                        'left': '6px'
                     });
                     $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview] .name').text(uw.DM.getl10n("town_index").window_title);
                 }
 
-                $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.city_overview.click).subscribe('dio_city_overview', (e, data) => { dio_island_overview(); });
-                $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.island_view.click).subscribe('dio_island_view', (e, data) => { dio_city_overview(); });
-                $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.strategic_map.click).subscribe('dio_strategic_map', (e, data) => { dio_city_overview(); });
+                // #Grepolis Fix: 2.287 -> 2.289
+                if (uw.GameEvents.ui.layout_mode) {
+                    $.Observer(uw.GameEvents.ui.layout_mode.city_overview.activate).subscribe('dio_city_overview', (e, data) => { dio_island_overview(); });
+                    $.Observer(uw.GameEvents.ui.layout_mode.island_view.activate).subscribe('dio_island_view', (e, data) => { dio_city_overview(); });
+                    $.Observer(uw.GameEvents.ui.layout_mode.strategic_map.activate).subscribe('dio_strategic_map', (e, data) => { dio_city_overview(); });
+                } else {
+                    $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.city_overview.click).subscribe('dio_city_overview', (e, data) => { dio_island_overview(); });
+                    $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.island_view.click).subscribe('dio_island_view', (e, data) => { dio_city_overview(); });
+                    $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.strategic_map.click).subscribe('dio_strategic_map', (e, data) => { dio_city_overview(); });
+                }
 
                 $('#ui_box .nui_main_menu .middle .content ul li[data-option-id=dio_cityview]').click(() => {
                     if (!$("#ui_box .bull_eye_buttons .city_overview").hasClass('checked')) { $("#ui_box .bull_eye_buttons .city_overview").click(); }
@@ -9765,14 +9865,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             minimizable: true,
                         };
                     };
+                    let city_overview, strategic_map, island_view;
+                    if (uw.GameEvents.ui.layout_mode) { // #Grepolis Fix: 2.287 -> 2.289
+                        city_overview = uw.GameEvents.ui.layout_mode.city_overview.activate;
+                        strategic_map = uw.GameEvents.ui.layout_mode.strategic_map.activate;
+                        island_view = uw.GameEvents.ui.layout_mode.island_view.activate;
+                    } else {
+                        city_overview = uw.GameEvents.ui.bull_eye.radiobutton.city_overview.click;
+                        strategic_map = uw.GameEvents.ui.bull_eye.radiobutton.strategic_map.click;
+                        island_view = uw.GameEvents.ui.bull_eye.radiobutton.island_view.click;
+                    }
                     WndHandlerDIOtownoverview.prototype.onClose = () => {
                         $('#ui_box').append($('DIV.ui_city_overview')).append($('DIV.ui_construction_queue'));
-                        if ($("#minimap_canvas").hasClass('expanded')) { $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.strategic_map.click).publish({}); }
-                        else { $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.island_view.click).publish({}); }
+                        if ($("#minimap_canvas").hasClass('expanded')) { $.Observer(strategic_map).publish({}); }
+                        else { $.Observer(island_view).publish({}); }
                     };
                     uw.GPWindowMgr.addWndType("DIO_TOWNOVERVIEW", "dio_townoverview", WndHandlerDIOtownoverview, 1);
 
-                    $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.city_overview.click).subscribe('dio_city_overview_window', (e, data) => {
+                    $.Observer(city_overview).subscribe('dio_city_overview_window', (e, data) => {
                         if (DATA.options.dio_Ciw & (typeof (uw.MoleHoleOnBoard) == "undefined")) {
                             var wnd = uw.GPWindowMgr.Create(uw.GPWindowMgr.TYPE_DIO_TOWNOVERVIEW) || uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_TOWNOVERVIEW);
 
@@ -9813,8 +9923,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var city_btn_construction = {
         activate: () => {
+            let layout_mode; // #Grepolis Fix: 2.287 -> 2.289
+            if (uw.GameEvents.ui.layout_mode) layout_mode = uw.GameEvents.ui.layout_mode.city_overview.activate
+            else layout_mode = uw.GameEvents.ui.bull_eye.radiobutton.city_overview.click
             if (!$('.city_overview_overlay.main').length) setTimeout(() => { $(".construction_queue_sprite.queue_button-idle.queue_button.btn_construction_mode.js-tutorial-btn-construction-mode").click(); }, 20);
-            $.Observer(uw.GameEvents.ui.bull_eye.radiobutton.city_overview.click).subscribe('dio_city_overview', () => {
+            $.Observer(layout_mode).subscribe('dio_city_overview', () => {
                 if (DATA.options.dio_Cic && !$('.city_overview_overlay.main').length) {
                     setTimeout(() => { $(".construction_queue_sprite.queue_button-idle.queue_button.btn_construction_mode.js-tutorial-btn-construction-mode").click(); }, 20);
                 }
@@ -9843,7 +9956,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         XMas: {
             add: () => {
                 if (MID == 'fr') { $('<a href="' + Home + 'pages/dio-tools-david1327" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box'); }
-                else $('<a href="https://dio-david1327.github.io/" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
+                else $('<a href="' + Home_url + '/" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
 
                 var dioXMAS = $('#dio_xmas');
 
@@ -9864,7 +9977,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                 var Year = new Date().getFullYear() + "";
 
                 // TODO: Jahreszahl dynamisch setzen
-                $('<a href="' + Home + 'https://dio-david1327.github.io/" target="_blank"><div id="dio_newYear">' +
+                $('<a href="' + Home_url + '/" target="_blank"><div id="dio_newYear">' +
                     '<img src="' + Home_img + 'sign2-' + Year.substr(0, 1) + '.gif">' +
                     '<img src="' + Home_img + 'sign2-' + Year.substr(1, 1) + '.gif">' +
                     '<img src="' + Home_img + 'sign2-' + Year.substr(2, 1) + '.gif">' +
@@ -9911,7 +10024,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         collor: (a, b, c, collor) => {
             //button
-            var scroll_vertical = "height: 16px; background-image: url(" + Home_img + "scroll-", scroll_horizontal = "width: 16px; background-image: url(" + Home_img + "scroll-";
+            var scroll_vertical = "height: 16px; background-image: url(" + Home_url + "/img/dio/btn/scroll-", scroll_horizontal = "width: 16px; background-image: url(" + Home_url + "/img/dio/btn/scroll-";
             return $('<style id="dio_Scrollbar">' +
                 // Style
                 '::-webkit-scrollbar { width: 12px; height: 12px; } ' +
@@ -10088,14 +10201,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
     var hotkeys = {
         ImagesHotkeys: {
-            key: Home_img + 'dj4uootz.jpg',
-            city_select: Home_img + 'nzhgrbzm.png',
-            administrator: Home_img + 'j4kvrnok.png',
-            captain: Home_img + '8r8ty3md.png',
-            menu: Home_img + 'giiagnrp.png'
+            key: Home_url + '/img/dio/logo/key.png',
+            city_select: Home_url + '/img/dio/logo/Senate.png',
+            administrator: Home_url + '/img/dio/logo/administrator.png',
+            captain: Home_url + '/img/dio/logo/captain.png',
+            menu: Home_url + '/img/dio/logo/parchment.png'
         },
         activate: () => {
-            $('.toolbar_activities .right').before('<a id="dio_BTN_HK" style="z-index: 6; top: -27px; left: 24px; float: right; position: relative;"><img src="' + Home_img + 'hotkeys.png" style="float:left; border-width: 0px"></a></a>');
+            $('.toolbar_activities .right').before('<a id="dio_BTN_HK" style="z-index: 6; top: -27px; left: 24px; float: right; position: relative;"><img src="' + Home_url + '/img/dio/btn/hotkeys.png" style="float:left; border-width: 0px"></a></a>');
 
             $('<style id="dio_hotkeys_style">.town_name_area {z-index: 6}</style>').appendTo('head');
             if ($('#gsa_shortcutOverview').is(':visible')) {
@@ -10343,7 +10456,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     'div.island_info_right { bottom: 0px; right: 0px; position: absolute; }' +
                     'div.island_info_right UL.game_list { height: 378px; }' +
                     '#farm_town_overview_btn { top: 465px; right: 9px; }' +
-                    '#dio_message_island { float: right; right: 3px; height: 23px; width: 22px; background: url("' + Home_img + 'islandmessage.png") no-repeat; 0px 0px; }' +
+                    '#dio_message_island { float: right; right: 3px; height: 23px; width: 22px; background: url("' + Home_url + '/img/dio/btn/islandmessage.png") no-repeat; 0px 0px; }' +
                     '#dio_message_island:hover { background-position: 0px -23px; }' +
                     '</style>').appendTo('head');
 
@@ -10389,10 +10502,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                     if (!$('.dio_town_bb').get(0)) { townslist.add(); }
                 }
             }, 100); //0.1s
-            dio.clipboard("#dio-copy-townslist", null, "townslist", null)
             createWindowType("DIO_BBCODE", getTexts("labels", "tow"), 470, 375, true, [240, 70]); //[240, 70]
             $('<style id="dio_town_list_bb_style"> ' +
-                '#dio_town_list_bb { background: url("' + Home_img + 'subforum-old.png") no-repeat; height: 15px; width: 15px; position: absolute; right: 6px; top: 2px;} ' +
+                '#dio_town_list_bb { background: url("' + Home_url + '/img/dio/btn/subforum-old.png") no-repeat; height: 15px; width: 15px; position: absolute; right: 6px; top: 2px;} ' +
                 '.dio_town_bb { position: absolute; top: 2px; right: 20px; width: 30px; height: 20px; } ' +
                 '.dio_title_bb { margin:1px 6px 13px 3px; color:rgb(126,223,126); } ' +
                 '#dio_close_bb { display: inline-block; float: none; position: relative; top: 5px; margin-left: 10px; } ' +
@@ -10401,6 +10513,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
         },
         add: () => {
             try {
+                dio.clipboard("#dio-copy-townslist", null, "townslist", null)
                 if (!$('#town_groups_list a.town_bb').length != 0) {
                     $('.content .group_name .name').append('<a class="dio_town_bb"><div id="dio_town_list_bb"></div></a>');
                     $('.dio_town_bb').click(function (e) {
@@ -10557,7 +10670,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             message = message.html().trim();
                         }
                         author = '[player]' + $("#message_partner a.gp_player_link").text().trim() + '[/player]';
-                        alliance = $("#message_partner span a").text().trim();
+                        alliance = $("#message_partner a.gp_alliance_link").text().trim();
 
                         if (author === "[player][/player]") author = "Grepolis";
 
@@ -10565,7 +10678,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         else { i = "(" + author + ")" };
 
                         bb_content += "[b]" + uw.DM.getl10n("layout").main_menu.items.messages + ":[/b] " + message + " " + i + "\n";
-                        bb_content += '[img]' + Home_img + 'transition-mini.png[/img]';
+                        bb_content += '[img]' + Home_url + '/img/dio/logo/transition-mini.png[/img]';
 
 
                         let format_search = [
@@ -10654,7 +10767,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
 
 
                             dio_messageExportTMP.find(".published_report").replaceWith("[report][/report]"); //replace reports
-                            dio_messageExportTMP.find(".bbcode_awards").replaceWith("[img]" + Home_img + "award.gif[/img]"); //replace awards
+                            dio_messageExportTMP.find(".bbcode_awards").replaceWith("[img]" + Home_url + "/img/dio/logo/award.gif[/img]"); //replace awards
                             dio_messageExportTMP.find(".reservation_list").replaceWith(function () { //replace reservations
                                 if (MessageExport.bbcodes_town_id($(this).find("a.gp_town_link")) == false) {
                                     dio_messageExportTMP.find(".reservation_list").replaceWith(function () { return '[reservation]9999999[/reservation]'; })
@@ -10690,7 +10803,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 return '[score]' + $(".bbcode_playername", this).text().trim() + '[/score]';
                             });
                             dio_messageExportTMP.find(".bbcode_application").replaceWith(function () { //replace invitation à rejoindre l'alliance
-                                return '[center][img]' + Home_img + 'horizontal-separator.png[/img][/center][center][b]' + $(this).text().trim().replace(/            /mg, "[img]" + Home_img + "espace-1.png[/img]") + '[/b][/center]';
+                                return '[center][img]' + Home_url + '/img/dio/logo/horizontal-separator.png[/img][/center][center][b]' + $(this).text().trim().replace(/            /mg, "[img]" + Home_url + "/img/dio/logo/espace.png[/img]") + '[/b][/center]';
                             });
                             dio_messageExportTMP.find("table").replaceWith(function () { //replace table
                                 return '[table]' + $(this)[0].outerHTML + '[/table]';
@@ -10704,7 +10817,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                             if (author === "[player][/player]") author = "Grepolis";
                             const postDate = $(".message_poster .message_date", this).text().trim();
                             bb_content += '[size=7]' + author + ' ' + postDate + '[/size]\n';
-                            bb_content += '[img]' + Home_img + 'transition-mini2.png[/img]\n';
+                            bb_content += '[img]' + Home_url + '/img/dio/logo/transition-mini2.png[/img]\n';
                             let postHTML = $("#dio_messageExportTMP .message_post_content").html().trim();
                             postHTML = postHTML.replace(e, i)
                             postHTML = postHTML.replace(/(\r\n|\n|\r|\t)/gm, ""); //remove line-breaks, tab characters
@@ -10723,7 +10836,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                                 postHTML = postHTML.replace(format_search[i], format_replace[i]);
                             }
                             bb_content += postHTML + "\n";
-                            bb_content += '[img]' + Home_img + 'transition-mini.png[/img]';
+                            bb_content += '[img]' + Home_url + '/img/dio/logo/transition-mini.png[/img]';
                             bb_content += "\n";
                         });
 
@@ -10749,24 +10862,39 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
                         $('#dio_help_MessageExport').tooltip('Wiki (' + dio_icon + getTexts("Options", "Mse")[0] + ')');
                         $("#expTextarea").focus(function () {
                             const that = this;
-                            setTimeout(() => {
-                                $(that).select();
-                            }, 10);
+                            setTimeout(() => { $(that).select(); }, 10);
                         });
                     });
                 }
             } catch (error) { errorHandling(error, "MessageExport"); }
         },
-        bbcodes_town_id: (e) => {
+        /*bbcodes_town_id: (e) => {
             let t = $(e).attr("href");
             return void 0 !== t && !1 !== t && "undefined" != (t = MessageExport.Link2Struct(t)).id && (t = parseInt(t.id),
                 !isNaN(t)) && t
+        },*/
+        bbcodes_town_id: (e) => {
+            let t = $(e).attr("href");
+            if (void 0 === t || t === false) return;
+            t = MessageExport.Link2Struct(t);
+            if (t.id === undefined) return;
+            t = parseInt(t.id);
+            if (isNaN(t)) return;
+            return t;
         },
-        Link2Struct: (l) => {
+        /*Link2Struct: (l) => {
             let ret = {};
             try {
                 l = l.split(/#/)
                 eval("ret=" + atob(l[1] || l[0]))
+            } catch (e) { }
+            return ret
+        },*/
+        Link2Struct: (l) => {
+            let ret = {};
+            try {
+                l = l.split(/#/)
+                ret = JSON.parse(atob(l[1] || l[0]))
             } catch (e) { }
             return ret
         },
@@ -10792,7 +10920,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a) {
      *******************************************************************************************************************************/
 
     var removetooltipps = {
-        activate: () => { dio.removeTooltipps("sidebar"); },
+        activate: () => { dio.removeTooltipps(); },
         deactivate: () => { },
     };
 
