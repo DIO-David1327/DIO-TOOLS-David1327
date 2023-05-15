@@ -2684,8 +2684,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 var beforeversion = dio_version.replace(version, version - 1);
                 beforeversion = beforeversion.split(".")[0] + "." + beforeversion.split(".")[1]
                 if (DATA.error[beforeversion]) { deleteValue("error"); }
-                if (dio.lang() == "fr") HTML_tab1 += '<iframe src="' + Home_url + '/fr/grepo/News.html " scrolling="auto" style="border:none;width: -moz-available;width: -webkit-fill-available;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
-                else HTML_tab1 += '<iframe src="' + Home_url + '/en/grepo/News.html " scrolling="auto" style="border:none;width: -webkit-fill-available;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
+                if (dio.lang() == "fr") HTML_tab1 += '<iframe src="' + Home_url + '/fr/grepo/News.html " scrolling="auto" style="border:none;width: -moz-available;width: 810px;;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
+                else HTML_tab1 += '<iframe src="' + Home_url + '/en/grepo/News.html " scrolling="auto" style="border:none;width: 810px;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
                 return HTML_tab1;
 
             }
