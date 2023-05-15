@@ -2,10 +2,10 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.32.2
+// @version		4.33
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2023. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
-// @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
+// @description:FR Version 2023. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
 // @match		https://*.grepolis.com/game/*
 // @match		https://*.forum.grepolis.com/*
 // @match		https://dio-david1327.github.io/*
@@ -106,9 +106,11 @@ function appendScript() {
     //console.log("GM-API: " + gm_bool);
     if (document.getElementsByTagName('body')[0]) {
 
-      if (GMM) {const scriptclipboard = document.createElement("script");
-        scriptclipboard.textContent = GM_getResourceText("clipboard");
-        document.body.appendChild(scriptclipboard);}
+        if (GMM) {
+            const scriptclipboard = document.createElement("script");
+            scriptclipboard.textContent = GM_getResourceText("clipboard");
+            document.body.appendChild(scriptclipboard);
+        }
 
         var dioscript = document.createElement('script');
         dioscript.type = 'text/javascript';
@@ -124,7 +126,7 @@ if (location.host === "dio-david1327.github.io") { DIO_PAGE(); } // PAGE
 else if ((uw.location.pathname.indexOf("game") >= 0)) {
     try {
         $('<script src="https://dio-david1327.github.io/DIO-TOOLS-David1327/Version.js"></script>').appendTo("head");
-        if (!GMM)$('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
+        if (!GMM) $('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
         //$('<script src="http://localhost:4000/test.js"></script>').appendTo("head");
     } catch (error) { console.log(error, '<script>') }
     appendScript();
@@ -327,12 +329,12 @@ function DIO_FORUM() {
                                 } else if (src.substring(0, 1) == "_") {
                                     smileyArray[e][f].src = "https://www.greensmilies.com/smile/smiley_emoticons" + src + ".gif";
                                 } else {*/
-                                    if (SmileyBox.loading_error == false) {
-                                        //smileyArray[e][f].src = "https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-" + src + ".gif";
-                                        smileyArray[e][f].src = Home_url + "/img/smileys/" + src + ".gif";
-                                    } else {
-                                        smileyArray[e][f].src = 'https://i.imgur.com/VdjJJgk.gif';
-                                    }
+                                if (SmileyBox.loading_error == false) {
+                                    //smileyArray[e][f].src = "https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-" + src + ".gif";
+                                    smileyArray[e][f].src = Home_url + "/img/smileys/" + src + ".gif";
+                                } else {
+                                    smileyArray[e][f].src = 'https://i.imgur.com/VdjJJgk.gif';
+                                }
                                 //}
                                 smileyArray[e][f].onerror = function () {
                                     this.src = 'https://i.imgur.com/VdjJJgk.gif';
@@ -1909,7 +1911,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_Fdm) ForumDeleteMultiple.activate();
                 // eslint no-fallthrough: "error"
                 case "/message/view":
-                    //markMessage();
+                //markMessage();
                 // eslint no-fallthrough: "error"
                 case "/message/new":
                 case "/message/forward":
@@ -1919,7 +1921,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 case '/message/index':
                 case '/message/create':
                 case '/message/reply':
-                    //markMessages();
+                //markMessages();
                 // eslint no-fallthrough: "error"
                 case "/player_memo/load_memo_content":
                     if (DATA.options.dio_sml) SmileyBox.add(action);
@@ -2155,28 +2157,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             }, 50);
         },
         clipboard: (IDbutton, input, error, Text) => {
-            //try {
-            var clipboard = new uw.ClipboardJS(IDbutton);
-            clipboard.on("success", () => {
-                setTimeout(() => {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                    if (input !== null) {
-                        $(IDbutton).css({ "display": "none" })
-                        $(input).css({ "display": "none" })
-                    }
-                    if (Text !== null) {
-                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
-                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
+            try {
+                var clipboard = new uw.ClipboardJS(IDbutton);
+                clipboard.on("success", () => {
+                    setTimeout(() => {
+                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                        if (input !== null) {
+                            $(IDbutton).css({ "display": "none" })
+                            $(input).css({ "display": "none" })
                         }
-                    }
-                }, 50)
-            });
-            clipboard.on('error', (e) => {
-                return uw.HumanMessage.error(dio_icon + getTexts("messages", "cli")); errorHandling(e, "clipboard error");
-            });
-            //} catch (error) {
-            //return errorHandling(error, "clipboard");
-            //}
+                        if (Text !== null) {
+                            if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
+                                uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
+                            }
+                        }
+                    }, 50)
+                });
+                clipboard.on('error', (e) => {
+                    return uw.HumanMessage.error(dio_icon + getTexts("messages", "cli")); errorHandling(e, "clipboard error");
+                });
+            } catch (error) {
+                return errorHandling(error, "clipboard");
+            }
         },
         dateDiff(date1, date2) {
             var diff = {}
@@ -2542,7 +2544,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             uw.NotificationType.DIO_TOOLS = "diotools";
             uw.NotificationType.DIO_TOOLS_V = "diotools_v";
 
-            var notifN = 33;
+            var notifN = dio_version.split(".")[1] + 1;
             var titreN =
                 //    0; // nouvelles fonctionnalités
                 1; // Nouvelle version
@@ -2652,15 +2654,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<div style="bottom: 1px;position: absolute; font-weight: bold;">' +
 
                     '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
-                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
+                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>';
 
-                    '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                if (MID == "fr" || dio.lang() == "fr") {
+                    HTML_tab1 += '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
+                        '<a id="link_forum" href="' + Home_url + '/fr/news/mise-a-jour/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                } else {
+                    HTML_tab1 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '</div>' +
+                        '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                }
+
+                HTML_tab1 += '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 92px;">' +
                     '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Update") + ' target="_blank"></a>' +
@@ -2688,15 +2698,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<div style="bottom: 1px;position: absolute; font-weight: bold;">' +
 
                     '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
-                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
+                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>';
 
-                    '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                if (MID == "fr" || dio.lang() == "fr") {
+                    HTML_tab2 += '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
+                        '<a id="link_forum" href="' + Home_url + '/fr/news/mise-a-jour/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                } else {
+                    HTML_tab2 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '</div>' +
+                        '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                }
+
+                HTML_tab2 += '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 92px;">' +
                     '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href="' + Home_url + '/Donations.html" target="_blank"></a>' +
@@ -2769,15 +2787,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '</div>' +
                     '<div style="bottom: -1px;position: absolute; font-weight: bold;">' +
 
-                    '<div id="diomenu_einstellungen_sendmail" style=" float: left; margin: -5px 0 -5px 10px;">' + dio.createButton(getTexts("translations", "send")) + '</div>' +
+                    '<div id="diomenu_einstellungen_sendmail" style=" float: left; margin: -5px 0 -5px 10px;">' + dio.createButton(getTexts("translations", "send")) + '</div>';
 
-                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
-                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
+                if (MID == "fr" || dio.lang() == "fr") {
+                    HTML_tab3 += '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                        '<a id="link_forum" href="' + Home_url + '/fr/news/mise-a-jour/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                } else {
+                    HTML_tab3 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '</div>' +
+                        '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                }
+
+                HTML_tab3 += '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 92px;">' +
                     '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Translations") + ' target="_blank"></a>' +
@@ -2836,7 +2862,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                         var translation_table = "";
                         for (var d = 0; d < translations.length; d++) {
-                            translation_table += '<tr class="translation"><td style="list-style:square outside;padding-right: 5px"></td><td><img src="' + Home_url + '/img/flag/flag.16.' + translations[d][0] + '.png" style="margin:0 5px;"></td><td>' + translations[d][0] + ':</td><td class="value">' + translations[d][1] + '</td></tr>';
+                            translation_table += '<tr class="translation"><td style="list-style:square outside;padding-right: 5px"></td><td><img src="' + Home_url + '/img/flag/flag.16.' + translations[d][0].toLowerCase() + '.png" style="margin:0 5px;"></td><td>' + translations[d][0] + ':</td><td class="value">' + translations[d][1] + '</td></tr>';
                         }
                         return translation_table;
                     })() +
@@ -2845,7 +2871,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 //HTML_tab3 += dio.grepo_btn("diomenu_einstellungen_sendmail", getTexts("Settings", "send"))[0].outerHTML;
                 return HTML_tab3;
             }
-            //???
+            //BUG
             function tab4() {
 
                 var HTML_tab4 = '<div style="overflow-x: hidden; padding-left: 5px; position: relative;"></div>' +
@@ -2858,12 +2884,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<div id="dioerrordio" style=" float: left; margin: -5px 0 -5px 10px;">' + dio.createButton(getTexts("translations", "send")) + '</div>' +
 
                     '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
-                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
+                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>';
 
-                    '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                if (MID == "fr" || dio.lang() == "fr") {
+                    HTML_tab4 += '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>';
+                } else {
+                    HTML_tab4 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>';
+                }
 
-                    '</div>' +
+                HTML_tab4 += '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 92px;">' +
                     '<a style="display: none;" class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Update") + ' target="_blank"></a>' +
@@ -7707,7 +7738,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '[size=12][town]' + uw.ITowns.getTown(uw.Game.townId).getId() + '[/town] ([player]' + uw.Game.player_name + '[/player])[/size]';
                 if (MID == 'fr') str += '\n[size=8][url=' + Home_url + '/fr/]DIO-TOOLS-David1327[/url] - v.' + dio_version + '[/size]';
                 else str += '\n[size=8][url=' + Home_url + '/en/]DIO-TOOLS-David1327[/url] - v.' + dio_version + '[/size]';
-                    //'[||][img]'+ imgArray['rev' + (uw.ITowns.getTown(uw.Game.townId).hasConqueror()?1:0)] +'[/img][/**][/table]'+
+                //'[||][img]'+ imgArray['rev' + (uw.ITowns.getTown(uw.Game.townId).hasConqueror()?1:0)] +'[/img][/**][/table]'+
                 str += '\n\n[i][b]' + getTexts("labels", "inf", true) + '[/b][/i]' + troop_table +
                     '[table][*]' +
                     '[img]' + imgArray.wall + '[/img][|]\n' +
@@ -10648,7 +10679,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         let bb_content = "[quote]";
 
                         // Titre
-                        let author, alliance, message, i;
+                        let author, alliance, alliance2, message, i;
                         if ($("#message_message_list .subject").is(":visible")) {
                             message = $("#message_message_list .subject").text().trim();
                         } else {
@@ -10657,10 +10688,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         }
                         author = '[player]' + $("#message_partner a.gp_player_link").text().trim() + '[/player]';
                         alliance = $("#message_partner a.gp_alliance_link").text().trim();
+                        alliance2 = $("#message_partner span a").text().trim();
 
                         if (author === "[player][/player]") author = "Grepolis";
 
                         if (alliance) { i = "(" + author + " [ally]" + alliance + "[/ally])" }
+                        else if (alliance2) { i = "(" + author + " [ally]" + alliance2 + "[/ally])" }
                         else { i = "(" + author + ")" };
 
                         bb_content += "[b]" + uw.DM.getl10n("layout").main_menu.items.messages + ":[/b] " + message + " " + i + "\n";
@@ -10827,8 +10860,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         });
 
                         //bb_content = bb_content.slice(0, -1);
-                        if (MID == 'fr') bb_content += "[url=" + Home_url + "/fr/[/url] - v." + dio_version;
-                        else bb_content += "[url=" + Home_url + "/en/[/url] - v." + dio_version;
+                        if (MID == 'fr') bb_content += "[url=" + Home_url + "/fr/]DIO-TOOLS-David1327[/url] - v." + dio_version;
+                        else bb_content += "[url=" + Home_url + "/en/]DIO-TOOLS-David1327[/url] - v." + dio_version;
                         bb_content += "[/quote]";
 
                         let expRahmen_a = "<div class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
