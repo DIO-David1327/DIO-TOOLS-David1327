@@ -2,18 +2,18 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.32.1
+// @version		4.33
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2023. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
-// @description:FR Version 2022. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
+// @description:FR Version 2023. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
 // @match		https://*.grepolis.com/game/*
 // @match		https://*.forum.grepolis.com/*
-// @match		https://*.tuto-de-david1327.com/*
+// @match		https://dio-david1327.github.io/*
 // @updateURL   https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js
 // @downloadURL	https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js
 // @require		https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
-// @resource clipboard	https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js
-// @icon		https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-bussi2.gif
+// @resource 	clipboard		https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js
+// @icon		https://dio-david1327.github.io/img/smileys/bussi2.gif
 // @icon64		https://www.tuto-de-david1327.com/medias/images/dio-tools-david1327.jpg
 // @copyright	2013+, DIONY and 2019+, David1327
 // @grant		GM_setValue
@@ -40,7 +40,6 @@ else GMM = (typeof GM_info === 'object');
 //GMM = false;
 
 //url_dev = true;
-url_dev = false;
 
 console.log('%c|= ' + GM.info.script.name + ' is active v' + dio_version + ' (' + GM.info.scriptHandler + ' v' + GM.info.version + ') [GMM ' + GMM + '] =|', 'color: green; font-size: 1em; font-weight: bolder; ');
 
@@ -106,9 +105,12 @@ var time_a, time_b;
 function appendScript() {
     //console.log("GM-API: " + gm_bool);
     if (document.getElementsByTagName('body')[0]) {
-        const scriptclipboard = document.createElement("script");
-        scriptclipboard.textContent = GM_getResourceText("clipboard");
-        document.body.appendChild(scriptclipboard);
+
+        if (GMM) {
+            const scriptclipboard = document.createElement("script");
+            scriptclipboard.textContent = GM_getResourceText("clipboard");
+            document.body.appendChild(scriptclipboard);
+        }
 
         var dioscript = document.createElement('script');
         dioscript.type = 'text/javascript';
@@ -120,10 +122,11 @@ function appendScript() {
     } else setTimeout(() => { appendScript(); }, 500);
 }
 
-if (location.host === "www.tuto-de-david1327.com") { DIO_PAGE(); } // PAGE
+if (location.host === "dio-david1327.github.io") { DIO_PAGE(); } // PAGE
 else if ((uw.location.pathname.indexOf("game") >= 0)) {
     try {
         $('<script src="https://dio-david1327.github.io/DIO-TOOLS-David1327/Version.js"></script>').appendTo("head");
+        if (!GMM) $('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
         //$('<script src="http://localhost:4000/test.js"></script>').appendTo("head");
     } catch (error) { console.log(error, '<script>') }
     appendScript();
@@ -132,7 +135,7 @@ else if ((uw.location.pathname.indexOf("game") >= 0)) {
 else { DIO_FORUM(); }
 
 function DIO_PAGE() {
-    document.getElementById("pied-de-page-pub-2").innerHTML = "";
+    //document.getElementById("pied-de-page-pub-2").innerHTML = "";
 }
 function DIO_FORUM() {
     setTimeout(() => { ajaxObserver(); }, 0);
@@ -158,6 +161,7 @@ function DIO_FORUM() {
     }
 
     let DIO = true, MID = document.location.host.split(".")[0], lang = navigator.language.split("-")[0];
+    let Home_url = "https://dio-david1327.github.io"
     let smileyArray = {};
     let SmileyBox = {
         loading_error: false,
@@ -165,14 +169,14 @@ function DIO_FORUM() {
             $('<style id="dio_smiley">' +
                 '#dio_smiley_button { cursor:pointer; margin:3px 2px 2px 2px; } ' +
 
-                '.dio_smiley_box.game { z-index:5000; position:absolute; top:27px; right: -5px; width:400px; display:none; border: 2px inset #52d313;} ' +
+                '.dio_smiley_box.game { z-index:5000; position:absolute; top:27px; right: -5px; width:444px; display:none; } ' +
                 '.dio_smiley_box.game.open { display:block; } ' +
 
                 // Smiley categories
                 '.dio_smiley_box .dio_box_header { display: table; width: 100%; text-align: center; margin-bottom: -9px; position: relative; top: 3px;} ' +
                 '.dio_smiley_box .dio_box_header img { position: relative; top: 2px;}' +
-                '.dio_smiley_box .dio_group { float: left; width: 35px; background: url("https://www.tuto-de-david1327.com/medias/images/etabA.gif") no-repeat; border-bottom: none; margin-right: 1px;}' +
-                '.dio_smiley_box .dio_group.active { background: url("https://www.tuto-de-david1327.com/medias/images/etabB.gif") no-repeat;}' +
+                '.dio_smiley_box .dio_group { float: left; width: 35px; background: url("' + Home_url + '/img/dio/btn/etabA.gif") no-repeat; border-bottom: none; margin-right: 1px;}' +
+                '.dio_smiley_box .dio_group.active { background: url("' + Home_url + '/img/dio/btn/etabB.gif") no-repeat;}' +
                 //'.dio_smiley_box .dio_group:hover { color: #14999E; } ' + // #11AD6C
 
                 '.dio_smiley_box hr { margin:3px 0px 0px 0px; color:#086b18; border:1px solid; } ' +
@@ -188,17 +192,17 @@ function DIO_FORUM() {
                 '.dio_smiley_box ::-webkit-scrollbar-thumb { background-color: rgba(87, 121, 45, 0.5); border-radius: 3px; } ' +
                 '.dio_smiley_box ::-webkit-scrollbar-thumb:hover { background-color: rgba(87, 121, 45, 0.8); } ' +
                 // Button Up //
-                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-up-green.png);} ' +
-                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-up-green-hover.png);} ' +
-                // Button Down //
-                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-down-green.png);} ' +
-                '.dio_smiley_box ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url(https://www.tuto-de-david1327.com/medias/images/scroll-down-green-hover.png);} ' +
+                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement {height: 16px; background-image: url("' + Home_url + '/img/dio/btn/scroll-up-green.png");} ' +
+                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {height: 16px; background-image: url("' + Home_url + '/img/dio/btn/scroll-up-green-hover.png");} ' +
+                /* Button Down */
+                '.dio_smiley_box ::-webkit-scrollbar-button:single-button:vertical:increment {height: 16px; background-image: url("' + Home_url + '/img/dio/btn/scroll-down-green.png");} ' +
+                '.dio_smiley_box ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url("' + Home_url + '/img/dio/btn/scroll-down-green-hover.png");} ' +
 
                 // Smiley page link
                 '.dio_smiley_box .box_footer { text-align:center; margin-top:4px; } ' +
                 '.dio_smiley_box a:link, .dio_smiley_box a:visited { color: #086b18; font-size: 0.7em; } ' +
                 '.dio_smiley_box a:hover { color: #14999E; } ' +
-                '#dio_smiley_button { z-index:2; height: 18px; border: transparent; background:url("https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif") no-repeat 0px 0px } ' +
+                '#dio_smiley_button { z-index:2; height: 18px; border: transparent; background:url("' + Home_url + '/img/smileys/smile.gif") no-repeat 0px 0px } ' +
                 '#dio_smiley_butt {display:none;} ' +
                 '</style>').appendTo('head');
 
@@ -206,76 +210,65 @@ function DIO_FORUM() {
             smileyArray.button = ["rollsmiliey", "smile"];
 
             smileyArray.standard = [
-                "smilenew", "lol", "neutral-new", "afraid", "freddus-pacman", "auslachen2", "kolobok-sanduhr", "bussi2", "winken4", "flucht2", "panik4", "seb-zunge", "ins-auge-stechen", "fluch4-GREEN", "baby-junge2", "blush-reloaded6", "frown", "verlegen", "blush-pfeif", "stevieh-rolleyes", "daumendreh2", "baby-taptap",
-                "sadnew", "hust", "confusednew", "idea2", "irre", "irre4", "sleep", "candle", "nicken", "no-sad", "thumbs-up-new", "kciuki", "thumbs-down-new", "oh-no2", "bravo2", "kaffee2", "drunk", "saufen", "freu-dance", "hecheln", "headstand", "rollsmiliey", "eazy-cool01", "motz", "cuinlove", "biggrin",
-                "_xp-ani04b-rosa", "_charly_rofl", "_schiefgrinsen2", "_klatsch", "_dream1", "_pssst", "_scared", "_baeh", "_baeh2", "_unknownauthor_neinnein", "_igitt", "_doh", "_charly_klatscher", "_flucht", "_confusednew", "_denker", "_klugscheisser", "_buch", "_nixweiss", "_bulb",
+                "smilenew", "lol", "neutral_new", "afraid", "freddus_pacman", "auslachen2", "kolobok-sanduhr", "bussi2", "winken4", "flucht2", "panik4", "ins-auge-stechen", "seb_zunge", "fluch4_GREEN", "baby_junge2", "blush-reloaded6", "frown", "verlegen", "blush-pfeif", "stevieh_rolleyes", "daumendreh2", "baby_taptap",
+                "sadnew", "hust", "confusednew", "idea2", "irre", "irre4", "sleep", "candle", "nicken", "no_sad", "thumbs-up_new", "kciuki", "thumbs-down_new", "bravo2", "oh-no2", "kaffee2", "drunk", "saufen", "freu-dance", "hecheln", "headstand", "rollsmiliey", "eazy_cool01", "motz", "cuinlove", "biggrin"
             ];
             smileyArray.nature = [
-                "dinosaurier07", "flu-super-gau", "ben-cat", "schwein", "hundeleine01", "blume", "ben-sharky", "ben-cow", "charly-bissig", "gehirnschnecke-confused", "mttao-fische", "mttao-angler", "insel", "fliegeschnappen", "ben-dumbo", "twitter", "elefant", "schildkroete", "elektroschocker", "spiderschwein", "oma-sessel-katze", "fred-elefant",
-                "palmoel", "stevieh-teddy", "fips-aufsmaul", "marienkaefer", "mrkaktus", "kleeblatt2", "fred-blumenstauss", "hurra-fruehling1-lila", "fred-rasenmaeher", "fred-blumenbeet",
-                "_fips_doh", "_fips_baeh2", "_fips_doh", "_fips_nixweiss",
+                "dinosaurier07", "flu-super-gau", "ben_cat", "schwein", "hundeleine01", "blume", "ben_sharky", "ben_cow", "charly_bissig", "gehirnschnecke_confused", "mttao_fische", "mttao_angler", "insel", "fliegeschnappen", "plapperhase", "ben_dumbo", "twitter", "elefant", "schildkroete", "elektroschocker", "spiderschwein", "oma_sessel_katze", "fred_elefant",
+                "palmoel", "stevieh_teddy", "fips_aufsmaul", "marienkaefer", "mrkaktus", "kleeblatt2", "fred_blumenstauss", "hurra_fruehling1_lila", "fred_rasenmaeher", "fred_blumenbeet"
             ];
             smileyArray.grepolis = [
-                "grepolis", "mttao-wassermann", "palka", "i-lovo-grepolis", "silvester-cuinlove", "mttao-schuetze", "kleeblatt2", "wallbash", "musketiere-fechtend", "lol-1", "mttao-waage2", "saladin", "steckenpferd", "skullhaufen", "pferdehaufen", "pirat5", "seb-cowboy", "gw-ranger001",
-                "barbar", "datz", "waffe01", "sarazene-bogen", "waffe02", "waffe14", "hoplit-sword1", "pfeildurchkopf02", "hoplit-sword3",
-                "_stephan_stahlhelm", "_mttao_star_wars",
+                "grepolis", "mttao_wassermann", "i-lovo-grepolis", "silvester_cuinlove", "mttao_schuetze", "kleeblatt2", "wallbash", "musketiere_fechtend", "aufsmaul", "lol1", "mttao_waage2", "steckenpferd", "skullhaufen", "pferdehaufen", "pirat5", "seb_cowboy", "gw_ranger001",
+                "barbar", "datz", "waffe01", "sarazene_bogen", "waffe02", "waffe14", "hoplit_sword1", "pfeildurchkopf02", "saladin", "hoplit_sword3"
             ];
             smileyArray.people = [
-                "greenistan", "mttao-usa", "schal-usa", "mttao-grossbritannien", "seb-hut5", "opa-boese2", "star-wars-yoda1-gruen", "snob", "seb-detektiv-ani", "devil", "segen", "borg", "hexe3b", "eazy-polizei", "stars-elvis", "mttao-chefkoch", "nikolaus", "pirate3-biggrin", "batman-skeptisch", "tubbie1", "tubbie2", "tubbie3", "kosmita", "tubbie4",
-                "_schriftsteller2", "_geek", "_help",
+                "greenistan", "mttao_usa", "schal_usa", "mttao_grossbritannien", "seb_hut5", "opa_boese2", "star-wars-yoda1-gruen", "hexefliegend", "snob", "seb_detektiv_ani", "devil", "segen", "borg", "hexe3b", "eazy_polizei", "stars_elvis", "mttao_chefkoch", "nikolaus", "pirate3_biggrin", "batman_skeptisch", "tubbie1", "tubbie2", "tubbie3", "kosmita", "tubbie4"
             ];
             smileyArray.Party = [
-                "torte1", "torte3", "bier", "party", "party2", "fans", "band", "klokotzen", "rave", "laola", "prost", "mcdonalds", "margarita", "geschenk", "sauf", "el", "trommler", "ozboss-gitarre2", "kaffee", "kaffee3", "caipirinha", "whiskey", "drunk", "popcorn-essen", "fressen", "saufen", "leckerer", "birthday", "energydrink1", "prost2",
-                "_stars_takethat_gary4", "_stars_takethat_gary3", "_stars_kiss_peter05b", "_kingrestless05", "_bananadancer2", "_kolobok_schlagzeuger",
+                "torte1", "torte3", "bier", "party", "party2", "fans", "band", "klokotzen", "laola", "prost", "rave", "mcdonalds", "margarita", "geschenk", "sauf", "el", "trommler", "ozboss_gitarre2", "kaffee", "kaffee3", "caipirinha", "whiskey", "drunk", "fressen", "popcorn_essen", "saufen", "energydrink1", "leckerer", "prost2", "birthday"
             ];
             smileyArray.other = [
-                "steinwerfen", "kolobok", "headbash", "liebeskummer", "bussi", "grab-schaufler2", "boxen2", "aufsmaul", "mttao-kehren", "sm", "weckruf", "klugscheisser2", "karte2-rot", "dagegen", "party", "outofthebox", "dafuer", "pokal-gold", "koepfler", "transformer", "eazy-senseo1",
-                "_browser-opera-vs-ff", "_browser-ff-vs-safari", "_browser-opera-vs-safari", "_browser-safari-vs-ff", "_browser-safari-vs-opera", "_seb_browser-ff", "_seb_browser-opera", "_seb_browser-safari", "_seb_browser-chrome1", "_mttao_haeuptling", "_pagerank-05", "_bibi_stats", "_fred_zocker_augen_4eck", "_fred_aoe_theageofkings", "_teuflisches-ja",
-                "_kilroy_sofa2", "_no-cheats", "_paradoxon5", "_ralf_greenpacman", "_ralf_greenpacman_bigmac", "_stevieh_ordilove",
+                "steinwerfen", "herzen02", "scream-if-you-can", "kolobok", "headbash", "liebeskummer", "bussi", "brautpaar-reis", "grab-schaufler2", "boxen2", "aufsmaul", "mttao_kehren", "sm", "weckruf", "klugscheisser2", "karte2_rot", "dagegen", "party", "dafuer", "outofthebox", "pokal_gold", "koepfler", "transformer", "eazy_senseo1"
             ];
             smileyArray.halloween = [
-                "zombies-alien", "zombies-lol", "zombies-rolleyes", "zombie01", "zombies-smile", "zombie02", "zombies-skeptisch", "zombies-eek", "zombies-frown", "geistani", "scream-if-you-can", "pfeildurchkopf01", "grab-schaufler", "kuerbisleuchten", "mummy3", "kuerbishaufen", "halloweenskulljongleur", "fledermausvampir", "frankenstein-lol", "halloween-confused", "zombies-razz",
-                "halloweenstars-freddykrueger", "zombies-cool", "geist2", "fledermaus2", "halloweenstars-dracula", "batman", "halloweenstars-lastsummer", "hexefliegend",
-                "_hexe-frosch", "_xmas4_hexe-frosch", "_hexe-frosch2",
+                "zombies_alien", "zombies_lol", "zombies_rolleyes", "zombie01", "zombies_smile", "zombie02", "zombies_skeptisch", "zombies_eek", "zombies_frown", "geistani", "scream-if-you-can", "pfeildurchkopf01", "grab-schaufler", "kuerbisleuchten", "mummy3", "kuerbishaufen", "halloweenskulljongleur", "fledermausvampir", "frankenstein_lol", "halloween_confused", "zombies_razz", "halloweenstars_freddykrueger", "zombies_cool", "geist2", "fledermaus2", "halloweenstars_dracula", "batman", "halloweenstars_lastsummer",
+                "hexe-frosch", "xmas4_hexe-frosch", "hexe-frosch2",
             ];
             smileyArray.xmas = [
-                "i-love-grepolis", "santagrin", "xmas1-down", "xmas1-thumbs1", "xmas2-lol", "xmas1-frown", "xmas1-irre", "xmas1-razz", "xmas4-kaffee2", "xmas4-hurra2", "xmas4-aufsmaul", "schneeball", "schneeballwerfen", "xmas4-advent4", "nikolaus", "weihnachtsmann-junge", "schneewerfen-wald", "weihnachtsmann-nordpol", "xmas-kilroy-kamin",
-                "xmas4-laola", "xmas3-smile", "xmas4-paketliebe", "3hlkoenige", "santa", "weihnachtsgeschenk2", "fred-weihnachten-ostern", "xmas4-wallbash", "xmas4-liebe", "xmas4-skullhaufen",
-                "_tree", "_xmas1_censored", "_xmas4_furz", "_xmas4_nixweiss", "_xmas4_postbote", "_xmas4_altermann", "_xmas4_postpaket", "_xmas4_paketliebe", "_xmas4_regenschirm2", "_xmas4_respekt", "_xmas4_stars_takethat_howard",
-                "_xmas4_talk", "_xmas4_hundeleine01", "_xmas4_spam1", "_xmas4_spam3", "_xmas4_google", "_xmas4_selbstmord", "_xmas4_doh", "_xmas_kilroy", "_xmas4_pfeif", "_xmas4_stars_takethat_gary", "_xmas4_borg", "_xmas4_borg2", "_xmas4_doh", "_xmas4_verlegen", "_xmas4_nixweiss", "_klo-lesen-mann-xmas",
+                "i-love-grepolis", "santagrin", "xmas1_down", "xmas1_thumbs1", "xmas2_lol", "xmas1_frown", "xmas1_irre", "xmas1_razz", "xmas4_kaffee2", "xmas4_hurra2", "xmas4_aufsmaul", "schneeball", "schneeballwerfen", "xmas4_advent4", "nikolaus", "weihnachtsmann_junge", "schneewerfen_wald", "weihnachtsmann_nordpol", "xmas_kilroy_kamin", "xmas4_laola", "xmas3_smile", "xmas4_paketliebe", "3hlkoenige", "santa", "weihnachtsgeschenk2", "fred_weihnachten-ostern", "xmas4_wallbash", "xmas4_liebe", "xmas4_skullhaufen",
+                "tree", "xmas1_censored", "xmas4_furz", "xmas4_nixweiss", "xmas4_altermann", "xmas4_postbote", "xmas4_postpaket", "xmas4_paketliebe", "xmas4_regenschirm2", "xmas4_respekt", "xmas4_stars_takethat_howard",
+                "xmas4_talk", "xmas4_hundeleine01", "xmas4_spam1", "xmas4_spam3", "xmas4_google", "xmas4_selbstmord",
             ];
             smileyArray.easter = [
-                "eier-bemalen-blau-hase-braun", "osterei-hase05", "osterei-bunt", "ostern-hurra2", "osterhasensmilie", "ostern-thumbs1", "ostern-nosmile", "ostern-lol", "ostern-irre", "ostern-frown", "ostern-down", "ostern-cuinlove", "ostern-confused", "ostern-blush", "ostern-biggrin", "plapperhase",
-                "_ostern1_blush-reloaded", "_ostern_alien", "_ostern_censored", "_ostern_cool", "_ostern_stumm", "_xmas4_ostern_stumm", "_ostern1_xd", "_ostern2_xd", "_ostern2_censored", "_ostern2_confused", "_ostern2_cuinlove", "_ostern2_down", "_ostern2_thumbs1", "_ostern_rofl3", "_ostern2_rofl3", "_ostern_eek", "_ostern_erschreckt", "_ostern_igitt", "_ostern_rolleyes", "_ostern_skeptisch", "_ostern_confused",
+                "eier_bemalen_blau_hase_braun", "osterei_hase05", "osterei_bunt", "ostern_hurra2", "osterhasensmilie", "ostern_thumbs1", "ostern_nosmile", "ostern_lol", "ostern_irre", "ostern_frown", "ostern_down", "ostern_cuinlove", "ostern_confused", "ostern_blush", "ostern_biggrin",
+                "ostern1_blush-reloaded", "ostern_alien", "ostern_censored", "ostern_cool", "ostern_stumm", "xmas4_ostern_stumm", "ostern1_xd", "ostern2_xd", "ostern2_censored", "ostern2_confused", "ostern2_cuinlove", "ostern2_down", "ostern2_thumbs1", "ostern_rofl3", "ostern2_rofl3",
             ];
             smileyArray.love = [
-                "b-love2", "brautpaar-kinder", "brautpaar-reis", "cuinlove", "fips-herzen01", "heart", "herzen01", "herzen02", "herzen06", "kiss", "klk-tee", "liebesflagge", "love", "lovelove-light", "rose", "send-out-love", "teeglas-fruechtetee", "unknownauthor-knutsch", "valentinstag-biggrin", "valentinstag-confused",
-                "valentinstag-down", "valentinstag-irre", "valentinstag-lol", "valentinstag-thumbs1", "wolke7",
-                "_xmas4_rose", "_sex4", "_teeglas_schwarzer-tee", "_teetasse", "_klk_tee", "_gehirnschnecke_cuinlove",
+                "b-love2", "brautpaar-kinder", "brautpaar-reis", "cuinlove", "fips_herzen01", "heart", "herzen01", "herzen02", "herzen06", "kiss", "klk_tee", "liebesflagge", "love", "lovelove_light", "rose", "send-out-love", "teeglas_fruechtetee", "unknownauthor_knutsch", "valentinstag_biggrin", "valentinstag_confused",
+                "valentinstag_down", "valentinstag_irre", "valentinstag_lol", "valentinstag_thumbs1", "wolke7", "xmas4_rose",
             ];
             smileyArray.Buchstaben = [
-                "_megaeek", "_question", "_callsign",
-                "smile/sign2_0", "smile/sign2_1", "smile/sign2_2", "smile/sign2_3", "smile/sign2_4", "smile/sign2_5", "smile/sign2_6", "smile/sign2_7", "smile/sign2_8", "smile/sign2_9",
-                "smile/sign2_A", "smile/sign2_B", "smile/sign2_C", "smile/sign2_D", "smile/sign2_E", "smile/sign2_F", "smile/sign2_G", "smile/sign2_H", "smile/sign2_I", "smile/sign2_J", "smile/sign2_K", "smile/sign2_L", "smile/sign2_M", "smile/sign2_N", "smile/sign2_O", "smile/sign2_P", "smile/sign2_Q", "smile/sign2_R", "smile/sign2_S", "smile/sign2_T", "smile/sign2_U", "smile/sign2_V", "smile/sign2_W", "smile/sign2_X", "smile/sign2_Y", "smile/sign2_Z",
-                "smile/sign2_and", "smile/sign2_backslash", "smile/sign2_callsign", "smile/sign2_comma", "smile/sign2_plus", "smile/sign2_point", "smile/sign2_questionmark", "smile/sign2_quote", "smile/sign2_slash", "smile/sign2_space", "smile/sign2_star", "smile/sign2_AE", "smile/sign2_OE", "smile/sign2_UE", "smile/sign2_SZ",
+                "sign2_0", "sign2_1", "sign2_2", "sign2_3", "sign2_4", "sign2_5", "sign2_6", "sign2_7", "sign2_8", "sign2_9",
+                "sign2_A", "sign2_B", "sign2_C", "sign2_D", "sign2_E", "sign2_F", "sign2_G", "sign2_H", "sign2_I", "sign2_J", "sign2_K", "sign2_L", "sign2_M", "sign2_N", "sign2_O", "sign2_P", "sign2_Q", "sign2_R", "sign2_S", "sign2_T", "sign2_U", "sign2_V", "sign2_W", "sign2_X", "sign2_Y", "sign2_Z",
+                "sign2_and", "sign2_backslash", "sign2_callsign", "sign2_comma", "sign2_plus", "sign2_point", "sign2_questionmark", "sign2_quote", "sign2_slash", "sign2_space", "sign2_star", "sign2_AE", "sign2_OE", "sign2_UE", "sign2_SZ",
 
-                "smile/sign3_0", "smile/sign3_1", "smile/sign3_2", "smile/sign3_3", "smile/sign3_4", "smile/sign3_5", "smile/sign3_6", "smile/sign3_7", "smile/sign3_8", "smile/sign3_9",
-                "smile/sign3_A", "smile/sign3_B", "smile/sign3_C", "smile/sign3_D", "smile/sign3_E", "smile/sign3_F", "smile/sign3_G", "smile/sign3_H", "smile/sign3_I", "smile/sign3_J", "smile/sign3_K", "smile/sign3_L", "smile/sign3_M", "smile/sign3_N", "smile/sign3_O", "smile/sign3_P", "smile/sign3_Q", "smile/sign3_R", "smile/sign3_S", "smile/sign3_T", "smile/sign3_U", "smile/sign3_V", "smile/sign3_W", "smile/sign3_X", "smile/sign3_Y", "smile/sign3_Z",
-                "smile/sign3_and", "smile/sign3_backslash", "smile/sign3_callsign", "smile/sign3_comma", "smile/sign3_plus", "smile/sign3_point", "smile/sign3_questionmark", "smile/sign3_quote", "smile/sign3_slash", "smile/sign3_space", "smile/sign3_star", "smile/sign3_AE", "smile/sign3_OE", "smile/sign3_UE", "smile/sign3_SZ",
+                "sign3_0", "sign3_1", "sign3_2", "sign3_3", "sign3_4", "sign3_5", "sign3_6", "sign3_7", "sign3_8", "sign3_9",
+                "sign3_A", "sign3_B", "sign3_C", "sign3_D", "sign3_E", "sign3_F", "sign3_G", "sign3_H", "sign3_I", "sign3_J", "sign3_K", "sign3_L", "sign3_M", "sign3_N", "sign3_O", "sign3_P", "sign3_Q", "sign3_R", "sign3_S", "sign3_T", "sign3_U", "sign3_V", "sign3_W", "sign3_X", "sign3_Y", "sign3_Z",
+                "sign3_and", "sign3_backslash", "sign3_callsign", "sign3_comma", "sign3_plus", "sign3_point", "sign3_questionmark", "sign3_quote", "sign3_slash", "sign3_space", "sign3_star", "sign3_AE", "sign3_OE", "sign3_UE", "sign3_SZ",
 
-                "smile/braille-schrift_0", "smile/braille-schrift_1", "smile/braille-schrift_2", "smile/braille-schrift_3", "smile/braille-schrift_4", "smile/braille-schrift_5", "smile/braille-schrift_6", "smile/braille-schrift_7", "smile/braille-schrift_8", "smile/braille-schrift_9",
-                "smile/braille-schrift_A", "smile/braille-schrift_B", "smile/braille-schrift_C", "smile/braille-schrift_D", "smile/braille-schrift_E", "smile/braille-schrift_F", "smile/braille-schrift_G", "smile/braille-schrift_H", "smile/braille-schrift_I", "smile/braille-schrift_J", "smile/braille-schrift_K", "smile/braille-schrift_L", "smile/braille-schrift_M", "smile/braille-schrift_N", "smile/braille-schrift_O", "smile/braille-schrift_P", "smile/braille-schrift_Q", "smile/braille-schrift_R", "smile/braille-schrift_S", "smile/braille-schrift_T", "smile/braille-schrift_U", "smile/braille-schrift_V", "smile/braille-schrift_W", "smile/braille-schrift_X", "smile/braille-schrift_Y", "smile/braille-schrift_Z",
-                "smile/braille-schrift_callsign", "smile/braille-schrift_comma", "smile/braille-schrift_point", "smile/braille-schrift_questionmark", "smile/braille-schrift_quote", "smile/braille-schrift_space", "smile/braille-schrift_AE", "smile/braille-schrift_OE", "smile/braille-schrift_UE", "smile/braille-schrift_SZ",
+                "braille-schrift_0", "braille-schrift_1", "braille-schrift_2", "braille-schrift_3", "braille-schrift_4", "braille-schrift_5", "braille-schrift_6", "braille-schrift_7", "braille-schrift_8", "braille-schrift_9",
+                "braille-schrift_A", "braille-schrift_B", "braille-schrift_C", "braille-schrift_D", "braille-schrift_E", "braille-schrift_F", "braille-schrift_G", "braille-schrift_H", "braille-schrift_I", "braille-schrift_J", "braille-schrift_K", "braille-schrift_L", "braille-schrift_M", "braille-schrift_N", "braille-schrift_O", "braille-schrift_P", "braille-schrift_Q", "braille-schrift_R", "braille-schrift_S", "braille-schrift_T", "braille-schrift_U", "braille-schrift_V", "braille-schrift_W", "braille-schrift_X", "braille-schrift_Y", "braille-schrift_Z",
+                "braille-schrift_callsign", "braille-schrift_comma", "braille-schrift_point", "braille-schrift_questionmark", "braille-schrift_quote", "braille-schrift_space", "braille-schrift_AE", "braille-schrift_OE", "braille-schrift_UE", "braille-schrift_SZ",
 
-                "smile/buchstaben_0", "smile/buchstaben_1", "smile/buchstaben_2", "smile/buchstaben_3", "smile/buchstaben_4", "smile/buchstaben_5", "smile/buchstaben_6", "smile/buchstaben_7", "smile/buchstaben_8", "smile/buchstaben_9",
-                "smile/buchstaben_A", "smile/buchstaben_B", "smile/buchstaben_C", "smile/buchstaben_D", "smile/buchstaben_E", "smile/buchstaben_F", "smile/buchstaben_G", "smile/buchstaben_H", "smile/buchstaben_I", "smile/buchstaben_J", "smile/buchstaben_K", "smile/buchstaben_L", "smile/buchstaben_M", "smile/buchstaben_N", "smile/buchstaben_O", "smile/buchstaben_P", "smile/buchstaben_Q", "smile/buchstaben_R", "smile/buchstaben_S", "smile/buchstaben_T", "smile/buchstaben_U", "smile/buchstaben_V", "smile/buchstaben_W", "smile/buchstaben_X", "smile/buchstaben_Y", "smile/buchstaben_Z",
-                "smile/buchstaben_and", "smile/buchstaben_callsign", "smile/buchstaben_comma", "smile/buchstaben_plus", "smile/buchstaben_point", "smile/buchstaben_questionmark", "smile/buchstaben_quote", "smile/buchstaben_space", "smile/buchstaben_star", "smile/buchstaben_AE", "smile/buchstaben_OE", "smile/buchstaben_UE",
+                "buchstaben_0", "buchstaben_1", "buchstaben_2", "buchstaben_3", "buchstaben_4", "buchstaben_5", "buchstaben_6", "buchstaben_7", "buchstaben_8", "buchstaben_9",
+                "buchstaben_A", "buchstaben_B", "buchstaben_C", "buchstaben_D", "buchstaben_E", "buchstaben_F", "buchstaben_G", "buchstaben_H", "buchstaben_I", "buchstaben_J", "buchstaben_K", "buchstaben_L", "buchstaben_M", "buchstaben_N", "buchstaben_O", "buchstaben_P", "buchstaben_Q", "buchstaben_R", "buchstaben_S", "buchstaben_T", "buchstaben_U", "buchstaben_V", "buchstaben_W", "buchstaben_X", "buchstaben_Y", "buchstaben_Z",
+                "buchstaben_and", "buchstaben_callsign", "buchstaben_comma", "buchstaben_plus", "buchstaben_point", "buchstaben_questionmark", "buchstaben_quote", "buchstaben_space", "buchstaben_star", "buchstaben_AE", "buchstaben_OE", "buchstaben_UE",
 
-                "smile/xmas-sign_0", "smile/xmas-sign_1", "smile/xmas-sign_2", "smile/xmas-sign_3", "smile/xmas-sign_4", "smile/xmas-sign_5", "smile/xmas-sign_6", "smile/xmas-sign_7", "smile/xmas-sign_8", "smile/xmas-sign_9",
-                "smile/xmas-sign_A", "smile/xmas-sign_B", "smile/xmas-sign_C", "smile/xmas-sign_D", "smile/xmas-sign_E", "smile/xmas-sign_F", "smile/xmas-sign_G", "smile/xmas-sign_H", "smile/xmas-sign_I", "smile/xmas-sign_J", "smile/xmas-sign_K", "smile/xmas-sign_L", "smile/xmas-sign_M", "smile/xmas-sign_N", "smile/xmas-sign_O", "smile/xmas-sign_P", "smile/xmas-sign_Q", "smile/xmas-sign_R", "smile/xmas-sign_S", "smile/xmas-sign_T", "smile/xmas-sign_U", "smile/xmas-sign_V", "smile/xmas-sign_W", "smile/xmas-sign_X", "smile/xmas-sign_Y", "smile/xmas-sign_Z",
-                "smile/xmas-sign_and", "smile/xmas-sign_backslash", "smile/xmas-sign_callsign", "smile/xmas-sign_comma", "smile/xmas-sign_plus", "smile/xmas-sign_point", "smile/xmas-sign_questionmark", "smile/xmas-sign_quote", "smile/xmas-sign_slash", "smile/xmas-sign_space", "smile/xmas-sign_star", "smile/xmas-sign_AE", "smile/xmas-sign_OE", "smile/xmas-sign_UE", "smile/xmas-sign_SZ",
+                "xmas-sign_0", "xmas-sign_1", "xmas-sign_2", "xmas-sign_3", "xmas-sign_4", "xmas-sign_5", "xmas-sign_6", "xmas-sign_7", "xmas-sign_8", "xmas-sign_9",
+                "xmas-sign_A", "xmas-sign_B", "xmas-sign_C", "xmas-sign_D", "xmas-sign_E", "xmas-sign_F", "xmas-sign_G", "xmas-sign_H", "xmas-sign_I", "xmas-sign_J", "xmas-sign_K", "xmas-sign_L", "xmas-sign_M", "xmas-sign_N", "xmas-sign_O", "xmas-sign_P", "xmas-sign_Q", "xmas-sign_R", "xmas-sign_S", "xmas-sign_T", "xmas-sign_U", "xmas-sign_V", "xmas-sign_W", "xmas-sign_X", "xmas-sign_Y", "xmas-sign_Z",
+                "xmas-sign_and", "xmas-sign_backslash", "xmas-sign_callsign", "xmas-sign_comma", "xmas-sign_plus", "xmas-sign_point", "xmas-sign_questionmark", "xmas-sign_quote", "xmas-sign_slash", "xmas-sign_space", "xmas-sign_star", "xmas-sign_AE", "xmas-sign_OE", "xmas-sign_UE", "xmas-sign_SZ",
             ];
-            //smileyArray.Geburtstag = ["_29a", "_29b", "_29c"];
+            smileyArray.Geburtstag = ["29a", "29b", "29c"];
 
             SmileyBox.loadSmileys();
         },
@@ -287,44 +280,42 @@ function DIO_FORUM() {
             try {
                 // Replace german sign smilies
                 if (MID == "de" || lang == "de") {
-                    smileyArray.standard.push("land-germany", "land-germany2", "land-germany3", "land-germany-kings");
+                    smileyArray.standard.push("land_germany", "land_germany2", "land_germany3", "land_germany_kings");
                     smileyArray.other.push("dagegen2", "dafuer2");
-                    smileyArray.people.unshift("mttao-deutschland", "schal-deutschland");
+                    smileyArray.people.unshift("mttao_deutschland", "schal_deutschland");
                 }
                 if (MID == "fr" || lang == "fr") {
-                    smileyArray.standard.push("land-france", "land-france2", "land-france3");
-                    smileyArray.people.unshift("mttao-frankreich", "schal-frankreich");
+                    smileyArray.standard.push("land_france", "land_france2", "land_france3");
+                    smileyArray.people.unshift("mttao_frankreich", "schal_frankreich");
                 }
                 if (MID == "it" || lang == "it") {
-                    smileyArray.standard.push("land-italy", "land-italy2", "land-italy3");
-                    smileyArray.people.unshift("mttao-italien", "schal-italien");
+                    smileyArray.standard.push("land_italy", "land_italy2", "land_italy3");
+                    smileyArray.people.unshift("mttao_italien", "schal_italien");
                 }
                 if (MID == "ro" || lang == "ro") {
-                    smileyArray.standard.push("land-romania", "land-romania2", "land-romania3");
-                    smileyArray.people.unshift("mttao-rumaenien");
+                    smileyArray.standard.push("land_romania", "land_romania2", "land_romania3");
+                    smileyArray.people.unshift("mttao_rumaenien");
                 }
                 if (MID == "br" || lang == "br") {
-                    smileyArray.standard.push("land-portugal", "land-portugal2", "land-portugal3");
-                    smileyArray.people.unshift("mttao-portugal", "schal-portugal");
+                    smileyArray.standard.push("land_portugal", "land_portugal2", "land_portugal3");
+                    smileyArray.people.unshift("mttao_portugal", "schal_portugal");
                 }
                 if (MID == "pl" || lang == "pl") {
-                    smileyArray.standard.push("land-poland", "land-poland2", "land-poland3");
-                    smileyArray.people.unshift("mttao-polen");
+                    smileyArray.standard.push("land_poland", "land_poland2", "land_poland3");
+                    smileyArray.people.unshift("mttao_polen");
                 }
                 if (MID == "es" || lang == "es") {
-                    smileyArray.standard.push("land-spain", "land-spain2", "land-spain3");
-                    smileyArray.people.unshift("mttao-spanien", "schal-spanien");
+                    smileyArray.standard.push("land_spain", "land_spain2", "land_spain3");
+                    smileyArray.people.unshift("mttao_spanien", "schal_spanien");
                 }
                 if (MID == "sk" || lang == "sk") {
-                    smileyArray.people.unshift("mttao-slowakei", "schal-slowakei");
+                    smileyArray.people.unshift("mttao_slowakei", "schal_slowakei");
                 }
-                for (var a = 1; a < 10; a++) {
-                    smileyArray.Buchstaben.push("_rate0" + a);
+                for (var a = 1; a < 101; a++) {
+                    smileyArray.Geburtstag.push("geburtstagswedler-" + a);
+                    if (a < 10) smileyArray.Buchstaben.push("rate0" + a);
                 }
-                smileyArray.Buchstaben.push("_rate10", "_rate11", "_rate11b", "_29a", "_29b", "_29c")
-                for (var b = 1; b < 101; b++) {
-                    smileyArray.Buchstaben.push("_geburtstagswedler-" + b);
-                }
+                smileyArray.Buchstaben.push("rate10", "rate11", "rate11b")
                 for (var e in smileyArray) {
                     if (smileyArray.hasOwnProperty(e)) {
                         for (var f in smileyArray[e]) {
@@ -333,17 +324,18 @@ function DIO_FORUM() {
 
                                 smileyArray[e][f] = new Image();
                                 smileyArray[e][f].className = "smiley";
-                                if (src.substring(0, 6) == "smile/") {
+                                /*if (src.substring(0, 6) == "smile/") {
                                     smileyArray[e][f].src = "https://www.greensmilies.com/" + src + ".gif";
                                 } else if (src.substring(0, 1) == "_") {
                                     smileyArray[e][f].src = "https://www.greensmilies.com/smile/smiley_emoticons" + src + ".gif";
+                                } else {*/
+                                if (SmileyBox.loading_error == false) {
+                                    //smileyArray[e][f].src = "https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-" + src + ".gif";
+                                    smileyArray[e][f].src = Home_url + "/img/smileys/" + src + ".gif";
                                 } else {
-                                    if (SmileyBox.loading_error == false) {
-                                        smileyArray[e][f].src = "https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-" + src + ".gif";
-                                    } else {
-                                        smileyArray[e][f].src = 'https://i.imgur.com/VdjJJgk.gif';
-                                    }
+                                    smileyArray[e][f].src = 'https://i.imgur.com/VdjJJgk.gif';
                                 }
+                                //}
                                 smileyArray[e][f].onerror = function () {
                                     this.src = 'https://i.imgur.com/VdjJJgk.gif';
                                 };
@@ -391,23 +383,25 @@ function DIO_FORUM() {
                     '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div><div class="bbcode_box top_center"></div>' +
                     '<div class="bbcode_box bottom_center"></div><div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
                     '<div class="dio_box_header">' +
-                    '<span class="dio_group standard active"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smilenew.gif"></span>' +
-                    '<span class="dio_group nature"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-ben-cat.gif" style="top: 1px;"></span>' +
-                    '<span class="dio_group grepolis"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-i-lovo-grepolis.gif" style="top: -5px;" ></span>' +
-                    '<span class="dio_group people"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-stars-elvis.gif" style="top: -1px;" ></span>' +
-                    '<span class="dio_group Party"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-prost2.gif" style="margin-right: -5px;" ></span>' +
-                    '<span class="dio_group other"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-irre.gif" style="margin-right: -5px;" ></span>' +
-                    '<span class="dio_group halloween"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-zombies-lol.gif" style="margin-right: -5px;" ></span>' +
-                    '<span class="dio_group xmas"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-santagrin.gif" style="top: -6px;" ></span>' +
-                    '<span class="dio_group easter"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-osterhasensmilie.gif" style="top: -6px;" ></span>' +
-                    '<span class="dio_group love"><img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-herzen02-1.gif" style="top: -3px;" ></span>' +
-                    '<span class="dio_group Buchstaben"><img src="https://www.greensmilies.com/smile/sign_A.gif" style="" ></span>' +
-                    //'<span class="dio_group Geburtstag"><img src="https://www.greensmilies.com/smile/smiley_emoticons_geburtstagswedler-1.gif" style="" ></span>' +
+                    '<span class="dio_group standard active"><img src="' + Home_url + '/img/smileys/smilenew.gif"></span>' +
+                    '<span class="dio_group nature"><img src="' + Home_url + '/img/smileys/ben_cat.gif" style="top: 1px;"></span>' +
+                    '<span class="dio_group grepolis"><img src="' + Home_url + '/img/smileys/i-lovo-grepolis.gif" style="top: -5px;" ></span>' +
+                    '<span class="dio_group people"><img src="' + Home_url + '/img/smileys/stars_elvis.gif" style="top: -1px;" ></span>' +
+                    '<span class="dio_group Party"><img src="' + Home_url + '/img/smileys/prost2.gif" style="margin-right: -5px;" ></span>' +
+                    '<span class="dio_group other"><img src="' + Home_url + '/img/smileys/irre.gif" style="margin-right: -5px;" ></span>' +
+                    '<span class="dio_group halloween"><img src="' + Home_url + '/img/smileys/zombies_lol.gif" style="margin-right: -5px;" ></span>' +
+                    '<span class="dio_group xmas"><img src="' + Home_url + '/img/smileys/santagrin.gif" style="top: -6px;" ></span>' +
+                    '<span class="dio_group easter"><img src="' + Home_url + '/img/smileys/osterhasensmilie.gif" style="top: -6px;" ></span>' +
+                    '<span class="dio_group love"><img src="' + Home_url + '/img/smileys/herzen02.gif" style="top: -3px;" ></span>' +
+                    '<span class="dio_group Buchstaben"><img src="' + Home_url + '/img/smileys/sign_A.gif" style="" ></span>' +
+                    '<span class="dio_group Geburtstag"><img src="' + Home_url + '/img/smileys/geburtstagswedler-1.gif" style="" ></span>' +
                     '</div>' +
                     '<hr><div class="dio_box_content"></div><hr>' +
                     '<div class="box_footer">DIO-TOOLS-David1327 & greensmilies.com</div>' +
                     /////'<div class="box_footer"><a href="http://www.greensmilies.com/smilie-album/" target="_blank">WWW.GREENSMILIES.COM</a></div>' +
                     '</div>');
+
+
 
                 bbcodeBarIdd = "#" + bbcodeBarIdd;
                 $('.dio_group').click(function (e) {
@@ -435,18 +429,18 @@ function DIO_FORUM() {
                     if (e.currentTarget.id == "dio_smiley_butt-5") { bbcodeBar = "#dio_smiley-5"; bbcodeBarremove = "#dio_smiley-1, #dio_smiley-2, #dio_smiley-3, #dio_smiley-4, #dio_smiley-6" }
                     if (e.currentTarget.id == "dio_smiley_butt-6") { bbcodeBar = "#dio_smiley-6"; bbcodeBarremove = "#dio_smiley-1, #dio_smiley-2, #dio_smiley-3, #dio_smiley-4, #dio_smiley-5" }
                     $($(bbcodeBarremove)).removeClass("open");
-                    $("#dio_smiley_butt-1 #dio_smiley_button, #dio_smiley_butt-2 #dio_smiley_button, #dio_smiley_butt-3 #dio_smiley_button, #dio_smiley_butt-4 #dio_smiley_button, #dio_smiley_butt-5 #dio_smiley_button, #dio_smiley_butt-6 #dio_smiley_button").css({ background: 'url(https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif) no-repeat 0px 0px' });
+                    $("#dio_smiley_butt-1 #dio_smiley_button, #dio_smiley_butt-2 #dio_smiley_button, #dio_smiley_butt-3 #dio_smiley_button, #dio_smiley_butt-4 #dio_smiley_button, #dio_smiley_butt-5 #dio_smiley_button, #dio_smiley_butt-6 #dio_smiley_button").css({ background: 'url(' + Home_url + '/img/smileys/smile.gif) no-repeat 0px 0px' });
                     if (!$($(bbcodeBar)).hasClass("open")) {
                         $($(bbcodeBar)).addClass("open");
-                        $("#" + e.currentTarget.id + " #dio_smiley_button").css({ background: 'url(https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-rollsmiliey.gif) no-repeat 0px 0px' });
+                        $("#" + e.currentTarget.id + " #dio_smiley_button").css({ background: 'url(' + Home_url + '/img/smileys/rollsmiliey.gif) no-repeat 0px 0px' });
                     } else {
                         $($(bbcodeBar)).removeClass("open");
-                        $("#" + e.currentTarget.id + " #dio_smiley_button").css({ background: 'url(https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif) no-repeat 0px 0px' });
+                        $("#" + e.currentTarget.id + " #dio_smiley_button").css({ background: 'url(' + Home_url + '/img/smileys/smile.gif) no-repeat 0px 0px' });
                     }
                 });
                 $('#moreRich-1, #moreRich-2, #moreRich-3, #moreRich-4, #moreRich-5, .rte-tab--preview, .fr-dropdown:last-of-type').click(function (e) {
                     $("#dio_smiley-1, #dio_smiley-2, #dio_smiley-3, #dio_smiley-4, #dio_smiley-5").removeClass("open");
-                    $("#dio_smiley_butt-1 #dio_smiley_button, #dio_smiley_butt-2 #dio_smiley_button, #dio_smiley_butt-3 #dio_smiley_button, #dio_smiley_butt-4 #dio_smiley_button, #dio_smiley_butt-5 #dio_smiley_button, #dio_smiley_butt-6 #dio_smiley_button").css({ background: 'url(https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-smile.gif) no-repeat 0px 0px' });
+                    $("#dio_smiley_butt-1 #dio_smiley_button, #dio_smiley_butt-2 #dio_smiley_button, #dio_smiley_butt-3 #dio_smiley_button, #dio_smiley_butt-4 #dio_smiley_button, #dio_smiley_butt-5 #dio_smiley_button, #dio_smiley_butt-6 #dio_smiley_button").css({ background: 'url(' + Home_url + '/img/smileys/smile.gif) no-repeat 0px 0px' });
                 });
 
             } catch (error) { console.log(e) }
@@ -669,13 +663,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     LANG.ar = LANG.es;
     LANG.pt = LANG.br;
     /*    var e = "fr"
-    
+
         if (LANG[MID] === undefined & MID !== "zz") LANG_add (MID)
         if (LANG.en) LANG_add ("en")
         if (DATA.test.lang) {
             if (LANG[DATA.test.lang] === undefined) LANG_add (DATA.test.lang)
         }
-    
+
         function LANG_add (e) {
             console.log(e)
             $.ajax({
@@ -687,7 +681,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 error: function(error) {errorHandling(error, "ajax GET (Dio." + e.toUpperCase() + ".js)")}
             })
         }
-    
+
         //$('<script src="' + Home_url + '/TEST-1/Langs/Dio.FR.js"></script>').appendTo("head");
         */
 
@@ -1841,8 +1835,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             if (DATA.options.dio_bbc) addForm("/frontend_bridge/execute");
                         }
                     }
-                    if (DATA.options.dio_tim) Map.add();
-                    if (DATA.options.dio_tic) updateIcon()
                     break;
                 case "/frontend_bridge/fetch": // Daily Reward
                     if (DATA.options.dio_tim) Map.add();
@@ -1915,24 +1907,25 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 case "/island_info/index":
                     if (DATA.options.dio_Isl) islandFarmingVillages.activate();
                     break;
+                case "/alliance_forum/forum":
+                    if (DATA.options.dio_Fdm) ForumDeleteMultiple.activate();
+                // eslint no-fallthrough: "error"
                 case "/message/view":
-                    markMessage();
+                //markMessage();
                 // eslint no-fallthrough: "error"
                 case "/message/new":
                 case "/message/forward":
                     if (DATA.options.dio_Mse) MessageExport.add();
-                    break;
+                // eslint no-fallthrough: "error"
                 case '/message/default':
                 case '/message/index':
                 case '/message/create':
                 case '/message/reply':
-                    markMessages();
+                //markMessages();
                 // eslint no-fallthrough: "error"
-                case "/alliance_forum/forum":
                 case "/player_memo/load_memo_content":
                     if (DATA.options.dio_sml) SmileyBox.add(action);
                     if (DATA.options.dio_bbc) addForm(action);
-                    if (DATA.options.dio_Fdm) ForumDeleteMultiple.activate();
                     break;
                 case "/wonders/index":
                     if (DATA.options.dio_per & (uw.Game.features.end_game_type == "end_game_type_world_wonder")) {
@@ -2164,28 +2157,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             }, 50);
         },
         clipboard: (IDbutton, input, error, Text) => {
-            //try {
-            var clipboard = new uw.ClipboardJS(IDbutton);
-            clipboard.on("success", () => {
-                setTimeout(() => {
-                    uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
-                    if (input !== null) {
-                        $(IDbutton).css({ "display": "none" })
-                        $(input).css({ "display": "none" })
-                    }
-                    if (Text !== null) {
-                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
-                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
+            try {
+                var clipboard = new uw.ClipboardJS(IDbutton);
+                clipboard.on("success", () => {
+                    setTimeout(() => {
+                        uw.HumanMessage.success(dio_icon + getTexts("messages", "copybb"))
+                        if (input !== null) {
+                            $(IDbutton).css({ "display": "none" })
+                            $(input).css({ "display": "none" })
                         }
-                    }
-                }, 50)
-            });
-            clipboard.on('error', (e) => {
-                return uw.HumanMessage.error(dio_icon + getTexts("messages", "cli")); errorHandling(e, "clipboard error");
-            });
-            //} catch (error) {
-            //return errorHandling(error, "clipboard");
-            //}
+                        if (Text !== null) {
+                            if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE)) {
+                                uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODEE).close();
+                            }
+                        }
+                    }, 50)
+                });
+                clipboard.on('error', (e) => {
+                    return uw.HumanMessage.error(dio_icon + getTexts("messages", "cli")); errorHandling(e, "clipboard error");
+                });
+            } catch (error) {
+                return errorHandling(error, "clipboard");
+            }
         },
         dateDiff(date1, date2) {
             var diff = {}
@@ -2551,7 +2544,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             uw.NotificationType.DIO_TOOLS = "diotools";
             uw.NotificationType.DIO_TOOLS_V = "diotools_v";
 
-            var notifN = 33;
+            var notifN = dio_version.split(".")[1] + 1;
             var titreN =
                 //    0; // nouvelles fonctionnalités
                 1; // Nouvelle version
@@ -2661,15 +2654,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<div style="bottom: 1px;position: absolute; font-weight: bold;">' +
 
                     '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
-                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
+                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>';
 
-                    '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                if (MID == "fr" || dio.lang() == "fr") {
+                    HTML_tab1 += '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
+                        '<a id="link_forum" href="' + Home_url + '/fr/news/mise-a-jour/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                } else {
+                    HTML_tab1 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '</div>' +
+                        '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                }
+
+                HTML_tab1 += '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 92px;">' +
                     '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Update") + ' target="_blank"></a>' +
@@ -2697,15 +2698,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<div style="bottom: 1px;position: absolute; font-weight: bold;">' +
 
                     '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
-                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
+                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>';
 
-                    '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                if (MID == "fr" || dio.lang() == "fr") {
+                    HTML_tab2 += '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '<a id="link_forum" href=' + getTexts("link", "Update") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>' +
+                        '<a id="link_forum" href="' + Home_url + '/fr/news/mise-a-jour/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                } else {
+                    HTML_tab2 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '</div>' +
+                        '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                }
+
+                HTML_tab2 += '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 92px;">' +
                     '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href="' + Home_url + '/Donations.html" target="_blank"></a>' +
@@ -2778,15 +2787,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '</div>' +
                     '<div style="bottom: -1px;position: absolute; font-weight: bold;">' +
 
-                    '<div id="diomenu_einstellungen_sendmail" style=" float: left; margin: -5px 0 -5px 10px;">' + dio.createButton(getTexts("translations", "send")) + '</div>' +
+                    '<div id="diomenu_einstellungen_sendmail" style=" float: left; margin: -5px 0 -5px 10px;">' + dio.createButton(getTexts("translations", "send")) + '</div>';
 
-                    '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
-                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
+                if (MID == "fr" || dio.lang() == "fr") {
+                    HTML_tab3 += '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                        '<a id="link_forum" href="' + Home_url + '/fr/news/mise-a-jour/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                } else {
+                    HTML_tab3 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
-                    '</div>' +
+                        '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                }
+
+                HTML_tab3 += '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 92px;">' +
                     '<a class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Translations") + ' target="_blank"></a>' +
@@ -2845,7 +2862,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                         var translation_table = "";
                         for (var d = 0; d < translations.length; d++) {
-                            translation_table += '<tr class="translation"><td style="list-style:square outside;padding-right: 5px"></td><td><img src="' + Home_url + '/img/flag/flag.16.' + translations[d][0] + '.png" style="margin:0 5px;"></td><td>' + translations[d][0] + ':</td><td class="value">' + translations[d][1] + '</td></tr>';
+                            translation_table += '<tr class="translation"><td style="list-style:square outside;padding-right: 5px"></td><td><img src="' + Home_url + '/img/flag/flag.16.' + translations[d][0].toLowerCase() + '.png" style="margin:0 5px;"></td><td>' + translations[d][0] + ':</td><td class="value">' + translations[d][1] + '</td></tr>';
                         }
                         return translation_table;
                     })() +
@@ -2854,7 +2871,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 //HTML_tab3 += dio.grepo_btn("diomenu_einstellungen_sendmail", getTexts("Settings", "send"))[0].outerHTML;
                 return HTML_tab3;
             }
-            //???
+            //BUG
             function tab4() {
 
                 var HTML_tab4 = '<div style="overflow-x: hidden; padding-left: 5px; position: relative;"></div>' +
@@ -2867,12 +2884,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<div id="dioerrordio" style=" float: left; margin: -5px 0 -5px 10px;">' + dio.createButton(getTexts("translations", "send")) + '</div>' +
 
                     '<span class="" style="font-weight:bold; float:left; margin-left:20px;">' + getTexts("Settings", "cat_forum") + ': ' +
-                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>' +
+                    '<a id="link_contact" href=' + getTexts("link", "forum") + ' target="_blank">DIO-TOOLS-David1327</a></span>';
 
-                    '<a id="link_forum" href=' + getTexts("link", "contact") + ' target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                    '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "forum") + '</span></a>' +
+                if (MID == "fr" || dio.lang() == "fr") {
+                    HTML_tab4 += '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>';
+                } else {
+                    HTML_tab4 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>';
+                }
 
-                    '</div>' +
+                HTML_tab4 += '</div>' +
 
                     '<div style="top: -37px;position: absolute; right: 92px;">' +
                     '<a style="display: none;" class="ui-dialog-titlebar-help ui-corner-all" id="dio_help" href=' + getTexts("link", "Update") + ' target="_blank"></a>' +
@@ -3354,7 +3376,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      *******************************************************************************************************************************/
     let dio_icon_small = Home_url + "/img/dio/btn/town-icons.png";
     var TownIcons = {
-        timeout: null,
         types: {
             // Automatic Icons
             lo: 0,
@@ -3442,12 +3463,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         deactivate: () => {
             $('#town_icon').remove();
             $('#dio_townicons_field').remove();
-            clearTimeout(TownIcons.timeout);
-            TownIcons.timeout = null;
         },
         activate: () => {
             try {
-                //TownIcons.timeout = setInterval(() => { updateIcon(); }, 800);
 
                 $('<div id="town_icon"><div class="town_icon_bg"><div class="icon_big townicon_' + (manuTownTypes[uw.Game.townId] || ((autoTownTypes[uw.Game.townId] || "no") + " auto")) + '"></div></div></div>').appendTo('.town_name_area');
 
@@ -3601,11 +3619,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      * Town icon (Map)
      *******************************************************************************************************************************/
     var Map = {
-        timeout: null,
         // TODO: activate aufspliten in activate und add
         activate: () => {
-            //Map.timeout = setInterval(() => { Map.add(); }, 800);
-
             //style
             $("<style id='dio_townicons_map' type='text/css'>" +
                 ".own_town .flagpole, #main_area .m_town.player_" + PID + " { z-index: 100; width:19px!important; height:19px!important; border-radius: 11px; border: 3px solid rgb(16, 133, 0); margin: -4px !important; font-size: 0em !important; box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5); } " +
@@ -3616,10 +3631,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 "</style>").appendTo("head");
             Map.add();
             $("#ui_box > div.topleft_navigation_area > div.coords_box > div.btn_jump_to_coordination.circle_button.jump_to_coordination > div, #ui_box > div.topleft_navigation_area > div.bull_eye_buttons > div.btn_jump_to_town.circle_button.jump_to_town > div, #minimap_canvas, #map").click(() => {
-                setTimeout(() => { Map.add(); }, 100);
+                if (DATA.options.dio_tim) setTimeout(() => { Map.add(); }, 500);
             });
             $("#minimap_canvas").dblclick(() => {
-                setTimeout(() => { Map.add(); console.log("test") }, 500);
+                if (DATA.options.dio_tim) setTimeout(() => { Map.add(); }, 500);
             });
         },
         add: () => {
@@ -3644,8 +3659,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         },
         deactivate: () => {
             $('#dio_townicons_map').remove();
-            clearTimeout(Map.timeout);
-            Map.timeout = null;
             $(".own_town .flagpole, #main_area .m_town").css({ "background": "" });
         }
     };
@@ -5304,7 +5317,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         $('<label id="farm" class="dio_menu_berichte_Icon" style="background-position: -176px 0; border-right:3px solid rgb(128, 64, 0);"><input type="checkbox" id="farm" class="dio_menu_berichte_checkbox"></label>').appendTo('#dio_menu_berichte_icon_wrapper');
                         $(".dio_menu_berichte_Icon").css({
                             'display': 'inline-block',
-                            'background-image': 'url(' + Home_img + 'reportsfilter.gif)',
+                            'background-image': 'url(' + Home_url + '/img/dio/btn/reportsfilter.gif)',
                             'background-repeat': 'repeat scroll',
                             'width': '22px',
                             'height': '22px',
@@ -7722,10 +7735,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 var str = '[img]' + imgArray.bordure + '[/img]' +
                     '\n[color=#006B00][size=12][u][b]' + getTexts("labels", "ttl", true) + '[/b][/u][/size][/color]\n\n' +
                     //'[table][**][img]'+ imgArray.sup +'[/img][||]'+
-                    '[size=12][town]' + uw.ITowns.getTown(uw.Game.townId).getId() + '[/town] ([player]' + uw.Game.player_name + '[/player])[/size]' +
-                    '\n[size=8][url=' + Home + 'en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v.' + dio_version + '[/size]' +
-                    //'[||][img]'+ imgArray['rev' + (uw.ITowns.getTown(uw.Game.townId).hasConqueror()?1:0)] +'[/img][/**][/table]'+
-                    '\n\n[i][b]' + getTexts("labels", "inf", true) + '[/b][/i]' + troop_table +
+                    '[size=12][town]' + uw.ITowns.getTown(uw.Game.townId).getId() + '[/town] ([player]' + uw.Game.player_name + '[/player])[/size]';
+                if (MID == 'fr') str += '\n[size=8][url=' + Home_url + '/fr/]DIO-TOOLS-David1327[/url] - v.' + dio_version + '[/size]';
+                else str += '\n[size=8][url=' + Home_url + '/en/]DIO-TOOLS-David1327[/url] - v.' + dio_version + '[/size]';
+                //'[||][img]'+ imgArray['rev' + (uw.ITowns.getTown(uw.Game.townId).hasConqueror()?1:0)] +'[/img][/**][/table]'+
+                str += '\n\n[i][b]' + getTexts("labels", "inf", true) + '[/b][/i]' + troop_table +
                     '[table][*]' +
                     '[img]' + imgArray.wall + '[/img][|]\n' +
                     '[img]' + imgArray.tower + '[/img][|]\n' +
@@ -7833,8 +7847,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 // Smiley categories
                 '.dio_smiley_box .dio_box_header { display: table; width: 100%; text-align: center; margin-bottom: -9px; position: relative; top: 3px;} ' +
                 '.dio_smiley_box .dio_box_header img { position: relative; top: 2px;}' +
-                '.dio_smiley_box .dio_group { float: left; width: 35px; background: url("https://www.tuto-de-david1327.com/medias/images/etabA.gif") no-repeat; border-bottom: none; margin-right: 1px;}' +
-                '.dio_smiley_box .dio_group.active { background: url("https://www.tuto-de-david1327.com/medias/images/etabB.gif") no-repeat;}' +
+                '.dio_smiley_box .dio_group { float: left; width: 35px; background: url("' + Home_url + '/img/dio/btn/etabA.gif") no-repeat; border-bottom: none; margin-right: 1px;}' +
+                '.dio_smiley_box .dio_group.active { background: url("' + Home_url + '/img/dio/btn/etabB.gif") no-repeat;}' +
                 //'.dio_smiley_box .dio_group:hover { color: #14999E; } ' + // #11AD6C
 
                 '.dio_smiley_box hr { margin:3px 0px 0px 0px; color:#086b18; border:1px solid; } ' +
@@ -7867,65 +7881,65 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             smileyArray.button = ["rollsmiliey", "smile"];
 
             smileyArray.standard = [
-                "smilenew", "lol", "neutral-new", "afraid", "freddus-pacman", "auslachen2", "kolobok-sanduhr", "bussi2", "winken4", "flucht2", "panik4", "ins-auge-stechen", "seb-zunge", "fluch4-GREEN", "baby-junge2", "blush-reloaded6", "frown", "verlegen", "blush-pfeif", "stevieh-rolleyes", "daumendreh2", "baby-taptap",
-                "sadnew", "hust", "confusednew", "idea2", "irre", "irre4", "sleep", "candle", "nicken", "no-sad", "thumbs-up-new", "kciuki", "thumbs-down-new", "bravo2", "oh-no2", "kaffee2", "drunk", "saufen", "freu-dance", "hecheln", "headstand", "rollsmiliey", "eazy-cool01", "motz", "cuinlove", "biggrin"
+                "smilenew", "lol", "neutral_new", "afraid", "freddus_pacman", "auslachen2", "kolobok-sanduhr", "bussi2", "winken4", "flucht2", "panik4", "ins-auge-stechen", "seb_zunge", "fluch4_GREEN", "baby_junge2", "blush-reloaded6", "frown", "verlegen", "blush-pfeif", "stevieh_rolleyes", "daumendreh2", "baby_taptap",
+                "sadnew", "hust", "confusednew", "idea2", "irre", "irre4", "sleep", "candle", "nicken", "no_sad", "thumbs-up_new", "kciuki", "thumbs-down_new", "bravo2", "oh-no2", "kaffee2", "drunk", "saufen", "freu-dance", "hecheln", "headstand", "rollsmiliey", "eazy_cool01", "motz", "cuinlove", "biggrin"
             ];
             smileyArray.nature = [
-                "dinosaurier07", "flu-super-gau", "ben-cat", "schwein", "hundeleine01", "blume", "ben-sharky", "ben-cow", "charly-bissig", "gehirnschnecke-confused", "mttao-fische", "mttao-angler", "insel", "fliegeschnappen", "plapperhase", "ben-dumbo", "twitter", "elefant", "schildkroete", "elektroschocker", "spiderschwein", "oma-sessel-katze", "fred-elefant",
-                "palmoel", "stevieh-teddy", "fips-aufsmaul", "marienkaefer", "mrkaktus", "kleeblatt2", "fred-blumenstauss", "hurra-fruehling1-lila", "fred-rasenmaeher", "fred-blumenbeet"
+                "dinosaurier07", "flu-super-gau", "ben_cat", "schwein", "hundeleine01", "blume", "ben_sharky", "ben_cow", "charly_bissig", "gehirnschnecke_confused", "mttao_fische", "mttao_angler", "insel", "fliegeschnappen", "plapperhase", "ben_dumbo", "twitter", "elefant", "schildkroete", "elektroschocker", "spiderschwein", "oma_sessel_katze", "fred_elefant",
+                "palmoel", "stevieh_teddy", "fips_aufsmaul", "marienkaefer", "mrkaktus", "kleeblatt2", "fred_blumenstauss", "hurra_fruehling1_lila", "fred_rasenmaeher", "fred_blumenbeet"
             ];
             smileyArray.grepolis = [
-                "grepolis", "mttao-wassermann", "i-lovo-grepolis", "silvester-cuinlove", "mttao-schuetze", "kleeblatt2", "wallbash", "musketiere-fechtend", "palka", "lol-1", "mttao-waage2", "steckenpferd", "skullhaufen", "pferdehaufen", "pirat5", "seb-cowboy", "gw-ranger001",
-                "barbar", "datz", "waffe01", "sarazene-bogen", "waffe02", "waffe14", "hoplit-sword1", "pfeildurchkopf02", "saladin", "hoplit-sword3"
+                "grepolis", "mttao_wassermann", "i-lovo-grepolis", "silvester_cuinlove", "mttao_schuetze", "kleeblatt2", "wallbash", "musketiere_fechtend", "aufsmaul", "lol1", "mttao_waage2", "steckenpferd", "skullhaufen", "pferdehaufen", "pirat5", "seb_cowboy", "gw_ranger001",
+                "barbar", "datz", "waffe01", "sarazene_bogen", "waffe02", "waffe14", "hoplit_sword1", "pfeildurchkopf02", "saladin", "hoplit_sword3"
             ];
             smileyArray.people = [
-                "greenistan", "mttao-usa", "schal-usa", "mttao-grossbritannien", "seb-hut5", "opa-boese2", "star-wars-yoda1-gruen", "hexefliegend", "snob", "seb-detektiv-ani", "devil", "segen", "borg", "hexe3b", "eazy-polizei", "stars-elvis", "mttao-chefkoch", "nikolaus", "pirate3-biggrin", "batman-skeptisch", "tubbie1", "tubbie2", "tubbie3", "kosmita", "tubbie4"
+                "greenistan", "mttao_usa", "schal_usa", "mttao_grossbritannien", "seb_hut5", "opa_boese2", "star-wars-yoda1-gruen", "hexefliegend", "snob", "seb_detektiv_ani", "devil", "segen", "borg", "hexe3b", "eazy_polizei", "stars_elvis", "mttao_chefkoch", "nikolaus", "pirate3_biggrin", "batman_skeptisch", "tubbie1", "tubbie2", "tubbie3", "kosmita", "tubbie4"
             ];
             smileyArray.Party = [
-                "torte1", "torte3", "bier", "party", "party2", "fans", "band", "klokotzen", "laola", "prost", "rave", "mcdonalds", "margarita", "geschenk", "sauf", "el", "trommler", "ozboss-gitarre2", "kaffee", "kaffee3", "caipirinha", "whiskey", "drunk", "fressen", "popcorn-essen", "saufen", "energydrink1", "leckerer", "prost2", "birthday"
+                "torte1", "torte3", "bier", "party", "party2", "fans", "band", "klokotzen", "laola", "prost", "rave", "mcdonalds", "margarita", "geschenk", "sauf", "el", "trommler", "ozboss_gitarre2", "kaffee", "kaffee3", "caipirinha", "whiskey", "drunk", "fressen", "popcorn_essen", "saufen", "energydrink1", "leckerer", "prost2", "birthday"
             ];
             smileyArray.other = [
-                "steinwerfen", "herzen02", "scream-if-you-can", "kolobok", "headbash", "liebeskummer", "bussi", "brautpaar-reis", "grab-schaufler2", "boxen2", "aufsmaul", "mttao-kehren", "sm", "weckruf", "klugscheisser2", "karte2-rot", "dagegen", "party", "dafuer", "outofthebox", "pokal-gold", "koepfler", "transformer", "eazy-senseo1"
+                "steinwerfen", "herzen02", "scream-if-you-can", "kolobok", "headbash", "liebeskummer", "bussi", "brautpaar-reis", "grab-schaufler2", "boxen2", "aufsmaul", "mttao_kehren", "sm", "weckruf", "klugscheisser2", "karte2_rot", "dagegen", "party", "dafuer", "outofthebox", "pokal_gold", "koepfler", "transformer", "eazy_senseo1"
             ];
             smileyArray.halloween = [
-                "zombies-alien", "zombies-lol", "zombies-rolleyes", "zombie01", "zombies-smile", "zombie02", "zombies-skeptisch", "zombies-eek", "zombies-frown", "geistani", "scream-if-you-can", "pfeildurchkopf01", "grab-schaufler", "kuerbisleuchten", "mummy3", "kuerbishaufen", "halloweenskulljongleur", "fledermausvampir", "frankenstein-lol", "halloween-confused", "zombies-razz", "halloweenstars-freddykrueger", "zombies-cool", "geist2", "fledermaus2", "halloweenstars-dracula", "batman", "halloweenstars-lastsummer",
-                "_hexe-frosch", "_xmas4_hexe-frosch", "_hexe-frosch2",
+                "zombies_alien", "zombies_lol", "zombies_rolleyes", "zombie01", "zombies_smile", "zombie02", "zombies_skeptisch", "zombies_eek", "zombies_frown", "geistani", "scream-if-you-can", "pfeildurchkopf01", "grab-schaufler", "kuerbisleuchten", "mummy3", "kuerbishaufen", "halloweenskulljongleur", "fledermausvampir", "frankenstein_lol", "halloween_confused", "zombies_razz", "halloweenstars_freddykrueger", "zombies_cool", "geist2", "fledermaus2", "halloweenstars_dracula", "batman", "halloweenstars_lastsummer",
+                "hexe-frosch", "xmas4_hexe-frosch", "hexe-frosch2",
             ];
             smileyArray.xmas = [
-                "i-love-grepolis", "santagrin", "xmas1-down", "xmas1-thumbs1", "xmas2-lol", "xmas1-frown", "xmas1-irre", "xmas1-razz", "xmas4-kaffee2", "xmas4-hurra2", "xmas4-aufsmaul", "schneeball", "schneeballwerfen", "xmas4-advent4", "nikolaus", "weihnachtsmann-junge", "schneewerfen-wald", "weihnachtsmann-nordpol", "xmas-kilroy-kamin", "xmas4-laola", "xmas3-smile", "xmas4-paketliebe", "3hlkoenige", "santa", "weihnachtsgeschenk2", "fred-weihnachten-ostern", "xmas4-wallbash", "xmas4-liebe", "xmas4-skullhaufen",
-                "_tree", "_xmas1_censored", "_xmas4_furz", "_xmas4_nixweiss", "_xmas4_altermann", "_xmas4_postbote", "_xmas4_postpaket", "_xmas4_paketliebe", "_xmas4_regenschirm2", "_xmas4_respekt", "_xmas4_stars_takethat_howard",
-                "_xmas4_talk", "_xmas4_hundeleine01", "_xmas4_spam1", "_xmas4_spam3", "_xmas4_google", "_xmas4_selbstmord",
+                "i-love-grepolis", "santagrin", "xmas1_down", "xmas1_thumbs1", "xmas2_lol", "xmas1_frown", "xmas1_irre", "xmas1_razz", "xmas4_kaffee2", "xmas4_hurra2", "xmas4_aufsmaul", "schneeball", "schneeballwerfen", "xmas4_advent4", "nikolaus", "weihnachtsmann_junge", "schneewerfen_wald", "weihnachtsmann_nordpol", "xmas_kilroy_kamin", "xmas4_laola", "xmas3_smile", "xmas4_paketliebe", "3hlkoenige", "santa", "weihnachtsgeschenk2", "fred_weihnachten-ostern", "xmas4_wallbash", "xmas4_liebe", "xmas4_skullhaufen",
+                "tree", "xmas1_censored", "xmas4_furz", "xmas4_nixweiss", "xmas4_altermann", "xmas4_postbote", "xmas4_postpaket", "xmas4_paketliebe", "xmas4_regenschirm2", "xmas4_respekt", "xmas4_stars_takethat_howard",
+                "xmas4_talk", "xmas4_hundeleine01", "xmas4_spam1", "xmas4_spam3", "xmas4_google", "xmas4_selbstmord",
             ];
             smileyArray.easter = [
-                "eier-bemalen-blau-hase-braun", "osterei-hase05", "osterei-bunt", "ostern-hurra2", "osterhasensmilie", "ostern-thumbs1", "ostern-nosmile", "ostern-lol", "ostern-irre", "ostern-frown", "ostern-down", "ostern-cuinlove", "ostern-confused", "ostern-blush", "ostern-biggrin",
-                "_ostern1_blush-reloaded", "_ostern_alien", "_ostern_censored", "_ostern_cool", "_ostern_stumm", "_xmas4_ostern_stumm", "_ostern1_xd", "_ostern2_xd", "_ostern2_censored", "_ostern2_confused", "_ostern2_cuinlove", "_ostern2_down", "_ostern2_thumbs1", "_ostern_rofl3", "_ostern2_rofl3",
+                "eier_bemalen_blau_hase_braun", "osterei_hase05", "osterei_bunt", "ostern_hurra2", "osterhasensmilie", "ostern_thumbs1", "ostern_nosmile", "ostern_lol", "ostern_irre", "ostern_frown", "ostern_down", "ostern_cuinlove", "ostern_confused", "ostern_blush", "ostern_biggrin",
+                "ostern1_blush-reloaded", "ostern_alien", "ostern_censored", "ostern_cool", "ostern_stumm", "xmas4_ostern_stumm", "ostern1_xd", "ostern2_xd", "ostern2_censored", "ostern2_confused", "ostern2_cuinlove", "ostern2_down", "ostern2_thumbs1", "ostern_rofl3", "ostern2_rofl3",
             ];
             smileyArray.love = [
-                "b-love2", "brautpaar-kinder", "brautpaar-reis", "cuinlove", "fips-herzen01", "heart", "herzen01", "herzen02", "herzen06", "kiss", "klk-tee", "liebesflagge", "love", "lovelove-light", "rose", "send-out-love", "teeglas-fruechtetee", "unknownauthor-knutsch", "valentinstag-biggrin", "valentinstag-confused",
-                "valentinstag-down", "valentinstag-irre", "valentinstag-lol", "valentinstag-thumbs1", "wolke7", "_xmas4_rose",
+                "b-love2", "brautpaar-kinder", "brautpaar-reis", "cuinlove", "fips_herzen01", "heart", "herzen01", "herzen02", "herzen06", "kiss", "klk_tee", "liebesflagge", "love", "lovelove_light", "rose", "send-out-love", "teeglas_fruechtetee", "unknownauthor_knutsch", "valentinstag_biggrin", "valentinstag_confused",
+                "valentinstag_down", "valentinstag_irre", "valentinstag_lol", "valentinstag_thumbs1", "wolke7", "xmas4_rose",
             ];
             smileyArray.Buchstaben = [
-                "smile/sign2_0", "smile/sign2_1", "smile/sign2_2", "smile/sign2_3", "smile/sign2_4", "smile/sign2_5", "smile/sign2_6", "smile/sign2_7", "smile/sign2_8", "smile/sign2_9",
-                "smile/sign2_A", "smile/sign2_B", "smile/sign2_C", "smile/sign2_D", "smile/sign2_E", "smile/sign2_F", "smile/sign2_G", "smile/sign2_H", "smile/sign2_I", "smile/sign2_J", "smile/sign2_K", "smile/sign2_L", "smile/sign2_M", "smile/sign2_N", "smile/sign2_O", "smile/sign2_P", "smile/sign2_Q", "smile/sign2_R", "smile/sign2_S", "smile/sign2_T", "smile/sign2_U", "smile/sign2_V", "smile/sign2_W", "smile/sign2_X", "smile/sign2_Y", "smile/sign2_Z",
-                "smile/sign2_and", "smile/sign2_backslash", "smile/sign2_callsign", "smile/sign2_comma", "smile/sign2_plus", "smile/sign2_point", "smile/sign2_questionmark", "smile/sign2_quote", "smile/sign2_slash", "smile/sign2_space", "smile/sign2_star", "smile/sign2_AE", "smile/sign2_OE", "smile/sign2_UE", "smile/sign2_SZ",
+                "sign2_0", "sign2_1", "sign2_2", "sign2_3", "sign2_4", "sign2_5", "sign2_6", "sign2_7", "sign2_8", "sign2_9",
+                "sign2_A", "sign2_B", "sign2_C", "sign2_D", "sign2_E", "sign2_F", "sign2_G", "sign2_H", "sign2_I", "sign2_J", "sign2_K", "sign2_L", "sign2_M", "sign2_N", "sign2_O", "sign2_P", "sign2_Q", "sign2_R", "sign2_S", "sign2_T", "sign2_U", "sign2_V", "sign2_W", "sign2_X", "sign2_Y", "sign2_Z",
+                "sign2_and", "sign2_backslash", "sign2_callsign", "sign2_comma", "sign2_plus", "sign2_point", "sign2_questionmark", "sign2_quote", "sign2_slash", "sign2_space", "sign2_star", "sign2_AE", "sign2_OE", "sign2_UE", "sign2_SZ",
 
-                "smile/sign3_0", "smile/sign3_1", "smile/sign3_2", "smile/sign3_3", "smile/sign3_4", "smile/sign3_5", "smile/sign3_6", "smile/sign3_7", "smile/sign3_8", "smile/sign3_9",
-                "smile/sign3_A", "smile/sign3_B", "smile/sign3_C", "smile/sign3_D", "smile/sign3_E", "smile/sign3_F", "smile/sign3_G", "smile/sign3_H", "smile/sign3_I", "smile/sign3_J", "smile/sign3_K", "smile/sign3_L", "smile/sign3_M", "smile/sign3_N", "smile/sign3_O", "smile/sign3_P", "smile/sign3_Q", "smile/sign3_R", "smile/sign3_S", "smile/sign3_T", "smile/sign3_U", "smile/sign3_V", "smile/sign3_W", "smile/sign3_X", "smile/sign3_Y", "smile/sign3_Z",
-                "smile/sign3_and", "smile/sign3_backslash", "smile/sign3_callsign", "smile/sign3_comma", "smile/sign3_plus", "smile/sign3_point", "smile/sign3_questionmark", "smile/sign3_quote", "smile/sign3_slash", "smile/sign3_space", "smile/sign3_star", "smile/sign3_AE", "smile/sign3_OE", "smile/sign3_UE", "smile/sign3_SZ",
+                "sign3_0", "sign3_1", "sign3_2", "sign3_3", "sign3_4", "sign3_5", "sign3_6", "sign3_7", "sign3_8", "sign3_9",
+                "sign3_A", "sign3_B", "sign3_C", "sign3_D", "sign3_E", "sign3_F", "sign3_G", "sign3_H", "sign3_I", "sign3_J", "sign3_K", "sign3_L", "sign3_M", "sign3_N", "sign3_O", "sign3_P", "sign3_Q", "sign3_R", "sign3_S", "sign3_T", "sign3_U", "sign3_V", "sign3_W", "sign3_X", "sign3_Y", "sign3_Z",
+                "sign3_and", "sign3_backslash", "sign3_callsign", "sign3_comma", "sign3_plus", "sign3_point", "sign3_questionmark", "sign3_quote", "sign3_slash", "sign3_space", "sign3_star", "sign3_AE", "sign3_OE", "sign3_UE", "sign3_SZ",
 
-                "smile/braille-schrift_0", "smile/braille-schrift_1", "smile/braille-schrift_2", "smile/braille-schrift_3", "smile/braille-schrift_4", "smile/braille-schrift_5", "smile/braille-schrift_6", "smile/braille-schrift_7", "smile/braille-schrift_8", "smile/braille-schrift_9",
-                "smile/braille-schrift_A", "smile/braille-schrift_B", "smile/braille-schrift_C", "smile/braille-schrift_D", "smile/braille-schrift_E", "smile/braille-schrift_F", "smile/braille-schrift_G", "smile/braille-schrift_H", "smile/braille-schrift_I", "smile/braille-schrift_J", "smile/braille-schrift_K", "smile/braille-schrift_L", "smile/braille-schrift_M", "smile/braille-schrift_N", "smile/braille-schrift_O", "smile/braille-schrift_P", "smile/braille-schrift_Q", "smile/braille-schrift_R", "smile/braille-schrift_S", "smile/braille-schrift_T", "smile/braille-schrift_U", "smile/braille-schrift_V", "smile/braille-schrift_W", "smile/braille-schrift_X", "smile/braille-schrift_Y", "smile/braille-schrift_Z",
-                "smile/braille-schrift_callsign", "smile/braille-schrift_comma", "smile/braille-schrift_point", "smile/braille-schrift_questionmark", "smile/braille-schrift_quote", "smile/braille-schrift_space", "smile/braille-schrift_AE", "smile/braille-schrift_OE", "smile/braille-schrift_UE", "smile/braille-schrift_SZ",
+                "braille-schrift_0", "braille-schrift_1", "braille-schrift_2", "braille-schrift_3", "braille-schrift_4", "braille-schrift_5", "braille-schrift_6", "braille-schrift_7", "braille-schrift_8", "braille-schrift_9",
+                "braille-schrift_A", "braille-schrift_B", "braille-schrift_C", "braille-schrift_D", "braille-schrift_E", "braille-schrift_F", "braille-schrift_G", "braille-schrift_H", "braille-schrift_I", "braille-schrift_J", "braille-schrift_K", "braille-schrift_L", "braille-schrift_M", "braille-schrift_N", "braille-schrift_O", "braille-schrift_P", "braille-schrift_Q", "braille-schrift_R", "braille-schrift_S", "braille-schrift_T", "braille-schrift_U", "braille-schrift_V", "braille-schrift_W", "braille-schrift_X", "braille-schrift_Y", "braille-schrift_Z",
+                "braille-schrift_callsign", "braille-schrift_comma", "braille-schrift_point", "braille-schrift_questionmark", "braille-schrift_quote", "braille-schrift_space", "braille-schrift_AE", "braille-schrift_OE", "braille-schrift_UE", "braille-schrift_SZ",
 
-                "smile/buchstaben_0", "smile/buchstaben_1", "smile/buchstaben_2", "smile/buchstaben_3", "smile/buchstaben_4", "smile/buchstaben_5", "smile/buchstaben_6", "smile/buchstaben_7", "smile/buchstaben_8", "smile/buchstaben_9",
-                "smile/buchstaben_A", "smile/buchstaben_B", "smile/buchstaben_C", "smile/buchstaben_D", "smile/buchstaben_E", "smile/buchstaben_F", "smile/buchstaben_G", "smile/buchstaben_H", "smile/buchstaben_I", "smile/buchstaben_J", "smile/buchstaben_K", "smile/buchstaben_L", "smile/buchstaben_M", "smile/buchstaben_N", "smile/buchstaben_O", "smile/buchstaben_P", "smile/buchstaben_Q", "smile/buchstaben_R", "smile/buchstaben_S", "smile/buchstaben_T", "smile/buchstaben_U", "smile/buchstaben_V", "smile/buchstaben_W", "smile/buchstaben_X", "smile/buchstaben_Y", "smile/buchstaben_Z",
-                "smile/buchstaben_and", "smile/buchstaben_callsign", "smile/buchstaben_comma", "smile/buchstaben_plus", "smile/buchstaben_point", "smile/buchstaben_questionmark", "smile/buchstaben_quote", "smile/buchstaben_space", "smile/buchstaben_star", "smile/buchstaben_AE", "smile/buchstaben_OE", "smile/buchstaben_UE",
+                "buchstaben_0", "buchstaben_1", "buchstaben_2", "buchstaben_3", "buchstaben_4", "buchstaben_5", "buchstaben_6", "buchstaben_7", "buchstaben_8", "buchstaben_9",
+                "buchstaben_A", "buchstaben_B", "buchstaben_C", "buchstaben_D", "buchstaben_E", "buchstaben_F", "buchstaben_G", "buchstaben_H", "buchstaben_I", "buchstaben_J", "buchstaben_K", "buchstaben_L", "buchstaben_M", "buchstaben_N", "buchstaben_O", "buchstaben_P", "buchstaben_Q", "buchstaben_R", "buchstaben_S", "buchstaben_T", "buchstaben_U", "buchstaben_V", "buchstaben_W", "buchstaben_X", "buchstaben_Y", "buchstaben_Z",
+                "buchstaben_and", "buchstaben_callsign", "buchstaben_comma", "buchstaben_plus", "buchstaben_point", "buchstaben_questionmark", "buchstaben_quote", "buchstaben_space", "buchstaben_star", "buchstaben_AE", "buchstaben_OE", "buchstaben_UE",
 
-                "smile/xmas-sign_0", "smile/xmas-sign_1", "smile/xmas-sign_2", "smile/xmas-sign_3", "smile/xmas-sign_4", "smile/xmas-sign_5", "smile/xmas-sign_6", "smile/xmas-sign_7", "smile/xmas-sign_8", "smile/xmas-sign_9",
-                "smile/xmas-sign_A", "smile/xmas-sign_B", "smile/xmas-sign_C", "smile/xmas-sign_D", "smile/xmas-sign_E", "smile/xmas-sign_F", "smile/xmas-sign_G", "smile/xmas-sign_H", "smile/xmas-sign_I", "smile/xmas-sign_J", "smile/xmas-sign_K", "smile/xmas-sign_L", "smile/xmas-sign_M", "smile/xmas-sign_N", "smile/xmas-sign_O", "smile/xmas-sign_P", "smile/xmas-sign_Q", "smile/xmas-sign_R", "smile/xmas-sign_S", "smile/xmas-sign_T", "smile/xmas-sign_U", "smile/xmas-sign_V", "smile/xmas-sign_W", "smile/xmas-sign_X", "smile/xmas-sign_Y", "smile/xmas-sign_Z",
-                "smile/xmas-sign_and", "smile/xmas-sign_backslash", "smile/xmas-sign_callsign", "smile/xmas-sign_comma", "smile/xmas-sign_plus", "smile/xmas-sign_point", "smile/xmas-sign_questionmark", "smile/xmas-sign_quote", "smile/xmas-sign_slash", "smile/xmas-sign_space", "smile/xmas-sign_star", "smile/xmas-sign_AE", "smile/xmas-sign_OE", "smile/xmas-sign_UE", "smile/xmas-sign_SZ",
+                "xmas-sign_0", "xmas-sign_1", "xmas-sign_2", "xmas-sign_3", "xmas-sign_4", "xmas-sign_5", "xmas-sign_6", "xmas-sign_7", "xmas-sign_8", "xmas-sign_9",
+                "xmas-sign_A", "xmas-sign_B", "xmas-sign_C", "xmas-sign_D", "xmas-sign_E", "xmas-sign_F", "xmas-sign_G", "xmas-sign_H", "xmas-sign_I", "xmas-sign_J", "xmas-sign_K", "xmas-sign_L", "xmas-sign_M", "xmas-sign_N", "xmas-sign_O", "xmas-sign_P", "xmas-sign_Q", "xmas-sign_R", "xmas-sign_S", "xmas-sign_T", "xmas-sign_U", "xmas-sign_V", "xmas-sign_W", "xmas-sign_X", "xmas-sign_Y", "xmas-sign_Z",
+                "xmas-sign_and", "xmas-sign_backslash", "xmas-sign_callsign", "xmas-sign_comma", "xmas-sign_plus", "xmas-sign_point", "xmas-sign_questionmark", "xmas-sign_quote", "xmas-sign_slash", "xmas-sign_space", "xmas-sign_star", "xmas-sign_AE", "xmas-sign_OE", "xmas-sign_UE", "xmas-sign_SZ",
             ];
-            smileyArray.Geburtstag = ["_29a", "_29b", "_29c"];
+            smileyArray.Geburtstag = ["29a", "29b", "29c"];
 
             SmileyBox.loadSmileys();
         },
@@ -7935,42 +7949,42 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             try {
                 // Replace german sign smilies
                 if (MID == "de" || dio.lang() == "de") {
-                    smileyArray.standard.push("land-germany", "land-germany2", "land-germany3", "land-germany-kings");
+                    smileyArray.standard.push("land_germany", "land_germany2", "land_germany3", "land_germany_kings");
                     smileyArray.other.push("dagegen2", "dafuer2");
-                    smileyArray.people.unshift("mttao-deutschland", "schal-deutschland");
+                    smileyArray.people.unshift("mttao_deutschland", "schal_deutschland");
                 }
                 if (MID == "fr" || dio.lang() == "fr") {
-                    smileyArray.standard.push("land-france", "land-france2", "land-france3");
-                    smileyArray.people.unshift("mttao-frankreich", "schal-frankreich");
+                    smileyArray.standard.push("land_france", "land_france2", "land_france3");
+                    smileyArray.people.unshift("mttao_frankreich", "schal_frankreich");
                 }
                 if (MID == "it" || dio.lang() == "it") {
-                    smileyArray.standard.push("land-italy", "land-italy2", "land-italy3");
-                    smileyArray.people.unshift("mttao-italien", "schal-italien");
+                    smileyArray.standard.push("land_italy", "land_italy2", "land_italy3");
+                    smileyArray.people.unshift("mttao_italien", "schal_italien");
                 }
                 if (MID == "ro" || dio.lang() == "ro") {
-                    smileyArray.standard.push("land-romania", "land-romania2", "land-romania3");
-                    smileyArray.people.unshift("mttao-rumaenien");
+                    smileyArray.standard.push("land_romania", "land_romania2", "land_romania3");
+                    smileyArray.people.unshift("mttao_rumaenien");
                 }
                 if (MID == "br" || dio.lang() == "br") {
-                    smileyArray.standard.push("land-portugal", "land-portugal2", "land-portugal3");
-                    smileyArray.people.unshift("mttao-portugal", "schal-portugal");
+                    smileyArray.standard.push("land_portugal", "land_portugal2", "land_portugal3");
+                    smileyArray.people.unshift("mttao_portugal", "schal_portugal");
                 }
                 if (MID == "pl" || dio.lang() == "pl") {
-                    smileyArray.standard.push("land-poland", "land-poland2", "land-poland3");
-                    smileyArray.people.unshift("mttao-polen");
+                    smileyArray.standard.push("land_poland", "land_poland2", "land_poland3");
+                    smileyArray.people.unshift("mttao_polen");
                 }
                 if (MID == "es" || dio.lang() == "es") {
-                    smileyArray.standard.push("land-spain", "land-spain2", "land-spain3");
-                    smileyArray.people.unshift("mttao-spanien", "schal-spanien");
+                    smileyArray.standard.push("land_spain", "land_spain2", "land_spain3");
+                    smileyArray.people.unshift("mttao_spanien", "schal_spanien");
                 }
                 if (MID == "sk" || dio.lang() == "sk") {
-                    smileyArray.people.unshift("mttao-slowakei", "schal-slowakei");
+                    smileyArray.people.unshift("mttao_slowakei", "schal_slowakei");
                 }
                 for (var a = 1; a < 101; a++) {
-                    smileyArray.Geburtstag.push("_geburtstagswedler-" + a);
-                    if (a < 10) smileyArray.Buchstaben.push("_rate0" + a);
+                    smileyArray.Geburtstag.push("geburtstagswedler-" + a);
+                    if (a < 10) smileyArray.Buchstaben.push("rate0" + a);
                 }
-                smileyArray.Buchstaben.push("_rate10", "_rate11", "_rate11b")
+                smileyArray.Buchstaben.push("rate10", "rate11", "rate11b")
 
                 for (var e in smileyArray) {
                     if (smileyArray.hasOwnProperty(e)) {
@@ -7986,7 +8000,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                     smileyArray[e][f].src = "https://www.greensmilies.com/smile/smiley_emoticons" + src + ".gif";
                                 } else {
                                     if (SmileyBox.loading_error == false) {
-                                        smileyArray[e][f].src = Home_img + "smiley-emoticons-" + src + ".gif";
+                                        //smileyArray[e][f].src = Home_img + "smiley-emoticons-" + src + ".gif";
+                                        smileyArray[e][f].src = Home_url + "/img/smileys/" + src + ".gif";
                                     } else {
                                         smileyArray[e][f].src = 'https://i.imgur.com/VdjJJgk.gif';
                                     }
@@ -8029,7 +8044,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     $(bbcodeBarId + " .bb_button_wrapper").get(0).lastChild.remove();
                 }
                 if (!$(bbcodeBarId + ' .bb_button_wrapper .dio_smiley_button').get(0)) {
-                    $('<img title="' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327" class="dio_smiley_button" src="' + Home_img + 'smiley-emoticons-smile.gif">').appendTo(bbcodeBarId + ' .bb_button_wrapper');
+                    $('<img title="' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327" class="dio_smiley_button" src="' + Home_url + '/img/smileys/smile.gif">').appendTo(bbcodeBarId + ' .bb_button_wrapper');
                 }
 
                 $('<div class="dio_smiley_box game">' +
@@ -8037,18 +8052,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<div class="bbcode_box top_left"></div><div class="bbcode_box top_right"></div><div class="bbcode_box top_center"></div>' +
                     '<div class="bbcode_box bottom_center"></div><div class="bbcode_box bottom_right"></div><div class="bbcode_box bottom_left"></div>' +
                     '<div class="dio_box_header">' +
-                    '<span class="dio_group standard active"><img src="' + Home_img + 'smiley-emoticons-smilenew.gif"></span>' +
-                    '<span class="dio_group nature"><img src="' + Home_img + 'smiley-emoticons-ben-cat.gif" style="top: 1px;"></span>' +
-                    '<span class="dio_group grepolis"><img src="' + Home_img + 'smiley-emoticons-i-lovo-grepolis.gif" style="top: -5px;" ></span>' +
-                    '<span class="dio_group people"><img src="' + Home_img + 'smiley-emoticons-stars-elvis.gif" style="top: -1px;" ></span>' +
-                    '<span class="dio_group Party"><img src="' + Home_img + 'smiley-emoticons-prost2.gif" style="margin-right: -5px;" ></span>' +
-                    '<span class="dio_group other"><img src="' + Home_img + 'smiley-emoticons-irre.gif" style="margin-right: -5px;" ></span>' +
-                    '<span class="dio_group halloween"><img src="' + Home_img + 'smiley-emoticons-zombies-lol.gif" style="margin-right: -5px;" ></span>' +
-                    '<span class="dio_group xmas"><img src="' + Home_img + 'smiley-emoticons-santagrin.gif" style="top: -6px;" ></span>' +
-                    '<span class="dio_group easter"><img src="' + Home_img + 'smiley-emoticons-osterhasensmilie.gif" style="top: -6px;" ></span>' +
-                    '<span class="dio_group love"><img src="' + Home_img + 'smiley-emoticons-herzen02-1.gif" style="top: -3px;" ></span>' +
-                    '<span class="dio_group Buchstaben"><img src="https://www.greensmilies.com/smile/sign_A.gif" style="" ></span>' +
-                    '<span class="dio_group Geburtstag"><img src="https://www.greensmilies.com/smile/smiley_emoticons_geburtstagswedler-1.gif" style="" ></span>' +
+                    '<span class="dio_group standard active"><img src="' + Home_url + '/img/smileys/smilenew.gif"></span>' +
+                    '<span class="dio_group nature"><img src="' + Home_url + '/img/smileys/ben_cat.gif" style="top: 1px;"></span>' +
+                    '<span class="dio_group grepolis"><img src="' + Home_url + '/img/smileys/i-lovo-grepolis.gif" style="top: -5px;" ></span>' +
+                    '<span class="dio_group people"><img src="' + Home_url + '/img/smileys/stars_elvis.gif" style="top: -1px;" ></span>' +
+                    '<span class="dio_group Party"><img src="' + Home_url + '/img/smileys/prost2.gif" style="margin-right: -5px;" ></span>' +
+                    '<span class="dio_group other"><img src="' + Home_url + '/img/smileys/irre.gif" style="margin-right: -5px;" ></span>' +
+                    '<span class="dio_group halloween"><img src="' + Home_url + '/img/smileys/zombies_lol.gif" style="margin-right: -5px;" ></span>' +
+                    '<span class="dio_group xmas"><img src="' + Home_url + '/img/smileys/santagrin.gif" style="top: -6px;" ></span>' +
+                    '<span class="dio_group easter"><img src="' + Home_url + '/img/smileys/osterhasensmilie.gif" style="top: -6px;" ></span>' +
+                    '<span class="dio_group love"><img src="' + Home_url + '/img/smileys/herzen02.gif" style="top: -3px;" ></span>' +
+                    '<span class="dio_group Buchstaben"><img src="' + Home_url + '/img/smileys/sign_A.gif" style="" ></span>' +
+                    '<span class="dio_group Geburtstag"><img src="' + Home_url + '/img/smileys/geburtstagswedler-1.gif" style="" ></span>' +
                     '</div>' +
                     '<hr><div class="dio_box_content"></div><hr>' +
                     '<div class="box_footer">' + getTexts("Options", "sml")[0] + ' DIO-TOOLS-David1327 & greensmilies.com</div>' +
@@ -9955,8 +9970,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         },
         XMas: {
             add: () => {
-                if (MID == 'fr') { $('<a href="' + Home + 'pages/dio-tools-david1327" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box'); }
-                else $('<a href="' + Home_url + '/" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
+                if (MID == 'fr') { $('<a href="' + Home_url + '/fr/" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box'); }
+                else $('<a href="' + Home_url + '/en/" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
 
                 var dioXMAS = $('#dio_xmas');
 
@@ -10573,7 +10588,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             else { }
                         });
                         const wnd = uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_DIO_BBCODE) || uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                        const dio_version_PUB = "[url=" + Home + "en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
+                        let dio_version_PUB;
+                        if (MID == 'fr') dio_version_PUB = "[url=" + Home_url + "/fr/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
+                        else dio_version_PUB = "[url=" + Home_url + "/en/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
                         bb_contentP1 += "[/table]" + dio_version_PUB; bb_contentP2 += "[/table]" + dio_version_PUB; bb_contentP3 += "[/table]" + dio_version_PUB; bb_contentP4 += "[/table]" + dio_version_PUB; bb_contentP5 += "[/table]" + dio_version_PUB;
                         const expRahmen_a = "<button id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></button><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
                             "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
@@ -10662,7 +10679,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         let bb_content = "[quote]";
 
                         // Titre
-                        let author, alliance, message, i;
+                        let author, alliance, alliance2, message, i;
                         if ($("#message_message_list .subject").is(":visible")) {
                             message = $("#message_message_list .subject").text().trim();
                         } else {
@@ -10671,10 +10688,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         }
                         author = '[player]' + $("#message_partner a.gp_player_link").text().trim() + '[/player]';
                         alliance = $("#message_partner a.gp_alliance_link").text().trim();
+                        alliance2 = $("#message_partner span a").text().trim();
 
                         if (author === "[player][/player]") author = "Grepolis";
 
                         if (alliance) { i = "(" + author + " [ally]" + alliance + "[/ally])" }
+                        else if (alliance2) { i = "(" + author + " [ally]" + alliance2 + "[/ally])" }
                         else { i = "(" + author + ")" };
 
                         bb_content += "[b]" + uw.DM.getl10n("layout").main_menu.items.messages + ":[/b] " + message + " " + i + "\n";
@@ -10841,7 +10860,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         });
 
                         //bb_content = bb_content.slice(0, -1);
-                        bb_content += "[url=" + Home + "en/pages/dio-tools-david1327/]DIO-TOOLS-David1327[/url] - v." + dio_version;
+                        if (MID == 'fr') bb_content += "[url=" + Home_url + "/fr/]DIO-TOOLS-David1327[/url] - v." + dio_version;
+                        else bb_content += "[url=" + Home_url + "/en/]DIO-TOOLS-David1327[/url] - v." + dio_version;
                         bb_content += "[/quote]";
 
                         let expRahmen_a = "<div class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
