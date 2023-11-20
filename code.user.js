@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name		DIO-TOOLS-David1327
-// @name:fr		DIO-TOOLS-David1327
+// @name		DIO-TOOLS-David1327 (test)
+// @name:fr		DIO-TOOLS-David1327 (test)
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.33
+// @version		4.34
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2023. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2023. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -32,20 +32,18 @@ let dio_version = GM.info.script.version;
 
 let uw = unsafeWindow || window, $ = uw.jQuery, DATA, GMM, url_dev;
 
-// GM-API?
-if (GM.info.scriptHandler == "Greasemonkey") GMM = false
-else GMM = (typeof GM_info === 'object');
+GMM = GM
 
-//GMM = true;
-//GMM = false;
+// GM-API?
+var GM = (typeof GM_info === 'object');
 
 //url_dev = true;
 
-console.log('%c|= ' + GM.info.script.name + ' is active v' + dio_version + ' (' + GM.info.scriptHandler + ' v' + GM.info.version + ') [GMM ' + GMM + '] =|', 'color: green; font-size: 1em; font-weight: bolder; ');
+console.log('%c|= ' + GMM.info.script.name + ' is active v' + dio_version + ' (' + GMM.info.scriptHandler + ' v' + GMM.info.version + ') =|', 'color: green; font-size: 1em; font-weight: bolder; ');
 
 function loadValue(name, default_val) {
     var value;
-    if (GMM) { value = GM_getValue(name, default_val); }
+    if (GM) { value = GM_getValue(name, default_val); }
     else { value = localStorage.getItem(name) || default_val; }
 
     if (typeof (value) === "string") { value = JSON.parse(value) }
@@ -53,7 +51,7 @@ function loadValue(name, default_val) {
 }
 
 // LOAD DATA
-if ((uw.location.pathname.indexOf("game") >= 0)) {
+if (GM && (uw.location.pathname.indexOf("game") >= 0)) {
     var WID = uw.Game.world_id, MID = uw.Game.market_id, AID = uw.Game.alliance_id;
 
     DATA = {
@@ -92,7 +90,7 @@ if ((uw.location.pathname.indexOf("game") >= 0)) {
     if (typeof DATA.options.dio_trd == 'boolean') { DATA.options.dio_per = DATA.options.dio_rec = DATA.options.dio_trd; delete DATA.options.dio_trd; }
     if (typeof DATA.options.dio_mov == 'boolean') { DATA.options.dio_act = DATA.options.dio_mov; delete DATA.options.dio_mov; }
     if (typeof DATA.options.dio_twn == 'boolean') { DATA.options.dio_tic = DATA.options.dio_til = DATA.options.dio_tim = DATA.options.dio_twn; delete DATA.options.dio_twn; }
-    if (GMM) GM_deleteValue("notification");
+    if (GM) GM_deleteValue("notification");
 }
 
 // GM: EXPORT FUNCTIONS
@@ -106,7 +104,7 @@ function appendScript() {
     //console.log("GM-API: " + gm_bool);
     if (document.getElementsByTagName('body')[0]) {
 
-        if (GMM) {
+        if (GM) {
             const scriptclipboard = document.createElement("script");
             scriptclipboard.textContent = GM_getResourceText("clipboard");
             document.body.appendChild(scriptclipboard);
@@ -117,16 +115,16 @@ function appendScript() {
         dioscript.id = 'diotools';
 
         time_a = uw.Timestamp.client();
-        dioscript.textContent = DIO_GAME.toString().replace(/uw\./g, "") + "\n DIO_GAME('" + dio_version + "', " + GMM + ", '" + JSON.stringify(DATA).replace(/'/g, "##") + "', " + time_a + ", " + url_dev + ");";
+        dioscript.textContent = DIO_GAME.toString().replace(/uw\./g, "") + "\n DIO_GAME('" + dio_version + "', " + GM + ", '" + JSON.stringify(DATA).replace(/'/g, "##") + "', " + time_a + ", " + url_dev + ");";
         document.body.appendChild(dioscript);
     } else setTimeout(() => { appendScript(); }, 500);
 }
 
 if (location.host === "dio-david1327.github.io") { DIO_PAGE(); } // PAGE
-else if ((uw.location.pathname.indexOf("game") >= 0)) {
+else if ((uw.location.pathname.indexOf("game") >= 0) && GM) {
     try {
         $('<script src="https://dio-david1327.github.io/DIO-TOOLS-David1327/Version.js"></script>').appendTo("head");
-        if (!GMM) $('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
+        //if (GM) $('<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>').appendTo("head");
         //$('<script src="http://localhost:4000/test.js"></script>').appendTo("head");
     } catch (error) { console.log(error, '<script>') }
     appendScript();
