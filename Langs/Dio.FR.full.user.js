@@ -117,7 +117,15 @@ LANGadd = {
             Cic: ["Vue de la ville", "Le mode construction de la vue de la ville est sélectionné par défaut"],
             Cuc: ["Filtrage de l'aperçu de culture (administrateur)", "Permettre le tri des villes."],
             Buc: ["Filtrage de l'aperçu des bâtiments (administrateur)", "Permettre le tri des villes."],
+            BBl: ["BBcode List", "Génère une liste en BB-code, idéale pour afficher les membres d'une alliance ou les villes d'un joueur"],
+            Amm: ["Message de groupe (alliance)", "Ajoute un bouton sur le profil de l'alliance pour faciliter l'envoi de messages groupés"],
+            Onb: ["Numéro d'océan", "Intègre les numéros d'océan à la vue île, améliorant la navigation."],
+            Idl: ["Joueur inactif", "Afficher les joueurs inactifs. Powered by GREPODATA"],
+            Saw: ["Sauvegarde des remparts", "Permet de sauvegarder les troupes dans les remparts"],
+            Att: ["Alarme d'attaque", "Recevez des avertissements instantanés lorsque vous êtes attaqué, renforçant votre sécurité"],
 
+            Comp_GRCT: "Les fonctions suivantes sont non compatibles avec GRCT",
+            Non_compatible: "Non compatible à activer dans les paramètres de ",
             err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
         },
         movement: {
@@ -208,6 +216,7 @@ LANGadd = {
             ingame_name: ["N'hésitez pas à me contacter si vous préférez être appeler par votre pseudo.", "Comme il y a beaucoup à faire, et que cela peut demander beaucoup de temps, je suis toujours très reconnaissant pour tout type d'aide. De ce fait, j'aimerai remercier tous ceux qui sont offert de l'aide sur ce projet, que ce soit par des donations, en partageant des connaissances, des conseils créatifs, en rapportant des problèmes, ou simplement par des messages d'encouragement."],
             raf: "En confirmant la page sera rafraîchir",
             con: "Force unitaire: Effectif total des troupes de siège",
+            Volume:"Volume",
         },
         tutoriel: {
             tuto: "Informations utiles",
@@ -339,6 +348,16 @@ LANGadd = {
             send: 'Générer message',
             name: 'Nom',
             add_edit: 'Ajouter / modifier',
+        },
+        wall: {
+            wallnotsaved: "Les remparts ne sont pas enregistr\u00e9s",
+            wallsaved: "Les remparts sont enregistr\u00e9s",
+            msghuman: "L'information a \u00e9t\u00e9 sauvegard\u00e9e",
+            erreur: "Une erreur s'est produite lors de l'\u00e9criture",
+            wantdeletecurrent:"Voulez vous effacer les donn\u00e9es actuelles des remparts?",
+            deletecurrent:"Effacer les donn\u00e9es actuelles",
+            listsaved:"Sauvegarder sur le mur le jour",
+            liststate: "État du mur le jour",
         },
         buttons: {
             sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser" //uw.DM.getl10n("notes").btn_save
