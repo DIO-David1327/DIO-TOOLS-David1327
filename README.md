@@ -1,31 +1,28 @@
 <p align="center"> 
-<img alt="Dio-tools-david1327" src="https://www.tuto-de-david1327.com/medias/images/dio-tools-david1327-700px.png"  style="max-width:100%;" />
+<img alt="Dio-tools-david1327" src="https://dio-david1327.github.io/img/site/dio-tools-david1327-700px.png"  style="max-width:100%;" />
 <br>DIO-TOOLS-David1327
 </p>
 
 [![GitHub version](https://img.shields.io/github/v/release/DIO-David1327/DIO-TOOLS-David1327?color=1&label=Version)](https://github.com/DIO-David1327/DIO-TOOLS-David1327/releases/latest)
 [![License](https://img.shields.io/github/license/DIO-David1327/DIO-TOOLS-David1327)](https://github.com/DIO-David1327/DIO-TOOLS-David1327/blob/master/LICENSE)
 [![Discord](https://img.shields.io/discord/838203647028232213?color=25237289DA&label=DIO%20TOOLS%20David1327&labelColor=%237289DA&logo=discord&logoColor=white)](https://discord.gg/Q7WXtmRNRW)
-[![Facebook](https://img.shields.io/badge/Facebook-%231877F2.svg?style=&logo=Facebook&logoColor=white)](https://fb.com/TutoDeDavid1327)
+[![Facebook](https://img.shields.io/badge/Facebook-%231877F2.svg?style=&logo=Facebook&logoColor=white)](https://fb.com/TutoDeDavid1327)<br><br>
 
+[![Donate](https://www.paypalobjects.com/en_US/FR/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url)<br><br>
 
-<center>https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/<a href="https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/" target="_blank"><img alt="Lien" height="10" src="https://www.tuto-de-david1327.com/medias/images/lien.png" width="10" /></a></center>
+**Currently available in version david1327**
 
-<p></p>
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url" rel="nofollow"><img alt="Donate" src="https://www.paypalobjects.com/en_US/FR/i/btn/btn_donateCC_LG.gif"></a><br><br>
-Currently available in version david1327
+* 1) Installing [Tampermonkey](https://www.tampermonkey.net/){:target="_blank"}
+* 2) Installing [DIO-TOOLS-David1327](https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js){:target="_blank"}
+* 3) Refresh Grepolis<br>
+=> [Detailed installation](https://dio-david1327.github.io/en/pages/Installation.html){:target="_blank"}
 
-<span style="color: #808080;"><a href="https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html" onclick="window.open(this.href, '', 'resizable=no,status=no,location=no,toolbar=no,menubar=no,fullscreen=no,scrollbars=no,dependent=no'); return false;" rel="nofollow"><span style="color: #808080;">DIO-Tools-David1327&nbsp;(Download)</span></a></span>
+DIO-Tools is officially approved by Grepolis on (EN), (IT), (PL), (DE), (BR), (CZ), (ES), (AR).<br>
+DIO-Tools is authorized on (FR), (US), (SK), (HU), (RO), (NL), (GR).<br>
+DIO-Tools is currently prohibited on (None).<br><br>
 
-
-<p>DIO-Tools is officially approved by Grepolis on (EN), (IT), (PL), (DE), (BR), (CZ), (ES), (AR).<br>
-DIO-Tools is authorized on&nbsp;(FR), (US), (SK),  (HU), (RO), (NL), (GR).<br>
-DIO-Tools is currently prohibited on (None).</p>
-
-<span style="text-decoration: underline;"><span style="color: #008000;"><strong>The functions of the script:</strong></span></span></p>
-
-<p><span style="font-size: small;"><span style="color: #008000;">Almost every function can be disabled in the options.</span></span>
-
+**The functions of the script:** 
+Almost every function can be disabled in the options.
 
 - smileys
 - commercial options
@@ -33,138 +30,136 @@ DIO-Tools is currently prohibited on (None).</p>
 - Unity Power
 - Wonders of the World-parts
 - Form of defense
-<p></p>
-<div><a href="https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/" target="_blank">Detailed description of functions<img alt="Lien" height="10" src="https://www.tuto-de-david1327.com/medias/images/lien.png" width="10" /></a></div>
-
-<div>&nbsp;</div>
 
 
-<center><div><img alt="Z6cvhf6p" height="75" src="https://www.tuto-de-david1327.com/medias/images/z6cvhf6p.png" style="display: block; margin-left: auto; margin-right: auto;" width="316" /></div>
+[Detailed description of functions](https://dio-david1327.github.io/en/pages/Features/){:target="_blank"}<br>
 
-<div><img alt="Z6cvhf6p" src="https://www.tuto-de-david1327.com/medias/images/overview-1.png" /></div></center>
+<center><div><img alt="Z6cvhf6p" height="75" src="https://dio-david1327.github.io/img/dio/APERCU.png" style="max-width:100%;"></div>
+
+<div><img alt="Z6cvhf6p" src="https://dio-david1327.github.io/img/dio/overview.png" style="max-width:100%;"></div></center>
 
 <h1>Detailed description of functions</h1>
 <p><b>DIO-Tools is a small extension for the browser game Grepolis. It offers, among other things, some displays (biremes counter, unit strength,...), a smiley selection box for text input fields, trade options and some changes to the layout.</b></p>
 
 <b>Almost each feature can be deactivated in the settings</b>
 
-<h2><b>►&nbsp;Smiley selection box</b></h2>
+<h2><b>► Smiley selection box</b></h2>
 
 <p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/smiley-box.1.png" style="width: 356px; height: 193px;" /></b></p>
 
-<p>● Inserts a smiley selection box to the bbcode bar for text input fields (forum, messages, notes)
-● Used smilies:&nbsp;<a href="http://www.greensmilies.com/smilie-album/" rel="nofollow">www.greensmilies.com</a>
-+ Special created grepolis smilies:</p>
+* Inserts a smiley selection box to the bbcode bar for text input fields (forum, messages, notes)
+* Used smilies: <a href="http://www.greensmilies.com/smilie-album/" rel="nofollow">www.greensmilies.com</a>
+ + Special created grepolis smilies:
 <table>
 	<tbody>
 		<tr>
-			<td>&emsp;<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-mttao-wassermann.gif" /></td>
-			<td>&emsp;<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigrqlp2odi2kqo24.gif" /></td>
-			<td>&emsp;<img src="https://www.tuto-de-david1327.com/medias/images/icon.gif" /></td>
-			<td>&emsp;<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigmv8wnffb3v0ifg.gif" /></td>
-			<td>&emsp;<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj2byjendffymp88t.gif" /></td>
-			<td>&emsp;<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj1l9gndtu3nduyvi.gif" /></td>
-			<td>&emsp;<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigrmpfofys5xtiks.gif" /></td>
-			<td>&emsp;<img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-i-lovo-grepolis.gif" /></td>
+			<td> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-mttao-wassermann.gif"></td>
+			<td> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigrqlp2odi2kqo24.gif"></td>
+			<td> <img src="https://www.tuto-de-david1327.com/medias/images/icon.gif"></td>
+			<td> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigmv8wnffb3v0ifg.gif"></td>
+			<td> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj2byjendffymp88t.gif"></td>
+			<td> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cj1l9gndtu3nduyvi.gif"></td>
+			<td> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-cigrmpfofys5xtiks.gif"></td>
+			<td> <img src="https://www.tuto-de-david1327.com/medias/images/smiley-emoticons-i-lovo-grepolis.gif"></td>
 		</tr>
 	</tbody>
 </table>
 
-<h2><b>►&nbsp;Town icons</b></h2>
+<h2><b>► Town icons</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/54iymary.png" style="width: 465px; height: 335px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/54iymary.png" style="max-width:100%;"></b></p>
 
-<p>● Layout adjustment (left-aligned) of the town list
-● Adds town icons automatically
-● Manually choosing of the town icons is possible</p>
+* Layout adjustment (left-aligned) of the town list
+* Adds town icons automatically
+* Manually choosing of the town icons is possible
 
-<h2><b>►&nbsp;Unit strength</b></h2>
+<h2><b>► Unit strength</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/unit-strength.png" style="width: 137px; height: 173px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/unit-strength.png" style="max-width:100%;"></b></p>
 
-<p>● Shows the strength of each attack type (blunt, sharp, distance) in several areas (unit menu, simulator, barracks,...)
-● Attack and defense values can be switched in the unit menu</p>
+* Shows the strength of each attack type (blunt, sharp, distance) in several areas (unit menu, simulator, barracks,...)
+* Attack and defense values can be switched in the unit menu
 
-<h2><b>►&nbsp;Transport capacity</b></h2>
+<h2><b>► Transport capacity</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/transport-capacity-2.png" style="width: 139px; height: 103px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/transport-capacity-2.png" style="max-width:100%;"></b></p>
 
-<p>● Shows the transporter capacity of the available transporter in town
-● Dis-/Enable big transporters by clicking on it</p>
+* Shows the transporter capacity of the available transporter in town
+* Dis-/Enable big transporters by clicking on it
 
-<h2><b>►&nbsp;Biremes counter</b></h2>
+<h2><b>► Biremes counter</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/ocean-number.png" style="width: 207px; height: 210px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/ocean-number.png" style="max-width:100%;"></b></p>
 
-<p>● Experimental, intended for siege worlds
-● Counts all the biremes of each city and sums these</p>
+* Experimental, intended for siege worlds
+* Counts all the biremes of each city and sums these
 
-<h2><b>►&nbsp;Improved speed</b></h2>
+<h2><b>► Improved speed</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/improved-speed.png" style="width: 241px; height: 49px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/improved-speed.png" style="max-width:100%;"></b></p>
 
-<p>● Shows the duration of improved speed effect in the attack/support window</p>
+* Shows the duration of improved speed effect in the attack/support window
 
-<h2><b>►&nbsp;Available units box</b></h2>
+<h2><b>► Available units box</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/available-units-box.png" style="width: 391px; height: 306px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/available-units-box.png" style="max-width:100%;"></b></p>
 
-<p>● Shows all your available units (no units outside of origin towns)<br />
-● Selecting of town groups is possible</p>
+* Shows all your available units (no units outside of origin towns)<br />
+* Selecting of town groups is possible
 
-<h2><b>►&nbsp;<u>Activity boxes</u></b></h2>
+<h2><b>► <u>Activity boxes</u></b></h2>
 
-<p>● Movable troops and trade activity boxes with position memory on startup</p>
+* Movable troops and trade activity boxes with position memory on startup
 
-<h2><b>►&nbsp;Favor popup</b></h2>
+<h2><b>► Favor popup</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/favor-popup2.png" style="width: 318px; height: 274px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/favor-popup2.png" style="max-width:100%;"></b></p>
 
-<p>● Nicer favor popup with graphics instead of text</p>
+* Nicer favor popup with graphics instead of text
 
-<h2><b>►&nbsp;Trade options</b></h2>
+<h2><b>► Trade options</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/trade-options.png" style="width: 481px; height: 312px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/trade-options.png" style="max-width:100%;"></b></p>
 
-<p>● Percentage trade (towns and ww)
-● Town festival marking (red)
-● Recruiting trade (trade ratio of unit types) + ratio marking (green)</p>
+* Percentage trade (towns and ww)
+* Town festival marking (red)
+* Recruiting trade (trade ratio of unit types) + ratio marking (green)
 
-<h2><b>►&nbsp;World wonder</b></h2>
+<h2><b>► World wonder</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/world-wonder.png" style="width: 760px; height: 436px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/world-wonder.png" style="max-width:100%;"></b></p>
 
-<p>● Layout adjustment
-● Share calculation (= ratio of player points to alliance points)
-● Resources calculation &amp; counter (stores amount) 
-● Adds missing previous &amp; next buttons on finished world wonders (better browsing through world wonders)</p>
+* Layout adjustment
+* Share calculation (= ratio of player points to alliance points)
+* Resources calculation &amp; counter (stores amount) 
+* Adds missing previous &amp; next buttons on finished world wonders (better browsing through world wonders)
 
-<h2><b>►&nbsp;Simulator</b></h2>
+<h2><b>► Simulator</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/simulator.png" style="width: 790px; height: 484px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/simulator.png" style="max-width:100%;"></b></p>
 
-<p>● Layout adjustment
-● Permanent display of the extended modifier box 
-● Unit strength for entered units</p>
+* Layout adjustment
+* Permanent display of the extended modifier box 
+* Unit strength for entered units
 
-<h2><b>►&nbsp;Conquests</b></h2>
+<h2><b>► Conquests</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/conquests.png" style="width: 508px; height: 327px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/conquests.png" style="max-width:100%;"></b></p>
 
-<p>● Attack/support counter 
-● Layout changes on troop movements (3 instead of 2 rows)
-● Unit strength of siege troops</p>
+* Attack/support counter 
+* Layout changes on troop movements (3 instead of 2 rows)
+* Unit strength of siege troops
 
-<h2><b>►&nbsp;<u>Taskbar</u></b></h2>
+<h2><b>► <u>Taskbar</u></b></h2>
 
-<p><b><u><img alt="" src="https://www.tuto-de-david1327.com/medias/images/barre-de-taches.png" style="width: 206px; height: 36px;" /></u></b></p>
+<p><b><u><img alt="" src="https://www.tuto-de-david1327.com/medias/images/barre-de-taches.png" style="max-width:100%;"></u></b></p>
 
-<p>● Larger taskbar
-● Minimized windows on startup (daily reward)</p>
+* Larger taskbar
+* Minimized windows on startup (daily reward)
 
-<h2><b>►&nbsp;Defense form</b></h2>
+<h2><b>► Defense form</b></h2>
 
-<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/defense-form.png" style="width: 675px; height: 432px;" /></b></p>
+<p><b><img alt="" src="https://www.tuto-de-david1327.com/medias/images/defense-form.png" style="max-width:100%;"></b></p>
 
-<p>● Adds a button for a defense form to the bbcode bar overview (forum &amp; messages) 
-● Optional settings for defense overview: detailed land units, premium, silver amount, troop movement (experimental)</p>
+* Adds a button for a defense form to the bbcode bar overview (forum &amp; messages) 
+* Optional settings for defense overview: detailed land units, premium, silver amount, troop movement (experimental)

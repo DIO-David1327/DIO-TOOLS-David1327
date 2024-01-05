@@ -213,10 +213,11 @@ LANGadd = {
             Happy: "Bonne année!",
             Merry: "Ho! Ho! Ho! Joyeux Noël!",
             tow: "BBCode ville",
+            loc: "Local",
             ingame_name: ["N'hésitez pas à me contacter si vous préférez être appeler par votre pseudo.", "Comme il y a beaucoup à faire, et que cela peut demander beaucoup de temps, je suis toujours très reconnaissant pour tout type d'aide. De ce fait, j'aimerai remercier tous ceux qui sont offert de l'aide sur ce projet, que ce soit par des donations, en partageant des connaissances, des conseils créatifs, en rapportant des problèmes, ou simplement par des messages d'encouragement."],
             raf: "En confirmant la page sera rafraîchir",
             con: "Force unitaire: Effectif total des troupes de siège",
-            Volume:"Volume",
+            Volume: "Volume",
         },
         tutoriel: {
             tuto: "Informations utiles",
@@ -354,10 +355,12 @@ LANGadd = {
             wallsaved: "Les remparts sont enregistr\u00e9s",
             msghuman: "L'information a \u00e9t\u00e9 sauvegard\u00e9e",
             erreur: "Une erreur s'est produite lors de l'\u00e9criture",
-            wantdeletecurrent:"Voulez vous effacer les donn\u00e9es actuelles des remparts?",
-            deletecurrent:"Effacer les donn\u00e9es actuelles",
-            listsaved:"Sauvegarder sur le mur le jour",
+            wantdeletecurrent: "Voulez vous effacer les donn\u00e9es actuelles des remparts ?",
+            deletecurrent: "Effacer les donn\u00e9es actuelles",
+            listsaved: "Sauvegarder sur le mur le jour",
             liststate: "État du mur le jour",
+            nosaved: "Aucune sauvegarde",
+            Auto: "Mode Auto",
         },
         buttons: {
             sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser" //uw.DM.getl10n("notes").btn_save

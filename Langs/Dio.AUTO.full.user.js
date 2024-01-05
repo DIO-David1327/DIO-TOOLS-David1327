@@ -335,6 +335,8 @@ LANGadd = {
             //deletecurrent:"Effacer les donn\u00e9es actuelles",
             //listsaved:"Sauvegarder sur le mur le jour",
             //liststate: "État du mur le jour",
+            //nosaved: "Aucune sauvegarde",
+            //Auto: "Mode Auto",
         },
         buttons: {
             sav: uw.DM.getl10n("notes").btn_save/*"sauvegarder"*/, /*ins: "Insérer",*/ res: uw.DM.getl10n("academy").tabs[1]/*"Réinitialiser"*/,

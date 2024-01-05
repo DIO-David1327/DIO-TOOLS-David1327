@@ -353,10 +353,12 @@ LANGadd = {
             wallsaved: "Wall is saved",
             msghuman: "The information has been saved",
             erreur: "An error occurred while writing",
-            wantdeletecurrent: "Do you want to delete the current record of the wall?",
+            wantdeletecurrent: "Do you want to delete the current record of the wall ?",
             deletecurrent: "Delete the current record",
             listsaved: "Saved on the wall the day",
             liststate: "Condition of the wall on the day",
+            nosaved: "No backup",
+            Auto: "Auto mode",
         },
         buttons: {
             sav: "Save", ins: "Insert", res: "Reset"
