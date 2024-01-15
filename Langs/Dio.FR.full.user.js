@@ -15,8 +15,8 @@ LANGadd = {
             ///donate:
             //Donate: "",
             ///autre
-            Update: "https://www.tuto-de-david1327.com/annonces/dio-tools-david1327/mise-a-jour-" + updateversion + ".html",
-            contact: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/",
+            Update: "https://dio-david1327.github.io/fr/News/Mise-a-jour/",
+            contact: "https://dio-david1327.github.io/fr/",
             forum: "https://fr.forum.grepolis.com/index.php?threads/dio-tools-david1327.79567/",
             link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html",
             link_utile: "https://www.tuto-de-david1327.com/pages/info/sites-utilitaires.html",
@@ -24,7 +24,7 @@ LANGadd = {
             available_units: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/apercu-des-unites.html",
             UnitComparison: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/comparaison-des-unites.html",
             MessageExport: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/bb-code-messages.html",
-            Translations: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/traductions.html",
+            Translations: "https://dio-david1327.github.io/fr/wiki/traductions.html",
         },
         Settings: {
             dsc: "DIO-Tools offres certains écrans, une boîte de smiley, les options <br>commerciales, des changements à la mise en page et d'autres choses.",
@@ -39,7 +39,7 @@ LANGadd = {
             Donate: "Faire un don",
 
             //forum: "",
-            Update: "Mise à jour " + dio_version,
+            Update: "Mise à jour",
             Feature: "Nouvelle fonctionnalité",
             Feature2: "Nouvelle version",
             Learn_more: "En savoir plus",
@@ -59,6 +59,9 @@ LANGadd = {
             Available: "Nouvelle version disponible",
             reqreload: "Nécessite le raffraîchissement du site",
             reload: "Raffraîchir",
+
+            Comp_GRCT: "Les fonctions suivantes sont non compatibles avec GRCT",
+            Non_compatible: "Non compatible à activer dans les paramètres de ",
         },
         Options: {
             bir: ["Compteur de birèmes ", "Totalise l'ensemble des birèmes présentent en villes et les résume. (Remplace la mini carte dans le cadran)"],
@@ -124,8 +127,6 @@ LANGadd = {
             Saw: ["Sauvegarde des remparts", "Permet de sauvegarder les troupes dans les remparts"],
             Att: ["Alarme d'attaque", "Recevez des avertissements instantanés lorsque vous êtes attaqué, renforçant votre sécurité"],
 
-            Comp_GRCT: "Les fonctions suivantes sont non compatibles avec GRCT",
-            Non_compatible: "Non compatible à activer dans les paramètres de ",
             err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
         },
         movement: {

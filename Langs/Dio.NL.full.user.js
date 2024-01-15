@@ -39,7 +39,7 @@ LANGadd = {
             Donate: "Doneer",
 
             //forum: "",
-            Update: "Bijwerken " + dio_version,
+            Update: "Bijwerken",
             Feature: "Nieuwe functie",
             Feature2: "Nieuwe versie",
             Learn_more: "Kom meer te weten",

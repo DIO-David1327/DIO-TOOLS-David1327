@@ -39,7 +39,7 @@ LANGadd = {
             Donate: "Podarować",
 
             //forum: "",
-            Update: "Aktualizacja " + dio_version,
+            Update: "Aktualizacja",
             Feature: "Nowa cecha",
             Feature2: "Nowa wersja",
             Learn_more: "Ucz się więcej",
@@ -326,7 +326,7 @@ LANGadd = {
             Reservations: "",
         },
         translations: {
-            info : "Informacja",
+            info: "Informacja",
             trans: 'Tłumaczenie na język',
             translations: 'Tłumaczenia',
             trans_sure: 'Czy jesteś pewien, że twoje tłumaczenie jest gotowe do wygenerowania?',
@@ -347,7 +347,7 @@ LANGadd = {
             enter_lang_name: 'Proszę podać nazwę języka',
             send: 'Generuj wiadomość',
             name: 'Nazwa',
-            add_edit : "Dodaj / edytuj",
+            add_edit: "Dodaj / edytuj",
         },
         wall: {
             //wallnotsaved: "",
