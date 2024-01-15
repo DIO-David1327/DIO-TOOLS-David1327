@@ -39,7 +39,7 @@ LANGadd = {
             Donate: "Spenden",
 
             //forum: "",
-            Update: "Aktualisieren " + dio_version,
+            Update: "Aktualisieren",
             Feature: "Neue Funktion",
             Feature2: "Neue Version",
             Learn_more: "Mehr erfahren",
@@ -79,6 +79,7 @@ LANGadd = {
             bbc: ["DEF-Formular", "Erweitert die BBCode-Leiste um ein automatisches DEF-Formular"],
             com: ["Einheitenvergleich", "Fügt Einheitenvergleichstabellen hinzu"],
             tic: ["Stadticons", "Jede Stadt erhält ein Icon für den Stadttyp (Automatische Erkennung)", "Zusätzliche Icons stehen bei der manuellen Auswahl zur Verfügung"],
+            tic2: ["Automatic detection", ""],
             til: ["Stadtliste", "Fügt die Stadticons zur Stadtliste hinzu"],
             tim: ["Karte", "Setzt die Stadticons auf die strategische Karte"],
             tiw: ["Icons Popup", ""],
@@ -128,7 +129,7 @@ LANGadd = {
         },
         Color: {
             Blue: 'Blau',
-            Red: 'rot',
+            Red: 'Rot',
             Green: 'Grün',
             Pink: 'Rosa',
             White: "Weiß",
@@ -194,6 +195,7 @@ LANGadd = {
             Merry: "Ho Ho Ho frohe Weihnachten!",
             tow: "BBCode Stadt",
             ingame_name: ["Wer lieber via ingame Name genannt werden möchte, kann sich gerne bei mir melden", "Da dies mitunter viel Aufwand und Zeit beansprucht, freue ich mich immer sehr über jede Form von Unterstützung. Deshalb ein großes Danke an alle die dieses Projekt schon solange unterstützen - sei es durch eine Spende, Wissen, Kreativität, Bugberichte oder aufmunternde Worte."],
+            raf: "Durch Bestätigung wird die Seite aktualisiert",
             con: "Einheitenstärke: Gesamteinheitenstärke der Belagerungstruppen",
         },
         tutoriel: {
@@ -263,6 +265,7 @@ LANGadd = {
             bbmessages: 'BB-Code Nachrichten',
             copybb: 'BBCode wurde kopiert',
             écrit: 'hat folgendes geschrieben:',
+            cli: "Die Nachricht wurde nicht kopiert",
         },
         caves: {
             stored_silver: 'Eingelagerte Silbermünzen',
@@ -299,7 +302,7 @@ LANGadd = {
             attacking: 'greift',
             farming_village: 'Bauerndorf',
             gold: "Du hast erhalten",
-            Quests: '',
+            Quests: 'Quests',
             Reservations: 'Reservierungen',
         },
         translations: {
@@ -319,7 +322,7 @@ LANGadd = {
             credits: 'Credits',
             no_translation: 'Keine Übersetzung gefunden',
             choose_lang: 'Sprache wählen',
-            add_lang: 'Neue Sprache hinzufügen',
+            add_lang: 'Hinzufügen / Bearbeiten',
             language: 'Sprache',
             enter_lang_name: 'Bitte geben Sie einen Sprachnamen ein',
             send: 'Nachricht generieren',

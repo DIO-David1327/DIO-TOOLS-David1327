@@ -15,8 +15,8 @@ LANGadd = {
             ///donate:
             //Donate: "",
             ///autre
-            Update: "https://www.tuto-de-david1327.com/annonces/dio-tools-david1327/mise-a-jour-" + updateversion + ".html",
-            contact: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/",
+            Update: "https://dio-david1327.github.io/fr/News/Mise-a-jour/",
+            contact: "https://dio-david1327.github.io/fr/",
             forum: "https://fr.forum.grepolis.com/index.php?threads/dio-tools-david1327.79567/",
             link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html",
             link_utile: "https://www.tuto-de-david1327.com/pages/info/sites-utilitaires.html",
@@ -24,7 +24,7 @@ LANGadd = {
             available_units: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/apercu-des-unites.html",
             UnitComparison: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/comparaison-des-unites.html",
             MessageExport: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/bb-code-messages.html",
-            Translations: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/traductions.html",
+            Translations: "https://dio-david1327.github.io/fr/wiki/traductions.html",
         },
         Settings: {
             dsc: "DIO-Tools offres certains écrans, une boîte de smiley, les options <br>commerciales, des changements à la mise en page et d'autres choses.",
@@ -39,7 +39,7 @@ LANGadd = {
             Donate: "Faire un don",
 
             //forum: "",
-            Update: "Mise à jour " + dio_version,
+            Update: "Mise à jour",
             Feature: "Nouvelle fonctionnalité",
             Feature2: "Nouvelle version",
             Learn_more: "En savoir plus",
@@ -59,6 +59,9 @@ LANGadd = {
             Available: "Nouvelle version disponible",
             reqreload: "Nécessite le raffraîchissement du site",
             reload: "Raffraîchir",
+
+            Comp_GRCT: "Les fonctions suivantes sont non compatibles avec GRCT",
+            Non_compatible: "Non compatible à activer dans les paramètres de ",
         },
         Options: {
             bir: ["Compteur de birèmes ", "Totalise l'ensemble des birèmes présentent en villes et les résume. (Remplace la mini carte dans le cadran)"],
@@ -117,6 +120,12 @@ LANGadd = {
             Cic: ["Vue de la ville", "Le mode construction de la vue de la ville est sélectionné par défaut"],
             Cuc: ["Filtrage de l'aperçu de culture (administrateur)", "Permettre le tri des villes."],
             Buc: ["Filtrage de l'aperçu des bâtiments (administrateur)", "Permettre le tri des villes."],
+            BBl: ["BBcode List", "Génère une liste en BB-code, idéale pour afficher les membres d'une alliance ou les villes d'un joueur"],
+            Amm: ["Message de groupe (alliance)", "Ajoute un bouton sur le profil de l'alliance pour faciliter l'envoi de messages groupés"],
+            Onb: ["Numéro d'océan", "Intègre les numéros d'océan à la vue île, améliorant la navigation."],
+            Idl: ["Joueur inactif", "Afficher les joueurs inactifs. Powered by GREPODATA"],
+            Saw: ["Sauvegarde des remparts", "Permet de sauvegarder les troupes dans les remparts"],
+            Att: ["Alarme d'attaque", "Recevez des avertissements instantanés lorsque vous êtes attaqué, renforçant votre sécurité"],
 
             err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
         },
@@ -205,9 +214,11 @@ LANGadd = {
             Happy: "Bonne année!",
             Merry: "Ho! Ho! Ho! Joyeux Noël!",
             tow: "BBCode ville",
+            loc: "Local",
             ingame_name: ["N'hésitez pas à me contacter si vous préférez être appeler par votre pseudo.", "Comme il y a beaucoup à faire, et que cela peut demander beaucoup de temps, je suis toujours très reconnaissant pour tout type d'aide. De ce fait, j'aimerai remercier tous ceux qui sont offert de l'aide sur ce projet, que ce soit par des donations, en partageant des connaissances, des conseils créatifs, en rapportant des problèmes, ou simplement par des messages d'encouragement."],
             raf: "En confirmant la page sera rafraîchir",
             con: "Force unitaire: Effectif total des troupes de siège",
+            Volume: "Volume",
         },
         tutoriel: {
             tuto: "Informations utiles",
@@ -339,6 +350,18 @@ LANGadd = {
             send: 'Générer message',
             name: 'Nom',
             add_edit: 'Ajouter / modifier',
+        },
+        wall: {
+            wallnotsaved: "Les remparts ne sont pas enregistr\u00e9s",
+            wallsaved: "Les remparts sont enregistr\u00e9s",
+            msghuman: "L'information a \u00e9t\u00e9 sauvegard\u00e9e",
+            erreur: "Une erreur s'est produite lors de l'\u00e9criture",
+            wantdeletecurrent: "Voulez vous effacer les donn\u00e9es actuelles des remparts ?",
+            deletecurrent: "Effacer les donn\u00e9es actuelles",
+            listsaved: "Sauvegarder sur le mur le jour",
+            liststate: "État du mur le jour",
+            nosaved: "Aucune sauvegarde",
+            Auto: "Mode Auto",
         },
         buttons: {
             sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser" //uw.DM.getl10n("notes").btn_save

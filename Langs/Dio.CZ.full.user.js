@@ -39,7 +39,7 @@ LANGadd = {
             Donate: "Darovat",
 
             //forum: "",
-            Update: "Aktualizace " + dio_version,
+            Update: "Aktualizace",
             Feature: "Nová vlastnost",
             Feature2: "Nová verze",
             Learn_more: "Zjistit více",

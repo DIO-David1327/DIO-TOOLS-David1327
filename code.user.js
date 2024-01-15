@@ -2,10 +2,10 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.33
+// @version		4.34
 // @author		DIONY (changes and bug fixes by David1327)
-// @description Version 2023. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
-// @description:FR Version 2023. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
+// @description Version 2024. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
+// @description:FR Version 2024. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
 // @match		https://*.grepolis.com/game/*
 // @match		https://*.forum.grepolis.com/*
 // @match		https://dio-david1327.github.io/*
@@ -30,7 +30,7 @@ let dio_version = GM.info.script.version;
  * Global stuff
  *******************************************************************************************************************************/
 
-let uw = unsafeWindow || window, $ = uw.jQuery, DATA, GMM, url_dev;
+var uw = unsafeWindow || window, $ = uw.jQuery, DATA, GMM, url_dev;
 
 // GM-API?
 if (GM.info.scriptHandler == "Greasemonkey") GMM = false
@@ -81,6 +81,11 @@ if ((uw.location.pathname.indexOf("game") >= 0)) {
         worldWonder: loadValue(WID + "_wonder", '{ "ratio": {}, "storage": {}, "map": {} }'),
 
         Overviews: loadValue("Overviews", '{ "Buildings": "", "Culture": "", "Gods": "" }'),
+
+        wall: loadValue(WID + '_wall', '[]'),
+
+        volumeControl: loadValue('volumeControl', '0.5'),
+        URLAlarm: loadValue('URLAlarm', JSON.stringify("https://dio-david1327.github.io/audio/alarm.mp3")),
 
         // MARKET
         worldWonderTypes: loadValue(MID + "_wonderTypes", '{}')
@@ -169,13 +174,13 @@ function DIO_FORUM() {
             $('<style id="dio_smiley">' +
                 '#dio_smiley_button { cursor:pointer; margin:3px 2px 2px 2px; } ' +
 
-                '.dio_smiley_box.game { z-index:5000; position:absolute; top:27px; right: -5px; width:444px; display:none; } ' +
+                '.dio_smiley_box.game { z-index:5000; position:absolute; top: -205px; left: 270px; width:444px; display:none; } ' +
                 '.dio_smiley_box.game.open { display:block; } ' +
 
                 // Smiley categories
                 '.dio_smiley_box .dio_box_header { display: table; width: 100%; text-align: center; margin-bottom: -9px; position: relative; top: 3px;} ' +
                 '.dio_smiley_box .dio_box_header img { position: relative; top: 2px;}' +
-                '.dio_smiley_box .dio_group { float: left; width: 35px; background: url("' + Home_url + '/img/dio/btn/etabA.gif") no-repeat; border-bottom: none; margin-right: 1px;}' +
+                '.dio_smiley_box .dio_group { float: left; width: 35px; background: url("' + Home_url + '/img/dio/btn/etabA.gif") no-repeat; border-bottom: none; margin-right: 1px; cursor: pointer; }' +
                 '.dio_smiley_box .dio_group.active { background: url("' + Home_url + '/img/dio/btn/etabB.gif") no-repeat;}' +
                 //'.dio_smiley_box .dio_group:hover { color: #14999E; } ' + // #11AD6C
 
@@ -199,7 +204,7 @@ function DIO_FORUM() {
                 '.dio_smiley_box ::-webkit-scrollbar-button:vertical:single-button:increment:hover {height: 16px; background-image: url("' + Home_url + '/img/dio/btn/scroll-down-green-hover.png");} ' +
 
                 // Smiley page link
-                '.dio_smiley_box .box_footer { text-align:center; margin-top:4px; } ' +
+                '.dio_smiley_box .box_footer { text-align:center; margin-top:4px; cursor: grab; } ' +
                 '.dio_smiley_box a:link, .dio_smiley_box a:visited { color: #086b18; font-size: 0.7em; } ' +
                 '.dio_smiley_box a:hover { color: #14999E; } ' +
                 '#dio_smiley_button { z-index:2; height: 18px; border: transparent; background:url("' + Home_url + '/img/smileys/smile.gif") no-repeat 0px 0px } ' +
@@ -443,6 +448,39 @@ function DIO_FORUM() {
                     $("#dio_smiley_butt-1 #dio_smiley_button, #dio_smiley_butt-2 #dio_smiley_button, #dio_smiley_butt-3 #dio_smiley_button, #dio_smiley_butt-4 #dio_smiley_button, #dio_smiley_butt-5 #dio_smiley_button, #dio_smiley_butt-6 #dio_smiley_button").css({ background: 'url(' + Home_url + '/img/smileys/smile.gif) no-repeat 0px 0px' });
                 });
 
+                // Fonction pour rendre la fenêtre déplaçable
+                function rendreFenetreDeplacable(element) {
+                    var deplacementX = 0, deplacementY = 0, positionX = 200, positionY = -200;
+                    var enDeplacement = false;
+                    // Gestionnaire d'événement pour commencer le déplacement
+                    $(element).find('.box_footer').on('mousedown', function (e) {
+                        enDeplacement = true;
+                        deplacementX = e.clientX - positionX;
+                        deplacementY = e.clientY - positionY;
+                    });
+                    // Gestionnaire d'événement pour arrêter le déplacement
+                    $(document).on('mouseup', function () {
+                        enDeplacement = false;
+                        $(".box_footer").css({ cursor: "grab" });
+                    });
+                    // Gestionnaire d'événement pour effectuer le déplacement
+                    $(document).on('mousemove', function (e) {
+                        if (enDeplacement) {
+                            $(".box_footer").css({ cursor: "grabbing" });
+                            positionX = e.clientX - deplacementX;
+                            positionY = e.clientY - deplacementY;
+                            $(element).css({ left: positionX + 'px', top: positionY + 'px' });
+                        }
+                    });
+                }
+                // Appel de la fonction pour rendre la fenêtre déplaçable
+                rendreFenetreDeplacable($('#dio_smiley-1'));
+                rendreFenetreDeplacable($('#dio_smiley-2'));
+                rendreFenetreDeplacable($('#dio_smiley-3'));
+                rendreFenetreDeplacable($('#dio_smiley-4'));
+                rendreFenetreDeplacable($('#dio_smiley-5'));
+                rendreFenetreDeplacable($('#dio_smiley-6'));
+
             } catch (error) { console.log(e) }
         },
         // insert smileys from arrays into smiley box
@@ -507,7 +545,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     var Home = "https://www.tuto-de-david1327.com/", Home_img = "https://www.tuto-de-david1327.com/medias/images/";
 
     //dio_icon
-    var dio_img = Home_url + "/img/dio/logo/icon.gif"; //Home_img + "icon.gif"
+    var dio_img = Home_url + "/img/dio/logo/icon.gif"; //Home_url + "/img/dio/logo/icon.gif
     var dio_icon = '<div class="dio_icon b"></div>';
 
     if (uw.location.pathname.indexOf("game") >= 0) {
@@ -608,57 +646,57 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         //////////////////////////////////////////////
         //            Translation AUTO              //
         //////////////////////////////////////////////
-        AUTO: { Notification: {}, link: {}, Settings: { cat_units: uw.DM.getl10n("context_menu").titles.units_info, cat_forum: uw.DM.getl10n("layout").main_menu.items.forum, cat_trade: uw.DM.getl10n("layout").premium_button.premium_menu.trade_overview, cat_other: uw.DM.getl10n("report").inbox.filter_types.misc, cat_Premium: uw.DM.getl10n("premium").common.window_title, }, Options: {}, movement: { offs: uw.DM.getl10n("layout").toolbar_activities.incomming_attacks, }, Town_icons: {}, Color: {}, labels: { available: uw.DM.getl10n("hercules2014", "available"), con: uw.DM.getl10n("context_menu").titles.select_town, sup: uw.DM.getl10n("context_menu").titles.support, her: uw.DM.getl10n("heroes").collection.heroes, att: uw.DM.getl10n("context_menu", "titles").attack, def: uw.DM.getl10n("place").tabs[0], }, tutoriel: {}, Quack: { delete: uw.DM.getl10n("market").delete_all_market_offers, }, hotkeys: { city_view: uw.DM.getl10n("town_index").window_title, messages: uw.DM.getl10n("layout").main_menu.items.messages, reports: uw.DM.getl10n("layout").main_menu.items.reports, alliance: uw.DM.getl10n("layout").main_menu.items.alliance, alliance_forum: uw.DM.getl10n("layout").main_menu.items.allianceforum, settings: uw.DM.getl10n("layout").config_buttons.settings, profile: uw.DM.getl10n("layout").main_menu.items.profile, }, messages: { ghosttown: uw.DM.getl10n("common").ghost_town, }, caves: { wood: uw.DM.getl10n("barracks").cost_details.wood, stone: uw.DM.getl10n("barracks").cost_details.stone, silver: uw.DM.getl10n("barracks").cost_details.iron, search_for: uw.DM.getl10n("place").simulator.configuration.technologies }, grepo_mainmenu: { city_view: uw.DM.getl10n("town_index").window_title, }, transport_calc: {}, reports: { support: uw.DM.getl10n("context_menu").titles.support, attacking: uw.DM.getl10n("context_menu", "titles").attack, }, translations: {}, buttons: { sav: uw.DM.getl10n("notes").btn_save, res: uw.DM.getl10n("academy").tabs[1], } },
+        AUTO: { Notification: {}, link: {}, Settings: { cat_units: uw.DM.getl10n("context_menu").titles.units_info, cat_forum: uw.DM.getl10n("layout").main_menu.items.forum, cat_trade: uw.DM.getl10n("layout").premium_button.premium_menu.trade_overview, cat_other: uw.DM.getl10n("report").inbox.filter_types.misc, cat_Premium: uw.DM.getl10n("premium").common.window_title, }, Options: {}, movement: { offs: uw.DM.getl10n("layout").toolbar_activities.incomming_attacks, }, Town_icons: {}, Color: {}, labels: { available: uw.DM.getl10n("hercules2014", "available"), con: uw.DM.getl10n("context_menu").titles.select_town, sup: uw.DM.getl10n("context_menu").titles.support, her: uw.DM.getl10n("heroes").collection.heroes, att: uw.DM.getl10n("context_menu", "titles").attack, def: uw.DM.getl10n("place").tabs[0], }, tutoriel: {}, Quack: { delete: uw.DM.getl10n("market").delete_all_market_offers, }, hotkeys: { city_view: uw.DM.getl10n("town_index").window_title, messages: uw.DM.getl10n("layout").main_menu.items.messages, reports: uw.DM.getl10n("layout").main_menu.items.reports, alliance: uw.DM.getl10n("layout").main_menu.items.alliance, alliance_forum: uw.DM.getl10n("layout").main_menu.items.allianceforum, settings: uw.DM.getl10n("layout").config_buttons.settings, profile: uw.DM.getl10n("layout").main_menu.items.profile, }, messages: { ghosttown: uw.DM.getl10n("common").ghost_town, }, caves: { wood: uw.DM.getl10n("barracks").cost_details.wood, stone: uw.DM.getl10n("barracks").cost_details.stone, silver: uw.DM.getl10n("barracks").cost_details.iron, search_for: uw.DM.getl10n("place").simulator.configuration.technologies }, grepo_mainmenu: { city_view: uw.DM.getl10n("town_index").window_title, }, transport_calc: {}, reports: { support: uw.DM.getl10n("context_menu").titles.support, attacking: uw.DM.getl10n("context_menu", "titles").attack, }, translations: {}, wall: {}, buttons: { sav: uw.DM.getl10n("notes").btn_save, res: uw.DM.getl10n("academy").tabs[1], } },
         //////////////////////////////////////////////
         //      German Translation by Diony         //
         //////////////////////////////////////////////
-        de: { Notification: {}, link: { forum: "https://de.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.36671/", }, Settings: { dsc: "DIO-Tools bietet unter anderem einige Anzeigen, eine Smileyauswahlbox,<br>Handelsoptionen und einige Veränderungen des Layouts.", act: "Funktionen der Toolsammlung aktivieren/deaktivieren:", prv: "Vorschau einzelner Funktionen:", version_old: "DIO-Tools-Version ist nicht aktuell", version_new: "DIO-Tools-Version ist aktuell", version_dev: "DIO-Tools-Entwicklerversion", version_update: "Aktualisieren", Donate: "Spenden", Update: "Aktualisieren " + dio_version, Feature: "Neue Funktion", Feature2: "Neue Version", Learn_more: "Mehr erfahren", cat_units: "Einheiten", cat_icons: "Stadticons", cat_forum: "Forum", cat_trade: "Handel", cat_wonders: "Weltwunder", cat_layout: "Layout", cat_other: "Sonstiges", cat_Premium: "Premium", cat_Quack: "Quack", install: "installieren", reminder: "später erinnern", Available: "Neue Version verfügbar", reqreload: "Aktualisierung erforderlich", reload: "Aktualisierung", }, Options: { ava: ["Einheitenübersicht", "Zeigt die Einheiten aller Städte an"], ava2: ["Nummer des Meeres", "Erweiterungseinheit"], sml: ["Smileys", "Erweitert die BBCode-Leiste um eine Smileybox"], str: ["Einheitenstärke", "Fügt mehrere Einheitenstärketabellen in verschiedenen Bereichen hinzu"], tra: ["Transportkapazität", "Zeigt die belegte und verfügbare Transportkapazität im Einheitenmenu an"], per: ["Prozentualer Handel", "Erweitert das Handelsfenster um einen Prozentualen Handel"], rec: ["Rekrutierungshandel", "Erweitert das Handelsfenster um einen Rekrutierungshandel"], cnt: ["EO-Zähler", "Zählt die ATT/UT-Anzahl im EO-Fenster"], way: ["Laufzeit", "Zeigt im ATT/UT-Fenster die Laufzeit bei Verbesserter Truppenbewegung an"], sim: ["Simulator", "Anpassung des Simulatorlayouts & permanente Anzeige der Erweiterten Modifikatorbox"], act: ["Aktivitätsboxen", "Verbesserte Anzeige der Handels- und Rekrutierung (Positionsspeicherung)"], pop: ["Gunst-Popup", 'Ändert das Aussehen des Gunst-Popups'], tsk: ["Taskleiste", 'Vergrößert die Taskleiste'], rew: ["Tägliche Belohnung", 'Minimiert das "Tägliche Belohnung"-Fenster beim Start'], bbc: ["DEF-Formular", "Erweitert die BBCode-Leiste um ein automatisches DEF-Formular"], com: ["Einheitenvergleich", "Fügt Einheitenvergleichstabellen hinzu"], tic: ["Stadticons", "Jede Stadt erhält ein Icon für den Stadttyp (Automatische Erkennung)", "Zusätzliche Icons stehen bei der manuellen Auswahl zur Verfügung"], til: ["Stadtliste", "Fügt die Stadticons zur Stadtliste hinzu"], tim: ["Karte", "Setzt die Stadticons auf die strategische Karte"], tiw: ["Icons Popup", ""], wwc: ["Anteil", "Anteilsrechner & Rohstoffzähler + Vor- & Zurück-Buttons bei fertiggestellten WW's (momentan nicht deaktivierbar!)"], wwr: ["Rangliste", "Überarbeitete Weltwunderrangliste"], wwi: ["Icons", 'Fügt Weltwundericons auf der strategischen Karte hinzu'], con: ["Kontextmenu", 'Vertauscht "Stadt selektieren" und "Stadtübersicht" im Kontextmenu'], sen: ["Abgeschickte Einheiten", 'Zeigt im Angriffs-/Unterstützungsfenster abgeschickte Einheiten an'], tov: ["Stadtübersicht", 'Ersetzt die neue Stadtansicht mit der alten Fensteransicht'], scr: ["Mausrad-Zoom", 'Man kann mit dem Mausrad die 3 Ansichten wechseln'], Scr: ["Scrollleiste", 'Ändern Sie den Stil der Bildlaufleiste'], tow: ["Stadtbbcode", "Fügt den Stadt-BBCode zur Registerkarte Stadt hinzu"], Fdm: ["Mehrere Nachrichten auswählen und löschen", "Sie können mehr als eine Nachricht löschen. Quack funktion"], Sel: ["Hinzufügen (Kein überladen / Löschen)", "Verbesserung neuer Tools im Angriffs- und Unterstützungsfenster. Quack funktion"], Cul: ["Kulturübersicht (Verwalter)", "Fügen Sie in der Kulturansicht einen Zähler für die Feiertage hinzu. Quack funktion"], Hot: ["Tastaturkürzel für Windows", "Es verändert dein Leben"], Isl: ["Visualisierung der Insel", "Erhöhen Sie die Höhe der Liste der Städte und Dörfer"], Ish: ["Überblick über Bauerndörfer (Kapitän)", "Die Stadt automatisch verstecken. Quack funktion"], Hio: ["Höhlen Übersicht (Verwalter)", "Sortierung der Städte ermöglichen. Quack funktion"], Hid: ["Höhle", "Silber über 15000 automatisch in das Eingabefeld eintragen. Quack funktion"], Tol: ["Liste der Städte in BB-Code ", "Kopieren & Einfügen. Quack function"], Cib: ["Schaltfläche Stadtansicht", "Einen Button für die Stadtansicht dem Seitenmenü von Grepolis hinzufügen. Quack funktion"], Ciw: ["Stadtansicht", "Stadtansicht in einem Fenster anzeigen. Quack funktion"], Tti: ["Ressourcen für Festivals tauschen", "Klicken Sie darauf und es wird nur gegen ein Festival ausgetauscht. Quack funktion"], Mse: ["BB-Code-Nachrichten", "Nachrichten in BB-Code konvertieren. Quack Funktion"], Rep: ["Berichte", "Hinzufügen eines Farbfilters. Quack funktion"], BBt: ["BBcode-Schaltfläche Spielerinfo", "Hinzufügen einer BBcode-Schaltfläche (Spieler und Allianz)"], Rtt: ["Entfernen der Tooltips des Geräts", ""], Cup: ["Advancement of Culture (Administrator)", "Die Darstellung des Fortschrittsbalkens wurde geändert und ein Fortschrittsbalken für Ernten hinzugefügt. Funktion von Akiway"], Cuo: ["Kulturpunkte (Administrator)", "Fügen Sie einen Zähler für die Kulturpunkte hinzu. Quack funktion"], Rct: ["Handel -> Ressourcenzähler (Administrator)", "Eine Zählung aller Ressourcen in deiner Stadt"], FLASK: ["Nicht kompatibel zur Aktivierung in den Parametern von FLASK-TOOLS", ""], Mole: ["Nicht kompatibel zur Aktivierung in den Parametern von Mole Hole", ""], err: ["Automatische Fehlerberichte senden", "Wenn du diese Option aktivierst, kannst du dabei helfen Fehler zu identifizieren."], her: ["Thrakische Eroberung", "Verkleinerung der Karte der Thrakischen Eroberung."], }, Town_icons: { LandOff: "Landeinheit Angriff", LandDef: "Landeinheit Verteidigung", NavyOff: "Seeeinheit Angriff", NavyDef: "Seeeinheit Verteidigung", FlyOff: "Mythischen Angriffseinheiten", FlyDef: "Mythischen Verteidigungseinheiten", Out: "Draußen", Emp: "Leer", }, Color: { Blue: 'Blau', Red: 'rot', Green: 'Grün', Pink: 'Rosa', White: "Weiß", }, labels: { uni: "Einheitenübersicht", total: "Gesamt", available: "Verfügbar", outer: "Außerhalb", con: "Selektierte Stadt", std: "Standard", gre: "Grepo", nat: "Natur", ppl: "Leute", oth: "Sonstige", xma: "Weihnachten", eas: "Ostern", lov: "Liebe", ttl: "Übersicht: Stadtverteidigung", inf: "Informationen zur Stadt:", dev: "Abweichung", det: "Detailierte Landeinheiten", prm: "Premiumboni", sil: "Silberstand", mov: "Truppenbewegungen:", leg: "WW-Anteil", stg: "Stufe", tot: "Gesamt", str: "Einheitenstärke", los: "Verluste", mod: "ohne Modifikatoreinfluss", dsc: "Einheitenvergleich", hck: "Schlag", prc: "Stich", dst: "Distanz", sea: "See", att: "Angriff", def: "Verteidigung", spd: "Geschwindigkeit", bty: "Beute (Rohstoffe)", cap: "Transportkapazität", res: "Baukosten (Rohstoffe)", fav: "Gunst", tim: "Bauzeit (s)", rat: "Ressourcenverhältnis eines Einheitentyps", shr: "Anteil an der Lagerkapazität der Zielstadt", per: "Prozentualer Handel", lab: "Abgeschickt", rec: "Ressourcen", improved_movement: "Verbesserte Truppenbewegung", donat: "Spenden", Tran: "Übersetzungen", Happy: "Frohes neues Jahr!", Merry: "Ho Ho Ho frohe Weihnachten!", tow: "BBCode Stadt", ingame_name: ["Wer lieber via ingame Name genannt werden möchte, kann sich gerne bei mir melden", "Da dies mitunter viel Aufwand und Zeit beansprucht, freue ich mich immer sehr über jede Form von Unterstützung. Deshalb ein großes Danke an alle die dieses Projekt schon solange unterstützen - sei es durch eine Spende, Wissen, Kreativität, Bugberichte oder aufmunternde Worte."], con: "Einheitenstärke: Gesamteinheitenstärke der Belagerungstruppen", }, tutoriel: { tuto: "Nützliche Info", reme: ["Mulțumesc tuturor celor care au contribuit dezvoltării DIO-Tools", ""], Trou: ["Tutorial Specializări Trupe Grepolis - Tutorialul lui david1327", "Tot ce trebuie să ști despre puterile / slăbiciunile trupelor de pe Grepolis"], util: ["Site-uri utilitare pentru Grepolis - Tutorialul lui david1327", "O multitudine de unelte pentru Grepolis: Statisticici, Hărți, Unelte, Scripturi, Forum ... toate sunt listate aici."] }, Quack: { delete_mul: "Löschen Sie mehrere Nachrichten", delete_sure: "Ausgewählte Beiträge wirklich löschen?", no_selection: "Es sind keine Beiträge markiert", mark_All: "Alles markieren", no_overload: 'Kein überladen', delete: 'Löschen', cityfestivals: 'Stadtfeste', olympicgames: 'Olympische Spiele', triumph: 'Triumphzüge', theater: 'Theaterspiele' }, hotkeys: { hotkeys: 'Hotkeys', Senate: 'Senat', city_select: 'Stadtauswahl', last_city: 'Letzte Stadt', next_city: 'Nächste Stadt', jump_city: 'Sprung zur aktuellen Stadt', administrator: 'Verwalter', captain: 'Kapitän', trade_ov: 'Handelsübersicht', command_ov: 'Befehlsübersicht', recruitment_ov: 'Rekrutierungsübersicht', troop_ov: 'Truppenübersicht', troops_outside: 'Truppen außerhalb', building_ov: 'Gebäudeübersicht', culture_ov: 'Kulturübersicht', gods_ov: 'Götterübersicht', cave_ov: 'Höhlenübersicht', city_groups_ov: 'Stadtgruppenübersicht', city_list: 'Städteliste', attack_planner: 'Angriffsplaner', farming_villages: 'Bauerndörfer', menu: 'Menü', city_view: 'Stadtansicht', messages: 'Nachrichten', reports: 'Berichte', alliance: 'Allianz', alliance_forum: 'Allianz-Forum', settings: 'Einstellungen', profile: 'Profil', ranking: 'Rangliste', notes: 'Notizen', council: 'Konzil der Helden' }, messages: { ghosttown: 'Geisterstadt', no_cities: 'Keine Städte auf dieser Insel', all: 'Alle', export: 'Nachricht als BB-Code für das Forum', Tol: 'Kopieren & Einfügen (Quack funktion)', copy: 'Kopieren', bbmessages: 'BB-Code Nachrichten', copybb: 'BBCode wurde kopiert', écrit: 'hat folgendes geschrieben:', }, caves: { stored_silver: 'Eingelagerte Silbermünzen', silver_to_store: 'Lagerbare Silbermünzen', name: 'Name', wood: 'Holz', stone: 'Stein', silver: 'Silbermünzen', search_for: 'Suchen nach' }, grepo_mainmenu: { city_view: 'Stadtansicht', island_view: 'Inselansicht' }, transport_calc: { recruits: 'Truppen in der Bauschleife', slowtrans: "Langsame Transportschiffe zählen", fasttrans: "Schnelle Transportschiffe zählen", Lack: "Mangel", Still: "Immer", pop: "verfügbare Bevölkerung. Für die", Optipop: "Optimale Bevölkerung für", army: "Du hast keine Armee.", }, reports: { choose_folder: 'Ordner wählen', enacted: 'gewirkt', conquered: 'erobert', spying: 'spioniert', spy: 'Spion', support: 'stationierte', supporting: 'unterstützt', attacking: 'greift', farming_village: 'Bauerndorf', gold: "Du hast erhalten", Quests: '', Reservations: 'Reservierungen', }, translations: { info: 'Info', trans: 'Übersetzung für Sprache', translations: 'Übersetzungen', trans_sure: 'Sind Sie sicher, dass Ihre Übersetzung zur Generierung bereit ist?', trans_success: 'Die Übersetzung wurde erfolgreich gesendet', trans_fail: 'Die Übersetzung konnte nicht gesendet werden', trans_infotext1: 'Übersetzung verfügbar', trans_infotext2: 'Um eine neue Sprache zu ändern oder zu erstellen, wählen Sie die Sprache im Dropdown-Menü', trans_infotext3: 'Wenn ein Text HTML-Tags enthält (also alles, was in <> Klammern steht), bitte ich Sie, sie dort zu belassen, wo Sie sie gefunden haben', trans_infotext4: 'Wenn Sie mit der Übersetzung fertig sind, drücken Sie', trans_infotext5: 'Um dich zu den Credits hinzufügen zu können, wird dein Spitzname generiert', trans_infotext6: 'Kopiere die generierte Nachricht und füge sie in einen Kommentar ein', please_note: 'Bitte beachten', credits: 'Credits', no_translation: 'Keine Übersetzung gefunden', choose_lang: 'Sprache wählen', add_lang: 'Neue Sprache hinzufügen', language: 'Sprache', enter_lang_name: 'Bitte geben Sie einen Sprachnamen ein', send: 'Nachricht generieren', name: 'Name', }, buttons: { sav: "Speichern", ins: "Einfügen", res: "Zurücksetzen" } },
+        de: { Notification: {}, link: { forum: "https://de.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.36671/", }, Settings: { dsc: "DIO-Tools bietet unter anderem einige Anzeigen, eine Smileyauswahlbox,<br>Handelsoptionen und einige Veränderungen des Layouts.", act: "Funktionen der Toolsammlung aktivieren/deaktivieren:", prv: "Vorschau einzelner Funktionen:", version_old: "DIO-Tools-Version ist nicht aktuell", version_new: "DIO-Tools-Version ist aktuell", version_dev: "DIO-Tools-Entwicklerversion", version_update: "Aktualisieren", Donate: "Spenden", Update: "Aktualisieren", Feature: "Neue Funktion", Feature2: "Neue Version", Learn_more: "Mehr erfahren", cat_units: "Einheiten", cat_icons: "Stadticons", cat_forum: "Forum", cat_trade: "Handel", cat_wonders: "Weltwunder", cat_layout: "Layout", cat_other: "Sonstiges", cat_Premium: "Premium", cat_Quack: "Quack", install: "installieren", reminder: "später erinnern", Available: "Neue Version verfügbar", reqreload: "Aktualisierung erforderlich", reload: "Aktualisierung", }, Options: { ava: ["Einheitenübersicht", "Zeigt die Einheiten aller Städte an"], ava2: ["Nummer des Meeres", "Erweiterungseinheit"], sml: ["Smileys", "Erweitert die BBCode-Leiste um eine Smileybox"], str: ["Einheitenstärke", "Fügt mehrere Einheitenstärketabellen in verschiedenen Bereichen hinzu"], tra: ["Transportkapazität", "Zeigt die belegte und verfügbare Transportkapazität im Einheitenmenu an"], per: ["Prozentualer Handel", "Erweitert das Handelsfenster um einen Prozentualen Handel"], rec: ["Rekrutierungshandel", "Erweitert das Handelsfenster um einen Rekrutierungshandel"], cnt: ["EO-Zähler", "Zählt die ATT/UT-Anzahl im EO-Fenster"], way: ["Laufzeit", "Zeigt im ATT/UT-Fenster die Laufzeit bei Verbesserter Truppenbewegung an"], sim: ["Simulator", "Anpassung des Simulatorlayouts & permanente Anzeige der Erweiterten Modifikatorbox"], act: ["Aktivitätsboxen", "Verbesserte Anzeige der Handels- und Rekrutierung (Positionsspeicherung)"], pop: ["Gunst-Popup", 'Ändert das Aussehen des Gunst-Popups'], tsk: ["Taskleiste", 'Vergrößert die Taskleiste'], rew: ["Tägliche Belohnung", 'Minimiert das "Tägliche Belohnung"-Fenster beim Start'], bbc: ["DEF-Formular", "Erweitert die BBCode-Leiste um ein automatisches DEF-Formular"], com: ["Einheitenvergleich", "Fügt Einheitenvergleichstabellen hinzu"], tic: ["Stadticons", "Jede Stadt erhält ein Icon für den Stadttyp (Automatische Erkennung)", "Zusätzliche Icons stehen bei der manuellen Auswahl zur Verfügung"], tic2: ["Automatic detection", ""], til: ["Stadtliste", "Fügt die Stadticons zur Stadtliste hinzu"], tim: ["Karte", "Setzt die Stadticons auf die strategische Karte"], tiw: ["Icons Popup", ""], wwc: ["Anteil", "Anteilsrechner & Rohstoffzähler + Vor- & Zurück-Buttons bei fertiggestellten WW's (momentan nicht deaktivierbar!)"], wwr: ["Rangliste", "Überarbeitete Weltwunderrangliste"], wwi: ["Icons", 'Fügt Weltwundericons auf der strategischen Karte hinzu'], con: ["Kontextmenu", 'Vertauscht "Stadt selektieren" und "Stadtübersicht" im Kontextmenu'], sen: ["Abgeschickte Einheiten", 'Zeigt im Angriffs-/Unterstützungsfenster abgeschickte Einheiten an'], tov: ["Stadtübersicht", 'Ersetzt die neue Stadtansicht mit der alten Fensteransicht'], scr: ["Mausrad-Zoom", 'Man kann mit dem Mausrad die 3 Ansichten wechseln'], Scr: ["Scrollleiste", 'Ändern Sie den Stil der Bildlaufleiste'], tow: ["Stadtbbcode", "Fügt den Stadt-BBCode zur Registerkarte Stadt hinzu"], Fdm: ["Mehrere Nachrichten auswählen und löschen", "Sie können mehr als eine Nachricht löschen. Quack funktion"], Sel: ["Hinzufügen (Kein überladen / Löschen)", "Verbesserung neuer Tools im Angriffs- und Unterstützungsfenster. Quack funktion"], Cul: ["Kulturübersicht (Verwalter)", "Fügen Sie in der Kulturansicht einen Zähler für die Feiertage hinzu. Quack funktion"], Hot: ["Tastaturkürzel für Windows", "Es verändert dein Leben"], Isl: ["Visualisierung der Insel", "Erhöhen Sie die Höhe der Liste der Städte und Dörfer"], Ish: ["Überblick über Bauerndörfer (Kapitän)", "Die Stadt automatisch verstecken. Quack funktion"], Hio: ["Höhlen Übersicht (Verwalter)", "Sortierung der Städte ermöglichen. Quack funktion"], Hid: ["Höhle", "Silber über 15000 automatisch in das Eingabefeld eintragen. Quack funktion"], Tol: ["Liste der Städte in BB-Code ", "Kopieren & Einfügen. Quack function"], Cib: ["Schaltfläche Stadtansicht", "Einen Button für die Stadtansicht dem Seitenmenü von Grepolis hinzufügen. Quack funktion"], Ciw: ["Stadtansicht", "Stadtansicht in einem Fenster anzeigen. Quack funktion"], Tti: ["Ressourcen für Festivals tauschen", "Klicken Sie darauf und es wird nur gegen ein Festival ausgetauscht. Quack funktion"], Mse: ["BB-Code-Nachrichten", "Nachrichten in BB-Code konvertieren. Quack Funktion"], Rep: ["Berichte", "Hinzufügen eines Farbfilters. Quack funktion"], BBt: ["BBcode-Schaltfläche Spielerinfo", "Hinzufügen einer BBcode-Schaltfläche (Spieler und Allianz)"], Rtt: ["Entfernen der Tooltips des Geräts", ""], Cup: ["Advancement of Culture (Administrator)", "Die Darstellung des Fortschrittsbalkens wurde geändert und ein Fortschrittsbalken für Ernten hinzugefügt. Funktion von Akiway"], Cuo: ["Kulturpunkte (Administrator)", "Fügen Sie einen Zähler für die Kulturpunkte hinzu. Quack funktion"], Rct: ["Handel -> Ressourcenzähler (Administrator)", "Eine Zählung aller Ressourcen in deiner Stadt"], FLASK: ["Nicht kompatibel zur Aktivierung in den Parametern von FLASK-TOOLS", ""], Mole: ["Nicht kompatibel zur Aktivierung in den Parametern von Mole Hole", ""], err: ["Automatische Fehlerberichte senden", "Wenn du diese Option aktivierst, kannst du dabei helfen Fehler zu identifizieren."], her: ["Thrakische Eroberung", "Verkleinerung der Karte der Thrakischen Eroberung."], }, Town_icons: { LandOff: "Landeinheit Angriff", LandDef: "Landeinheit Verteidigung", NavyOff: "Seeeinheit Angriff", NavyDef: "Seeeinheit Verteidigung", FlyOff: "Mythischen Angriffseinheiten", FlyDef: "Mythischen Verteidigungseinheiten", Out: "Draußen", Emp: "Leer", }, Color: { Blue: 'Blau', Red: 'Rot', Green: 'Grün', Pink: 'Rosa', White: "Weiß", }, labels: { uni: "Einheitenübersicht", total: "Gesamt", available: "Verfügbar", outer: "Außerhalb", con: "Selektierte Stadt", std: "Standard", gre: "Grepo", nat: "Natur", ppl: "Leute", oth: "Sonstige", xma: "Weihnachten", eas: "Ostern", lov: "Liebe", ttl: "Übersicht: Stadtverteidigung", inf: "Informationen zur Stadt:", dev: "Abweichung", det: "Detailierte Landeinheiten", prm: "Premiumboni", sil: "Silberstand", mov: "Truppenbewegungen:", leg: "WW-Anteil", stg: "Stufe", tot: "Gesamt", str: "Einheitenstärke", los: "Verluste", mod: "ohne Modifikatoreinfluss", dsc: "Einheitenvergleich", hck: "Schlag", prc: "Stich", dst: "Distanz", sea: "See", att: "Angriff", def: "Verteidigung", spd: "Geschwindigkeit", bty: "Beute (Rohstoffe)", cap: "Transportkapazität", res: "Baukosten (Rohstoffe)", fav: "Gunst", tim: "Bauzeit (s)", rat: "Ressourcenverhältnis eines Einheitentyps", shr: "Anteil an der Lagerkapazität der Zielstadt", per: "Prozentualer Handel", lab: "Abgeschickt", rec: "Ressourcen", improved_movement: "Verbesserte Truppenbewegung", donat: "Spenden", Tran: "Übersetzungen", Happy: "Frohes neues Jahr!", Merry: "Ho Ho Ho frohe Weihnachten!", tow: "BBCode Stadt", ingame_name: ["Wer lieber via ingame Name genannt werden möchte, kann sich gerne bei mir melden", "Da dies mitunter viel Aufwand und Zeit beansprucht, freue ich mich immer sehr über jede Form von Unterstützung. Deshalb ein großes Danke an alle die dieses Projekt schon solange unterstützen - sei es durch eine Spende, Wissen, Kreativität, Bugberichte oder aufmunternde Worte."], raf: "Durch Bestätigung wird die Seite aktualisiert", con: "Einheitenstärke: Gesamteinheitenstärke der Belagerungstruppen", }, tutoriel: { tuto: "Nützliche Info", reme: ["Mulțumesc tuturor celor care au contribuit dezvoltării DIO-Tools", ""], Trou: ["Tutorial Specializări Trupe Grepolis - Tutorialul lui david1327", "Tot ce trebuie să ști despre puterile / slăbiciunile trupelor de pe Grepolis"], util: ["Site-uri utilitare pentru Grepolis - Tutorialul lui david1327", "O multitudine de unelte pentru Grepolis: Statisticici, Hărți, Unelte, Scripturi, Forum ... toate sunt listate aici."] }, Quack: { delete_mul: "Löschen Sie mehrere Nachrichten", delete_sure: "Ausgewählte Beiträge wirklich löschen?", no_selection: "Es sind keine Beiträge markiert", mark_All: "Alles markieren", no_overload: 'Kein überladen', delete: 'Löschen', cityfestivals: 'Stadtfeste', olympicgames: 'Olympische Spiele', triumph: 'Triumphzüge', theater: 'Theaterspiele' }, hotkeys: { hotkeys: 'Hotkeys', Senate: 'Senat', city_select: 'Stadtauswahl', last_city: 'Letzte Stadt', next_city: 'Nächste Stadt', jump_city: 'Sprung zur aktuellen Stadt', administrator: 'Verwalter', captain: 'Kapitän', trade_ov: 'Handelsübersicht', command_ov: 'Befehlsübersicht', recruitment_ov: 'Rekrutierungsübersicht', troop_ov: 'Truppenübersicht', troops_outside: 'Truppen außerhalb', building_ov: 'Gebäudeübersicht', culture_ov: 'Kulturübersicht', gods_ov: 'Götterübersicht', cave_ov: 'Höhlenübersicht', city_groups_ov: 'Stadtgruppenübersicht', city_list: 'Städteliste', attack_planner: 'Angriffsplaner', farming_villages: 'Bauerndörfer', menu: 'Menü', city_view: 'Stadtansicht', messages: 'Nachrichten', reports: 'Berichte', alliance: 'Allianz', alliance_forum: 'Allianz-Forum', settings: 'Einstellungen', profile: 'Profil', ranking: 'Rangliste', notes: 'Notizen', council: 'Konzil der Helden' }, messages: { ghosttown: 'Geisterstadt', no_cities: 'Keine Städte auf dieser Insel', all: 'Alle', export: 'Nachricht als BB-Code für das Forum', Tol: 'Kopieren & Einfügen (Quack funktion)', copy: 'Kopieren', bbmessages: 'BB-Code Nachrichten', copybb: 'BBCode wurde kopiert', écrit: 'hat folgendes geschrieben:', cli: "Die Nachricht wurde nicht kopiert", }, caves: { stored_silver: 'Eingelagerte Silbermünzen', silver_to_store: 'Lagerbare Silbermünzen', name: 'Name', wood: 'Holz', stone: 'Stein', silver: 'Silbermünzen', search_for: 'Suchen nach' }, grepo_mainmenu: { city_view: 'Stadtansicht', island_view: 'Inselansicht' }, transport_calc: { recruits: 'Truppen in der Bauschleife', slowtrans: "Langsame Transportschiffe zählen", fasttrans: "Schnelle Transportschiffe zählen", Lack: "Mangel", Still: "Immer", pop: "verfügbare Bevölkerung. Für die", Optipop: "Optimale Bevölkerung für", army: "Du hast keine Armee.", }, reports: { choose_folder: 'Ordner wählen', enacted: 'gewirkt', conquered: 'erobert', spying: 'spioniert', spy: 'Spion', support: 'stationierte', supporting: 'unterstützt', attacking: 'greift', farming_village: 'Bauerndorf', gold: "Du hast erhalten", Quests: 'Quests', Reservations: 'Reservierungen', }, translations: { info: 'Info', trans: 'Übersetzung für Sprache', translations: 'Übersetzungen', trans_sure: 'Sind Sie sicher, dass Ihre Übersetzung zur Generierung bereit ist?', trans_success: 'Die Übersetzung wurde erfolgreich gesendet', trans_fail: 'Die Übersetzung konnte nicht gesendet werden', trans_infotext1: 'Übersetzung verfügbar', trans_infotext2: 'Um eine neue Sprache zu ändern oder zu erstellen, wählen Sie die Sprache im Dropdown-Menü', trans_infotext3: 'Wenn ein Text HTML-Tags enthält (also alles, was in <> Klammern steht), bitte ich Sie, sie dort zu belassen, wo Sie sie gefunden haben', trans_infotext4: 'Wenn Sie mit der Übersetzung fertig sind, drücken Sie', trans_infotext5: 'Um dich zu den Credits hinzufügen zu können, wird dein Spitzname generiert', trans_infotext6: 'Kopiere die generierte Nachricht und füge sie in einen Kommentar ein', please_note: 'Bitte beachten', credits: 'Credits', no_translation: 'Keine Übersetzung gefunden', choose_lang: 'Sprache wählen', add_lang: 'Hinzufügen / Bearbeiten', language: 'Sprache', enter_lang_name: 'Bitte geben Sie einen Sprachnamen ein', send: 'Nachricht generieren', name: 'Name', }, buttons: { sav: "Speichern", ins: "Einfügen", res: "Zurücksetzen" } },
         //////////////////////////////////////////////
         //      English Translation                 //
         //////////////////////////////////////////////
-        en: { Notification: {}, link: { update: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js", update_direct: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js", Donate: "https://www.paypal.com/donate/?hosted_button_id=GAFP5WFRRVDWG", Update: "https://www.tuto-de-david1327.com/en/annonces/dio-tools-david1327/update-to-version-" + updateversion + ".html", contact: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/", forum: "https://en.forum.grepolis.com/index.php?threads/dio-tools-david1327.62408/", link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html", link_utile: "https://www.tuto-de-david1327.com/en/pages/info/utility-sites.html", available_units: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/units-overview.html", UnitComparison: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/unit-comparison.html", MessageExport: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/bb-code-messages.html", Translations: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/translations.html", }, Settings: { dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.", act: "Activate/deactivate features of the toolset:", prv: "Preview of several features:", version_old: "Version is not up to date", version_new: "Version is up to date", version_dev: "Developer version", version_update: "Update", Donate: "Donate", forum: "Tuto de david1327", Update: "Update " + dio_version, Feature: "New Feature", Feature2: "New version", Learn_more: "Learn more", cat_units: "Units", cat_icons: "Town icons", cat_forum: "Forum", cat_trade: "Trade", cat_wonders: "World wonder", cat_layout: "Layout", cat_other: "Miscellaneous", cat_Premium: "Premium", cat_Quack: "Quack", install: "install", reminder: "Remind me later", Available: "New version Available", reqreload: "Refresh required", reload: "Refresh", }, Options: { ava: ["Units overview", "Counts the units of all cities"], ava2: ["Ocean number", "Extension unit"], sml: ["Smilies", "Extends the bbcode bar by a smiley box"], str: ["Unit strength", "Adds unit strength tables in various areas"], tra: ["Transport capacity", "Shows the occupied and available transport capacity in the unit menu"], per: ["Percentual trade", "Extends the trade window by a percentual trade"], rec: ["Recruiting trade", "Extends the trade window by a recruiting trade"], cnt: ["Conquests", "Counts the attacks/supports in the conquest window"], way: ["Troop speed", "Displays improved troop speed in the attack/support window"], sim: ["Simulator", "Adaptation of the simulator layout & permanent display of the extended modifier box"], act: ["Activity boxes", "Improved display of trade and recruitment (position memory)"], pop: ["Favor popup", "Changes the favor popup"], tsk: ["Taskbar", "Increases the taskbar"], rew: ["Daily reward", "Minimizes the daily reward window on startup"], bbc: ["Defense form", "Extends the bbcode bar by an automatic defense form"], com: ["Unit Comparison", "Adds unit comparison tables"], tic: ["Town icons", "Each city receives an icon for the town type (automatic detection)", "Additional icons are available for manual selection"], tic2: ["Automatic detection", ""], til: ["Town list", "Adds the town icons to the town list"], tim: ["Map", "Sets the town icons on the strategic map"], tiw: ["Icons Popup", ""], wwc: ["Calculator", "Share calculation & resources counter + previous & next buttons on finished world wonders (currently not deactivatable!)"], wwr: ["Ranking", "Redesigned world wonder rankings"], wwi: ["Icons", 'Adds world wonder icons on the strategic map'], con: ["Context menu", 'Swaps "Select town" and "City overview" in the context menu'], sen: ["Sent units", 'Shows sent units in the attack/support window'], tov: ["Town overview", 'Replaces the new town overview with the old window style'], scr: ["Mouse wheel", 'You can change the views with the mouse wheel'], Scr: ["Scrollbar", 'Change the style of the scrollbar (Not available on firefox)'], tow: ["Town bbcode", "Adds the town bbcode to the town tab"], Fdm: ["Select and delete several messages", "You can delete more than one messages. Quack function"], Sel: ["Add (No overloading / Delete)", "Improvement of new tools on the attack and support window. Quack function"], Cul: ["Culture overview (Administrator)", "Add a counter for the party in the culture view. Quack function"], Hot: ["Keyboard shortcuts for Windows", "It changes your life"], Isl: ["Visualization of the island", "Increase the height of the list of cities and villages"], Ish: ["Overview of peasant villages (Captain)", "Automatically hide the city. Quack function"], Hio: ["Caves overview (Administrator)", "Allow sorting of cities. Quack function"], Hid: ["Cave", "Enter silver above 15000 automatically into the input field. Quack function"], Tol: ["List of cities in BB-Code", "Copy & Paste. Quack function"], Cib: ["City view button", 'Add a button for opening the city view to the sidemenu of Greplis. Quack function'], Ciw: ["City view", "Display the city view in a window. Quack function"], Tti: ["Trade resources for festivals", "Click on it and it is only exchanged towards a festival. Quack function"], Mse: ["BB-Code messages", "Convert messages to BB-Code. Quack function"], Rep: ["Reports", "Adding a color filter. Quack function"], BBt: ["BBcode button Player Info", "Addition of a BBcode button (player and alliance)"], Rtt: ["Removal of the unit tooltips", ""], Cup: ["Advancement of Culture (Administrator)", "Changed the presentation of the progress bar and added a progress bar for crops. Function of Akiway"], Cuo: ["Points of Culture (Administrator)", "Add a counter for the Points of Culture. Quack function"], Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"], FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""], Mole: ["Not compatible to activate in the parameters of Mole Hole", ""], Cic: ["City view", "City view construction mode is selected by default"], Cuc: ["Culture overview filtering (Administrator)", "Allow sorting of cities."], Buc: ["Building overview filtering (Administrator)", "Allow sorting of cities."], err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."], }, movement: { off: 'Incoming attack', offs: 'Incoming attacks', def: 'Incoming support', defs: 'Incoming support', }, Town_icons: { LandOff: "Land Offensive", LandDef: "Land Defensive", NavyOff: "Navy Offensive", NavyDef: "Navy Defensive", FlyOff: "Fly Offensive", FlyDef: "Fly Defensive", Out: "Outside", Emp: "Empty", }, Color: { Blue: 'Blue', Red: 'Red', Green: 'Green', Pink: 'Pink', White: "White", }, labels: { uni: "Units overview", total: "Total", available: "Available", outer: "Outside", con: "Select town", std: "Standard", gre: "Grepo", nat: "Nature", ppl: "People", Par: "Party", oth: "Other", hal: "Halloween", xma: "Xmas", eas: "Easter", lov: "Love", ttl: "Overview: Town defense", inf: "Town information:", dev: "Deviation", det: "Detailed land units", prm: "Premium bonuses", sil: "Silver volume", mov: "Troop movements:", leg: "WW Share", stg: "Stage", tot: "Total", str: "Unit strength", los: "Loss", mod: "without modificator influence", dsc: "Unit comparison", hck: "Blunt", prc: "Sharp", dst: "Distance", sea: "Sea", att: "Offensive", def: "Defensive", spd: "Speed", bty: "Booty (resources)", cap: "Transport capacity", res: "Costs (resources)", fav: "Favor", tim: "Recruiting time (s)", rat: "Resource ratio of an unit type", shr: "Share of the storage capacity of the target city", per: "Percentage trade", lab: "Sent units", rec: "Resources", improved_movement: "Improved troop movement", Tran: "Translations", donat: "Donations", Happy: "Happy new year!", Merry: "Ho Ho Ho, Merry Christmas!", tow: "BBCode city", loc: "Local", ingame_name: ["Do not hesitate to contact me if you prefer to be called by your ingame name", "Since this is a great deal of work that can be very time-consuming I am always very grateful for any type of support. Therefore I would like to thank everyone who has offered support for this project - whether through donations, knowledge, creativity, bug reports or just some encouraging words."], raf: "By confirming the page will refresh", con: "Unit strength: Total strength of siege troops", }, tutoriel: { tuto: "Useful info", reme: ["I thank all those who contributed to the development of DIO tools", ""], Trou: ["Grepolis Troops Specialization Tutorial - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"], util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."], }, Quack: { delete_mul: "Delete multiple messages", delete_sure: "Do you really want to delete these posts?", no_selection: "No posts selected", mark_All: "Mark All", no_overload: 'No overloading', delete: 'Delete', cityfestivals: 'City festivals', olympicgames: 'Olympic Games', triumph: 'Victory processions', theater: 'Theater plays' }, hotkeys: { hotkeys: 'Hotkeys', Senate: 'Senate', city_select: 'City selection', last_city: 'Last city', next_city: 'Next city', jump_city: 'Jump to current city', administrator: 'Administrator', captain: 'Captain', trade_ov: 'Trade', command_ov: 'Commands', recruitment_ov: 'Recruiting', troop_ov: 'Troop overview', troops_outside: 'Troops outside', building_ov: 'Buildings', culture_ov: 'Culture', gods_ov: 'Gods', cave_ov: 'hidesOverview', city_groups_ov: 'City groups', city_list: 'City list', attack_planner: 'Attack planner', farming_villages: 'Farming villages', menu: 'Menu', city_view: 'City view', messages: 'Messages', reports: 'Reports', alliance: 'Alliance', alliance_forum: 'Alliance forum', settings: 'Settings', profile: 'Profile', ranking: 'Ranking', notes: 'Notes', chat: 'Chat', council: 'Council of Heroes' }, messages: { ghosttown: "Ghost town", no_cities: "No cities on this island", all: "all", export: "Convert message into BB-Code", Tol: "Copy & Paste (Quack function)", copy: "Copy", bbmessages: "BB-Code messages", copybb: "BBCode has been copied", écrit: "has written the following:", cli: "The message was not copied", }, caves: { stored_silver: 'Stored silver coins', silver_to_store: 'Storable silver coins', name: 'Name', wood: 'Wood', stone: 'Stone', silver: 'Silver coins', search_for: 'Search for' }, grepo_mainmenu: { city_view: "City view", island_view: "Island view" }, transport_calc: { recruits: "Count units in recruitment queue", slowtrans: "Count slow transport ships", fasttrans: "Count fast transport ships", Lack: "Lack", Still: "Still", pop: "available population. For the", Optipop: "Optimal population for", army: "You don't have an army.", }, reports: { choose_folder: 'Choose folder', enacted: 'enacted', conquered: 'conquered', spying: 'spying', spy: 'Spy', support: 'support', support2: "can't support", supporting: 'stationed', attacking: 'attacking', farming_village: 'farming village', gold: 'You have received', Quests: 'Quests', Reservations: 'Reservations', }, translations: { info: 'Info', trans: 'Translation for language', translations: 'Translations', trans_sure: 'Are you sure that your translation is ready to be generated?', trans_success: 'The translation has been sent successfully', trans_fail: 'The translation could not be sent', trans_infotext1: 'Translation available', trans_infotext2: 'To modify or create a new language, choose the language in the drop-down menu', trans_infotext3: 'When a text contains HTML tags (thus everything which is surrounded by <> brackets) I ask you to keep them where you found them', trans_infotext4: 'When you have finished translating press', trans_infotext5: 'In order to be able to add you to the credits, your nickname will be generated', trans_infotext6: 'Copy the generated message, and paste it in a comment', please_note: 'Please note', credits: 'Credits', no_translation: 'No translation found', choose_lang: 'Choose language', add_lang: 'Add a new language', language: 'Language', enter_lang_name: 'Please enter a language name', send: 'Generate message', name: 'Name', add_edit: 'Add / edit', }, buttons: { sav: "Save", ins: "Insert", res: "Reset" } },
+        en: { Notification: {}, link: { update: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js", update_direct: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js", Donate: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url", Update: "https://dio-david1327.github.io/en/News/Update/", contact: "https://dio-david1327.github.io/en/", forum: "https://en.forum.grepolis.com/index.php?threads/dio-tools-david1327.62408/", link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html", link_utile: "https://www.tuto-de-david1327.com/en/pages/info/utility-sites.html", available_units: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/units-overview.html", UnitComparison: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/unit-comparison.html", MessageExport: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/bb-code-messages.html", Translations: "https://dio-david1327.github.io/en/wiki/translations.html", }, Settings: { dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.", act: "Activate/deactivate features of the toolset:", prv: "Preview of several features:", version_old: "Version is not up to date", version_new: "Version is up to date", version_dev: "Developer version", version_update: "Update", Donate: "Donate", forum: "Tuto de david1327", Update: "Update", Feature: "New Feature", Feature2: "New version", Learn_more: "Learn more", cat_units: "Units", cat_icons: "Town icons", cat_forum: "Forum", cat_trade: "Trade", cat_wonders: "World wonder", cat_layout: "Layout", cat_other: "Miscellaneous", cat_Premium: "Premium", cat_Quack: "Quack", install: "install", reminder: "Remind me later", Available: "New version Available", reqreload: "Refresh required", reload: "Refresh", Comp_GRCT: "The following functions are not compatible with GRCT", Non_compatible: "Not compatible, enable in the settings of ", }, Options: { ava: ["Units overview", "Counts the units of all cities"], ava2: ["Ocean number", "Extension unit"], sml: ["Smilies", "Extends the bbcode bar by a smiley box"], str: ["Unit strength", "Adds unit strength tables in various areas"], tra: ["Transport capacity", "Shows the occupied and available transport capacity in the unit menu"], per: ["Percentual trade", "Extends the trade window by a percentual trade"], rec: ["Recruiting trade", "Extends the trade window by a recruiting trade"], cnt: ["Conquests", "Counts the attacks/supports in the conquest window"], way: ["Troop speed", "Displays improved troop speed in the attack/support window"], sim: ["Simulator", "Adaptation of the simulator layout & permanent display of the extended modifier box"], act: ["Activity boxes", "Improved display of trade and recruitment (position memory)"], pop: ["Favor popup", "Changes the favor popup"], tsk: ["Taskbar", "Increases the taskbar"], rew: ["Daily reward", "Minimizes the daily reward window on startup"], bbc: ["Defense form", "Extends the bbcode bar by an automatic defense form"], com: ["Unit Comparison", "Adds unit comparison tables"], tic: ["Town icons", "Each city receives an icon for the town type (automatic detection)", "Additional icons are available for manual selection"], tic2: ["Automatic detection", ""], til: ["Town list", "Adds the town icons to the town list"], tim: ["Map", "Sets the town icons on the strategic map"], tiw: ["Icons Popup", ""], wwc: ["Calculator", "Share calculation & resources counter + previous & next buttons on finished world wonders (currently not deactivatable!)"], wwr: ["Ranking", "Redesigned world wonder rankings"], wwi: ["Icons", 'Adds world wonder icons on the strategic map'], con: ["Context menu", 'Swaps "Select town" and "City overview" in the context menu'], sen: ["Sent units", 'Shows sent units in the attack/support window'], tov: ["Town overview", 'Replaces the new town overview with the old window style'], scr: ["Mouse wheel", 'You can change the views with the mouse wheel'], Scr: ["Scrollbar", 'Change the style of the scrollbar (Not available on firefox)'], tow: ["Town bbcode", "Adds the town bbcode to the town tab"], Fdm: ["Select and delete several messages", "You can delete more than one messages. Quack function"], Sel: ["Add (No overloading / Delete)", "Improvement of new tools on the attack and support window. Quack function"], Cul: ["Culture overview (Administrator)", "Add a counter for the party in the culture view. Quack function"], Hot: ["Keyboard shortcuts for Windows", "It changes your life"], Isl: ["Visualization of the island", "Increase the height of the list of cities and villages"], Ish: ["Overview of peasant villages (Captain)", "Automatically hide the city. Quack function"], Hio: ["Caves overview (Administrator)", "Allow sorting of cities. Quack function"], Hid: ["Cave", "Enter silver above 15000 automatically into the input field. Quack function"], Tol: ["List of cities in BB-Code", "Copy & Paste. Quack function"], Cib: ["City view button", 'Add a button for opening the city view to the sidemenu of Greplis. Quack function'], Ciw: ["City view", "Display the city view in a window. Quack function"], Tti: ["Trade resources for festivals", "Click on it and it is only exchanged towards a festival. Quack function"], Mse: ["BB-Code messages", "Convert messages to BB-Code. Quack function"], Rep: ["Reports", "Adding a color filter. Quack function"], BBt: ["BBcode button Player Info", "Addition of a BBcode button (player and alliance)"], Rtt: ["Removal of the unit tooltips", ""], Cup: ["Advancement of Culture (Administrator)", "Changed the presentation of the progress bar and added a progress bar for crops. Function of Akiway"], Cuo: ["Points of Culture (Administrator)", "Add a counter for the Points of Culture. Quack function"], Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"], FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""], Mole: ["Not compatible to activate in the parameters of Mole Hole", ""], Cic: ["City view", "City view construction mode is selected by default"], Cuc: ["Culture overview filtering (Administrator)", "Allow sorting of cities."], Buc: ["Building overview filtering (Administrator)", "Allow sorting of cities."], BBl: ["BBcode List", "Generates a BB-code list, ideal for displaying alliance members or a player's cities"], Amm: ["Group Message (alliance)", "Adds a button on the alliance profile to facilitate sending group messages"], Onb: ["Ocean Number", "Integrates ocean numbers into the island view, improving navigation."], Idl: ["Inactive Player", "Displays inactive players for more effective management. Powered by GREPODATA"], Saw: ["Wall Backup", "Allows for the backup of troops in the walls, ensuring enhanced protection"], Att: ["Attack Alarm", "Receive instant warnings when under attack, reinforcing your security"], Comp_GRCT: "The following functions are not compatible with GRCT", Non_compatible: "Not compatible, enable in the settings of ", err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."], }, movement: { off: 'Incoming attack', offs: 'Incoming attacks', def: 'Incoming support', defs: 'Incoming support', }, Town_icons: { LandOff: "Land Offensive", LandDef: "Land Defensive", NavyOff: "Navy Offensive", NavyDef: "Navy Defensive", FlyOff: "Fly Offensive", FlyDef: "Fly Defensive", Out: "Outside", Emp: "Empty", }, Color: { Blue: 'Blue', Red: 'Red', Green: 'Green', Pink: 'Pink', White: "White", }, labels: { uni: "Units overview", total: "Total", available: "Available", outer: "Outside", con: "Select town", std: "Standard", gre: "Grepo", nat: "Nature", ppl: "People", Par: "Party", oth: "Other", hal: "Halloween", xma: "Xmas", eas: "Easter", lov: "Love", ttl: "Overview: Town defense", inf: "Town information:", dev: "Deviation", det: "Detailed land units", prm: "Premium bonuses", sil: "Silver volume", mov: "Troop movements:", leg: "WW Share", stg: "Stage", tot: "Total", str: "Unit strength", los: "Loss", mod: "without modificator influence", dsc: "Unit comparison", hck: "Blunt", prc: "Sharp", dst: "Distance", sea: "Sea", att: "Offensive", def: "Defensive", spd: "Speed", bty: "Booty (resources)", cap: "Transport capacity", res: "Costs (resources)", fav: "Favor", tim: "Recruiting time (s)", rat: "Resource ratio of an unit type", shr: "Share of the storage capacity of the target city", per: "Percentage trade", lab: "Sent units", rec: "Resources", improved_movement: "Improved troop movement", Tran: "Translations", donat: "Donations", Happy: "Happy new year!", Merry: "Ho Ho Ho, Merry Christmas!", tow: "BBCode city", loc: "Local", ingame_name: ["Do not hesitate to contact me if you prefer to be called by your ingame name", "Since this is a great deal of work that can be very time-consuming I am always very grateful for any type of support. Therefore I would like to thank everyone who has offered support for this project - whether through donations, knowledge, creativity, bug reports or just some encouraging words."], raf: "By confirming the page will refresh", con: "Unit strength: Total strength of siege troops", Volume: "Volume", }, tutoriel: { tuto: "Useful info", reme: ["I thank all those who contributed to the development of DIO tools", ""], Trou: ["Grepolis Troops Specialization Tutorial - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"], util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."], }, Quack: { delete_mul: "Delete multiple messages", delete_sure: "Do you really want to delete these posts?", no_selection: "No posts selected", mark_All: "Mark All", no_overload: 'No overloading', delete: 'Delete', cityfestivals: 'City festivals', olympicgames: 'Olympic Games', triumph: 'Victory processions', theater: 'Theater plays' }, hotkeys: { hotkeys: 'Hotkeys', Senate: 'Senate', city_select: 'City selection', last_city: 'Last city', next_city: 'Next city', jump_city: 'Jump to current city', administrator: 'Administrator', captain: 'Captain', trade_ov: 'Trade', command_ov: 'Commands', recruitment_ov: 'Recruiting', troop_ov: 'Troop overview', troops_outside: 'Troops outside', building_ov: 'Buildings', culture_ov: 'Culture', gods_ov: 'Gods', cave_ov: 'hidesOverview', city_groups_ov: 'City groups', city_list: 'City list', attack_planner: 'Attack planner', farming_villages: 'Farming villages', menu: 'Menu', city_view: 'City view', messages: 'Messages', reports: 'Reports', alliance: 'Alliance', alliance_forum: 'Alliance forum', settings: 'Settings', profile: 'Profile', ranking: 'Ranking', notes: 'Notes', chat: 'Chat', council: 'Council of Heroes' }, messages: { ghosttown: "Ghost town", no_cities: "No cities on this island", all: "all", export: "Convert message into BB-Code", Tol: "Copy & Paste (Quack function)", copy: "Copy", bbmessages: "BB-Code messages", copybb: "BBCode has been copied", écrit: "has written the following:", cli: "The message was not copied", }, caves: { stored_silver: 'Stored silver coins', silver_to_store: 'Storable silver coins', name: 'Name', wood: 'Wood', stone: 'Stone', silver: 'Silver coins', search_for: 'Search for' }, grepo_mainmenu: { city_view: "City view", island_view: "Island view" }, transport_calc: { recruits: "Count units in recruitment queue", slowtrans: "Count slow transport ships", fasttrans: "Count fast transport ships", Lack: "Lack", Still: "Still", pop: "available population. For the", Optipop: "Optimal population for", army: "You don't have an army.", }, reports: { choose_folder: 'Choose folder', enacted: 'enacted', conquered: 'conquered', spying: 'spying', spy: 'Spy', support: 'support', support2: "can't support", supporting: 'stationed', attacking: 'attacking', farming_village: 'farming village', gold: 'You have received', Quests: 'Quests', Reservations: 'Reservations', }, translations: { info: 'Info', trans: 'Translation for language', translations: 'Translations', trans_sure: 'Are you sure that your translation is ready to be generated?', trans_success: 'The translation has been sent successfully', trans_fail: 'The translation could not be sent', trans_infotext1: 'Translation available', trans_infotext2: 'To modify or create a new language, choose the language in the drop-down menu', trans_infotext3: 'When a text contains HTML tags (thus everything which is surrounded by <> brackets) I ask you to keep them where you found them', trans_infotext4: 'When you have finished translating press', trans_infotext5: 'In order to be able to add you to the credits, your nickname will be generated', trans_infotext6: 'Copy the generated message, and paste it in a comment', please_note: 'Please note', credits: 'Credits', no_translation: 'No translation found', choose_lang: 'Choose language', add_lang: 'Add a new language', language: 'Language', enter_lang_name: 'Please enter a language name', send: 'Generate message', name: 'Name', add_edit: 'Add / edit', }, wall: { wallnotsaved: "Wall is not saved", wallsaved: "Wall is saved", msghuman: "The information has been saved", erreur: "An error occurred while writing", wantdeletecurrent: "Do you want to delete the current record of the wall ?", deletecurrent: "Delete the current record", listsaved: "Saved on the wall the day", liststate: "Condition of the wall on the day", nosaved: "No backup", Auto: "Auto mode", }, buttons: { sav: "Save", ins: "Insert", res: "Reset" } },
         //////////////////////////////////////////////
         //      Italian Translation by amliam       //
         //////////////////////////////////////////////
-        it: { Notification: {}, link: { forum: "https://it.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.22111/", }, Settings: { dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.", act: "Activate/deactivate features of the toolset:", prv: "Preview of several features:", version_old: "La versione non è aggiornata", version_new: "La versione è aggiornata", version_dev: "Versione per sviluppatori", version_update: "Aggiornare", Donate: "Donare", Update: "Aggiornare " + dio_version, Feature: "Nuova caratteristica", Feature2: "Nuova versione", Learn_more: "Per saperne di più", cat_units: "Unità", cat_icons: "Icone città", cat_forum: "Forum", cat_trade: "Commercio", cat_wonders: "Mondo meravigliarsi", cat_layout: "Disposizione", cat_other: "Altro", cat_Premium: "Premium", cat_Quack: "Quack", install: "installa", reminder: "Ricordamelo più tardi", Available: "Nuova versione disponibile", reqreload: "E' necessario aggiornare la pagina", reload: "Aggiorna", }, Options: { bir: ["Conta biremi", "Conta le biremi di una città e le somma"], ava: ["Panoramica delle unità", "Conta le unità di tutte le città"], ava2: ["Numero del mare", ""], sml: ["Emojy", "Aggiunge una raccolta di emojy ai pulsanti bbcode"], str: ["Forza delle untià", "Aggiunge una tabella delle forze delle unità nelle varie aree"], tra: ["Capacità di trasporto", "Mostra la capacità di trasporto usata e disponibile nel menù unità"], per: ["Commercio percentuale", "Aggiunge alla finestra del commercio la funzione commercio percentuale"], rec: ["Commercio di reclutamento", "Aggiunge alla finestra del commercio il valore del reclutamento"], cnt: ["Conquista", "Conta gli attacchi/supporti nella finestra della conquista"], way: ["Movimento accelerato", "Mostra il movimento accelerato nalla finestra di attacco/supporto"], sim: ["Simulatore", "Adatta il layout del simulatore e aggiunge permanenti le modifiche della finestra box"], act: ["Box dei movimenti", "Importa sullo schermo una box di commercio e reclutamento (posizione memorizzata)"], pop: ["Popup favori", "Cambia il popup dei favori"], tsk: ["Taskbar", "Aumenta le dimensioni taskbar"], rew: ["Finestra della ricompensa", "Riduce la dimensione della finestra della ricompensa giornaliera all'avvio"], bbc: ["Form difensivo", "Aggiunge alla barra del bbcode un pulsante per un form difensivo automatico"], com: ["Paragone unità", "Aggiunge una tabella per la comparazione delle unità"], tic: ["Icone delle città", "Ogni città riceve una icona per il tipo di città(rilevamento automatico)", "Icone addizionali sono disponibili per la selezione automatica"], til: ["Lista città", "Aggiunge le icone delle città alla lista città"], tim: ["Mappa", "Aggiunge le icone città alla mappa strategica"], tiw: ["Popup icona", ""], con: ["Menu selezione", 'Scambia il pulsante "Seleziona città" con "Panoramica città" nel menu selezione'], sen: ["Unità inviate", 'Mostra le unità inviate nella finestre di attacco/supporto'], tov: ["Panoramica città", 'Sostituisce la panoramica città con la vecchia finestra vecchio stile'], scr: ["Rotella del mouse", 'Puoi cambiare visuale con la rotella del mouse'], Scr: ["Barra di scorrimento", 'Cambia lo stile della barra di scorrimento'], tow: ["BBcode città", "Aggiunge il bbcode delle città alla tab della città"], Fdm: ["Seleziona ed elimina più messaggi", "Puoi eliminare più di un messaggio. Funzione Quack"], Sel: ["Aggiungi (Nessun sovraccarico / Elimina)", "Miglioramento di nuovi strumenti nella finestra di attacco e supporto. Funzione Quack"], Cul: ["Panoramica cultura (Amministratore)", "Aggiungi un contatore per la festa nella vista Cultura. Funzione Quack"], Hot: ["Scorciatoie da tastiera per Windows", "Ti cambia la vita"], Isl: ["Visualizzazione dell'isola", "Aumenta l'altezza dell'elenco delle città e dei villaggi. Funzione Quack"], Ish: ["Panoramica dei villaggi contadini (Capitano)", "Nascondi automaticamente la città. Funzione Quack"], Hio: ["Panoramica caverna (Amministratore)", "Consentire alle città di essere riordinate. Funzione Quack"], Hid: ["Caverna", "Inserisci denaro al di sopra di 15.000 automaticamente nel campo di inserimento. Funzione Quack"], Tol: ["Elenco delle città in BB-Code", "Copia e incolla. Funzione Quack"], Cib: ["Pulsante vista città", "Aggiungi un pulsante per aprire la vista della città nel menu laterale su Grepolis. Funzione Quack"], Ciw: ["Panoramica città", "Mostra la città in una finestra. Funzione Quack"], Tti: ["Scambia risorse per festival", "Fai clic su di esso e viene scambiato solo per un festival. Funzione Quack"], Mse: ["Messaggi BB-Code", "Converti messaggi in BB-Code. Funzione Quack"], Rep: ["Rapporti", "Aggiunta di un filtro colorato. Funzione Quack"], BBt: ["Informazioni sul giocatore del pulsante BBcode", "Aggiunta di un pulsante BBcode (giocatore e alleanza)"], Rtt: ["Rimozione dei tooltip dell'unità", ""], Cup: ["Advancement of Culture (Administrator)", "Cambiata la presentazione della barra di avanzamento e aggiunta una barra di avanzamento per le colture. Funzione di Akiway"], Cuo: ["Punti di Cultura (Amministratore)", "Aggiungi un segnalino per i Punti Cultura. Funzione Quack"], Rct: ["Commercio -> Contatore risorse (amministratore)", "Un conteggio di tutte le risorse nella tua città"], FLASK: ["Non compatibile per attivare nei parametri di FLASK-TOOLS", ""], Mole: ["Non compatibile per attivare nei parametri di Mole Hole", ""], err: ["Invia automaticamente il report dei bug", "Se attivi questa opzione, puoi aiutare a identificare i bug."], her: ["Conquista della Tracia", "Ridimensiona la mappa della conquista della Tracia"], }, Town_icons: {}, Color: { Blue: 'Blu', Red: 'Rosso', Green: 'verde', Pink: 'Rosa', White: "bianca", }, labels: { uni: "Panoramica unità", total: "Totali", available: "Disponibili", outer: "Fuori", con: "Seleziona città", std: "Standard", gre: "Grepo", nat: "Natura", ppl: "Persone", oth: "Altro", hal: "Halloween", xma: "Natale", eas: "Pasqua", lov: "Amore", ttl: "Panoramica: difesa della città", inf: "Informazioni città:", dev: "Errore", det: "Dettagli unità in città", prm: "Bonus premium", sil: "Argento in caverna", mov: "Movimenti truppi:", str: "Forza delle unità", los: "Perse", mod: "Senza influenza dei modificatori", dsc: "Paragone unità", hck: "Contundente", prc: "Arma bianca", dst: "Distanza", sea: "Mare", att: "Offensiva", def: "Defensiva", spd: "Velocità", bty: "Bottino (risorse)", cap: "Capacità di trasporto", res: "Costi (risorse)", fav: "Favori", tim: "Tempo di reclutamento", rat: "Quantità di risorse per tipo unità", shr: "Quantità della capacità del magazzino della città bersaglio", per: "Commercio percentuale", lab: "Unità inviate", rec: "Risorse", improved_movement: "Movimento accelerato unità", Tran: "Traduzioni", donat: "donare", Happy: "Felice anno nuovo!", Merry: "Ho Ho Ho, buon Natale!", tow: "BBCode città", ingame_name: ["Non esitare a contattarmi se preferisci essere chiamato con il tuo nickname", "Dato che si tratta di una grande quantità di lavoro che può richiedere molto tempo, sono sempre molto grato per qualsiasi tipo di supporto. Pertanto, vorrei ringraziare tutti coloro che hanno offerto supporto per questo progetto, sia attraverso donazioni, conoscenze, creatività, segnalazioni di errori o solo alcune parole incoraggianti."] }, tutoriel: { tuto: "Informazioni Utili", reme: ["Ringrazio tutti coloro che hanno contribuito allo sviluppo di DIO-Tools-david1327", ""], Trou: ["Specializzazione delle truppe di Grepolis lezione - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"], util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."] }, Quack: { delete_mul: "Cancella più messaggi", delete_sure: "Vuoi davvero cancellare questo post?", no_selection: "Nessun post selezionato", mark_All: "Segna tutto", no_overload: 'Nessun sovraccarico', delete: 'Cancella', cityfestivals: 'Festa cittadina', olympicgames: 'Giochi Olimpici', triumph: 'Corteo trionfale', theater: 'Opere teatrali' }, hotkeys: { hotkeys: 'Tasti di scelta rapida', Senate: 'Senato', city_select: 'Selezione città', last_city: 'Precedente città', next_city: 'Prossima città', jump_city: 'Salta alla città attuale', administrator: 'Amministratore', captain: 'Capitano', trade_ov: 'Panoramica commercio', command_ov: 'Panoramica ordini', recruitment_ov: 'Panoramica reclutamento', troop_ov: 'Panoramica truppe', troops_outside: 'Truppe esterne', building_ov: 'Panoramica edifici', culture_ov: 'Panoramica cultura', gods_ov: 'Panoramica dei', cave_ov: 'Panoramica caverne', city_groups_ov: 'Panoramica gruppi di città', city_list: 'Elenco città', attack_planner: 'Pianificatore attacchi', farming_villages: 'Villaggi rurali', menu: "", city_view: 'Panoramica città', messages: 'Messaggi', reports: 'Rapporti', alliance: 'Alleanza', alliance_forum: 'Forum-Alleanza', settings: 'Impostazioni', profile: 'Profilo', ranking: 'Classifica', notes: 'Note', council: 'Concilio degli eroi' }, messages: { ghosttown: 'Città fantasma', no_cities: 'Nessuna città su quest\'isola', all: 'tutti', export: 'Converti messagi in BB-Code', Tol: 'Copia e incolla (Quack function)', copy: 'copia', bbmessages: 'Messaggi BB-Code', copybb: 'BBCode è stato copiato', écrit: 'ha scritto:', }, caves: { stored_silver: 'Monete d\'argento incorporate', silver_to_store: 'Monete d\'argento immagazinabili', name: 'Nome', wood: 'Legname', stone: 'Pietre', silver: 'Monete d\'argento', search_for: 'Cerca per' }, grepo_mainmenu: { city_view: 'Panoramica città', island_view: 'Visuale isola' }, transport_calc: { recruits: 'Calcola le truppe in reclutamento', slowtrans: "Conta navi da trasporto lento", fasttrans: "Conta navi da trasporto veloce", Lack: "Mancanza", Still: "Ancora", pop: "popolazione disponibile. Per il", Optipop: "Popolazione ottimale per", army: "Non hai un esercito.", }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'Info', trans: 'Traduzione per lingua', translations: 'Traduzioni', trans_sure: 'Sei sicuro che la tua traduzione sia pronta per essere generata?', trans_success: 'La traduzione è stata inviata con successo', trans_fail: 'Impossibile inviare la traduzione', trans_infotext1: 'Traduzione disponibile', trans_infotext2: 'Per modificare o creare una nuova lingua, scegli la lingua nel menu a discesa', trans_infotext3: 'Quando un testo contiene tag HTML (quindi tutto ciò che è racchiuso tra parentesi <>) ti chiedo di tenerli dove li hai trovati', trans_infotext4: 'Quando hai finito di tradurre, premi', trans_infotext5: 'Per poterti aggiungere ai crediti, verrà generato il tuo nickname', trans_infotext6: 'Copia il messaggio generato e incollalo in un commento', please_note: 'Nota', credits: 'Crediti', no_translation: 'Nessuna traduzione trovata', choose_lang: 'Scegli la lingua', add_lang: 'Aggiungi una nuova lingua', language: 'Lingua', enter_lang_name: 'Inserisci un nome per la lingua', send: 'Genera messaggio', name: 'Nome', }, buttons: { sav: "Salva", ins: "Inserisci", res: "Reset" } },
+        it: { Notification: {}, link: { forum: "https://it.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.22111/", }, Settings: { dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.", act: "Activate/deactivate features of the toolset:", prv: "Preview of several features:", version_old: "La versione non è aggiornata", version_new: "La versione è aggiornata", version_dev: "Versione per sviluppatori", version_update: "Aggiornare", Donate: "Donare", Update: "Aggiornare", Feature: "Nuova caratteristica", Feature2: "Nuova versione", Learn_more: "Per saperne di più", cat_units: "Unità", cat_icons: "Icone città", cat_forum: "Forum", cat_trade: "Commercio", cat_wonders: "Mondo meravigliarsi", cat_layout: "Disposizione", cat_other: "Altro", cat_Premium: "Premium", cat_Quack: "Quack", install: "installa", reminder: "Ricordamelo più tardi", Available: "Nuova versione disponibile", reqreload: "E' necessario aggiornare la pagina", reload: "Aggiorna", }, Options: { bir: ["Conta biremi", "Conta le biremi di una città e le somma"], ava: ["Panoramica delle unità", "Conta le unità di tutte le città"], ava2: ["Numero del mare", ""], sml: ["Emojy", "Aggiunge una raccolta di emojy ai pulsanti bbcode"], str: ["Forza delle untià", "Aggiunge una tabella delle forze delle unità nelle varie aree"], tra: ["Capacità di trasporto", "Mostra la capacità di trasporto usata e disponibile nel menù unità"], per: ["Commercio percentuale", "Aggiunge alla finestra del commercio la funzione commercio percentuale"], rec: ["Commercio di reclutamento", "Aggiunge alla finestra del commercio il valore del reclutamento"], cnt: ["Conquista", "Conta gli attacchi/supporti nella finestra della conquista"], way: ["Movimento accelerato", "Mostra il movimento accelerato nalla finestra di attacco/supporto"], sim: ["Simulatore", "Adatta il layout del simulatore e aggiunge permanenti le modifiche della finestra box"], act: ["Box dei movimenti", "Importa sullo schermo una box di commercio e reclutamento (posizione memorizzata)"], pop: ["Popup favori", "Cambia il popup dei favori"], tsk: ["Taskbar", "Aumenta le dimensioni taskbar"], rew: ["Finestra della ricompensa", "Riduce la dimensione della finestra della ricompensa giornaliera all'avvio"], bbc: ["Form difensivo", "Aggiunge alla barra del bbcode un pulsante per un form difensivo automatico"], com: ["Paragone unità", "Aggiunge una tabella per la comparazione delle unità"], tic: ["Icone delle città", "Ogni città riceve una icona per il tipo di città(rilevamento automatico)", "Icone addizionali sono disponibili per la selezione automatica"], til: ["Lista città", "Aggiunge le icone delle città alla lista città"], tim: ["Mappa", "Aggiunge le icone città alla mappa strategica"], tiw: ["Popup icona", ""], con: ["Menu selezione", 'Scambia il pulsante "Seleziona città" con "Panoramica città" nel menu selezione'], sen: ["Unità inviate", 'Mostra le unità inviate nella finestre di attacco/supporto'], tov: ["Panoramica città", 'Sostituisce la panoramica città con la vecchia finestra vecchio stile'], scr: ["Rotella del mouse", 'Puoi cambiare visuale con la rotella del mouse'], Scr: ["Barra di scorrimento", 'Cambia lo stile della barra di scorrimento'], tow: ["BBcode città", "Aggiunge il bbcode delle città alla tab della città"], Fdm: ["Seleziona ed elimina più messaggi", "Puoi eliminare più di un messaggio. Funzione Quack"], Sel: ["Aggiungi (Nessun sovraccarico / Elimina)", "Miglioramento di nuovi strumenti nella finestra di attacco e supporto. Funzione Quack"], Cul: ["Panoramica cultura (Amministratore)", "Aggiungi un contatore per la festa nella vista Cultura. Funzione Quack"], Hot: ["Scorciatoie da tastiera per Windows", "Ti cambia la vita"], Isl: ["Visualizzazione dell'isola", "Aumenta l'altezza dell'elenco delle città e dei villaggi. Funzione Quack"], Ish: ["Panoramica dei villaggi contadini (Capitano)", "Nascondi automaticamente la città. Funzione Quack"], Hio: ["Panoramica caverna (Amministratore)", "Consentire alle città di essere riordinate. Funzione Quack"], Hid: ["Caverna", "Inserisci denaro al di sopra di 15.000 automaticamente nel campo di inserimento. Funzione Quack"], Tol: ["Elenco delle città in BB-Code", "Copia e incolla. Funzione Quack"], Cib: ["Pulsante vista città", "Aggiungi un pulsante per aprire la vista della città nel menu laterale su Grepolis. Funzione Quack"], Ciw: ["Panoramica città", "Mostra la città in una finestra. Funzione Quack"], Tti: ["Scambia risorse per festival", "Fai clic su di esso e viene scambiato solo per un festival. Funzione Quack"], Mse: ["Messaggi BB-Code", "Converti messaggi in BB-Code. Funzione Quack"], Rep: ["Rapporti", "Aggiunta di un filtro colorato. Funzione Quack"], BBt: ["Informazioni sul giocatore del pulsante BBcode", "Aggiunta di un pulsante BBcode (giocatore e alleanza)"], Rtt: ["Rimozione dei tooltip dell'unità", ""], Cup: ["Advancement of Culture (Administrator)", "Cambiata la presentazione della barra di avanzamento e aggiunta una barra di avanzamento per le colture. Funzione di Akiway"], Cuo: ["Punti di Cultura (Amministratore)", "Aggiungi un segnalino per i Punti Cultura. Funzione Quack"], Rct: ["Commercio -> Contatore risorse (amministratore)", "Un conteggio di tutte le risorse nella tua città"], FLASK: ["Non compatibile per attivare nei parametri di FLASK-TOOLS", ""], Mole: ["Non compatibile per attivare nei parametri di Mole Hole", ""], err: ["Invia automaticamente il report dei bug", "Se attivi questa opzione, puoi aiutare a identificare i bug."], her: ["Conquista della Tracia", "Ridimensiona la mappa della conquista della Tracia"], }, Town_icons: {}, Color: { Blue: 'Blu', Red: 'Rosso', Green: 'verde', Pink: 'Rosa', White: "bianca", }, labels: { uni: "Panoramica unità", total: "Totali", available: "Disponibili", outer: "Fuori", con: "Seleziona città", std: "Standard", gre: "Grepo", nat: "Natura", ppl: "Persone", oth: "Altro", hal: "Halloween", xma: "Natale", eas: "Pasqua", lov: "Amore", ttl: "Panoramica: difesa della città", inf: "Informazioni città:", dev: "Errore", det: "Dettagli unità in città", prm: "Bonus premium", sil: "Argento in caverna", mov: "Movimenti truppi:", str: "Forza delle unità", los: "Perse", mod: "Senza influenza dei modificatori", dsc: "Paragone unità", hck: "Contundente", prc: "Arma bianca", dst: "Distanza", sea: "Mare", att: "Offensiva", def: "Defensiva", spd: "Velocità", bty: "Bottino (risorse)", cap: "Capacità di trasporto", res: "Costi (risorse)", fav: "Favori", tim: "Tempo di reclutamento", rat: "Quantità di risorse per tipo unità", shr: "Quantità della capacità del magazzino della città bersaglio", per: "Commercio percentuale", lab: "Unità inviate", rec: "Risorse", improved_movement: "Movimento accelerato unità", Tran: "Traduzioni", donat: "donare", Happy: "Felice anno nuovo!", Merry: "Ho Ho Ho, buon Natale!", tow: "BBCode città", ingame_name: ["Non esitare a contattarmi se preferisci essere chiamato con il tuo nickname", "Dato che si tratta di una grande quantità di lavoro che può richiedere molto tempo, sono sempre molto grato per qualsiasi tipo di supporto. Pertanto, vorrei ringraziare tutti coloro che hanno offerto supporto per questo progetto, sia attraverso donazioni, conoscenze, creatività, segnalazioni di errori o solo alcune parole incoraggianti."] }, tutoriel: { tuto: "Informazioni Utili", reme: ["Ringrazio tutti coloro che hanno contribuito allo sviluppo di DIO-Tools-david1327", ""], Trou: ["Specializzazione delle truppe di Grepolis lezione - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"], util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."] }, Quack: { delete_mul: "Cancella più messaggi", delete_sure: "Vuoi davvero cancellare questo post?", no_selection: "Nessun post selezionato", mark_All: "Segna tutto", no_overload: 'Nessun sovraccarico', delete: 'Cancella', cityfestivals: 'Festa cittadina', olympicgames: 'Giochi Olimpici', triumph: 'Corteo trionfale', theater: 'Opere teatrali' }, hotkeys: { hotkeys: 'Tasti di scelta rapida', Senate: 'Senato', city_select: 'Selezione città', last_city: 'Precedente città', next_city: 'Prossima città', jump_city: 'Salta alla città attuale', administrator: 'Amministratore', captain: 'Capitano', trade_ov: 'Panoramica commercio', command_ov: 'Panoramica ordini', recruitment_ov: 'Panoramica reclutamento', troop_ov: 'Panoramica truppe', troops_outside: 'Truppe esterne', building_ov: 'Panoramica edifici', culture_ov: 'Panoramica cultura', gods_ov: 'Panoramica dei', cave_ov: 'Panoramica caverne', city_groups_ov: 'Panoramica gruppi di città', city_list: 'Elenco città', attack_planner: 'Pianificatore attacchi', farming_villages: 'Villaggi rurali', menu: "", city_view: 'Panoramica città', messages: 'Messaggi', reports: 'Rapporti', alliance: 'Alleanza', alliance_forum: 'Forum-Alleanza', settings: 'Impostazioni', profile: 'Profilo', ranking: 'Classifica', notes: 'Note', council: 'Concilio degli eroi' }, messages: { ghosttown: 'Città fantasma', no_cities: 'Nessuna città su quest\'isola', all: 'tutti', export: 'Converti messagi in BB-Code', Tol: 'Copia e incolla (Quack function)', copy: 'copia', bbmessages: 'Messaggi BB-Code', copybb: 'BBCode è stato copiato', écrit: 'ha scritto:', }, caves: { stored_silver: 'Monete d\'argento incorporate', silver_to_store: 'Monete d\'argento immagazinabili', name: 'Nome', wood: 'Legname', stone: 'Pietre', silver: 'Monete d\'argento', search_for: 'Cerca per' }, grepo_mainmenu: { city_view: 'Panoramica città', island_view: 'Visuale isola' }, transport_calc: { recruits: 'Calcola le truppe in reclutamento', slowtrans: "Conta navi da trasporto lento", fasttrans: "Conta navi da trasporto veloce", Lack: "Mancanza", Still: "Ancora", pop: "popolazione disponibile. Per il", Optipop: "Popolazione ottimale per", army: "Non hai un esercito.", }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'Info', trans: 'Traduzione per lingua', translations: 'Traduzioni', trans_sure: 'Sei sicuro che la tua traduzione sia pronta per essere generata?', trans_success: 'La traduzione è stata inviata con successo', trans_fail: 'Impossibile inviare la traduzione', trans_infotext1: 'Traduzione disponibile', trans_infotext2: 'Per modificare o creare una nuova lingua, scegli la lingua nel menu a discesa', trans_infotext3: 'Quando un testo contiene tag HTML (quindi tutto ciò che è racchiuso tra parentesi <>) ti chiedo di tenerli dove li hai trovati', trans_infotext4: 'Quando hai finito di tradurre, premi', trans_infotext5: 'Per poterti aggiungere ai crediti, verrà generato il tuo nickname', trans_infotext6: 'Copia il messaggio generato e incollalo in un commento', please_note: 'Nota', credits: 'Crediti', no_translation: 'Nessuna traduzione trovata', choose_lang: 'Scegli la lingua', add_lang: 'Aggiungi una nuova lingua', language: 'Lingua', enter_lang_name: 'Inserisci un nome per la lingua', send: 'Genera messaggio', name: 'Nome', }, buttons: { sav: "Salva", ins: "Inserisci", res: "Reset" } },
         //////////////////////////////////////////////
         //      French Translation by eclat49       //
         //////////////////////////////////////////////
-        fr: { Notification: {}, link: { Update: "https://www.tuto-de-david1327.com/annonces/dio-tools-david1327/mise-a-jour-" + updateversion + ".html", contact: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/", forum: "https://fr.forum.grepolis.com/index.php?threads/dio-tools-david1327.79567/", link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html", link_utile: "https://www.tuto-de-david1327.com/pages/info/sites-utilitaires.html", available_units: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/apercu-des-unites.html", UnitComparison: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/comparaison-des-unites.html", MessageExport: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/bb-code-messages.html", Translations: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/traductions.html", }, Settings: { dsc: "DIO-Tools offres certains écrans, une boîte de smiley, les options <br>commerciales, des changements à la mise en page et d'autres choses.", act: "Activation/Désactivation des fonctions:", prv: "Aperçu des fonctions séparées:", version_old: "La version n'est pas à jour", version_new: "La version est à jour", version_dev: "Version développeur", version_update: "Mettre à jour", Donate: "Faire un don", Update: "Mise à jour " + dio_version, Feature: "Nouvelle fonctionnalité", Feature2: "Nouvelle version", Learn_more: "En savoir plus", cat_units: "Unités", cat_icons: "Icônes de la ville", cat_forum: "Forum", cat_trade: "Commerce", cat_layout: "Disposition", cat_other: "Divers", cat_Premium: "Premium", cat_Quack: "Quack", install: "installer", reminder: "Me rappeler plus tard", Available: "Nouvelle version disponible", reqreload: "Nécessite le raffraîchissement du site", reload: "Raffraîchir", }, Options: { bir: ["Compteur de birèmes ", "Totalise l'ensemble des birèmes présentent en villes et les résume. (Remplace la mini carte dans le cadran)"], ava: ["L'aperçu des unites", "Indique les unités de toutes les villes."], ava2: ["Numéro de Mer", "Extension unité"], sml: ["Smileys", "Rajoutes une boite de smilies à la boite de bbcode"], str: ["Force unitaire", "Ajoutes des tableaux de force unitaire dans les différentes armes"], tra: ["Capacité de transport", "Affiche la capacité de transport occupée et disponible dans le menu des l'unités"], per: ["Commerce de pourcentage", "Prolonge la fenêtre du commerce par un commerce de pourcentage"], rec: ["Commerce de recrutement", "Prolonge la fenêtre du commerce par un commerce de recrutement"], cnt: ["Compteur conquête", "Comptabilise le nombre d'attaque et de soutien dans la fenêtre de conquête"], way: ["Vitesse des troupes ", "Rajoutes le temps de trajet avec le bonus accélération"], sim: ["Simulateur", "Modification de la présentation du simulateur et affichage permanent des options premium"], act: ["Boîte d'activité", "Présentation améliorée du commerce et du recrutement (mémoire de position)"], pop: ["Popup de faveur", 'Change la popup de faveur'], tsk: ["Barre de tâches", "La barre de tâches augmente"], rew: ["Récompenses journalières", "Minimise la fenêtre de récompense quotidienne au démarrage"], bbc: ["Formulaire de défense", "Ajout d'un bouton dans la barre BBCode pour un formulaire de défense automatique"], com: ["Comparaison des unités", "Ajoutes des tableaux de comparaison des unités"], tic: ["Icônes des villes", "Chaque ville reçoit une icône pour le type de ville (détection automatique)", "Des icônes supplémentaires sont disponibles pour la sélection manuelle"], tic2: ["Détection automatique", ""], til: ["Liste de ville", "Ajoute les icônes de la ville à la liste de la ville"], tim: ["Carte", "Définit les icônes de la ville sur la carte stratégique"], tiw: ["Icônes Popup", ""], wwc: ["Merveille du monde", "Compteur de ressource et calcul d'envoi + bouton précédent et suivant sur les merveilles finies"], wwr: ["Classement", "Nouveau classement mondial des merveilles"], wwi: ["Icônes", 'Ajoute des icônes de merveilles du monde sur la carte stratégique'], con: ["Menu contextuel", 'Échangée "Sélectionner ville" et "Aperçu de la ville" dans le menu contextuel'], sen: ["Unités envoyées", 'Affiche unités envoyées dans la fenêtre attaque/support'], tov: ["Aperçu de ville", "Remplace la nouvelle aperçu de la ville avec l'ancien style de fenêtre"], scr: ["Molette de la souris", 'Avec la molette de la souris vous pouvez changer les vues'], Scr: ["Barre de défilement", 'Modifier le style de la barre de défilement (Non disponible sur Firefox)'], tow: ["BBcode de la ville", "Ajoute le bbcode de la ville à la tab de la ville. Fonction Quack"], Fdm: ["Sélectionner et supprimer plusieur messages", "Vous pouvez supprimer plus de un commentaire. Fonction Quack"], Sel: ["Rajouter (Sans surcharge / Effacer)", "Amélioration de nouveaux outils sur la fenêtre d'attaque et de support. Fonction Quack"], Cul: ["Aperçu de culture (Administrateur)", "Ajouter un compteur pour les fêtes dans la vue de la culture. Fonction Quack"], Hot: ["Raccourcis clavier pour Windows", "Ça change votre vie"], Isl: ["Visualisation de l'île", "Agrandir la hauteur de la liste des villes et des villages"], Ish: ["L'aperçu des villages de paysans (Capitaine)", "Masquer automatiquement la ville. Fonction Quack"], Hio: ["Aperçu des grottes (Administrateur)", "Permettre le tri des villes. Fonction Quack"], Hid: ["Grotte", "Entrer l'argent au-dessus de 15.000 automatiquement dans le champ de saisie. Fonction Quack"], Tol: ["Liste des villes en BB-Code", "Copier & colle. Fonction Quack"], Cib: ["Bouton vue sur la ville", "Ajouter un bouton pour ouvrir la vue sur la ville au menu de côté sur Grepolis. Fonction Quack"], Ciw: ["Vue de la ville", "Afficher la ville dans une fenêtre. Fonction Quack"], Tti: ["Commerce de ressources pour les festival", "Cliquer dessus et il ne s'échange que vers un festival. Fonction Quack"], Mse: ["BB-Code messages", "Convertir les message en BB-Code. Fonction Quack"], Rep: ["Rapports", "Rajout d'un filtre de couleur. Fonction Quack"], BBt: ["Bouton BBcode Infos joueur", "Ajout d'un bouton BBcode (joueur et alliance)"], Rtt: ["Suppression des info-bulles de l'unité", ""], Cup: ["Avancement de la culture (Administrateur)", "Modification de la présentation de la barre de progression et ajout d'une barre de progression pour les cultures. Fonction d'Akiway"], Cuo: ["Points de Culture (Administrateur)", "Ajoutez un compteur pour les points de culture. Fonction Quack"], Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"], FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""], Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""], Cic: ["Vue de la ville", "Le mode construction de la vue de la ville est sélectionné par défaut"], Cuc: ["Filtrage de l'aperçu de culture (administrateur)", "Permettre le tri des villes."], Buc: ["Filtrage de l'aperçu des bâtiments (administrateur)", "Permettre le tri des villes."], err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."], }, movement: { off: 'Attaque entrante', offs: 'Attaques entrantes', def: 'Soutien entrant', defs: 'Soutiens entrants', }, Town_icons: { LandOff: "Off terrestre", LandDef: "Déf terrestre", NavyOff: "Off naval", NavyDef: "Déf naval", FlyOff: "Unités Mythiques Off", FlyDef: "Unités Mythiques Def", Out: "À l'extérieur", Emp: "Vide", }, Color: { Blue: 'Bleu', Red: 'Rouge', Green: 'Vert', Pink: 'Rose', White: "Blanc", }, labels: { uni: "Présentation des unités", total: "Total", available: "Disponible", outer: "Extérieur", con: "Sélectionner", sup: "Soutien", her: "Héros", std: "Standard", gre: "Grepo", nat: "Nature", ppl: "Gens", Par: "Fête", oth: "Autres", hal: "Halloween", xma: "Noël", eas: "Pâques", lov: "Amour", ttl: "Aperçu: Défense de ville", inf: "Renseignements sur la ville:", dev: "Différence", det: "Unités terrestres détaillées", prm: "Bonus premium", sil: "Remplissage de la grotte", mov: "Mouvements de troupes:", leg: "Participation", stg: "Niveau", tot: "Total", str: "Force unitaire", los: "Pertes", mod: "sans influence de modificateur", dsc: "Comparaison des unités", hck: "Contond.", prc: "Blanche", dst: "Jet", sea: "Navale", att: "Attaque", def: "Défense", spd: "Vitesse", bty: "Butin", cap: "Capacité de transport", res: "Coût de construction", fav: "Faveur", tim: "Temps de construction (s)", rat: "Ratio des ressources d'un type d'unité", shr: "Part de la capacité de stockage de la ville cible", per: "Commerce de pourcentage", lab: "Envoyée", rec: "Ressources", improved_movement: "Mouvement des troupes amélioré", Tran: "Traductions", donat: "Contribution (Dons)", Happy: "Bonne année!", Merry: "Ho! Ho! Ho! Joyeux Noël!", tow: "BBCode ville", ingame_name: ["N'hésitez pas à me contacter si vous préférez être appeler par votre pseudo.", "Comme il y a beaucoup à faire, et que cela peut demander beaucoup de temps, je suis toujours très reconnaissant pour tout type d'aide. De ce fait, j'aimerai remercier tous ceux qui sont offert de l'aide sur ce projet, que ce soit par des donations, en partageant des connaissances, des conseils créatifs, en rapportant des problèmes, ou simplement par des messages d'encouragement."], raf: "En confirmant la page sera rafraîchir", con: "Force unitaire: Effectif total des troupes de siège", }, tutoriel: { tuto: "Informations utiles", reme: ["Je remercie tous ceux qui ont contribué au développement de DIO-Tools", ""], Trou: ["Tuto spécialisation Troupes Grepolis - tuto de david1327", "Tuto Troupes Grepolis se qui faux savoir sur les troupe de grepolis Point forts/faibles des unités"], util: ["Sites utilitaires pour grepolis - Tuto de david1327", "Une multitude d'outils pour Grepolis : Statistiques, Maps, Outils, Script, Forum... ils sont tous répertorié ici."] }, Quack: { delete_mul: "Supprimer plusieurs messages", delete_sure: "Voulez vous réellement effacer ces messages?", no_selection: "Aucun message sélectionnés", mark_All: "Tout marquer", no_overload: 'Sans surcharge', delete: 'Effacer', cityfestivals: 'Festivals', olympicgames: 'Jeux Olympiques', triumph: 'Marche triomphales', theater: 'Pièces de théâtre' }, hotkeys: { hotkeys: 'Raccourci', Senate: 'Sénat', city_select: 'Sélection ville', last_city: 'Ville précédente', next_city: 'Ville suivante', jump_city: 'Attendre la ville actuelle', administrator: 'Administrateur', captain: 'Capitaine', trade_ov: 'Aperçu du commerce', command_ov: 'Aperçu des ordres', recruitment_ov: 'Aperçu du recrutement', troop_ov: 'Aperçu des troupes', troops_outside: 'Troupes en dehors', building_ov: 'Aperçu des bâtiments', culture_ov: 'Aperçu culturel', gods_ov: 'Aperçu des divinités', cave_ov: 'Aperçu des grottes', city_groups_ov: 'Aperçu des groupes de villes', city_list: 'Liste des villes', attack_planner: 'Planificateur', farming_villages: 'Villages de paysans', menu: 'Menu', city_view: 'Vue de la ville', messages: 'Messages', reports: 'Rapports', alliance: 'Alliance', alliance_forum: 'Forum d\'alliance', settings: 'Réglages', profile: 'Profil', ranking: 'Classement', notes: 'Notes', chat: 'Chat', council: 'Concile des héros' }, messages: { ghosttown: 'Ville fantôme', no_cities: 'Aucune ville sur cette île', all: 'Tous', export: 'Convertir le message en BB-Code', Tol: 'Copier & colle (Fonction Quack)', copy: 'Copier', bbmessages: 'BB-Code messages', copybb: 'Le BBCode a été copié', écrit: 'a écrit ce qui suit :', cli: "Le message n'a pas été copié", }, caves: { stored_silver: 'Capacité de stockage des pièces d\'argent', silver_to_store: "Pièces d'argent stockables", name: 'Nom', wood: 'Bois', stone: 'Pierre', silver: 'Pièces d\'argent', search_for: 'Rechercher', }, grepo_mainmenu: { city_view: 'Vue de la ville', island_view: "Vue île", }, transport_calc: { recruits: 'Nombre d\'unités dans la queue de recrutement', slowtrans: 'Nombre de transporteurs lents', fasttrans: 'Nombre de transporteurs rapides', Lack: "Manque", Still: "Encore", pop: "de population disponible. Pour les", Optipop: "Population optimale pour les", army: "Tu n'as pas d'armée.", }, reports: { choose_folder: 'Choisissez un dossier', enacted: 'lancé', conquered: 'conquis', spying: 'espionne', spy: 'Espion', support: 'soutien', support2: 'ne peut pas soutenir', supporting: 'stationnées', attacking: 'attaque', farming_village: 'village agricole', gold: 'Vous avez reçu', Quests: 'a expiré', Reservations: 'Votre réservation pour', }, translations: { info: 'Info', trans: 'Traduction pour la langue', translations: 'Traductions', trans_sure: 'Etes vous sur que votre traduction est prête à être générer ?', trans_success: 'La traduction a été envoyée avec succès', trans_fail: 'La traduction ne peut pas être envoyée', trans_infotext1: 'Traduction disponible', trans_infotext2: 'Pour modifier ou créer une nouvelle langue, choisissez la langue dans le menu déroulant', trans_infotext3: 'Quand du texte contient des balises HTML (tout ce qui est entouré par des <> ) je vous demande de les laisser au même endroit où vous les avez trouvé', trans_infotext4: 'Quand vous avez fini de traduire appuyer sur', trans_infotext5: 'Afin de pouvoir vous ajouter aux crédits, votre pseudo sera générée', trans_infotext6: 'Copier le message généré, et coller le dans un commentaire', please_note: 'Notez', credits: 'Credits', no_translation: 'Traduction non trouvée', choose_lang: 'Sélectionner la langue', add_lang: 'Ajouter une langue', language: 'Langue', enter_lang_name: 'Entrer un nom de langue', send: 'Générer message', name: 'Nom', add_edit: 'Ajouter / modifier', }, buttons: { sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser" } },
+        fr: { Notification: {}, link: { Update: "https://dio-david1327.github.io/fr/News/Mise-a-jour/", contact: "https://dio-david1327.github.io/fr/", forum: "https://fr.forum.grepolis.com/index.php?threads/dio-tools-david1327.79567/", link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html", link_utile: "https://www.tuto-de-david1327.com/pages/info/sites-utilitaires.html", available_units: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/apercu-des-unites.html", UnitComparison: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/comparaison-des-unites.html", MessageExport: "https://www.tuto-de-david1327.com/pages/dio-tools-david1327/wiki/bb-code-messages.html", Translations: "https://dio-david1327.github.io/fr/wiki/traductions.html", }, Settings: { dsc: "DIO-Tools offres certains écrans, une boîte de smiley, les options <br>commerciales, des changements à la mise en page et d'autres choses.", act: "Activation/Désactivation des fonctions:", prv: "Aperçu des fonctions séparées:", version_old: "La version n'est pas à jour", version_new: "La version est à jour", version_dev: "Version développeur", version_update: "Mettre à jour", Donate: "Faire un don", Update: "Mise à jour", Feature: "Nouvelle fonctionnalité", Feature2: "Nouvelle version", Learn_more: "En savoir plus", cat_units: "Unités", cat_icons: "Icônes de la ville", cat_forum: "Forum", cat_trade: "Commerce", cat_layout: "Disposition", cat_other: "Divers", cat_Premium: "Premium", cat_Quack: "Quack", install: "installer", reminder: "Me rappeler plus tard", Available: "Nouvelle version disponible", reqreload: "Nécessite le raffraîchissement du site", reload: "Raffraîchir", Comp_GRCT: "Les fonctions suivantes sont non compatibles avec GRCT", Non_compatible: "Non compatible à activer dans les paramètres de ", }, Options: { bir: ["Compteur de birèmes ", "Totalise l'ensemble des birèmes présentent en villes et les résume. (Remplace la mini carte dans le cadran)"], ava: ["L'aperçu des unites", "Indique les unités de toutes les villes."], ava2: ["Numéro de Mer", "Extension unité"], sml: ["Smileys", "Rajoutes une boite de smilies à la boite de bbcode"], str: ["Force unitaire", "Ajoutes des tableaux de force unitaire dans les différentes armes"], tra: ["Capacité de transport", "Affiche la capacité de transport occupée et disponible dans le menu des l'unités"], per: ["Commerce de pourcentage", "Prolonge la fenêtre du commerce par un commerce de pourcentage"], rec: ["Commerce de recrutement", "Prolonge la fenêtre du commerce par un commerce de recrutement"], cnt: ["Compteur conquête", "Comptabilise le nombre d'attaque et de soutien dans la fenêtre de conquête"], way: ["Vitesse des troupes ", "Rajoutes le temps de trajet avec le bonus accélération"], sim: ["Simulateur", "Modification de la présentation du simulateur et affichage permanent des options premium"], act: ["Boîte d'activité", "Présentation améliorée du commerce et du recrutement (mémoire de position)"], pop: ["Popup de faveur", 'Change la popup de faveur'], tsk: ["Barre de tâches", "La barre de tâches augmente"], rew: ["Récompenses journalières", "Minimise la fenêtre de récompense quotidienne au démarrage"], bbc: ["Formulaire de défense", "Ajout d'un bouton dans la barre BBCode pour un formulaire de défense automatique"], com: ["Comparaison des unités", "Ajoutes des tableaux de comparaison des unités"], tic: ["Icônes des villes", "Chaque ville reçoit une icône pour le type de ville (détection automatique)", "Des icônes supplémentaires sont disponibles pour la sélection manuelle"], tic2: ["Détection automatique", ""], til: ["Liste de ville", "Ajoute les icônes de la ville à la liste de la ville"], tim: ["Carte", "Définit les icônes de la ville sur la carte stratégique"], tiw: ["Icônes Popup", ""], wwc: ["Merveille du monde", "Compteur de ressource et calcul d'envoi + bouton précédent et suivant sur les merveilles finies"], wwr: ["Classement", "Nouveau classement mondial des merveilles"], wwi: ["Icônes", 'Ajoute des icônes de merveilles du monde sur la carte stratégique'], con: ["Menu contextuel", 'Échangée "Sélectionner ville" et "Aperçu de la ville" dans le menu contextuel'], sen: ["Unités envoyées", 'Affiche unités envoyées dans la fenêtre attaque/support'], tov: ["Aperçu de ville", "Remplace la nouvelle aperçu de la ville avec l'ancien style de fenêtre"], scr: ["Molette de la souris", 'Avec la molette de la souris vous pouvez changer les vues'], Scr: ["Barre de défilement", 'Modifier le style de la barre de défilement (Non disponible sur Firefox)'], tow: ["BBcode de la ville", "Ajoute le bbcode de la ville à la tab de la ville. Fonction Quack"], Fdm: ["Sélectionner et supprimer plusieur messages", "Vous pouvez supprimer plus de un commentaire. Fonction Quack"], Sel: ["Rajouter (Sans surcharge / Effacer)", "Amélioration de nouveaux outils sur la fenêtre d'attaque et de support. Fonction Quack"], Cul: ["Aperçu de culture (Administrateur)", "Ajouter un compteur pour les fêtes dans la vue de la culture. Fonction Quack"], Hot: ["Raccourcis clavier pour Windows", "Ça change votre vie"], Isl: ["Visualisation de l'île", "Agrandir la hauteur de la liste des villes et des villages"], Ish: ["L'aperçu des villages de paysans (Capitaine)", "Masquer automatiquement la ville. Fonction Quack"], Hio: ["Aperçu des grottes (Administrateur)", "Permettre le tri des villes. Fonction Quack"], Hid: ["Grotte", "Entrer l'argent au-dessus de 15.000 automatiquement dans le champ de saisie. Fonction Quack"], Tol: ["Liste des villes en BB-Code", "Copier & colle. Fonction Quack"], Cib: ["Bouton vue sur la ville", "Ajouter un bouton pour ouvrir la vue sur la ville au menu de côté sur Grepolis. Fonction Quack"], Ciw: ["Vue de la ville", "Afficher la ville dans une fenêtre. Fonction Quack"], Tti: ["Commerce de ressources pour les festival", "Cliquer dessus et il ne s'échange que vers un festival. Fonction Quack"], Mse: ["BB-Code messages", "Convertir les message en BB-Code. Fonction Quack"], Rep: ["Rapports", "Rajout d'un filtre de couleur. Fonction Quack"], BBt: ["Bouton BBcode Infos joueur", "Ajout d'un bouton BBcode (joueur et alliance)"], Rtt: ["Suppression des info-bulles de l'unité", ""], Cup: ["Avancement de la culture (Administrateur)", "Modification de la présentation de la barre de progression et ajout d'une barre de progression pour les cultures. Fonction d'Akiway"], Cuo: ["Points de Culture (Administrateur)", "Ajoutez un compteur pour les points de culture. Fonction Quack"], Rct: ["Commerce -> Compteur de ressources (Administrateur)", "Un compteur de toutes les ressources de votre ville"], FLASK: ["Non compatible à activer dans les paramètres de FLASK-TOOLS", ""], Mole: ["Non compatible à activer dans les paramètres de Mole Hole", ""], Cic: ["Vue de la ville", "Le mode construction de la vue de la ville est sélectionné par défaut"], Cuc: ["Filtrage de l'aperçu de culture (administrateur)", "Permettre le tri des villes."], Buc: ["Filtrage de l'aperçu des bâtiments (administrateur)", "Permettre le tri des villes."], BBl: ["BBcode List", "Génère une liste en BB-code, idéale pour afficher les membres d'une alliance ou les villes d'un joueur"], Amm: ["Message de groupe (alliance)", "Ajoute un bouton sur le profil de l'alliance pour faciliter l'envoi de messages groupés"], Onb: ["Numéro d'océan", "Intègre les numéros d'océan à la vue île, améliorant la navigation."], Idl: ["Joueur inactif", "Afficher les joueurs inactifs. Powered by GREPODATA"], Saw: ["Sauvegarde des remparts", "Permet de sauvegarder les troupes dans les remparts"], Att: ["Alarme d'attaque", "Recevez des avertissements instantanés lorsque vous êtes attaqué, renforçant votre sécurité"], err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."], }, movement: { off: 'Attaque entrante', offs: 'Attaques entrantes', def: 'Soutien entrant', defs: 'Soutiens entrants', }, Town_icons: { LandOff: "Off terrestre", LandDef: "Déf terrestre", NavyOff: "Off naval", NavyDef: "Déf naval", FlyOff: "Unités Mythiques Off", FlyDef: "Unités Mythiques Def", Out: "À l'extérieur", Emp: "Vide", }, Color: { Blue: 'Bleu', Red: 'Rouge', Green: 'Vert', Pink: 'Rose', White: "Blanc", }, labels: { uni: "Présentation des unités", total: "Total", available: "Disponible", outer: "Extérieur", con: "Sélectionner", sup: "Soutien", her: "Héros", std: "Standard", gre: "Grepo", nat: "Nature", ppl: "Gens", Par: "Fête", oth: "Autres", hal: "Halloween", xma: "Noël", eas: "Pâques", lov: "Amour", ttl: "Aperçu: Défense de ville", inf: "Renseignements sur la ville:", dev: "Différence", det: "Unités terrestres détaillées", prm: "Bonus premium", sil: "Remplissage de la grotte", mov: "Mouvements de troupes:", leg: "Participation", stg: "Niveau", tot: "Total", str: "Force unitaire", los: "Pertes", mod: "sans influence de modificateur", dsc: "Comparaison des unités", hck: "Contond.", prc: "Blanche", dst: "Jet", sea: "Navale", att: "Attaque", def: "Défense", spd: "Vitesse", bty: "Butin", cap: "Capacité de transport", res: "Coût de construction", fav: "Faveur", tim: "Temps de construction (s)", rat: "Ratio des ressources d'un type d'unité", shr: "Part de la capacité de stockage de la ville cible", per: "Commerce de pourcentage", lab: "Envoyée", rec: "Ressources", improved_movement: "Mouvement des troupes amélioré", Tran: "Traductions", donat: "Contribution (Dons)", Happy: "Bonne année!", Merry: "Ho! Ho! Ho! Joyeux Noël!", tow: "BBCode ville", loc: "Local", ingame_name: ["N'hésitez pas à me contacter si vous préférez être appeler par votre pseudo.", "Comme il y a beaucoup à faire, et que cela peut demander beaucoup de temps, je suis toujours très reconnaissant pour tout type d'aide. De ce fait, j'aimerai remercier tous ceux qui sont offert de l'aide sur ce projet, que ce soit par des donations, en partageant des connaissances, des conseils créatifs, en rapportant des problèmes, ou simplement par des messages d'encouragement."], raf: "En confirmant la page sera rafraîchir", con: "Force unitaire: Effectif total des troupes de siège", Volume: "Volume", }, tutoriel: { tuto: "Informations utiles", reme: ["Je remercie tous ceux qui ont contribué au développement de DIO-Tools", ""], Trou: ["Tuto spécialisation Troupes Grepolis - tuto de david1327", "Tuto Troupes Grepolis se qui faux savoir sur les troupe de grepolis Point forts/faibles des unités"], util: ["Sites utilitaires pour grepolis - Tuto de david1327", "Une multitude d'outils pour Grepolis : Statistiques, Maps, Outils, Script, Forum... ils sont tous répertorié ici."] }, Quack: { delete_mul: "Supprimer plusieurs messages", delete_sure: "Voulez vous réellement effacer ces messages?", no_selection: "Aucun message sélectionnés", mark_All: "Tout marquer", no_overload: 'Sans surcharge', delete: 'Effacer', cityfestivals: 'Festivals', olympicgames: 'Jeux Olympiques', triumph: 'Marche triomphales', theater: 'Pièces de théâtre' }, hotkeys: { hotkeys: 'Raccourci', Senate: 'Sénat', city_select: 'Sélection ville', last_city: 'Ville précédente', next_city: 'Ville suivante', jump_city: 'Attendre la ville actuelle', administrator: 'Administrateur', captain: 'Capitaine', trade_ov: 'Aperçu du commerce', command_ov: 'Aperçu des ordres', recruitment_ov: 'Aperçu du recrutement', troop_ov: 'Aperçu des troupes', troops_outside: 'Troupes en dehors', building_ov: 'Aperçu des bâtiments', culture_ov: 'Aperçu culturel', gods_ov: 'Aperçu des divinités', cave_ov: 'Aperçu des grottes', city_groups_ov: 'Aperçu des groupes de villes', city_list: 'Liste des villes', attack_planner: 'Planificateur', farming_villages: 'Villages de paysans', menu: 'Menu', city_view: 'Vue de la ville', messages: 'Messages', reports: 'Rapports', alliance: 'Alliance', alliance_forum: 'Forum d\'alliance', settings: 'Réglages', profile: 'Profil', ranking: 'Classement', notes: 'Notes', chat: 'Chat', council: 'Concile des héros' }, messages: { ghosttown: 'Ville fantôme', no_cities: 'Aucune ville sur cette île', all: 'Tous', export: 'Convertir le message en BB-Code', Tol: 'Copier & colle (Fonction Quack)', copy: 'Copier', bbmessages: 'BB-Code messages', copybb: 'Le BBCode a été copié', écrit: 'a écrit ce qui suit :', cli: "Le message n'a pas été copié", }, caves: { stored_silver: 'Capacité de stockage des pièces d\'argent', silver_to_store: "Pièces d'argent stockables", name: 'Nom', wood: 'Bois', stone: 'Pierre', silver: 'Pièces d\'argent', search_for: 'Rechercher', }, grepo_mainmenu: { city_view: 'Vue de la ville', island_view: "Vue île", }, transport_calc: { recruits: 'Nombre d\'unités dans la queue de recrutement', slowtrans: 'Nombre de transporteurs lents', fasttrans: 'Nombre de transporteurs rapides', Lack: "Manque", Still: "Encore", pop: "de population disponible. Pour les", Optipop: "Population optimale pour les", army: "Tu n'as pas d'armée.", }, reports: { choose_folder: 'Choisissez un dossier', enacted: 'lancé', conquered: 'conquis', spying: 'espionne', spy: 'Espion', support: 'soutien', support2: 'ne peut pas soutenir', supporting: 'stationnées', attacking: 'attaque', farming_village: 'village agricole', gold: 'Vous avez reçu', Quests: 'a expiré', Reservations: 'Votre réservation pour', }, translations: { info: 'Info', trans: 'Traduction pour la langue', translations: 'Traductions', trans_sure: 'Etes vous sur que votre traduction est prête à être générer ?', trans_success: 'La traduction a été envoyée avec succès', trans_fail: 'La traduction ne peut pas être envoyée', trans_infotext1: 'Traduction disponible', trans_infotext2: 'Pour modifier ou créer une nouvelle langue, choisissez la langue dans le menu déroulant', trans_infotext3: 'Quand du texte contient des balises HTML (tout ce qui est entouré par des <> ) je vous demande de les laisser au même endroit où vous les avez trouvé', trans_infotext4: 'Quand vous avez fini de traduire appuyer sur', trans_infotext5: 'Afin de pouvoir vous ajouter aux crédits, votre pseudo sera générée', trans_infotext6: 'Copier le message généré, et coller le dans un commentaire', please_note: 'Notez', credits: 'Credits', no_translation: 'Traduction non trouvée', choose_lang: 'Sélectionner la langue', add_lang: 'Ajouter une langue', language: 'Langue', enter_lang_name: 'Entrer un nom de langue', send: 'Générer message', name: 'Nom', add_edit: 'Ajouter / modifier', }, wall: { wallnotsaved: "Les remparts ne sont pas enregistr\u00e9s", wallsaved: "Les remparts sont enregistr\u00e9s", msghuman: "L'information a \u00e9t\u00e9 sauvegard\u00e9e", erreur: "Une erreur s'est produite lors de l'\u00e9criture", wantdeletecurrent: "Voulez vous effacer les donn\u00e9es actuelles des remparts ?", deletecurrent: "Effacer les donn\u00e9es actuelles", listsaved: "Sauvegarder sur le mur le jour", liststate: "État du mur le jour", nosaved: "Aucune sauvegarde", Auto: "Mode Auto", }, buttons: { sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser" } },
         //////////////////////////////////////////////
         //      Russian Translation by MrBobr       //
         //////////////////////////////////////////////
-        ru: { Notification: {}, link: {}, Settings: { dsc: "DIO-Tools изменяет некоторые окна, добавляет новые смайлы, отчёты,<br>улучшеные варианты торговли и другие функции.", act: "Включение/выключение функций:", prv: "Примеры внесённых изменений:", Donate: "Пожертвовать", cat_Quack: "Quack", install: "Установить", reminder: "Напомнить позже", Available: "Доступна новая версия", reqreload: "Требуется обновление", reload: "Обновление", }, Options: { ava: ["Обзор единиц", "Указывает единицы всех городов"], ava2: ["", ""], sml: ["Смайлы", "Добавляет кнопку для вставки смайлов в сообщения"], str: ["Сила отряда", "Добавляет таблицу общей силы отряда в некоторых окнах"], per: ["Процент торговля", ""], rec: ["Рекрутинг торговля", ""], cnt: ["Завоевания", "Отображение общего числа атак/подкреплений в окне завоевания города"], way: ["30% ускорение", "Отображает примерное время движения отряда с 30% бонусом"], sim: ["Симулятор", "Изменение интерфейса симулятора, добавление новых функций"], act: ["Перемещения", "Показывает окна пересылки ресурсов и вербовка"], pop: ["Благосклонность", "Отображение окна с уровнем благосклонности богов"], tsk: ["Таскбар", "Увеличение ширины таскбара"], rew: ["Eжедневной награды", "Cворачивание окна ежедневной награды при входе в игру"], bbc: ["Форма обороны", "Добавляет кнопку для вставки в сообщение отчёта о городе"], com: ["Сравнение юнитов", "Добавляет окно сравнения юнитов"], tic: ["Типы городов", "Каждый город получает значок для городского типа (автоматическое определение)", "Дополнительные иконки доступны для ручного выбора"], til: ["Список город", "Добавляет значки городские в список города"], tim: ["Карта", "Устанавливает городские иконки на стратегической карте"], tiw: ["Всплывающий значок", ""], wwc: ["Чудо света", "Share calculation & resources counter + previous & next buttons on finished world wonders (currently not deactivatable!)"], tov: ["Обзор Город", 'Заменяет новый обзор города с старом стиле окна'], scr: ["Колесо мыши", 'С помощью колеса мыши вы можете изменить взгляды'], Scr: ["Полоса прокрутки", 'Изменить стиль полосы прокрутки'], tow: ["BBCode город", "Добавляет bbcode города на вкладку города"], Fdm: ["Выбрать и удалить несколько сообщений", "Вы можете удалить более одного сообщения. Функция Quack"], Sel: ["Добавить (Без перегрузки / Удалить)", "Улучшение новых инструментов в окне атаки и поддержки. Функция Quack"], Cul: ["Обзор культуры (Администратор)", "Добавить счетчик для партии в представлении культуры. Функция Quack"], Hot: ["Сочетания клавиш для Windows", "Это меняет вашу жизнь"], Isl: ["Визуализация острова", "Увеличение высоты списка городов и сел. Функция Quack"], Ish: ["Обзор крестьянских деревень (капитан)", "Автоматически скрыть город. Функция Quack"], Hio: ["Обзор пещеры (Администратор)", "Разрешить сортировку городов. Функция Quack"], Hid: ["Пещера", "Поместить 15000 серебра автоматически в поле ввода. Функция Quack"], Tol: ["Список городов в BB-коде", "Копировать и вставить. Функция Quack"], Cib: ["Кнопка просмотра города", 'Добавить кнопку для открытия Обзора города в подменю Grepolis. Функция Quack'], Ciw: ["Обзор города", "Показать город в окне. Функция Quack"], Tti: ["Торговые ресурсы для фестивалей", "Нажмите на него, и он будет обменен только на фестиваль. Функция Quack"], Mse: ["Сообщения BB-кода", "Преобразование сообщений в BB-код. Функция Quack"], Rep: ["Отчеты", "Добавление цветового фильтра. Функция Quack"], BBt: ["Информация об игроке, кнопка BBcode", "Добавление кнопки BBcode (игрок и альянс)"], Rtt: ["Удаление всплывающих подсказок для юнита", ""], err: ["Отправить сообщения об ошибках автоматически", "Если вы включите эту опцию, вы можете помочь идентифицировать ошибки"], }, Town_icons: {}, Color: { Blue: 'Синий', Red: 'Красный', Green: 'Зеленый', Pink: 'Розовый', White: "Белый", }, labels: { uni: "Обзор единиц", total: "Oбщий", available: "доступный", outer: "вне", con: "выбирать", ttl: "Обзор: Отчёт о городе", inf: "Информация о войсках и постройках:", dev: "Отклонение", det: "Детальный отчёт", prm: "Премиум-бонусы", sil: "Серебро в пещере", mov: "Перемещения", str: "Сила войск", los: "Потери", mod: "без учёта заклинаний, бонусов, исследований", dsc: "Сравнение юнитов", hck: "Ударное", prc: "Колющее", dst: "Дальнего боя", sea: "Морские", att: "Атака", def: "Защита", spd: "Скорость", bty: "Добыча (ресурсы)", cap: "Вместимость транспортов", res: "Стоимость (ресурсы)", fav: "Благосклонность", tim: "Время найма (с)", lab: "Отправлено", rec: "Ресурсы", improved_movement: "Улучшенная перемещение войск", Tran: "Переводы", donat: "Пожертвования", tow: "BBCode город", ingame_name: ["Не стесняйтесь обращаться ко мне, если вы предпочитаете, чтобы вас назвали в честь названия игры", "Я благодарен игрокам за советы и идеи, они дают мне силы работать дальше. К сожалению, проект отнимает очень много времени, поэтому я буду рад любой поддержке. Я хочу поблагодарить всех, кто помогал проекту, будь то Пожертвования, советы, отчеты с ошибками или просто добрые слова в мой адрес."] }, tutoriel: { tuto: "Полезная информация", reme: ["Я благодарю всех, кто внес вклад в разработку DIO-TOOLS-David1327", ""], }, Quack: { delete_mul: "Удалить несколько сообщений", delete_sure: "Вы действительно хотите удалить эти сообщения?", no_selection: "Сообщения не выбраны", mark_All: "Пометить все", no_overload: 'Нет перезагрузки', delete: 'Удалить', cityfestivals: 'Фестиваль', olympicgames: 'Олимпийские игры', triumph: 'Шествие', theater: 'Представление' }, hotkeys: { hotkeys: 'Горячие клавиши', Senate: 'Senate', city_select: 'Выбор города', last_city: 'Последний город', next_city: 'Следующий город', jump_city: 'Переход к текущему городу', administrator: 'Администратор', captain: 'Капитан', trade_ov: 'Обзор торговли', command_ov: 'Обзор приказов', recruitment_ov: 'Обзор вербовок', troop_ov: 'Обзор войск', troops_outside: 'Войска вне города', building_ov: 'Обзор зданий', culture_ov: 'Обзор культуры', gods_ov: 'Обзор богов', cave_ov: 'Обзор пещер', city_groups_ov: 'Обзор групп городов', city_list: 'Список городов', attack_planner: 'Планировщик', farming_villages: 'Селения земледельцев', menu: 'Меню', city_view: 'Обзор города', messages: 'Сообщения', reports: 'Отчеты', alliance: 'Союз', alliance_forum: 'Форум Союза', settings: 'Настройки', profile: 'Профиль', ranking: 'Рейтинг', notes: 'Заметки', chat: 'Чат', council: 'Совет героев' }, messages: { ghosttown: 'Город-призрак', no_cities: 'На этом острове нет городов', all: 'Все', export: 'Конвертировать сообщение в BB-Код', Tol: 'Копировать и вставить (Функция Quack)', copy: 'копия', bbmessages: 'Сообщения BB-Код', copybb: 'BB-Код был скопирован', écrit: 'написал:', }, caves: { stored_silver: 'Встроенные cереб. монеты', silver_to_store: "", name: 'название', wood: 'древесина', stone: 'камень', silver: 'Сереб. монеты', search_for: "" }, grepo_mainmenu: { city_view: 'Обзор города', island_view: 'Обзор острова' }, transport_calc: { recruits: 'Подсчитать юнитов в очереди обучения', }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'информация', trans: 'Перевод для языка', translations: 'Переводы', trans_sure: 'Вы уверены, что ваш перевод готов к созданию?', trans_success: 'Перевод успешно отправлен', trans_fail: 'Перевод не может быть отправлен', trans_infotext1: 'Доступен перевод', trans_infotext2: 'Чтобы изменить или создать новый язык, выберите язык в раскрывающемся меню', trans_infotext3: 'Когда текст содержит теги HTML (то есть все, что заключено в скобки <>), я прошу вас сохранить их там, где вы их нашли.', trans_infotext4: 'Когда вы закончите перевод, нажмите', trans_infotext5: 'Для того, чтобы иметь возможность добавить вас к кредитам, ваш ник будет сгенерирован', trans_infotext6: 'Скопируйте сгенерированное сообщение и вставьте его в комментарий', please_note: 'Обратите внимание', credits: 'Кредиты', no_translation: 'Перевод не найден', choose_lang: 'Выбрать язык', add_lang: 'Добавить новый язык', language: 'Язык', enter_lang_name: 'Пожалуйста, введите название языка', send: 'Создать сообщение', name: 'Имя', }, buttons: { sav: "Сохраниить", ins: "Вставка", res: "Сброс" } },
+        ru: { Notification: {}, link: {}, Settings: { dsc: "DIO-Tools изменяет некоторые окна, добавляет новые смайлы, отчёты,<br>улучшеные варианты торговли и другие функции.", act: "Включение/выключение функций:", prv: "Примеры внесённых изменений:", Donate: "Пожертвовать", cat_Quack: "Quack", install: "Установить", reminder: "Напомнить позже", Available: "Доступна новая версия", reqreload: "Требуется обновление", reload: "Обновление", }, Options: { ava: ["Обзор единиц", "Указывает единицы всех городов"], sml: ["Смайлы", "Добавляет кнопку для вставки смайлов в сообщения"], str: ["Сила отряда", "Добавляет таблицу общей силы отряда в некоторых окнах"], per: ["Процент торговля", ""], rec: ["Рекрутинг торговля", ""], cnt: ["Завоевания", "Отображение общего числа атак/подкреплений в окне завоевания города"], way: ["30% ускорение", "Отображает примерное время движения отряда с 30% бонусом"], sim: ["Симулятор", "Изменение интерфейса симулятора, добавление новых функций"], act: ["Перемещения", "Показывает окна пересылки ресурсов и вербовка"], pop: ["Благосклонность", "Отображение окна с уровнем благосклонности богов"], tsk: ["Таскбар", "Увеличение ширины таскбара"], rew: ["Eжедневной награды", "Cворачивание окна ежедневной награды при входе в игру"], bbc: ["Форма обороны", "Добавляет кнопку для вставки в сообщение отчёта о городе"], com: ["Сравнение юнитов", "Добавляет окно сравнения юнитов"], tic: ["Типы городов", "Каждый город получает значок для городского типа (автоматическое определение)", "Дополнительные иконки доступны для ручного выбора"], til: ["Список город", "Добавляет значки городские в список города"], tim: ["Карта", "Устанавливает городские иконки на стратегической карте"], tiw: ["Всплывающий значок", ""], wwc: ["Чудо света", "Share calculation & resources counter + previous & next buttons on finished world wonders (currently not deactivatable!)"], tov: ["Обзор Город", 'Заменяет новый обзор города с старом стиле окна'], scr: ["Колесо мыши", 'С помощью колеса мыши вы можете изменить взгляды'], Scr: ["Полоса прокрутки", 'Изменить стиль полосы прокрутки'], tow: ["BBCode город", "Добавляет bbcode города на вкладку города"], Fdm: ["Выбрать и удалить несколько сообщений", "Вы можете удалить более одного сообщения. Функция Quack"], Sel: ["Добавить (Без перегрузки / Удалить)", "Улучшение новых инструментов в окне атаки и поддержки. Функция Quack"], Cul: ["Обзор культуры (Администратор)", "Добавить счетчик для партии в представлении культуры. Функция Quack"], Hot: ["Сочетания клавиш для Windows", "Это меняет вашу жизнь"], Isl: ["Визуализация острова", "Увеличение высоты списка городов и сел. Функция Quack"], Ish: ["Обзор крестьянских деревень (капитан)", "Автоматически скрыть город. Функция Quack"], Hio: ["Обзор пещеры (Администратор)", "Разрешить сортировку городов. Функция Quack"], Hid: ["Пещера", "Поместить 15000 серебра автоматически в поле ввода. Функция Quack"], Tol: ["Список городов в BB-коде", "Копировать и вставить. Функция Quack"], Cib: ["Кнопка просмотра города", 'Добавить кнопку для открытия Обзора города в подменю Grepolis. Функция Quack'], Ciw: ["Обзор города", "Показать город в окне. Функция Quack"], Tti: ["Торговые ресурсы для фестивалей", "Нажмите на него, и он будет обменен только на фестиваль. Функция Quack"], Mse: ["Сообщения BB-кода", "Преобразование сообщений в BB-код. Функция Quack"], Rep: ["Отчеты", "Добавление цветового фильтра. Функция Quack"], BBt: ["Информация об игроке, кнопка BBcode", "Добавление кнопки BBcode (игрок и альянс)"], Rtt: ["Удаление всплывающих подсказок для юнита", ""], err: ["Отправить сообщения об ошибках автоматически", "Если вы включите эту опцию, вы можете помочь идентифицировать ошибки"], }, Town_icons: {}, Color: { Blue: 'Синий', Red: 'Красный', Green: 'Зеленый', Pink: 'Розовый', White: "Белый", }, labels: { uni: "Обзор единиц", total: "Oбщий", available: "доступный", outer: "вне", con: "выбирать", ttl: "Обзор: Отчёт о городе", inf: "Информация о войсках и постройках:", dev: "Отклонение", det: "Детальный отчёт", prm: "Премиум-бонусы", sil: "Серебро в пещере", mov: "Перемещения", str: "Сила войск", los: "Потери", mod: "без учёта заклинаний, бонусов, исследований", dsc: "Сравнение юнитов", hck: "Ударное", prc: "Колющее", dst: "Дальнего боя", sea: "Морские", att: "Атака", def: "Защита", spd: "Скорость", bty: "Добыча (ресурсы)", cap: "Вместимость транспортов", res: "Стоимость (ресурсы)", fav: "Благосклонность", tim: "Время найма (с)", lab: "Отправлено", rec: "Ресурсы", improved_movement: "Улучшенная перемещение войск", Tran: "Переводы", donat: "Пожертвования", tow: "BBCode город", ingame_name: ["Не стесняйтесь обращаться ко мне, если вы предпочитаете, чтобы вас назвали в честь названия игры", "Я благодарен игрокам за советы и идеи, они дают мне силы работать дальше. К сожалению, проект отнимает очень много времени, поэтому я буду рад любой поддержке. Я хочу поблагодарить всех, кто помогал проекту, будь то Пожертвования, советы, отчеты с ошибками или просто добрые слова в мой адрес."] }, tutoriel: { tuto: "Полезная информация", reme: ["Я благодарю всех, кто внес вклад в разработку DIO-TOOLS-David1327", ""], }, Quack: { delete_mul: "Удалить несколько сообщений", delete_sure: "Вы действительно хотите удалить эти сообщения?", no_selection: "Сообщения не выбраны", mark_All: "Пометить все", no_overload: 'Нет перезагрузки', delete: 'Удалить', cityfestivals: 'Фестиваль', olympicgames: 'Олимпийские игры', triumph: 'Шествие', theater: 'Представление' }, hotkeys: { hotkeys: 'Горячие клавиши', Senate: 'Senate', city_select: 'Выбор города', last_city: 'Последний город', next_city: 'Следующий город', jump_city: 'Переход к текущему городу', administrator: 'Администратор', captain: 'Капитан', trade_ov: 'Обзор торговли', command_ov: 'Обзор приказов', recruitment_ov: 'Обзор вербовок', troop_ov: 'Обзор войск', troops_outside: 'Войска вне города', building_ov: 'Обзор зданий', culture_ov: 'Обзор культуры', gods_ov: 'Обзор богов', cave_ov: 'Обзор пещер', city_groups_ov: 'Обзор групп городов', city_list: 'Список городов', attack_planner: 'Планировщик', farming_villages: 'Селения земледельцев', menu: 'Меню', city_view: 'Обзор города', messages: 'Сообщения', reports: 'Отчеты', alliance: 'Союз', alliance_forum: 'Форум Союза', settings: 'Настройки', profile: 'Профиль', ranking: 'Рейтинг', notes: 'Заметки', chat: 'Чат', council: 'Совет героев' }, messages: { ghosttown: 'Город-призрак', no_cities: 'На этом острове нет городов', all: 'Все', export: 'Конвертировать сообщение в BB-Код', Tol: 'Копировать и вставить (Функция Quack)', copy: 'копия', bbmessages: 'Сообщения BB-Код', copybb: 'BB-Код был скопирован', écrit: 'написал:', }, caves: { stored_silver: 'Встроенные cереб. монеты', silver_to_store: "", name: 'название', wood: 'древесина', stone: 'камень', silver: 'Сереб. монеты', search_for: "" }, grepo_mainmenu: { city_view: 'Обзор города', island_view: 'Обзор острова' }, transport_calc: { recruits: 'Подсчитать юнитов в очереди обучения', }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'информация', trans: 'Перевод для языка', translations: 'Переводы', trans_sure: 'Вы уверены, что ваш перевод готов к созданию?', trans_success: 'Перевод успешно отправлен', trans_fail: 'Перевод не может быть отправлен', trans_infotext1: 'Доступен перевод', trans_infotext2: 'Чтобы изменить или создать новый язык, выберите язык в раскрывающемся меню', trans_infotext3: 'Когда текст содержит теги HTML (то есть все, что заключено в скобки <>), я прошу вас сохранить их там, где вы их нашли.', trans_infotext4: 'Когда вы закончите перевод, нажмите', trans_infotext5: 'Для того, чтобы иметь возможность добавить вас к кредитам, ваш ник будет сгенерирован', trans_infotext6: 'Скопируйте сгенерированное сообщение и вставьте его в комментарий', please_note: 'Обратите внимание', credits: 'Кредиты', no_translation: 'Перевод не найден', choose_lang: 'Выбрать язык', add_lang: 'Добавить новый язык', language: 'Язык', enter_lang_name: 'Пожалуйста, введите название языка', send: 'Создать сообщение', name: 'Имя', }, buttons: { sav: "Сохраниить", ins: "Вставка", res: "Сброс" } },
         //////////////////////////////////////////////
         //       Polish Translation by anpu         //
         //////////////////////////////////////////////
-        pl: { Notification: {}, link: { forum: "https://pl.forum.grepolis.com/index.php?threads/dio-tools-david1327.30016/", }, Settings: { dsc: "DIO-Tools oferuje (między innymi) poprawione widoki, nowe uśmieszki,<br>opcje handlu i zmiany w wyglądzie.", act: "Włącz/wyłącz funkcje skryptu:", prv: "podgląd poszczególnych opcji:", version_old: "Wersja nie jest aktualizowana", version_new: "Wersja jest zaktualizowana", version_dev: "Wersja dla programistów", version_update: "aktualizacja", Donate: "Podarować", Update: "Aktualizacja " + dio_version, Feature: "Nowa cecha", Feature2: "Nowa wersja", Learn_more: "Ucz się więcej", cat_Quack: "Quack", install: "Zainstaluj", reminder: "Przypomnij później", Available: "Dostępna nowa wersja", reqreload: "Wymagane odświeżenie strony", reload: "Odśwież", }, Options: { ava: ["Przegląd jednostek", "Wskazuje jednostki wszystkich miast"], sml: ["Emotki", "Dodaje dodatkowe (zielone) emotikonki"], str: ["Siła jednostek", "dodaje tabelki z siłą jednostek w różnych miejscach gry"], per: ["Handel procentowy", ""], rec: ["Handel rekrutacyjne", ""], cnt: ["Podboje", "Zlicza wsparcia/ataki w oknie podboju (tylko własne podboje)"], way: ["Prędkość wojsk", "Wyświetla dodatkowo czas jednostek dla bonusu przyspieszone ruchy wojsk"], sim: ["Symulator", "Dostosowanie wyglądu symulatora oraz dodanie szybkich pól wyboru"], act: ["Ramki aktywności", "Ulepszony widok rekrutacji i handlu (można umieścić w dowolnym miejscu ekranu. Zapamiętuje położenie.)"], pop: ["Łaski", "Zmienia wygląd ramki informacyjnej o ilości produkowanych łask"], tsk: ["Pasek skrótów", "Powiększa pasek skrótów"], rew: ["Bonusem dziennym", "Minimalizuje okienko z bonusem dziennym przy starcie"], bbc: ["Raportów obronnych", "Rozszerza pasek skrótów BBcode o generator raportów obronnych"], com: ["Porównianie", "Dodaje tabelki z porównaniem jednostek"], tic: ["Ikony miasta", "Każde miasto otrzyma ikonę typu miasta (automatyczne wykrywanie)", "Dodatkowe ikony są dostępne dla ręcznego wyboru"], til: ["Lista miasto", "Dodaje ikony miasta do listy miasta"], tim: ["Mapa", "Zestawy ikon miasta na mapie strategicznej"], tiw: ["Wyskakująca ikona", ""], wwc: ["Cuda Świata", "Liczy udział w budowie oraz ilość wysłanych surowców na budowę Cudu Świata oraz dodaje przyciski do szybkiego przełączania między cudami (obecnie nie możliwe do wyłączenia)"], con: ["menu kontekstowe", 'Zamiemia miejcami przycisk "wybierz miasto" z przyciskiem "podgląd miasta" po kliknięciu miasta na mapie'], sen: ["Wysłane jednostki", 'Pokaż wysłane jednostki w oknie wysyłania ataków/wsparć'], tov: ["Podgląd miasta", 'Zastępuje nowy podgląd miasta starym'], scr: ["Zoom", 'Możesz zmienić poziom przybliżenia mapy kółkiem myszy'], Scr: ["Pasek przewijania", 'Zmień styl paska przewijania'], tow: ["Miasto BBCode", "Dodaje bbcode miasta do karty miasta"], Fdm: ["Wybierz i usuń kilka wiadomości", "Możesz usunąć więcej niż jedną wiadomość. Funkcja Quack"], Sel: ["Dodaj (Bez przeciążania / Usuń)", "Udoskonalenie nowych narzędzi w oknie ataku i wsparcia. Funkcja Quack"], Cul: ["Przegląd kultury (Zarządca)", "Dodaj licznik imprezy w widoku kultury. Funkcja Quack"], Hot: ["Skróty klawiaturowe dla systemu Windows", "Zmienia twoje życie"], Isl: ["Wizualizacja wyspy", "Zwiększ wysokość listy miast i wsi. Funkcja Quack"], Ish: ["Przegląd wiosek chłopskich (Kapitan)", "Automatycznie ukryj miasto. Funkcja Quack"], Hio: ["Podgląd jaskiń (Zarządca)", "Możliwość sortowania miast. Funkcja Quack"], Hid: ["Jaskinia", "Wstaw automatycznie w pole wpisywania srebro powyżej 15000. Funkcja Quack"], Tol: ["Lista miast w BB-коде", "Kopiuj i wklej. Funkcja Quack"], Cib: ["Przycisk widoku miasta", 'Dodaj guzik "Podgląd Miasta" do menu. Funkcja Quack'], Ciw: ["Podgląd miasta", "Wyświetl podgląd miasta w oknie. Funkcja Quack"], Tti: ["Wymieniaj zasoby na festiwale", "Kliknij na niego, a zostanie on wymieniony tylko na festiwal. Funkcja Quack"], Mse: ["Wiadomości BB-Code", "Konwertuj wiadomości na BB-Code. Funkcja Quack"], Rep: ["Raporty", "Dodawanie filtra kolorów. Funkcja Quack"], BBt: ["BBcode button Informacje o graczu", "Dodanie przycisku BBcode (gracz i sojusz)"], Rtt: ["Usunięcie podpowiedzi jednostki", ""], Cup: ["Postęp Kultury (Administrator)", "Zmieniono prezentację paska postępu i dodano pasek postępu dla upraw. Funkcja Akiway"], Cuo: ["Punkty Kultury (Administrator)", "Dodaj licznik dla Punktów Kultury. Funkcja Quack"], Rct: ["Handel -> Licznik zasobów (Administrator)", "Licznik wszystkich zasobów w Twoim mieście"], err: ["Automatycznie wysyłać raporty o błędach", "Jeśli włączysz tę opcję, możesz pomóc zidentyfikować błędy"], }, Town_icons: {}, Color: { Blue: 'niebieski', Red: 'Czerwony', Green: 'Zielony', Pink: 'Różowy', White: "Biały", }, labels: { uni: "Przegląd jednostek", total: "Ogólny", available: "Dostępny", outer: "Na zewnątrz", con: "Wybierz miasto", std: "Standard", gre: "Grepo", nat: "Przyroda", ppl: "Ludzie", oth: "Inne", ttl: "Podgląd: Obrona miasta", inf: "Informacje o mieście:", dev: "Ochyłka", det: "jednostki lądowe", prm: "opcje Premium", sil: "Ilość srebra", mov: "Ruchy wojsk", leg: "Udział w Cudzie", stg: "Poziom", tot: "Łącznie", str: "Siła jednostek", los: "Straty", mod: "bez modyfikatorów", dsc: "Porównianie jednostek", hck: "Obuchowa", prc: "Tnąca", dst: "Dystansowa", sea: "Morskie", att: "Offensywne", def: "Defensywne", spd: "Prędkość", bty: "Łup (surowce)", cap: "Pojemność transportu", res: "Koszta (surowce)", fav: "Łaski", tim: "Czas rekrutacji (s)", rat: "Stosunek surowców dla wybranej jednostki", shr: "procent zapełnienia magazynu w docelowym mieście", per: "Handel procentowy", lab: "Wysłane jednostki", rec: "Zasoby", improved_movement: "Przyspieszone ruchy wojsk", donat: "Darowizny", Tran: "Tłumaczenia", Happy: "Szczęśliwego Nowego Roku!", Merry: "Ho ho ho wesołych świąt!", tow: "Miasto BBCode", ingame_name: ["Nie wahaj się ze mną skontaktować, jeśli wolisz być nazywany tak jak w grze", "Ponieważ jest to bardzo dużo pracy, która może być bardzo czasochłonna, zawsze jestem bardzo wdzięczny za wszelkiego rodzaju wsparcie. Dlatego chciałbym podziękować wszystkim, którzy zaoferowali wsparcie dla tego projektu - czy to poprzez darowizny, wiedzę, kreatywność, raporty o błędach lub po prostu zachęcające słowa."] }, tutoriel: { tuto: "Przydatna informacja", reme: ["Dziękuję wszystkim, którzy przyczynili się do rozwoju DIO-TOOLS-David1327", ""], }, Quack: { delete_mul: "Usuń wiele wiadomości", delete_sure: "Czy na pewno chcesz usunąć te posty?", no_selection: "Brak zaznaczonych Postów", mark_All: "Zaznacz wszystko", no_overload: 'Wybierz i napełnij łódki', delete: 'Wyczyść', cityfestivals: 'Festyn miejski', olympicgames: 'Igrzyska Olimpijskie', triumph: 'Pochód triumfalny', theater: 'Występy teatralne' }, hotkeys: { hotkeys: 'Skróty', Senate: 'Senat', city_select: 'Wybór miasta', last_city: 'Poprzednie miasto', next_city: 'Następne miasto', jump_city: 'Przejdź do obecnego miasta', administrator: 'Zarządca', captain: 'Kapitan', trade_ov: 'Podgląd handlu', command_ov: 'Podgląd poleceń', recruitment_ov: 'Podgląd rekrutacji', troop_ov: 'Podgląd wojsk', troops_outside: 'Wojska poza miastem', building_ov: 'Podgląd budynków', culture_ov: 'Podgląd kultury', gods_ov: 'Podgląd bogów', cave_ov: 'Podgląd jaskini', city_groups_ov: 'Podglad grupy miast', city_list: 'Lista miast', attack_planner: 'Planer ataków', farming_villages: 'Wioski', menu: 'Menu', city_view: 'Podgląd miasta', messages: 'Wiadomości', reports: 'Raporty', alliance: 'Sojusz', alliance_forum: 'Forum sojuszu', settings: 'Ustawienia', profile: 'Profil', ranking: 'Ranking', notes: 'Notatnik', chat: 'Czat', council: 'Rada Bohaterów' }, messages: { ghosttown: 'Opuszczone miasto', no_cities: 'Brak miast na tej wyspie', all: 'Całość', export: 'Zmień wiadomość na BB-Code', Tol: 'Kopiuj i wklej (Funkcja Quack)', copy: 'kopiuj', bbmessages: 'Wiadomości z BB-Code', copybb: 'BBCode został skopiowany', écrit: 'napisał(a):', }, caves: { stored_silver: 'Przechowywane srebrne monety', name: 'Nazwa', wood: 'Drewno', stone: 'Kamień', silver: 'Srebrne monety', }, grepo_mainmenu: { city_view: 'Podgląd miasta', island_view: 'Podgląd wyspy' }, transport_calc: { recruits: 'Uwzględniaj jednostki w kolejce rekrutacji', }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'информация', trans: 'Tłumaczenie na język', translations: 'Tłumaczenia', trans_sure: 'Czy jesteś pewien, że twoje tłumaczenie jest gotowe do wygenerowania?', trans_success: 'Tłumaczenie zostało wysłane pomyślnie', trans_fail: 'Nie można wysłać tłumaczenia', trans_infotext1: 'Dostępne tłumaczenie', trans_infotext2: 'Aby zmodyfikować lub utworzyć nowy język, wybierz język z menu rozwijanego', trans_infotext3: 'Kiedy tekst zawiera znaczniki HTML (a więc wszystko, co jest otoczone nawiasami <>), proszę o zachowanie ich tam, gdzie je znalazłeś', trans_infotext4: 'Po zakończeniu tłumaczenia naciśnij', trans_infotext5: 'Aby móc dodać cię do kredytów, zostanie wygenerowany twój pseudonim', trans_infotext6: 'Skopiuj wygenerowaną wiadomość i wklej ją w komentarzu', please_note: 'Uwaga', credits: 'Kredyty', no_translation: 'Nie znaleziono tłumaczenia', choose_lang: 'Wybierz język', add_lang: 'Dodaj nowy język', language: 'Język', enter_lang_name: 'Proszę podać nazwę języka', send: 'Generuj wiadomość', name: 'Nazwa', }, buttons: { sav: "Zapisz", ins: "Wstaw", res: "Anuluj" } },
+        pl: { Notification: {}, link: { forum: "https://pl.forum.grepolis.com/index.php?threads/dio-tools-david1327.30016/", }, Settings: { dsc: "DIO-Tools oferuje (między innymi) poprawione widoki, nowe uśmieszki,<br>opcje handlu i zmiany w wyglądzie.", act: "Włącz/wyłącz funkcje skryptu:", prv: "podgląd poszczególnych opcji:", version_old: "Wersja nie jest aktualizowana", version_new: "Wersja jest zaktualizowana", version_dev: "Wersja dla programistów", version_update: "aktualizacja", Donate: "Podarować", Update: "Aktualizacja", Feature: "Nowa cecha", Feature2: "Nowa wersja", Learn_more: "Ucz się więcej", cat_units: "Jednostki", cat_icons: "Ikony Miasta", cat_forum: "forum", cat_trade: "Handel", cat_wonders: "Cuda Świata", cat_layout: "Układ", cat_other: "Różne", cat_Premium: "Premium", cat_Quack: "Quack", install: "Zainstaluj", reminder: "Przypomnij później", Available: "Dostępna nowa wersja", reqreload: "Wymagane odświeżenie strony", reload: "Odśwież", }, Options: { ava: ["Przegląd jednostek", "Wskazuje jednostki wszystkich miast"], ava2: ["Numer Morza", "Jednostka rozszerzająca"], sml: ["Emotki", "Dodaje dodatkowe (zielone) emotikonki"], str: ["Siła jednostek", "dodaje tabelki z siłą jednostek w różnych miejscach gry"], per: ["Handel procentowy", ""], rec: ["Handel rekrutacyjne", ""], cnt: ["Podboje", "Zlicza wsparcia/ataki w oknie podboju (tylko własne podboje)"], way: ["Prędkość wojsk", "Wyświetla dodatkowo czas jednostek dla bonusu przyspieszone ruchy wojsk"], sim: ["Symulator", "Dostosowanie wyglądu symulatora oraz dodanie szybkich pól wyboru"], act: ["Ramki aktywności", "Ulepszony widok rekrutacji i handlu (można umieścić w dowolnym miejscu ekranu. Zapamiętuje położenie.)"], pop: ["Łaski", "Zmienia wygląd ramki informacyjnej o ilości produkowanych łask"], tsk: ["Pasek skrótów", "Powiększa pasek skrótów"], rew: ["Bonusem dziennym", "Minimalizuje okienko z bonusem dziennym przy starcie"], bbc: ["Raportów obronnych", "Rozszerza pasek skrótów BBcode o generator raportów obronnych"], com: ["Porównianie", "Dodaje tabelki z porównaniem jednostek"], tic: ["Ikony miasta", "Każde miasto otrzyma ikonę typu miasta (automatyczne wykrywanie)", "Dodatkowe ikony są dostępne dla ręcznego wyboru"], tic2: ["Automatyczne wykrywanie", ""], til: ["Lista miasto", "Dodaje ikony miasta do listy miasta"], tim: ["Mapa", "Zestawy ikon miasta na mapie strategicznej"], tiw: ["Wyskakująca ikona", ""], wwc: ["Cuda Świata", "Liczy udział w budowie oraz ilość wysłanych surowców na budowę Cudu Świata oraz dodaje przyciski do szybkiego przełączania między cudami (obecnie nie możliwe do wyłączenia)"], wwr: ["Ranking", "Przeprojektowane rankingi cudów świata"], wwi: ["Ikony", "Dodaje ikony cudów świata na mapie strategicznej"], con: ["menu kontekstowe", 'Zamiemia miejcami przycisk "wybierz miasto" z przyciskiem "podgląd miasta" po kliknięciu miasta na mapie'], sen: ["Wysłane jednostki", 'Pokaż wysłane jednostki w oknie wysyłania ataków/wsparć'], tov: ["Podgląd miasta", 'Zastępuje nowy podgląd miasta starym'], scr: ["Zoom", 'Możesz zmienić poziom przybliżenia mapy kółkiem myszy'], Scr: ["Pasek przewijania", 'Zmień styl paska przewijania'], tow: ["Miasto BBCode", "Dodaje bbcode miasta do karty miasta"], Fdm: ["Wybierz i usuń kilka wiadomości", "Możesz usunąć więcej niż jedną wiadomość. Funkcja Quack"], Sel: ["Dodaj (Bez przeciążania / Usuń)", "Udoskonalenie nowych narzędzi w oknie ataku i wsparcia. Funkcja Quack"], Cul: ["Przegląd kultury (Zarządca)", "Dodaj licznik imprezy w widoku kultury. Funkcja Quack"], Hot: ["Skróty klawiaturowe dla systemu Windows", "Zmienia twoje życie"], Isl: ["Wizualizacja wyspy", "Zwiększ wysokość listy miast i wsi. Funkcja Quack"], Ish: ["Przegląd wiosek chłopskich (Kapitan)", "Automatycznie ukryj miasto. Funkcja Quack"], Hio: ["Podgląd jaskiń (Zarządca)", "Możliwość sortowania miast. Funkcja Quack"], Hid: ["Jaskinia", "Wstaw automatycznie w pole wpisywania srebro powyżej 15000. Funkcja Quack"], Tol: ["Lista miast w BB-коде", "Kopiuj i wklej. Funkcja Quack"], Cib: ["Przycisk widoku miasta", 'Dodaj guzik "Podgląd Miasta" do menu. Funkcja Quack'], Ciw: ["Podgląd miasta", "Wyświetl podgląd miasta w oknie. Funkcja Quack"], Tti: ["Wymieniaj zasoby na festiwale", "Kliknij na niego, a zostanie on wymieniony tylko na festiwal. Funkcja Quack"], Mse: ["Wiadomości BB-Code", "Konwertuj wiadomości na BB-Code. Funkcja Quack"], Rep: ["Raporty", "Dodawanie filtra kolorów. Funkcja Quack"], BBt: ["BBcode button Informacje o graczu", "Dodanie przycisku BBcode (gracz i sojusz)"], Rtt: ["Usunięcie podpowiedzi jednostki", ""], Cup: ["Postęp Kultury (Administrator)", "Zmieniono prezentację paska postępu i dodano pasek postępu dla upraw. Funkcja Akiway"], Cuo: ["Punkty Kultury (Administrator)", "Dodaj licznik dla Punktów Kultury. Funkcja Quack"], Rct: ["Handel -> Licznik zasobów (Administrator)", "Licznik wszystkich zasobów w Twoim mieście"], FLASK: ["Nie kompatybilne by aktywować w parametrach FLASK-TOOLS", ""], Mole: ["Nie kompatybilne by aktywować w parametrach Mole Hole", ""], Cic: ["Widok miasta", "Domyślnie wybrany jest tryb budowy z widokiem na miasto"], Cuc: ["Filtrowanie przeglądu kultury (Administrator)", "Zezwalaj na sortowanie miast."], Buc: ["Filtrowanie przeglądu budynku (administrator)", "Zezwalaj na sortowanie miast."], err: ["Automatycznie wysyłać raporty o błędach", "Jeśli włączysz tę opcję, możesz pomóc zidentyfikować błędy"], }, movement: { off: "Nadchodzący atak", offs: "Nadchodzące ataki", def: "Nadchodzące wsparcie", defs: "Nadchodzące wsparcia", }, Town_icons: { LandOff: "Ofensywa Lądowa", LandDef: "Defensywa Lądowa", NavyOff: "Ofensywa Wodna", NavyDef: "Defensywa Wodna", FlyOff: "Ofensywa Latająca", FlyDef: "Defensywa Latająca", Out: "Poza", Emp: "Pusty", }, Color: { Blue: 'niebieski', Red: 'Czerwony', Green: 'Zielony', Pink: 'Różowy', White: "Biały", }, labels: { uni: "Przegląd jednostek", total: "Ogólny", available: "Dostępny", outer: "Na zewnątrz", con: "Wybierz miasto", sup: "", her: "", std: "Standard", gre: "Grepo", nat: "Przyroda", ppl: "Ludzie", Par: "Impreza", oth: "Inne", xma: "Boże Narodzenie", eas: "Wielkanoc", lov: "Walentynki", ttl: "Podgląd: Obrona miasta", inf: "Informacje o mieście:", dev: "Ochyłka", det: "jednostki lądowe", prm: "opcje Premium", sil: "Ilość srebra", mov: "Ruchy wojsk", leg: "Udział w Cudzie", stg: "Poziom", tot: "Łącznie", str: "Siła jednostek", los: "Straty", mod: "bez modyfikatorów", dsc: "Porównianie jednostek", hck: "Obuchowa", prc: "Tnąca", dst: "Dystansowa", sea: "Morskie", att: "Offensywne", def: "Defensywne", spd: "Prędkość", bty: "Łup (surowce)", cap: "Pojemność transportu", res: "Koszta (surowce)", fav: "Łaski", tim: "Czas rekrutacji (s)", rat: "Stosunek surowców dla wybranej jednostki", shr: "procent zapełnienia magazynu w docelowym mieście", per: "Handel procentowy", lab: "Wysłane jednostki", rec: "Zasoby", improved_movement: "Przyspieszone ruchy wojsk", donat: "Darowizny", Tran: "Tłumaczenia", Happy: "Szczęśliwego Nowego Roku!", Merry: "Ho ho ho wesołych świąt!", tow: "Miasto BBCode", loc: "Lokalny", ingame_name: ["Nie wahaj się ze mną skontaktować, jeśli wolisz być nazywany tak jak w grze", "Ponieważ jest to bardzo dużo pracy, która może być bardzo czasochłonna, zawsze jestem bardzo wdzięczny za wszelkiego rodzaju wsparcie. Dlatego chciałbym podziękować wszystkim, którzy zaoferowali wsparcie dla tego projektu - czy to poprzez darowizny, wiedzę, kreatywność, raporty o błędach lub po prostu zachęcające słowa."], raf: "Po potwierdzeniu strona zostanie odświeżona", }, tutoriel: { tuto: "Przydatna informacja", reme: ["Dziękuję wszystkim, którzy przyczynili się do rozwoju DIO-TOOLS-David1327", ""], util: "Samouczek specjalizacji żołnierzy Grepolis - tuto de david1327,Co musisz wiedzieć o ekipie Grepolis Mocne/słabe strony jednostek", }, Quack: { delete_mul: "Usuń wiele wiadomości", delete_sure: "Czy na pewno chcesz usunąć te posty?", no_selection: "Brak zaznaczonych Postów", mark_All: "Zaznacz wszystko", no_overload: 'Wybierz i napełnij łódki', delete: 'Wyczyść', cityfestivals: 'Festyn miejski', olympicgames: 'Igrzyska Olimpijskie', triumph: 'Pochód triumfalny', theater: 'Występy teatralne' }, hotkeys: { hotkeys: 'Skróty', Senate: 'Senat', city_select: 'Wybór miasta', last_city: 'Poprzednie miasto', next_city: 'Następne miasto', jump_city: 'Przejdź do obecnego miasta', administrator: 'Zarządca', captain: 'Kapitan', trade_ov: 'Podgląd handlu', command_ov: 'Podgląd poleceń', recruitment_ov: 'Podgląd rekrutacji', troop_ov: 'Podgląd wojsk', troops_outside: 'Wojska poza miastem', building_ov: 'Podgląd budynków', culture_ov: 'Podgląd kultury', gods_ov: 'Podgląd bogów', cave_ov: 'Podgląd jaskini', city_groups_ov: 'Podglad grupy miast', city_list: 'Lista miast', attack_planner: 'Planer ataków', farming_villages: 'Wioski', menu: 'Menu', city_view: 'Podgląd miasta', messages: 'Wiadomości', reports: 'Raporty', alliance: 'Sojusz', alliance_forum: 'Forum sojuszu', settings: 'Ustawienia', profile: 'Profil', ranking: 'Ranking', notes: 'Notatnik', chat: 'Czat', council: 'Rada Bohaterów' }, messages: { ghosttown: 'Opuszczone miasto', no_cities: 'Brak miast na tej wyspie', all: 'Całość', export: 'Zmień wiadomość na BB-Code', Tol: 'Kopiuj i wklej (Funkcja Quack)', copy: 'kopiuj', bbmessages: 'Wiadomości z BB-Code', copybb: 'BBCode został skopiowany', écrit: 'napisał(a):', cli: "Wiadomość nie została skopiowana", }, caves: { stored_silver: 'Przechowywane srebrne monety', silver_to_store: "Przechowywanie srebrnych monet", name: 'Nazwa', wood: 'Drewno', stone: 'Kamień', silver: 'Srebrne monety', search_for: "Szukaj", }, grepo_mainmenu: { city_view: 'Podgląd miasta', island_view: 'Podgląd wyspy' }, transport_calc: { recruits: 'Uwzględniaj jednostki w kolejce rekrutacji', slowtrans: "Policz powolne statki transportowe", fasttrans: "Policz szybkie statki transportowe", Lack: "Brak", Still: "Wciąż", pop: "dostępna populacja. Dla", Optipop: "Optymalna populacja dla", army: "Nie masz armii.", }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: "Informacja", trans: 'Tłumaczenie na język', translations: 'Tłumaczenia', trans_sure: 'Czy jesteś pewien, że twoje tłumaczenie jest gotowe do wygenerowania?', trans_success: 'Tłumaczenie zostało wysłane pomyślnie', trans_fail: 'Nie można wysłać tłumaczenia', trans_infotext1: 'Dostępne tłumaczenie', trans_infotext2: 'Aby zmodyfikować lub utworzyć nowy język, wybierz język z menu rozwijanego', trans_infotext3: 'Kiedy tekst zawiera znaczniki HTML (a więc wszystko, co jest otoczone nawiasami <>), proszę o zachowanie ich tam, gdzie je znalazłeś', trans_infotext4: 'Po zakończeniu tłumaczenia naciśnij', trans_infotext5: 'Aby móc dodać cię do kredytów, zostanie wygenerowany twój pseudonim', trans_infotext6: 'Skopiuj wygenerowaną wiadomość i wklej ją w komentarzu', please_note: 'Uwaga', credits: 'Kredyty', no_translation: 'Nie znaleziono tłumaczenia', choose_lang: 'Wybierz język', add_lang: 'Dodaj nowy język', language: 'Język', enter_lang_name: 'Proszę podać nazwę języka', send: 'Generuj wiadomość', name: 'Nazwa', add_edit: "Dodaj / edytuj", }, wall: {}, buttons: { sav: "Zapisz", ins: "Wstaw", res: "Anuluj" } },
         //////////////////////////////////////////////
         // Spanish Translation by Juana de Castilla //
         //////////////////////////////////////////////
-        es: { Notification: {}, link: { forum: "https://es.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.45017/" }, Settings: { dsc: "DIO-Tools ofrece, entre otras cosas, varias pantallas, ventana de <br>emoticones, opciones de comercio y algunos cambios en el diseño.", act: "Activar/desactivar características de las herramientas:", prv: "Vista previa de varias características:", version_old: "La versión no está actualizada", version_new: "La versión está actualizada", version_dev: "Versión de desarrollador", version_update: "poner al día", Donate: "Donar", Update: "Actualizar " + dio_version, Feature: "Nueva caracteristica", Feature2: "Nueva versión", Learn_more: "Aprende más", cat_Premium: "Premium", cat_Quack: "Quack", install: "Instalar", reminder: "Recordármelo más tardee", Available: "Disponible nueva versión", reqreload: "Se necesita cargar de nuevo el sitio", reload: "Cargar de nuevo", }, Options: { ava: ["Información general unidades", "Indica las unidades de todas las ciudades"], sml: ["Emoticones", "Código BB para emoticones"], str: ["Fortaleza de la Unidad", "Añade tabla de fortalezas de cada unidad en varias zonas"], trd: ["Comercio", "Añade en la pestaña de comercio un porcentaje de comercio y reclutamiento y limitadores de Mercado por cada ciudad"], per: ["Comercio de porcentual", ""], rec: ["Comercio de reclutamiento", ""], cnt: ["Conquistas", "contador de ataques y refuerzos en la pestaña de conquista"], way: ["Velocidad de tropas", "Muestra movimiento de tropas mejorado en la ventana de ataque/refuerzo"], sim: ["Simulador", "Adaptación de la ventana del simulador incluyendo recuadro de modificadores"], act: ["Ventana de actividad", "Mejora las ventanas de comercio y reclutamiento (memoria posicional)"], pop: ["Popup", "Cambia el popup de favores"], tsk: ["Barra de tareas", "Aumenta la barra de tareas"], rew: ["Recompensa diaria", "Minimice la recompensa diaria al inicio"], bbc: ["Formulario de defensa", "Añade en la barra de códigos bb un formulario de defensa"], com: ["Comparación", "añade ventana de comparación de unidades"], tic: ["Iconos de la ciudad", "Cada ciudad recibe un icono para el tipo de la ciudad (detección automática)", "Iconos adicionales están disponibles para la selección manual"], til: ["Lista de la ciudad", "Agrega los iconos de la ciudad a la lista de la ciudad"], tim: ["Map", "Establece los iconos de la ciudad en el mapa estratégico"], tiw: ["Ventana emergente de icono", ""], wwc: ["Maravillas", "Calcula participación & contador de recursos + antes y después teclas de maravillas terminadas (no desactibable ahora!)"], con: ["menú contextual", 'Cambia "Elegir ciudad" y "vista de la ciudad" en el menú contextual '], sen: ["Unidades enviadas", 'Muestra las unidades enviadas en la ventana de ataque/refuerzos'], tov: ["Información de la ciudad", 'sustituye la vista nueva de ciudad por la ventana antigua'], scr: ["Rueda raton", 'Puede cambiar las vistas con la rueda del raton'], Scr: ["Barra de desplazamiento", 'Cambiar el estilo de la barra de desplazamiento'], tow: ["BBCode ciudad", "Agrega el bbcode de la ciudad a la pestaña de la ciudad"], Fdm: ["Seleccionar y eliminar varios mensajes", "Puede eliminar más de un mensaje. Función Quack"], Sel: ["Agregar (No cargar / Borrar)", "Mejora de nuevas herramientas en la ventana de ataque y soporte. Función Quack"], Cul: ["Resumen de cultura (Administrador)", "Agregue un contador para la fiesta en la vista de cultura. Función Quack"], Hot: ["Atajos de teclado para Windows", "Te cambia la vida"], Isl: ["Visualización de la isla", "Aumentar la altura de la lista de ciudades y pueblos. Función Quack"], Ish: ["Descripción general de las aldeas campesinas (Capitán)", "Ocultar automáticamente la ciudad. Función Quack"], Hio: ["Resumen de Cuevas (Administrador)", "Permitir la clasificación de las ciudades. Función Quack"], Hid: ["Cueva", "Introducir 15.000 monedas de plata automáticamente en el campo de entrada. Función Quack"], Tol: ["Lista de ciudades en código BB", "Copiar y pegar. Función Quack"], Cib: ["Botón de vista de la ciudad", "Agregar un botón para abrir la vista de la ciudad al menú lateral de Grepolis. Función Quack"], Ciw: ["Vista de la ciudad", "Mostrar la vista de la ciudad en una ventana. Función Quack"], Tti: ["Intercambie recursos para festivales", "Haga clic en él y solo se intercambiará hacia un festival. Función Quack"], Mse: ["Mensajes de código BB", "Convertir mensajes a código BB. Función Quack"], Rep: ["Informes", "Agregar un filtro de color. Función Quack"], BBt: ["Información del jugador del botón BBcode", "Adición de un botón BBcode (jugador y alianza)"], Rtt: ["Eliminación de la información sobre herramientas de la unidad", ""], Cup: ["Avance de la cultura (Administrador) ", " Se modificó la presentación de la barra de progreso y se agregó una barra de progreso para los cultivos. Función de Akiway"], Cuo: ["Puntos de Cultura (Administrador)", "Agrega un contador para los Puntos de Cultura. Función Quack"], Rct: ["Comercio -> Contador de recursos (Administrador) ", " Un recuento de todos los recursos de tu ciudad"], err: ["Enviar informes de errores automáticamente", "Si se activa esta opción, puede ayudar a identificar errores."], }, Town_icons: {}, Color: { Blue: 'Azul', Red: 'rojo', Green: 'Verde', Pink: 'Rosado', White: "Blanco", }, labels: { uni: "Información general unidades", total: "Total", available: "Disponible", outer: "Fuera", con: "Escoger ciudad", std: "Standard", gre: "Grepo", nat: "Natura", ppl: "Gente", oth: "Otros", ttl: "Vista general: Defensa de la ciudad", inf: "Información de la ciudad:", dev: "Desviación", det: "Unidades de tierra detalladas", prm: "Bonos Premium", sil: "Volumen de plata", mov: "Movimientos de tropas:", leg: "WW cuota", stg: "Nivel", tot: "Total", str: "Fortaleza de la Unidad", los: "Perdida", mod: "sin influencia del modificador", dsc: "Comparación de Unidades", hck: "Contundente", prc: "Punzante", dst: "Distancia", sea: "Mar", att: "Ataque", def: "Defensa", spd: "Velocidad", bty: "Botín (recursos)", cap: "Capacidad de transporte", res: "Costes (recursos)", fav: "Favor", tim: "Tiempo de reclutamiento (s)", rat: "Proporción de recursos de un tipo de unidad", shr: "Porcentaje de la capacidad de almacenamiento de la ciudad destino", per: "Porcentaje de comercio", lab: "Unidades enviadas", rec: "Recursos", improved_movement: "Movimiento de tropas mejorados", donat: "Donaciones", Tran: "Traducciones", Happy: "Feliz año nuevo!", Merry: "Ho ho ho Feliz Navidad!", tow: "código BB ciudad", ingame_name: ["No dudes en ponerte en contacto conmigo si prefieres que te llamen por tu nombre en el juego", "Dado que se trata de mucho trabajo y puede ser muy lento siempre estoy muy agradecido por cualquier tipo de soporte. Por lo tanto me gustaría dar las gracias a todos los que ofreció su apoyo para este proyecto -. Sea a través de donaciones, el conocimiento, la creatividad, los informes de error o sólo algunas palabras alentadoras bbcode"] }, tutoriel: { tuto: "Información útil", reme: ["Agradezco a todos los que contribuyeron al desarrollo de DIO-TOOLS-David1327", ""], }, Quack: { delete_mul: "Eliminar múltiples mensajes", delete_sure: "¿Realmente desea eliminar estos mensajes?", no_selection: "No hay posts seleccionados", mark_All: "Marca todas", no_overload: 'No cargar', delete: 'Borrar', cityfestivals: 'Festival de la ciudad', olympicgames: 'Juegos Olímpicos', triumph: 'Marcha triunfal', theater: 'Obras de teatro' }, hotkeys: { hotkeys: 'Atajos de teclado', Senate: 'Senado', city_select: 'Selección de la ciudad', last_city: 'Última ciudad', next_city: 'Próxima ciudad', jump_city: 'Saltar a la ciudad actual', administrator: 'Administrador', captain: 'Capitán', trade_ov: 'Vista general de comercio', command_ov: 'Vista general de órdenes', recruitment_ov: 'Vista general de reclutamiento', troop_ov: 'Vista de tropas', troops_outside: 'Tropas fuera', building_ov: 'Vista general de edificios', culture_ov: 'Vista de cultura', gods_ov: 'Vista general de dioses', cave_ov: 'Vista general de la cueva', city_groups_ov: 'Vista general de grupos de ciudades', city_list: 'Lista de ciudades', attack_planner: 'Programador de ataque', farming_villages: 'Aldeas', menu: 'Menú', city_view: 'Vista de la ciudad', messages: 'Mensajes', reports: 'Informes', alliance: 'Alianza', alliance_forum: 'Foro de la alianza', settings: 'Ajustes', profile: 'Perfil', ranking: 'Clasificación', notes: 'Notas', chat: 'Chat', council: 'Consejo de héroes' }, messages: { ghosttown: 'Ciudad fantasma', no_cities: 'No hay ciudades en esta isla', all: 'Todo', export: 'Convertir mensaje en códigos BB', Tol: 'Copiar y pegar (Función Quack)', copy: 'copia', bbmessages: 'Mensajes de código BB', copybb: 'código BB ha sido copiado', écrit: 'ha escrito:', }, caves: { stored_silver: 'Monedas de plata almacenables', silver_to_store: 'Monedas de plata Almacenadas', name: 'Nombre', wood: 'Madera', stone: 'Piedra', silver: 'Monedas de plata', }, grepo_mainmenu: { city_view: 'Vista de la ciudad', island_view: 'Vista de la isla' }, transport_calc: { recruits: 'Contar unidades en cola de reclutamiento', }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'информация', trans: 'Traducción para el idioma', translations: 'Traducciones', trans_sure: '¿Está seguro de que su traducción está lista para ser generada?', trans_success: 'La traducción se ha enviado correctamente', trans_fail: 'No se pudo enviar la traducción', trans_infotext1: 'Traducción disponible', trans_infotext2: 'Para modificar o crear un nuevo idioma, elija el idioma en el menú desplegable', trans_infotext3: 'Cuando un texto contiene etiquetas HTML (por lo tanto, todo lo que está entre <> corchetes) te pido que los guardes donde los encontraste', trans_infotext4: 'Cuando hayas terminado de traducir, presiona', trans_infotext5: 'Para poder agregarte a los créditos, se generará tu apodo', trans_infotext6: 'Copia el mensaje generado y pégalo en un comentario', please_note: 'Tenga en cuenta', credits: 'Créditos', no_translation: 'No se encontró traducción', choose_lang: 'Elegir idioma', add_lang: 'Agregar un nuevo idioma', language: 'Idioma', enter_lang_name: 'Por favor ingrese un nombre de idioma', send: 'Generar mensaje', name: 'nombre', }, buttons: { sav: "Guardar", ins: "Insertar", res: "Reinicio" } },
+        es: { Notification: {}, link: { forum: "https://es.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.45017/" }, Settings: { dsc: "DIO-Tools ofrece, entre otras cosas, varias pantallas, ventana de <br>emoticones, opciones de comercio y algunos cambios en el diseño.", act: "Activar/desactivar características de las herramientas:", prv: "Vista previa de varias características:", version_old: "La versión no está actualizada", version_new: "La versión está actualizada", version_dev: "Versión de desarrollador", version_update: "poner al día", Donate: "Donar", Update: "Actualizar", Feature: "Nueva caracteristica", Feature2: "Nueva versión", Learn_more: "Aprende más", cat_Premium: "Premium", cat_Quack: "Quack", install: "Instalar", reminder: "Recordármelo más tardee", Available: "Disponible nueva versión", reqreload: "Se necesita cargar de nuevo el sitio", reload: "Cargar de nuevo", }, Options: { ava: ["Información general unidades", "Indica las unidades de todas las ciudades"], sml: ["Emoticones", "Código BB para emoticones"], str: ["Fortaleza de la Unidad", "Añade tabla de fortalezas de cada unidad en varias zonas"], trd: ["Comercio", "Añade en la pestaña de comercio un porcentaje de comercio y reclutamiento y limitadores de Mercado por cada ciudad"], per: ["Comercio de porcentual", ""], rec: ["Comercio de reclutamiento", ""], cnt: ["Conquistas", "contador de ataques y refuerzos en la pestaña de conquista"], way: ["Velocidad de tropas", "Muestra movimiento de tropas mejorado en la ventana de ataque/refuerzo"], sim: ["Simulador", "Adaptación de la ventana del simulador incluyendo recuadro de modificadores"], act: ["Ventana de actividad", "Mejora las ventanas de comercio y reclutamiento (memoria posicional)"], pop: ["Popup", "Cambia el popup de favores"], tsk: ["Barra de tareas", "Aumenta la barra de tareas"], rew: ["Recompensa diaria", "Minimice la recompensa diaria al inicio"], bbc: ["Formulario de defensa", "Añade en la barra de códigos bb un formulario de defensa"], com: ["Comparación", "añade ventana de comparación de unidades"], tic: ["Iconos de la ciudad", "Cada ciudad recibe un icono para el tipo de la ciudad (detección automática)", "Iconos adicionales están disponibles para la selección manual"], til: ["Lista de la ciudad", "Agrega los iconos de la ciudad a la lista de la ciudad"], tim: ["Map", "Establece los iconos de la ciudad en el mapa estratégico"], tiw: ["Ventana emergente de icono", ""], wwc: ["Maravillas", "Calcula participación & contador de recursos + antes y después teclas de maravillas terminadas (no desactibable ahora!)"], con: ["menú contextual", 'Cambia "Elegir ciudad" y "vista de la ciudad" en el menú contextual '], sen: ["Unidades enviadas", 'Muestra las unidades enviadas en la ventana de ataque/refuerzos'], tov: ["Información de la ciudad", 'sustituye la vista nueva de ciudad por la ventana antigua'], scr: ["Rueda raton", 'Puede cambiar las vistas con la rueda del raton'], Scr: ["Barra de desplazamiento", 'Cambiar el estilo de la barra de desplazamiento'], tow: ["BBCode ciudad", "Agrega el bbcode de la ciudad a la pestaña de la ciudad"], Fdm: ["Seleccionar y eliminar varios mensajes", "Puede eliminar más de un mensaje. Función Quack"], Sel: ["Agregar (No cargar / Borrar)", "Mejora de nuevas herramientas en la ventana de ataque y soporte. Función Quack"], Cul: ["Resumen de cultura (Administrador)", "Agregue un contador para la fiesta en la vista de cultura. Función Quack"], Hot: ["Atajos de teclado para Windows", "Te cambia la vida"], Isl: ["Visualización de la isla", "Aumentar la altura de la lista de ciudades y pueblos. Función Quack"], Ish: ["Descripción general de las aldeas campesinas (Capitán)", "Ocultar automáticamente la ciudad. Función Quack"], Hio: ["Resumen de Cuevas (Administrador)", "Permitir la clasificación de las ciudades. Función Quack"], Hid: ["Cueva", "Introducir 15.000 monedas de plata automáticamente en el campo de entrada. Función Quack"], Tol: ["Lista de ciudades en código BB", "Copiar y pegar. Función Quack"], Cib: ["Botón de vista de la ciudad", "Agregar un botón para abrir la vista de la ciudad al menú lateral de Grepolis. Función Quack"], Ciw: ["Vista de la ciudad", "Mostrar la vista de la ciudad en una ventana. Función Quack"], Tti: ["Intercambie recursos para festivales", "Haga clic en él y solo se intercambiará hacia un festival. Función Quack"], Mse: ["Mensajes de código BB", "Convertir mensajes a código BB. Función Quack"], Rep: ["Informes", "Agregar un filtro de color. Función Quack"], BBt: ["Información del jugador del botón BBcode", "Adición de un botón BBcode (jugador y alianza)"], Rtt: ["Eliminación de la información sobre herramientas de la unidad", ""], Cup: ["Avance de la cultura (Administrador) ", " Se modificó la presentación de la barra de progreso y se agregó una barra de progreso para los cultivos. Función de Akiway"], Cuo: ["Puntos de Cultura (Administrador)", "Agrega un contador para los Puntos de Cultura. Función Quack"], Rct: ["Comercio -> Contador de recursos (Administrador) ", " Un recuento de todos los recursos de tu ciudad"], err: ["Enviar informes de errores automáticamente", "Si se activa esta opción, puede ayudar a identificar errores."], }, Town_icons: {}, Color: { Blue: 'Azul', Red: 'rojo', Green: 'Verde', Pink: 'Rosado', White: "Blanco", }, labels: { uni: "Información general unidades", total: "Total", available: "Disponible", outer: "Fuera", con: "Escoger ciudad", std: "Standard", gre: "Grepo", nat: "Natura", ppl: "Gente", oth: "Otros", ttl: "Vista general: Defensa de la ciudad", inf: "Información de la ciudad:", dev: "Desviación", det: "Unidades de tierra detalladas", prm: "Bonos Premium", sil: "Volumen de plata", mov: "Movimientos de tropas:", leg: "WW cuota", stg: "Nivel", tot: "Total", str: "Fortaleza de la Unidad", los: "Perdida", mod: "sin influencia del modificador", dsc: "Comparación de Unidades", hck: "Contundente", prc: "Punzante", dst: "Distancia", sea: "Mar", att: "Ataque", def: "Defensa", spd: "Velocidad", bty: "Botín (recursos)", cap: "Capacidad de transporte", res: "Costes (recursos)", fav: "Favor", tim: "Tiempo de reclutamiento (s)", rat: "Proporción de recursos de un tipo de unidad", shr: "Porcentaje de la capacidad de almacenamiento de la ciudad destino", per: "Porcentaje de comercio", lab: "Unidades enviadas", rec: "Recursos", improved_movement: "Movimiento de tropas mejorados", donat: "Donaciones", Tran: "Traducciones", Happy: "Feliz año nuevo!", Merry: "Ho ho ho Feliz Navidad!", tow: "código BB ciudad", ingame_name: ["No dudes en ponerte en contacto conmigo si prefieres que te llamen por tu nombre en el juego", "Dado que se trata de mucho trabajo y puede ser muy lento siempre estoy muy agradecido por cualquier tipo de soporte. Por lo tanto me gustaría dar las gracias a todos los que ofreció su apoyo para este proyecto -. Sea a través de donaciones, el conocimiento, la creatividad, los informes de error o sólo algunas palabras alentadoras bbcode"] }, tutoriel: { tuto: "Información útil", reme: ["Agradezco a todos los que contribuyeron al desarrollo de DIO-TOOLS-David1327", ""], }, Quack: { delete_mul: "Eliminar múltiples mensajes", delete_sure: "¿Realmente desea eliminar estos mensajes?", no_selection: "No hay posts seleccionados", mark_All: "Marca todas", no_overload: 'No cargar', delete: 'Borrar', cityfestivals: 'Festival de la ciudad', olympicgames: 'Juegos Olímpicos', triumph: 'Marcha triunfal', theater: 'Obras de teatro' }, hotkeys: { hotkeys: 'Atajos de teclado', Senate: 'Senado', city_select: 'Selección de la ciudad', last_city: 'Última ciudad', next_city: 'Próxima ciudad', jump_city: 'Saltar a la ciudad actual', administrator: 'Administrador', captain: 'Capitán', trade_ov: 'Vista general de comercio', command_ov: 'Vista general de órdenes', recruitment_ov: 'Vista general de reclutamiento', troop_ov: 'Vista de tropas', troops_outside: 'Tropas fuera', building_ov: 'Vista general de edificios', culture_ov: 'Vista de cultura', gods_ov: 'Vista general de dioses', cave_ov: 'Vista general de la cueva', city_groups_ov: 'Vista general de grupos de ciudades', city_list: 'Lista de ciudades', attack_planner: 'Programador de ataque', farming_villages: 'Aldeas', menu: 'Menú', city_view: 'Vista de la ciudad', messages: 'Mensajes', reports: 'Informes', alliance: 'Alianza', alliance_forum: 'Foro de la alianza', settings: 'Ajustes', profile: 'Perfil', ranking: 'Clasificación', notes: 'Notas', chat: 'Chat', council: 'Consejo de héroes' }, messages: { ghosttown: 'Ciudad fantasma', no_cities: 'No hay ciudades en esta isla', all: 'Todo', export: 'Convertir mensaje en códigos BB', Tol: 'Copiar y pegar (Función Quack)', copy: 'copia', bbmessages: 'Mensajes de código BB', copybb: 'código BB ha sido copiado', écrit: 'ha escrito:', }, caves: { stored_silver: 'Monedas de plata almacenables', silver_to_store: 'Monedas de plata Almacenadas', name: 'Nombre', wood: 'Madera', stone: 'Piedra', silver: 'Monedas de plata', }, grepo_mainmenu: { city_view: 'Vista de la ciudad', island_view: 'Vista de la isla' }, transport_calc: { recruits: 'Contar unidades en cola de reclutamiento', }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'информация', trans: 'Traducción para el idioma', translations: 'Traducciones', trans_sure: '¿Está seguro de que su traducción está lista para ser generada?', trans_success: 'La traducción se ha enviado correctamente', trans_fail: 'No se pudo enviar la traducción', trans_infotext1: 'Traducción disponible', trans_infotext2: 'Para modificar o crear un nuevo idioma, elija el idioma en el menú desplegable', trans_infotext3: 'Cuando un texto contiene etiquetas HTML (por lo tanto, todo lo que está entre <> corchetes) te pido que los guardes donde los encontraste', trans_infotext4: 'Cuando hayas terminado de traducir, presiona', trans_infotext5: 'Para poder agregarte a los créditos, se generará tu apodo', trans_infotext6: 'Copia el mensaje generado y pégalo en un comentario', please_note: 'Tenga en cuenta', credits: 'Créditos', no_translation: 'No se encontró traducción', choose_lang: 'Elegir idioma', add_lang: 'Agregar un nuevo idioma', language: 'Idioma', enter_lang_name: 'Por favor ingrese un nombre de idioma', send: 'Generar mensaje', name: 'nombre', }, buttons: { sav: "Guardar", ins: "Insertar", res: "Reinicio" } },
         ar: {},
         //////////////////////////////////////////////
         //   Portuguese (BR) Translation by  HELL   //
         //////////////////////////////////////////////
-        br: { Notification: {}, link: { forum: "https://br.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.23781/", }, Settings: { dsc: "DIO-Tools oferece, entre outras coisas, algumas telas, uma caixa de smiley, opções de comércio <br> e algumas alterações no layout.", act: "Ativar/desativar recursos do conjunto de ferramentas:", prv: "Pré-visualização de vários recursos:", version_old: "Versão não está atualizada", version_new: "Versão está atualizada", version_dev: "Versão do desenvolvedor", version_update: "Atualização", Donate: "Doar", Update: "Atualizar " + dio_version, Feature: "Novo Recurso", Feature2: "Nova versão", Learn_more: "Saber mais", cat_units: "Unidades", cat_icons: "Ícones nas Cidades", cat_forum: "Forum", cat_trade: "Comércio", cat_wonders: "Maravilhas do Mundo", cat_layout: "Layout", cat_other: "Outros", cat_Premium: "Premium", cat_Quack: "Quack", install: "Instalar", reminder: "Lembrar mais tarde", Available: "Nova versão disponível", reqreload: "Atualização requerida", reload: "Atualizar", }, Options: { ava: ["Visão Geral da unidade", "Indica as unidades de todas as cidades"], sml: ["Smilies", "Estende o bbcode com uma caixa de smiley"], str: ["Força das Tropas", "Adiciona quadros de força das tropas em diversas áreas"], tra: ["Capacidade de Transporte", "Mostra a capacidade de transporte ocupado e disponível no menu de unidades"], per: ["Percentual de comércio", "Estende-se a janela de comércio com um percentual de comércio"], rec: ["Comércio para recrutamento", "Estende-se a janela de comércio com um comércio de recrutamento"], cnt: ["Conquistas", "Conta os ataques/apoios na janela de conquista"], way: ["Velocidade da Tropa", "Displays mostram a possivél velocidade de tropa na janela de ataque/suporte"], sim: ["Simulador", "Adaptação do layout simulador & exposição permanente da caixa poderes estendida"], act: ["Ativar caixas suspensas de comércio e ataque", "Melhorias da exibição de caixas de comércio e recrutamento (com memória de posição)"], pop: ["Caixa de favores divino", "Altera a caixa de favores divino por um novo layout"], tsk: ["Barra de tarefas", "Aumenta a barra de tarefas"], rew: ["Recompensa diária", "Minimiza a janela recompensa diária no inicio"], bbc: ["Pedido de Apoio", "Estende a barra de bbcode com uma forma de Pedido de Apoio Automática"], com: ["Comparação de Unidades", "Adiciona tabelas de comparação de unidade"], tic: ["Ícones nas Cidades", "Cada cidade recebe um ícone para o tipo de tropas na cidade (detecção automática) ", " Ícones adicionais estão disponíveis para seleção manual"], til: ["Lista das Cidades", "Adiciona os ícones da cidade na lista de cidades"], tim: ["Mapa", "Mostra os ícones das cidades no mapa estratégico"], tiw: ["Pop-up de ícone", ""], wwc: ["Calculadora de WW", "Cálculo compartilhado & contador de recursos + botões anterior e próxima maravilhas do mundo (atualmente não desactivável!)"], wwr: ["Classificação", "Classificação das maravilha do mundo redesenhadas"], wwi: ["Icones", 'Adiciona ícones nas maravilha do mundo no mapa estratégico'], con: ["Menu de Contexto", 'Troca da "Selecione cidade" e "Visão Geral da Cidade" no menu de contexto'], sen: ["Unidades Enviadas", 'Shows sent units in the attack/support window'], tov: ["Visão da Cidade", 'Substitui o novo panorama da cidade, com o estilo da janela antiga'], scr: ["Roda do Mouse", 'Você pode alterar os pontos de vista com a roda do mouse'], Scr: ["Barra de rolagem", 'Alterar o estilo da barra de rolagem'], tow: ["BBCode city", "Adiciona o bbcode da cidade à guia cidade"], Fdm: ["Selecione e exclua várias mensagens", "Você pode excluir mais de uma mensagem. Função Quack"], Sel: ["Adicionar (Sem sobrecarga / Excluir)", "Melhoria de novas ferramentas na janela de ataque e suporte. Função Quack"], Cul: ["Visão geral da cultura (Administrador)", "Adicionar um contador para a festa na visualização de cultura. Função Quack"], Hot: ["Atalhos do teclado para Windows", "Isso muda sua vida"], Isl: ["Visualização da ilha", "Aumentar a altura da lista de cidades e vilas. Função Quack"], Ish: ["Visão geral das aldeias camponesas (capitão)", "Ocultar automaticamente a cidade. Função Quack"], Hio: ["Visão geral das Grutas (Administrador)", "Permitir o filtro de cidades"], Hid: ["Gruta", "Digite prata acima 15000 automaticamente no campo. Função Quack"], Tol: ["Lista de cidades em BB-Code", "Copiar e colar. Função Quack"], Cib: ["Botão de vista da cidade", "Adicionar um botão para abrir a vista da cidade ao menu lateral. Função Quack"], Ciw: ["Vista da cidade", "Mostrar vista para a cidade em uma janela. Função Quack"], Tti: ["Troque recursos para festivais", "Clique nele e só será trocado por um festival. Função Quack"], Mse: ["Mensagens do Código BB", "Converter mensagens em Código BB. Função Quack"], Rep: ["Reports", "Adicionando um filtro de cores. Função Quack"], BBt: ["Κουμπί BBcode Πληροφορίες προγράμματος αναπαραγωγής", "Προσθήκη κουμπιού BBcode (player και alliance)"], Rtt: ["Remoção das dicas da unidade", ""], Cup: ["Avanço da Cultura (Administrador)", "Alterada a apresentação da barra de progresso e adicionada uma barra de progresso para as colheitas. Função de Akiway"], Cuo: ["Pontos de Cultura (Administrador)", "Adicione um contador para os Pontos de Cultura. Função Quack"], Rct: ["Comércio -> Contador de recursos (Administrador) ", " Uma contagem de todos os recursos em sua cidade"], err: ["Enviar automaticamente relatórios de erros", "Se você ativar essa opção, você pode ajudar a identificar erros."], }, Town_icons: {}, Color: { Blue: 'Azul', Red: 'Vermelho', Green: 'Verde', Pink: 'Rosa', White: "Blanco", }, labels: { uni: "Visão Geral da unidade", total: "Global", available: "Disponível", outer: "Fora", con: "Selecionar cidade", std: "Padrão", gre: "Grepo", nat: "Natural", ppl: "Popular", oth: "Outros", hal: "Halloween", xma: "Natal", ttl: "Pedido de Apoio", inf: "Informação da cidade:", dev: "Desvio", det: "Unidades Detalhadas", prm: "Bônus Premium", sil: "Prata na Gruta", mov: "Movimentação de Tropas:", leg: "WW Maravilhas", stg: "Level", tot: "Total", str: "Força das Unidades", los: "Perdas", mod: "Sem modificador de influência", dsc: "Comparação de unidades", hck: "Impacto", prc: "Corte", dst: "Arremço", sea: "Naval", att: "Ofensivo", def: "Defensivo", spd: "Velocidade", bty: "Saque (recursos)", cap: "Capacidade de trasporte", res: "Custo (recursos)", fav: "Favor", tim: "Tempo de recrutamento (s)", rat: "Proporção de recursos de um tipo de unidade", shr: "A partir do armazenamento sobre a cidade de destino", per: "Percentual de comércio", lab: "Unidades enviadas", rec: "Recursos", improved_movement: "Movimentação de tropas com ajuste de bônus", Tran: "Traduções", donat: "Doações", Happy: "Feliz Ano Novo!", Merry: "Ho ho ho feliz Natal!", ingame_name: ["Não hesite em me contatar se você prefere ser chamado pelo seu nick de jogo", "Como se trata de muito trabalho e pode ser muito Eu sou sempre muito grato por qualquer tipo de apoio demorado. Portanto, eu gostaria de agradecer a todos que ofereceram apoio para este projecto - seja através de doações , o conhecimento, a criatividade, relatórios de bugs ou apenas algumas palavras de incentivo."] }, tutoriel: { tuto: "Informações úteis", reme: ["Agradeço a todos que contribuíram para o desenvolvimento de DIO-TOOLS-David1327", ""], }, Quack: { delete_mul: "Excluir várias mensagens", delete_sure: "Você realmente quer apagar essas mensagens?", no_selection: "Nenhuma mensagem selecionada", mark_All: "Marcar todos", no_overload: 'Sem sobrecarga', delete: 'Excluir', cityfestivals: 'Festival Urbano', olympicgames: 'Jogos Olímpicos', triumph: 'Desfile da Vitória', theater: 'Peças de Teatro' }, hotkeys: { hotkeys: 'Teclas de atalho', Senate: 'Senado', city_select: 'Seleção Cidade', last_city: 'Última cidade', next_city: 'Próxima cidade', jump_city: 'Ir para a cidade atual', administrator: 'Administrador', captain: 'Capitão', trade_ov: 'Troca', command_ov: 'Comandos', recruitment_ov: 'Recrutamento', troop_ov: 'Visão geral das tropasa', troops_outside: 'Tropas no exterior', building_ov: 'Edifícios', culture_ov: 'Cultura', gods_ov: 'Deuses', cave_ov: 'Grutas', city_groups_ov: 'Grupos de cidades', city_list: 'Lista de cidades', attack_planner: 'Planejador de ataques', farming_villages: 'Aldeias bárbaras', menu: 'Menu', city_view: 'Vista da cidade', messages: 'Mensagens', reports: 'Relatórios', alliance: 'Aliança', alliance_forum: 'Fórum da aliança', settings: 'Configurações', profile: 'Perfil', ranking: 'Posição', notes: 'Notas', chat: 'Chat', council: 'Conselho de Heróis' }, messages: { ghosttown: "Cidade-fantasma", no_cities: "Nenhuma cidade nesta ilha", all: "Tudo", export: "Converter mensagem em BB-Code", Tol: "Copiar e colar (Função Quack)", copy: "Copiar", bbmessages: "Mensagens do BB-Code", copybb: "BBCode foi copiado", écrit: "escreveu o seguinte:", }, caves: { stored_silver: 'Moedas de prata armazenadss', silver_to_store: 'Moedas de prata armazenáveis', name: 'Nome', wood: 'Madeira', stone: 'Pedra', silver: 'Moedas de prata', }, grepo_mainmenu: { city_view: 'Vista da cidade', island_view: 'Vista Ilha' }, transport_calc: { recruits: "Contagem das unidades na fila de recrutamento", }, reports: {}, translations: { info: 'Info', trans: 'tradução para o idioma', translations: 'Traduções', trans_sure: 'Tem certeza de que sua tradução está pronta para ser gerada?', trans_success: 'A tradução foi enviada com sucesso', trans_fail: 'A tradução não pôde ser enviada', trans_infotext1: 'Tradução disponível', trans_infotext2: 'Para modificar ou criar um novo idioma, escolha o idioma no menu suspenso', trans_infotext3: 'Quando um texto contém tags HTML (portanto, tudo que está entre <> colchetes) eu peço que você os mantenha onde os encontrou', trans_infotext4: 'Quando você terminar de traduzir, pressione', trans_infotext5: 'Para poder adicionar você aos créditos, seu apelido será gerado', trans_infotext6: 'Copie a mensagem gerada e cole-a em um comentário', please_note: 'Por favor, note', credits: 'Créditos', no_translation: 'Nenhuma tradução encontrada', choose_lang: 'Escolha o idioma', add_lang: 'Adicionar um novo idioma', language: 'Idioma', enter_lang_name: 'Por favor, digite um nome de idioma', send: 'Gerar mensagem', name: 'Nome', }, buttons: { sav: "Salvar", ins: "Inserir", res: "Resetar" } },
+        br: { Notification: {}, link: { forum: "https://br.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.23781/", }, Settings: { dsc: "DIO-Tools oferece, entre outras coisas, algumas telas, uma caixa de smiley, opções de comércio <br> e algumas alterações no layout.", act: "Ativar/desativar recursos do conjunto de ferramentas:", prv: "Pré-visualização de vários recursos:", version_old: "Versão não está atualizada", version_new: "Versão está atualizada", version_dev: "Versão do desenvolvedor", version_update: "Atualização", Donate: "Doar", Update: "Atualizar", Feature: "Novo Recurso", Feature2: "Nova versão", Learn_more: "Saber mais", cat_units: "Unidades", cat_icons: "Ícones nas Cidades", cat_forum: "Forum", cat_trade: "Comércio", cat_wonders: "Maravilhas do Mundo", cat_layout: "Layout", cat_other: "Outros", cat_Premium: "Premium", cat_Quack: "Quack", install: "Instalar", reminder: "Lembrar mais tarde", Available: "Nova versão disponível", reqreload: "Atualização requerida", reload: "Atualizar", }, Options: { ava: ["Visão Geral da unidade", "Indica as unidades de todas as cidades"], sml: ["Smilies", "Estende o bbcode com uma caixa de smiley"], str: ["Força das Tropas", "Adiciona quadros de força das tropas em diversas áreas"], tra: ["Capacidade de Transporte", "Mostra a capacidade de transporte ocupado e disponível no menu de unidades"], per: ["Percentual de comércio", "Estende-se a janela de comércio com um percentual de comércio"], rec: ["Comércio para recrutamento", "Estende-se a janela de comércio com um comércio de recrutamento"], cnt: ["Conquistas", "Conta os ataques/apoios na janela de conquista"], way: ["Velocidade da Tropa", "Displays mostram a possivél velocidade de tropa na janela de ataque/suporte"], sim: ["Simulador", "Adaptação do layout simulador & exposição permanente da caixa poderes estendida"], act: ["Ativar caixas suspensas de comércio e ataque", "Melhorias da exibição de caixas de comércio e recrutamento (com memória de posição)"], pop: ["Caixa de favores divino", "Altera a caixa de favores divino por um novo layout"], tsk: ["Barra de tarefas", "Aumenta a barra de tarefas"], rew: ["Recompensa diária", "Minimiza a janela recompensa diária no inicio"], bbc: ["Pedido de Apoio", "Estende a barra de bbcode com uma forma de Pedido de Apoio Automática"], com: ["Comparação de Unidades", "Adiciona tabelas de comparação de unidade"], tic: ["Ícones nas Cidades", "Cada cidade recebe um ícone para o tipo de tropas na cidade (detecção automática) ", " Ícones adicionais estão disponíveis para seleção manual"], til: ["Lista das Cidades", "Adiciona os ícones da cidade na lista de cidades"], tim: ["Mapa", "Mostra os ícones das cidades no mapa estratégico"], tiw: ["Pop-up de ícone", ""], wwc: ["Calculadora de WW", "Cálculo compartilhado & contador de recursos + botões anterior e próxima maravilhas do mundo (atualmente não desactivável!)"], wwr: ["Classificação", "Classificação das maravilha do mundo redesenhadas"], wwi: ["Icones", 'Adiciona ícones nas maravilha do mundo no mapa estratégico'], con: ["Menu de Contexto", 'Troca da "Selecione cidade" e "Visão Geral da Cidade" no menu de contexto'], sen: ["Unidades Enviadas", 'Shows sent units in the attack/support window'], tov: ["Visão da Cidade", 'Substitui o novo panorama da cidade, com o estilo da janela antiga'], scr: ["Roda do Mouse", 'Você pode alterar os pontos de vista com a roda do mouse'], Scr: ["Barra de rolagem", 'Alterar o estilo da barra de rolagem'], tow: ["BBCode city", "Adiciona o bbcode da cidade à guia cidade"], Fdm: ["Selecione e exclua várias mensagens", "Você pode excluir mais de uma mensagem. Função Quack"], Sel: ["Adicionar (Sem sobrecarga / Excluir)", "Melhoria de novas ferramentas na janela de ataque e suporte. Função Quack"], Cul: ["Visão geral da cultura (Administrador)", "Adicionar um contador para a festa na visualização de cultura. Função Quack"], Hot: ["Atalhos do teclado para Windows", "Isso muda sua vida"], Isl: ["Visualização da ilha", "Aumentar a altura da lista de cidades e vilas. Função Quack"], Ish: ["Visão geral das aldeias camponesas (capitão)", "Ocultar automaticamente a cidade. Função Quack"], Hio: ["Visão geral das Grutas (Administrador)", "Permitir o filtro de cidades"], Hid: ["Gruta", "Digite prata acima 15000 automaticamente no campo. Função Quack"], Tol: ["Lista de cidades em BB-Code", "Copiar e colar. Função Quack"], Cib: ["Botão de vista da cidade", "Adicionar um botão para abrir a vista da cidade ao menu lateral. Função Quack"], Ciw: ["Vista da cidade", "Mostrar vista para a cidade em uma janela. Função Quack"], Tti: ["Troque recursos para festivais", "Clique nele e só será trocado por um festival. Função Quack"], Mse: ["Mensagens do Código BB", "Converter mensagens em Código BB. Função Quack"], Rep: ["Reports", "Adicionando um filtro de cores. Função Quack"], BBt: ["Κουμπί BBcode Πληροφορίες προγράμματος αναπαραγωγής", "Προσθήκη κουμπιού BBcode (player και alliance)"], Rtt: ["Remoção das dicas da unidade", ""], Cup: ["Avanço da Cultura (Administrador)", "Alterada a apresentação da barra de progresso e adicionada uma barra de progresso para as colheitas. Função de Akiway"], Cuo: ["Pontos de Cultura (Administrador)", "Adicione um contador para os Pontos de Cultura. Função Quack"], Rct: ["Comércio -> Contador de recursos (Administrador) ", " Uma contagem de todos os recursos em sua cidade"], err: ["Enviar automaticamente relatórios de erros", "Se você ativar essa opção, você pode ajudar a identificar erros."], }, Town_icons: {}, Color: { Blue: 'Azul', Red: 'Vermelho', Green: 'Verde', Pink: 'Rosa', White: "Blanco", }, labels: { uni: "Visão Geral da unidade", total: "Global", available: "Disponível", outer: "Fora", con: "Selecionar cidade", std: "Padrão", gre: "Grepo", nat: "Natural", ppl: "Popular", oth: "Outros", hal: "Halloween", xma: "Natal", ttl: "Pedido de Apoio", inf: "Informação da cidade:", dev: "Desvio", det: "Unidades Detalhadas", prm: "Bônus Premium", sil: "Prata na Gruta", mov: "Movimentação de Tropas:", leg: "WW Maravilhas", stg: "Level", tot: "Total", str: "Força das Unidades", los: "Perdas", mod: "Sem modificador de influência", dsc: "Comparação de unidades", hck: "Impacto", prc: "Corte", dst: "Arremço", sea: "Naval", att: "Ofensivo", def: "Defensivo", spd: "Velocidade", bty: "Saque (recursos)", cap: "Capacidade de trasporte", res: "Custo (recursos)", fav: "Favor", tim: "Tempo de recrutamento (s)", rat: "Proporção de recursos de um tipo de unidade", shr: "A partir do armazenamento sobre a cidade de destino", per: "Percentual de comércio", lab: "Unidades enviadas", rec: "Recursos", improved_movement: "Movimentação de tropas com ajuste de bônus", Tran: "Traduções", donat: "Doações", Happy: "Feliz Ano Novo!", Merry: "Ho ho ho feliz Natal!", ingame_name: ["Não hesite em me contatar se você prefere ser chamado pelo seu nick de jogo", "Como se trata de muito trabalho e pode ser muito Eu sou sempre muito grato por qualquer tipo de apoio demorado. Portanto, eu gostaria de agradecer a todos que ofereceram apoio para este projecto - seja através de doações , o conhecimento, a criatividade, relatórios de bugs ou apenas algumas palavras de incentivo."] }, tutoriel: { tuto: "Informações úteis", reme: ["Agradeço a todos que contribuíram para o desenvolvimento de DIO-TOOLS-David1327", ""], }, Quack: { delete_mul: "Excluir várias mensagens", delete_sure: "Você realmente quer apagar essas mensagens?", no_selection: "Nenhuma mensagem selecionada", mark_All: "Marcar todos", no_overload: 'Sem sobrecarga', delete: 'Excluir', cityfestivals: 'Festival Urbano', olympicgames: 'Jogos Olímpicos', triumph: 'Desfile da Vitória', theater: 'Peças de Teatro' }, hotkeys: { hotkeys: 'Teclas de atalho', Senate: 'Senado', city_select: 'Seleção Cidade', last_city: 'Última cidade', next_city: 'Próxima cidade', jump_city: 'Ir para a cidade atual', administrator: 'Administrador', captain: 'Capitão', trade_ov: 'Troca', command_ov: 'Comandos', recruitment_ov: 'Recrutamento', troop_ov: 'Visão geral das tropasa', troops_outside: 'Tropas no exterior', building_ov: 'Edifícios', culture_ov: 'Cultura', gods_ov: 'Deuses', cave_ov: 'Grutas', city_groups_ov: 'Grupos de cidades', city_list: 'Lista de cidades', attack_planner: 'Planejador de ataques', farming_villages: 'Aldeias bárbaras', menu: 'Menu', city_view: 'Vista da cidade', messages: 'Mensagens', reports: 'Relatórios', alliance: 'Aliança', alliance_forum: 'Fórum da aliança', settings: 'Configurações', profile: 'Perfil', ranking: 'Posição', notes: 'Notas', chat: 'Chat', council: 'Conselho de Heróis' }, messages: { ghosttown: "Cidade-fantasma", no_cities: "Nenhuma cidade nesta ilha", all: "Tudo", export: "Converter mensagem em BB-Code", Tol: "Copiar e colar (Função Quack)", copy: "Copiar", bbmessages: "Mensagens do BB-Code", copybb: "BBCode foi copiado", écrit: "escreveu o seguinte:", }, caves: { stored_silver: 'Moedas de prata armazenadss', silver_to_store: 'Moedas de prata armazenáveis', name: 'Nome', wood: 'Madeira', stone: 'Pedra', silver: 'Moedas de prata', }, grepo_mainmenu: { city_view: 'Vista da cidade', island_view: 'Vista Ilha' }, transport_calc: { recruits: "Contagem das unidades na fila de recrutamento", }, reports: {}, translations: { info: 'Info', trans: 'tradução para o idioma', translations: 'Traduções', trans_sure: 'Tem certeza de que sua tradução está pronta para ser gerada?', trans_success: 'A tradução foi enviada com sucesso', trans_fail: 'A tradução não pôde ser enviada', trans_infotext1: 'Tradução disponível', trans_infotext2: 'Para modificar ou criar um novo idioma, escolha o idioma no menu suspenso', trans_infotext3: 'Quando um texto contém tags HTML (portanto, tudo que está entre <> colchetes) eu peço que você os mantenha onde os encontrou', trans_infotext4: 'Quando você terminar de traduzir, pressione', trans_infotext5: 'Para poder adicionar você aos créditos, seu apelido será gerado', trans_infotext6: 'Copie a mensagem gerada e cole-a em um comentário', please_note: 'Por favor, note', credits: 'Créditos', no_translation: 'Nenhuma tradução encontrada', choose_lang: 'Escolha o idioma', add_lang: 'Adicionar um novo idioma', language: 'Idioma', enter_lang_name: 'Por favor, digite um nome de idioma', send: 'Gerar mensagem', name: 'Nome', }, buttons: { sav: "Salvar", ins: "Inserir", res: "Resetar" } },
         pt: {},
         //////////////////////////////////////////////
         //       Czech Translation by Piwus         //
         //////////////////////////////////////////////
-        cz: { Notification: {}, link: { forum: "https://cz.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.8478/", }, Settings: { dsc: "DIO-Tools nabízí,mimo jiné,některá nová zobrazení,okénko smajlíků,<br>obchodní možnosti a některé změny v rozložení panelů.", act: "Aktivovat/Deaktivovat funkce  sady nástrojů:", prv: "Ukázka několika funkcí:", version_old: "Verze je zastaralá", version_new: "Verze je aktuální", version_dev: "Vývojářská verze", version_update: "Aktualizovat", Donate: "Darovat", Update: "Aktualizace " + dio_version, Feature: "Nová vlastnost", Feature2: "Nová verze", Learn_more: "Zjistit více", cat_units: "Jednotky", cat_icons: "Ikony měst", cat_forum: "Forum", cat_trade: "Obchod", cat_wonders: "Div světa", cat_layout: "Okna", cat_other: "Ostatní", cat_Premium: "Premium", cat_Quack: "Quack", }, Options: { ava: ["Jednotky Přehled", "Označuje jednotky všemi městy"], sml: ["Smajlíci", "Rozšiřuje panel BBkodů okénkem smajlíků"], str: ["Síla jednotek", "Přidává tabulku sil jednotek v různých  oblastech"], tra: ["Transportní kapacita", "Zobrazuje obsazenou a dostupnou transportní kapacitu v nabídce jednotek"], per: ["Procentuální obchod", "Rozšiřuje obchodní okno možností procentuálního obchodu"], rec: ["Obchod rekrutace", "Rozšiřuje obchodní okno možností obchodem pro rekrutaci"], cnt: ["Dobývání", "Počítá Útok/Obrana v okně dobývání (pouze vlastní dobývání zatím)"], way: ["Rychlost vojsk", "Zobrazuje vylepšenou rychlost vojsk v okně útoku/obrany"], sim: ["Simulátor", "Přizpůsobení rozložení simulátoru & permanentní zobrazování rozšířeného okna modifikátoru"], act: ["Aktivní okénka", "Zlepšený zobrazení obchodů a vojsk aktivními okénky (pozice paměti)"], pop: ["Vyskakovací okénko přízně", "Změní vyskakovací okno seznamu přízní"], tsk: ["Hlavní panel", "Zvyšuje hlavní panel"], rew: ["Denní odměny", "Minimalizuje bonus denní odměny po přihlášení"], bbc: ["Obranné hlášení", "Rozšiřuje panel BBkodů automatickém hlášení obrany města"], com: ["Porovnání jednotek", "Přidává tabulku porovnání jednotek"], tic: ["Ikony měst", "Každé město dostává svojí ikonku dle typu města (automatická detekce)", "Další ikonky jsou k dispozici manuálně"], til: ["Seznam měst", "Přidává ikony měst do seznamu měst"], tim: ["Mapa", "Přidává ikony měst na stategickou mapu"], tiw: ["Vyskakovací ikona", ""], wwc: ["Kalkulačka", "Výpočet podílu & počítadlo surovin  + předchozí & další tlačítka  na dokončených divech světa (aktuálně nelze deaktivovat!)"], wwr: ["Žebříček", "Předělaný žebříček divů světa"], wwi: ["Ikony", 'Přídává ikony divů světa na strategickou mapu'], con: ["Kontextové menu", 'Vyměňuje "Vybrat město" a "Přehled města" v kontextovém menu'], sen: ["Odeslané jednotky", 'Zobrazuje odeslané jednotky útoku/obrany v okně'], tov: ["Přehled města", 'Nahrazuje nový přehled měst starším stylem okna'], scr: ["Kolečko myši", 'Můžeš změnit pohledy s kolečkem myši'], Scr: ["Posuvník", 'Změňte styl posuvníku'], tow: ["BBCode město", "Přidá bbcode města na kartu města"], Fdm: ["Vyberte a smažte několik zpráv", "Můžete smazat více než jednu zprávu. Funkce Quack"], Sel: ["Přidat (Bez přeložení / Smazat)", "Vylepšení nových nástrojů v okně útoku a podpory. Funkce Quack"], Cul: ["Přehled kultury (Správce)", "Přidejte čítač strany v zobrazení kultury. Funkce Quack"], Hot: ["Klávesové zkratky pro Windows", "Změní to váš život"], Isl: ["Vizualizace ostrova", "Zvětšete výšku seznamu měst a vesnic. Quack funkce"], Ish: ["Přehled rolnických vesnic (kapitán)", "Automaticky skrýt město. Quack funkce"], Hio: ["Přehled jeskyní (Správce)", "Povolit řazení měst. Quack funkce"], Hid: ["Jeskyně", "Automaticky vkládat do vstupního pole stříbrné mince nad 15 000. Quack funkce"], Tol: ["Seznam měst v BB-Code", "Kopírovat a vložit. Quack funkce"], Cib: ["Botão de vista da cidade", "Přidat tlačítko pro otevírání přehledu města do postranní lišty Grepolisu. Quack funkce"], Ciw: ["Přehled města", "Exibir a cidade em uma janela. Quack funkce"], Tti: ["Obchodní zdroje pro festivaly", "Klikněte na něj a je vyměňováno pouze za festival. Quack funkce"], Mse: ["BB-Code messages", "Převést zprávy na BB-Code. Quack funkce"], Rep: ["Reports", "Přidání barevného filtru. Quack funkce"], BBt: ["Tlačítko BBcode Player Info", "Přidání tlačítka BBcode (hráč a spojenectví)"], Rtt: ["Odstranění popisů jednotky", ""], Cup: ["Rozvoj kultury (správce)", "Změnilo se zobrazení pruhu postupu a přidal se ukazatel průběhu pro plodiny. Funkce Akiway"], Cuo: ["Body kultury (správce)", "Přidejte počítadlo pro body kultury. Quack funkce"], Rct: ["Obchod -> Počítadlo zdrojů (správce)", "Počet všech zdrojů ve vašem městě"], err: ["Hlásit chyby automaticky", "Pokud aktivuješ tuto možnost,pomůžeš nám identifikovat chyby."], her: ["Thrácké dobývání", "Redukuje mapy Thráckého dobývání."], }, Town_icons: {}, Color: { Blue: 'Modrý', Red: 'Červené', Green: 'Zelený', Pink: 'Růžový', White: "Bílý", }, labels: { uni: "Jednotky Přehled", total: "Celkový", available: "K dispozici", outer: "Vně", con: "Zvolit město", std: "Standartní", gre: "Grepo", nat: "Příroda", ppl: "Lidi", oth: "Ostatní", hal: "Halloween", xma: "Vánoce", ttl: "Přehled: Obrana města", inf: "Informace o městě:", dev: "Odchylka", det: "Podrobné pozemní jednotky", prm: "Prémiové bonusy", sil: "Objem stříbra", mov: "Pohyby vojsk:", leg: "Podíl divu světa", stg: "Stupeň", tot: "Celkem", str: "Síla jednotek", los: "Ztráta", mod: "bez vlivu modifikátoru", dsc: "Porovnání jednotek", hck: "Sečné", prc: "Bodné", dst: "Střelné", sea: "Moře", att: "Útočné", def: "Obranné", spd: "Rychlost", bty: "Kořist (suroviny)", cap: "Transportní kapacita", res: "Náklady (suroviny)", fav: "Přízeň", tim: "Doba rekrutování (s)", rat: "Poměr surovin typu jednotky", shr: "Podíl na úložné kapacitě cílového města", per: "Procentuální obchod", lab: "Odeslané jednotky", rec: "Zdroje", improved_movement: "Vylepšený pohyb jednotek", donat: "Dary", Tran: "Překlady", Happy: "Šťastný nový rok!", Merry: "Ho Ho Ho, Veselé Vánoce!", tow: "BBCode město", ingame_name: ["Neváhejte mě kontaktovat, pokud chcete být volán svým herním jménem", "Protože je tato práce náročná, a to i časově, jsem vždy vděčný za jakoukoliv Vaši podporu. Proto chci poděkovat každému, kdo tomuto projektu jakkoliv pomohl - buďto skrze dary nebo, znalostí, kreativitou, hlášením chyb nebo pouze povzbudivými slovy."] }, tutoriel: { tuto: "Užitečné informace", reme: ["Děkuji všem, kteří se podíleli na vývoji DIO-TOOLS-David1327", ""], }, Quack: { delete_mul: "Odstraňte více zpráv", delete_sure: "Opravdu chcete smazat tyto příspěvky?", no_selection: "Nebyly vybrány žádné příspěvky", mark_All: "Označit vše", no_overload: 'Bez přeložení', delete: 'Smazat', cityfestivals: 'Městské slavnosti', olympicgames: 'Olympijské hry', triumph: 'Slavnostní pochody', theater: 'Divadelní hry' }, hotkeys: { hotkeys: 'Horké klávesy', Senate: 'Senát', city_select: 'Výběr města', last_city: 'Předchozí město', next_city: 'Následující město', jump_city: 'Přejít na aktuální město', administrator: 'Správce', captain: 'Kapitán', trade_ov: 'Obchod', command_ov: 'Rozkazy', recruitment_ov: 'Rekrutování', troop_ov: 'Přehled vojsk', troops_outside: 'Vojsko mimo', building_ov: 'Budovy', culture_ov: 'Kultura', gods_ov: 'Bohové', cave_ov: 'Jeskyně', city_groups_ov: 'Skupiny měst', city_list: 'Seznam měst', attack_planner: 'Plánovač útoků', farming_villages: 'Zemědělské vesnice', city_view: 'Přehled města', messages: 'Zprávy', reports: 'Hlášení', alliance: 'Aliance', alliance_forum: 'Fórum aliance', settings: 'Nastavení', profile: 'Profil', ranking: 'Žebříček', notes: 'Poznámky', council: 'Shromáždění hrdinů' }, messages: { ghosttown: 'Město duchů', no_cities: 'Na tomto ostrově nejsou žádná města', all: 'vše', export: 'Zkonvertuj zprávu do BB-kódu', Tol: 'Kopírovat a vložit (Quack funkce)', copy: 'Pro kopírování', bbmessages: 'BB-kódu messages', copybb: 'BB-kódu byl zkopírován', écrit: 'napsal toto:', }, caves: { stored_silver: 'Uložené stříbrné mince', name: 'Jméno', wood: 'Dřevo', stone: 'Kámen', silver: 'Stříbrné mince', }, grepo_mainmenu: { city_view: 'Přehled města', island_view: 'Ostrovní pohled' }, transport_calc: { recruits: 'Započítej jednotky ve výstavbě', }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'Info', trans: 'Překlad pro jazyk', translations: 'Překlady', trans_sure: 'Jste si jisti, že je váš překlad připraven k vygenerování?', trans_success: 'Překlad byl úspěšně odeslán', trans_fail: 'Překlad nelze odeslat', trans_infotext1: 'Překlad k dispozici', trans_infotext2: 'Chcete-li upravit nebo vytvořit nový jazyk, vyberte jazyk v rozevírací nabídce', trans_infotext3: 'Pokud text obsahuje značky HTML (tedy vše, co je obklopeno <> závorkami), požádám vás, abyste je ponechali tam, kde jste je našli.', trans_infotext4: 'Po dokončení překladu stiskněte', trans_infotext5: 'Abychom vás mohli přidat do kreditů, bude vygenerována vaše přezdívka', trans_infotext6: 'Zkopírujte vygenerovanou zprávu a vložte ji do komentáře', please_note: 'Vezměte prosím na vědomí', credits: 'Kredity', no_translation: 'Nebyl nalezen žádný překlad', choose_lang: 'Vyber jazyk', add_lang: 'Přidat nový jazyk', language: 'Jazyk', enter_lang_name: 'Zadejte prosím název jazyka', send: 'Generovat zprávu', name: 'Jméno', }, buttons: { sav: "Uložit", ins: "Vložit", res: "Resetovat" } },
+        cz: { Notification: {}, link: { forum: "https://cz.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.8478/", }, Settings: { dsc: "DIO-Tools nabízí,mimo jiné,některá nová zobrazení,okénko smajlíků,<br>obchodní možnosti a některé změny v rozložení panelů.", act: "Aktivovat/Deaktivovat funkce  sady nástrojů:", prv: "Ukázka několika funkcí:", version_old: "Verze je zastaralá", version_new: "Verze je aktuální", version_dev: "Vývojářská verze", version_update: "Aktualizovat", Donate: "Darovat", Update: "Aktualizace", Feature: "Nová vlastnost", Feature2: "Nová verze", Learn_more: "Zjistit více", cat_units: "Jednotky", cat_icons: "Ikony měst", cat_forum: "Forum", cat_trade: "Obchod", cat_wonders: "Div světa", cat_layout: "Okna", cat_other: "Ostatní", cat_Premium: "Premium", cat_Quack: "Quack", }, Options: { ava: ["Jednotky Přehled", "Označuje jednotky všemi městy"], sml: ["Smajlíci", "Rozšiřuje panel BBkodů okénkem smajlíků"], str: ["Síla jednotek", "Přidává tabulku sil jednotek v různých  oblastech"], tra: ["Transportní kapacita", "Zobrazuje obsazenou a dostupnou transportní kapacitu v nabídce jednotek"], per: ["Procentuální obchod", "Rozšiřuje obchodní okno možností procentuálního obchodu"], rec: ["Obchod rekrutace", "Rozšiřuje obchodní okno možností obchodem pro rekrutaci"], cnt: ["Dobývání", "Počítá Útok/Obrana v okně dobývání (pouze vlastní dobývání zatím)"], way: ["Rychlost vojsk", "Zobrazuje vylepšenou rychlost vojsk v okně útoku/obrany"], sim: ["Simulátor", "Přizpůsobení rozložení simulátoru & permanentní zobrazování rozšířeného okna modifikátoru"], act: ["Aktivní okénka", "Zlepšený zobrazení obchodů a vojsk aktivními okénky (pozice paměti)"], pop: ["Vyskakovací okénko přízně", "Změní vyskakovací okno seznamu přízní"], tsk: ["Hlavní panel", "Zvyšuje hlavní panel"], rew: ["Denní odměny", "Minimalizuje bonus denní odměny po přihlášení"], bbc: ["Obranné hlášení", "Rozšiřuje panel BBkodů automatickém hlášení obrany města"], com: ["Porovnání jednotek", "Přidává tabulku porovnání jednotek"], tic: ["Ikony měst", "Každé město dostává svojí ikonku dle typu města (automatická detekce)", "Další ikonky jsou k dispozici manuálně"], til: ["Seznam měst", "Přidává ikony měst do seznamu měst"], tim: ["Mapa", "Přidává ikony měst na stategickou mapu"], tiw: ["Vyskakovací ikona", ""], wwc: ["Kalkulačka", "Výpočet podílu & počítadlo surovin  + předchozí & další tlačítka  na dokončených divech světa (aktuálně nelze deaktivovat!)"], wwr: ["Žebříček", "Předělaný žebříček divů světa"], wwi: ["Ikony", 'Přídává ikony divů světa na strategickou mapu'], con: ["Kontextové menu", 'Vyměňuje "Vybrat město" a "Přehled města" v kontextovém menu'], sen: ["Odeslané jednotky", 'Zobrazuje odeslané jednotky útoku/obrany v okně'], tov: ["Přehled města", 'Nahrazuje nový přehled měst starším stylem okna'], scr: ["Kolečko myši", 'Můžeš změnit pohledy s kolečkem myši'], Scr: ["Posuvník", 'Změňte styl posuvníku'], tow: ["BBCode město", "Přidá bbcode města na kartu města"], Fdm: ["Vyberte a smažte několik zpráv", "Můžete smazat více než jednu zprávu. Funkce Quack"], Sel: ["Přidat (Bez přeložení / Smazat)", "Vylepšení nových nástrojů v okně útoku a podpory. Funkce Quack"], Cul: ["Přehled kultury (Správce)", "Přidejte čítač strany v zobrazení kultury. Funkce Quack"], Hot: ["Klávesové zkratky pro Windows", "Změní to váš život"], Isl: ["Vizualizace ostrova", "Zvětšete výšku seznamu měst a vesnic. Quack funkce"], Ish: ["Přehled rolnických vesnic (kapitán)", "Automaticky skrýt město. Quack funkce"], Hio: ["Přehled jeskyní (Správce)", "Povolit řazení měst. Quack funkce"], Hid: ["Jeskyně", "Automaticky vkládat do vstupního pole stříbrné mince nad 15 000. Quack funkce"], Tol: ["Seznam měst v BB-Code", "Kopírovat a vložit. Quack funkce"], Cib: ["Botão de vista da cidade", "Přidat tlačítko pro otevírání přehledu města do postranní lišty Grepolisu. Quack funkce"], Ciw: ["Přehled města", "Exibir a cidade em uma janela. Quack funkce"], Tti: ["Obchodní zdroje pro festivaly", "Klikněte na něj a je vyměňováno pouze za festival. Quack funkce"], Mse: ["BB-Code messages", "Převést zprávy na BB-Code. Quack funkce"], Rep: ["Reports", "Přidání barevného filtru. Quack funkce"], BBt: ["Tlačítko BBcode Player Info", "Přidání tlačítka BBcode (hráč a spojenectví)"], Rtt: ["Odstranění popisů jednotky", ""], Cup: ["Rozvoj kultury (správce)", "Změnilo se zobrazení pruhu postupu a přidal se ukazatel průběhu pro plodiny. Funkce Akiway"], Cuo: ["Body kultury (správce)", "Přidejte počítadlo pro body kultury. Quack funkce"], Rct: ["Obchod -> Počítadlo zdrojů (správce)", "Počet všech zdrojů ve vašem městě"], err: ["Hlásit chyby automaticky", "Pokud aktivuješ tuto možnost,pomůžeš nám identifikovat chyby."], her: ["Thrácké dobývání", "Redukuje mapy Thráckého dobývání."], }, Town_icons: {}, Color: { Blue: 'Modrý', Red: 'Červené', Green: 'Zelený', Pink: 'Růžový', White: "Bílý", }, labels: { uni: "Jednotky Přehled", total: "Celkový", available: "K dispozici", outer: "Vně", con: "Zvolit město", std: "Standartní", gre: "Grepo", nat: "Příroda", ppl: "Lidi", oth: "Ostatní", hal: "Halloween", xma: "Vánoce", ttl: "Přehled: Obrana města", inf: "Informace o městě:", dev: "Odchylka", det: "Podrobné pozemní jednotky", prm: "Prémiové bonusy", sil: "Objem stříbra", mov: "Pohyby vojsk:", leg: "Podíl divu světa", stg: "Stupeň", tot: "Celkem", str: "Síla jednotek", los: "Ztráta", mod: "bez vlivu modifikátoru", dsc: "Porovnání jednotek", hck: "Sečné", prc: "Bodné", dst: "Střelné", sea: "Moře", att: "Útočné", def: "Obranné", spd: "Rychlost", bty: "Kořist (suroviny)", cap: "Transportní kapacita", res: "Náklady (suroviny)", fav: "Přízeň", tim: "Doba rekrutování (s)", rat: "Poměr surovin typu jednotky", shr: "Podíl na úložné kapacitě cílového města", per: "Procentuální obchod", lab: "Odeslané jednotky", rec: "Zdroje", improved_movement: "Vylepšený pohyb jednotek", donat: "Dary", Tran: "Překlady", Happy: "Šťastný nový rok!", Merry: "Ho Ho Ho, Veselé Vánoce!", tow: "BBCode město", ingame_name: ["Neváhejte mě kontaktovat, pokud chcete být volán svým herním jménem", "Protože je tato práce náročná, a to i časově, jsem vždy vděčný za jakoukoliv Vaši podporu. Proto chci poděkovat každému, kdo tomuto projektu jakkoliv pomohl - buďto skrze dary nebo, znalostí, kreativitou, hlášením chyb nebo pouze povzbudivými slovy."] }, tutoriel: { tuto: "Užitečné informace", reme: ["Děkuji všem, kteří se podíleli na vývoji DIO-TOOLS-David1327", ""], }, Quack: { delete_mul: "Odstraňte více zpráv", delete_sure: "Opravdu chcete smazat tyto příspěvky?", no_selection: "Nebyly vybrány žádné příspěvky", mark_All: "Označit vše", no_overload: 'Bez přeložení', delete: 'Smazat', cityfestivals: 'Městské slavnosti', olympicgames: 'Olympijské hry', triumph: 'Slavnostní pochody', theater: 'Divadelní hry' }, hotkeys: { hotkeys: 'Horké klávesy', Senate: 'Senát', city_select: 'Výběr města', last_city: 'Předchozí město', next_city: 'Následující město', jump_city: 'Přejít na aktuální město', administrator: 'Správce', captain: 'Kapitán', trade_ov: 'Obchod', command_ov: 'Rozkazy', recruitment_ov: 'Rekrutování', troop_ov: 'Přehled vojsk', troops_outside: 'Vojsko mimo', building_ov: 'Budovy', culture_ov: 'Kultura', gods_ov: 'Bohové', cave_ov: 'Jeskyně', city_groups_ov: 'Skupiny měst', city_list: 'Seznam měst', attack_planner: 'Plánovač útoků', farming_villages: 'Zemědělské vesnice', city_view: 'Přehled města', messages: 'Zprávy', reports: 'Hlášení', alliance: 'Aliance', alliance_forum: 'Fórum aliance', settings: 'Nastavení', profile: 'Profil', ranking: 'Žebříček', notes: 'Poznámky', council: 'Shromáždění hrdinů' }, messages: { ghosttown: 'Město duchů', no_cities: 'Na tomto ostrově nejsou žádná města', all: 'vše', export: 'Zkonvertuj zprávu do BB-kódu', Tol: 'Kopírovat a vložit (Quack funkce)', copy: 'Pro kopírování', bbmessages: 'BB-kódu messages', copybb: 'BB-kódu byl zkopírován', écrit: 'napsal toto:', }, caves: { stored_silver: 'Uložené stříbrné mince', name: 'Jméno', wood: 'Dřevo', stone: 'Kámen', silver: 'Stříbrné mince', }, grepo_mainmenu: { city_view: 'Přehled města', island_view: 'Ostrovní pohled' }, transport_calc: { recruits: 'Započítej jednotky ve výstavbě', }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'Info', trans: 'Překlad pro jazyk', translations: 'Překlady', trans_sure: 'Jste si jisti, že je váš překlad připraven k vygenerování?', trans_success: 'Překlad byl úspěšně odeslán', trans_fail: 'Překlad nelze odeslat', trans_infotext1: 'Překlad k dispozici', trans_infotext2: 'Chcete-li upravit nebo vytvořit nový jazyk, vyberte jazyk v rozevírací nabídce', trans_infotext3: 'Pokud text obsahuje značky HTML (tedy vše, co je obklopeno <> závorkami), požádám vás, abyste je ponechali tam, kde jste je našli.', trans_infotext4: 'Po dokončení překladu stiskněte', trans_infotext5: 'Abychom vás mohli přidat do kreditů, bude vygenerována vaše přezdívka', trans_infotext6: 'Zkopírujte vygenerovanou zprávu a vložte ji do komentáře', please_note: 'Vezměte prosím na vědomí', credits: 'Kredity', no_translation: 'Nebyl nalezen žádný překlad', choose_lang: 'Vyber jazyk', add_lang: 'Přidat nový jazyk', language: 'Jazyk', enter_lang_name: 'Zadejte prosím název jazyka', send: 'Generovat zprávu', name: 'Jméno', }, buttons: { sav: "Uložit", ins: "Vložit", res: "Resetovat" } },
         //////////////////////////////////////////////
         //     Romanian Translation by Nicolae01    //
         //////////////////////////////////////////////
-        ro: { Notification: {}, link: { forum: "https://ro.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.12961/", }, Settings: { dsc: "DIO-Tools oferă, printre altele, câteva afișaje, emoticoane, opțiuni de tranzacționare și unele modificări ale aspectului.", act: "Activați / dezactivați caracteristicile instrumentelor:", prv: "Previzualizarea mai multor funcții:", version_old: "Versiunea nu este la zi", version_new: "Versiunea este la zi", version_dev: "Versiunea dezvoltatorului", version_update: "Versiune la zi", Donate: "Donează", Update: "Actualizați " + dio_version, Feature: "Optiune noua", Feature2: "Versiune noua", Learn_more: "Aflați mai multe", cat_units: "Unități", cat_icons: "Iconițele pentru orașe", cat_forum: "Forum", cat_trade: "Magazin", cat_wonders: "Minunile Lumii", cat_layout: "Schemă", cat_other: "Diverse", cat_Quack: "Quack", install: "Instaleaza", reminder: "Adu-mi aminte mai tarziu", Available: "O noua versiune este disponibila", reqreload: "Reimprospatare nececsara", reload: "Reimprospateaza", }, Options: { bir: ["Contor de bireme", "Numără câte bireme sunt în orașe și face suma lor"], ava: ["Vedere de ansamblu a unităților", "Numără unitățile din fiecare oraș și face suma lor"], ava2: ["Numărul mării", "Unitate de extensie"], sml: ["Emoticoane", "Extinde bb-cod-ul printr-o bară de emoticoane"], str: ["Puterea unității", "Adăugă tabele de rezistență a unității în diferite zone"], tra: ["Capacitate de transport", "Arată locurile de transport ocupate și libere în meniul unităților"], per: ["Comerț procentual", "Extinde în fereastra de comerț o tranzacție procentuală"], rec: ["Recrutarea comerțului", "Extinde în fereastra de comerț un comerț de recrutare"], cnt: ["Cuceriri", "Numără atacurile/suporturile din fereastra de cucerire"], way: ["Viteza unităților", "Afișează viteza îmbunătățită a trupelor în fereastra de atac / sprijin"], sim: ["Simulator", "Adaptarea simulatorului și afișarea permanentă a vrăjilor și bonusurilor"], act: ["Cutii de activitate", "Afișare îmbunătățită a ferestrelor de comerț și de activități (poziție memorată)"], pop: ["Fereastră Favoruri", "Modifică fereastra favorurilor"], tsk: ["Bara De Activități", "Crește bara de activități"], rew: ["Recompense zilnice", "Minimizează fereastra de recompense zilnice la pornire"], bbc: ["Forma de apărare", "Extinde fereastra bb-code-ului într-un formular de apărare automată"], com: ["Comparația unităților", "Adăugă tabele de comparare a unităților"], tic: ["Iconițele orașelor", "Fiecare oraș primește o iconiță pentru tipul orașului (detectare automată)", "Iconițe suplimentare sunt disponibile pentru selectarea manuală"], til: ["Lista orașelor", "Adds the town icons to the town list"], tim: ["Hartă", "Setează iconița orașului pe hartă"], tiw: ["Popup pictogramă", ""], wwc: ["Calculator", "Împarte calculul și contorizarea resurselor + butoanele anterioare și următoare pentru minunile lumii finalizate (momentan nu pot fi dezactivate!)"], wwr: ["Ranking", "Clasamentul minunilor lumii refăcut"], wwi: ["Iconițe", 'Adaugă iconița pentru minunile lumii pe hartă'], con: ["Meniu contextual", 'Schimbă „Selectați orașul” și „Prezentare generală a orașului” din meniul contextual'], sen: ["Unități trimise", 'Arată unitățile trimise în fereastra de atac/sprijin'], tov: ["Prezentare generală a orașului", 'Înlocuiește noua privire a orașului cu stilul vechi al ferestrei'], scr: ["Rotiță Mouse", 'Puteți schimba vizionările cu rotița mouse-ului'], Scr: ["Scrollbar", 'Schimbă stilul scrollbar-ului'], tow: ["Orașul BBCode", "Adăugați bbcode-ul orașului la fila localității"], Fdm: ["Selectați și ștergeți mai multe mesaje", "Puteți șterge mai multe mesaje. Funcția Quack"], Sel: ["Adăugare (Nu supraincarcati / Sterge)", "Îmbunătățirea noilor instrumente în fereastra de atac și sprijin. Funcția Quack"], Cul: ["Prezentare culturală (Administrator)", "Adăugați un contor pentru petrecere în vizualizarea culturii. Funcția Quack"], Hot: ["Comenzi rapide pentru tastatură pentru Windows", "Îți schimbă viața"], Isl: ["Vizualizarea insulei", "Creșterea înălțimii listei de orașe și sate. Funcția Quack"], Ish: ["Prezentare generală a satelor țărănești (căpitan)", "Ascundeți automat orașul. Funcția Quack"], Hio: ["Privire de ansamblu asupra pesterilor (Administrator)", "Permite sortarea oraselor. Funcția Quack"], Hid: ["Pestera", "Introdu 1500 monede de argint automat in campul selectat. Funcția Quack"], Tol: ["Lista orașelor din BB-Code", "Copiaza & lipeste. Funcția Quack"], Cib: ["Butonul vizualizare oraș", 'Adauga buton pentru deschiderea "vezi orasul" in meniul lateral al Grepolisului. Funcția Quack'], Ciw: ["Vezi oras", "Afiseaza vederea orasului in fereastra. Funcția Quack"], Tti: ["Resurse comerciale pentru festivaluri", "Faceți clic pe el și sunt schimbate doar către un festival. Funcția Quack"], Mse: ["Mesaje cu codul BB", "Conversia mesajelor în codul BB. Funcția Quack"], Rep: ["Rapoarte", "Adăugarea unui filtru de culori. Funcția Quack"], BBt: ["Butonul BBcode Informații jucător", "Adăugarea unui buton BBcode (jucător și alianță)"], Rtt: ["Îndepărtarea sfaturilor de instrumente ale unității", ""], Cup: ["Avansarea culturii (Administrator)", "A modificat prezentarea barei de progres și a adăugat o bară de progres pentru culturi. Funcția Akiway"], Cuo: ["Puncte de cultură (Administrator)", "Adăugați un contor pentru punctele de cultură. Funcția Quack"], Rct: ["Comerț -> Contor de resurse (Administrator)", "Un număr al tuturor resurselor din orașul dvs."], err: ["Trimite rapoarte de eroare automatic", "Dacă activezi această opțiune, poți ajuta în identificarea erorilor."], her: ["Cucerirea Tracică", "Reducerea hărții cuceririi tracice."], }, Town_icons: { LandOff: "Atac Terestru", LandDef: "Apărare Terestră", NavyOff: "Atac Naval", NavyDef: "Apărare Navală", FlyOff: "Zburătoare ofensive", FlyDef: "Zburătoare defensive", Out: "Afară", Emp: "Gol", }, Color: { Blue: 'Albastru', Red: 'Roșu', Green: 'Verde', Pink: 'Roz', White: "alb", }, labels: { uni: "Vedere de ansamblu unități", total: "Total", available: "Disponibile", outer: "Afară", con: "Alege orașul", std: "Standard", gre: "Grepolis", nat: "Natură", ppl: "Oameni", Par: "Petrecere", oth: "Altele", hal: "Halloween", xma: "Crăciun", eas: "Paște", lov: "Dragoste", ttl: "Vedere de ansamblu: Apărarea orașului", inf: "Informațiile orașului:", dev: "Deviere", det: "Detalii unități terestre", prm: "Bonusurile premium", sil: "Volumul argintului", mov: "Mișcările trupelor:", leg: "ML Participare", stg: "Stagiu", tot: "Total", str: "Puterea unităților", los: "Pierderi", mod: "fără modificator de influență", dsc: "Comparare unități", hck: "Neascuțit", prc: "Ascuțit", dst: "Distanță", sea: "Naval", att: "Ofensiv", def: "Defensiv", spd: "Viteză", bty: "Pradă de război (resurse)", cap: "Capacitate de transport", res: "Cost (resurse)", fav: "Favoruri", tim: "Timp de recrutare (s)", rat: "Raportul resurselor față de tipul de unitate", shr: "Ponderarea capacității de stocare a orașului țintă", per: "Procent resurse", lab: "Unități trimise", rec: "Resurse", improved_movement: "Mișcare îmbunătățită a trupelor", donat: "Donații", Tran: "Traduceri", Happy: "An Nou Fericit!", Merry: "Ho Ho Ho, Crăciun fericit!", tow: "Orașul BBCode", ingame_name: ["Nu ezita sa ma contactezi daca preferi sa fi numit dupa numele de joc", ""] }, tutoriel: { tuto: "Informații utile", reme: ["Mulțumesc tuturor celor care au contribuit dezvoltării DIO-Tools", ""], Trou: ["Tutorial Specializări Trupe Grepolis - Tutorialul lui david1327", "Tot ce trebuie să ști despre puterile / slăbiciunile trupelor de pe Grepolis"], util: ["Site-uri utilitare pentru Grepolis - Tutorialul lui david1327", "O multitudine de unelte pentru Grepolis: Statisticici, Hărți, Unelte, Scripturi, Forum ... toate sunt listate aici."] }, Quack: { delete_mul: "Ștergeți mai multe mesaje", delete_sure: "Esti sigur ca vrei sa stergi acest post?", no_selection: "Nici un post selectat", mark_All: "Marchează-le pe toate", no_overload: 'Nu supraincarcati', delete: 'Sterge', cityfestivals: 'Festival oras', olympicgames: 'Jocuri olimpice', triumph: 'Parada triumfala', theater: 'Piese de teatru' }, hotkeys: { hotkeys: 'Taste', Senate: 'Senat', city_select: 'Selectare oras', last_city: 'Ultimul oras', next_city: 'Urmatorul oras', jump_city: 'Salt la orasul curent', captain: 'Capitan', trade_ov: 'Negot', command_ov: 'Comenzi', recruitment_ov: 'Recrutare', troop_ov: 'Privire de ansamblu a trupelor', troops_outside: 'Trupe din afara orasului', building_ov: 'Constructii', culture_ov: 'Cultura', gods_ov: 'Zei', cave_ov: 'Pesteri', city_groups_ov: 'Grupe orase', city_list: 'Lista orase', attack_planner: 'Planificator atacuri', farming_villages: 'Sate de farmat', menu: 'Meniu', city_view: 'Vezi oras ', messages: 'Mesaje', reports: 'Rapoarte', alliance: 'Alianta', alliance_forum: 'Forum Alianta', settings: 'Setari', profile: 'Profil', ranking: 'Clasament', notes: 'Notite', council: 'Consiliul eroilor' }, messages: { ghosttown: 'Oras fantoma', no_cities: 'Nici un oras pe aceasta insula', all: 'toate', export: 'Converteste mesajul in BB-Code', Tol: 'Copiaza & lipeste (Funcția Quack)', copy: 'A copia', bbmessages: 'Mesaje ale BB-Code', copybb: 'BB-Code a fost copiat', écrit: 'a scris următoarele:', }, caves: { stored_silver: 'Monede de argint stocate', silver_to_store: 'Monede de argint ce pot fi stocate', name: 'Nume', wood: 'Lemn', stone: 'Piatra', silver: 'Monede de argint ', }, grepo_mainmenu: { city_view: 'Vezi Oras', island_view: 'Vezi Insula' }, transport_calc: { recruits: 'Numar unitati in asteptare de recrutare', }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'Info', trans: 'Traducere pentru limbă', translations: 'Traduceri', trans_sure: 'Sunteți sigur că traducerea dvs. este gata să fie generată?', trans_success: 'Traducerea a fost trimisă cu succes', trans_fail: 'Traducerea nu a putut fi trimisă', trans_infotext1: 'Traducere disponibilă', trans_infotext2: 'Pentru a modifica sau a crea o nouă limbă, alegeți limba din meniul derulant', trans_infotext3: 'Când un text conține etichete HTML (deci tot ce este înconjurat de paranteze <>) vă rog să le păstrați acolo unde le-ați găsit', trans_infotext4: 'Când ați terminat traducerea, apăsați', trans_infotext5: 'Pentru a vă putea adăuga la credite, va fi generat porecla dvs.', trans_infotext6: 'Copiați mesajul generat și lipiți-l într-un comentariu', please_note: 'Vă rugăm să rețineți', credits: 'Credite', no_translation: 'Nu s-a găsit nicio traducere', choose_lang: 'Alege limba', add_lang: 'Adăugați o nouă limbă', language: 'Limba', enter_lang_name: 'Vă rugăm să introduceți un nume de limbă', send: 'Generați mesaj', name: 'Nume', }, buttons: { sav: "Salvați", ins: "Introduceți", res: "Resetați" }, },
+        ro: { Notification: {}, link: { forum: "https://ro.forum.grepolis.com/index.php?threads/script-dio-tools-david1327.12961/", }, Settings: { dsc: "DIO-Tools oferă, printre altele, câteva afișaje, emoticoane, opțiuni de tranzacționare și unele modificări ale aspectului.", act: "Activați / dezactivați caracteristicile instrumentelor:", prv: "Previzualizarea mai multor funcții:", version_old: "Versiunea nu este la zi", version_new: "Versiunea este la zi", version_dev: "Versiunea dezvoltatorului", version_update: "Versiune la zi", Donate: "Donează", Update: "Actualizați", Feature: "Optiune noua", Feature2: "Versiune noua", Learn_more: "Aflați mai multe", cat_units: "Unități", cat_icons: "Iconițele pentru orașe", cat_forum: "Forum", cat_trade: "Magazin", cat_wonders: "Minunile Lumii", cat_layout: "Schemă", cat_other: "Diverse", cat_Quack: "Quack", install: "Instaleaza", reminder: "Adu-mi aminte mai tarziu", Available: "O noua versiune este disponibila", reqreload: "Reimprospatare nececsara", reload: "Reimprospateaza", }, Options: { bir: ["Contor de bireme", "Numără câte bireme sunt în orașe și face suma lor"], ava: ["Vedere de ansamblu a unităților", "Numără unitățile din fiecare oraș și face suma lor"], ava2: ["Numărul mării", "Unitate de extensie"], sml: ["Emoticoane", "Extinde bb-cod-ul printr-o bară de emoticoane"], str: ["Puterea unității", "Adăugă tabele de rezistență a unității în diferite zone"], tra: ["Capacitate de transport", "Arată locurile de transport ocupate și libere în meniul unităților"], per: ["Comerț procentual", "Extinde în fereastra de comerț o tranzacție procentuală"], rec: ["Recrutarea comerțului", "Extinde în fereastra de comerț un comerț de recrutare"], cnt: ["Cuceriri", "Numără atacurile/suporturile din fereastra de cucerire"], way: ["Viteza unităților", "Afișează viteza îmbunătățită a trupelor în fereastra de atac / sprijin"], sim: ["Simulator", "Adaptarea simulatorului și afișarea permanentă a vrăjilor și bonusurilor"], act: ["Cutii de activitate", "Afișare îmbunătățită a ferestrelor de comerț și de activități (poziție memorată)"], pop: ["Fereastră Favoruri", "Modifică fereastra favorurilor"], tsk: ["Bara De Activități", "Crește bara de activități"], rew: ["Recompense zilnice", "Minimizează fereastra de recompense zilnice la pornire"], bbc: ["Forma de apărare", "Extinde fereastra bb-code-ului într-un formular de apărare automată"], com: ["Comparația unităților", "Adăugă tabele de comparare a unităților"], tic: ["Iconițele orașelor", "Fiecare oraș primește o iconiță pentru tipul orașului (detectare automată)", "Iconițe suplimentare sunt disponibile pentru selectarea manuală"], til: ["Lista orașelor", "Adds the town icons to the town list"], tim: ["Hartă", "Setează iconița orașului pe hartă"], tiw: ["Popup pictogramă", ""], wwc: ["Calculator", "Împarte calculul și contorizarea resurselor + butoanele anterioare și următoare pentru minunile lumii finalizate (momentan nu pot fi dezactivate!)"], wwr: ["Ranking", "Clasamentul minunilor lumii refăcut"], wwi: ["Iconițe", 'Adaugă iconița pentru minunile lumii pe hartă'], con: ["Meniu contextual", 'Schimbă „Selectați orașul” și „Prezentare generală a orașului” din meniul contextual'], sen: ["Unități trimise", 'Arată unitățile trimise în fereastra de atac/sprijin'], tov: ["Prezentare generală a orașului", 'Înlocuiește noua privire a orașului cu stilul vechi al ferestrei'], scr: ["Rotiță Mouse", 'Puteți schimba vizionările cu rotița mouse-ului'], Scr: ["Scrollbar", 'Schimbă stilul scrollbar-ului'], tow: ["Orașul BBCode", "Adăugați bbcode-ul orașului la fila localității"], Fdm: ["Selectați și ștergeți mai multe mesaje", "Puteți șterge mai multe mesaje. Funcția Quack"], Sel: ["Adăugare (Nu supraincarcati / Sterge)", "Îmbunătățirea noilor instrumente în fereastra de atac și sprijin. Funcția Quack"], Cul: ["Prezentare culturală (Administrator)", "Adăugați un contor pentru petrecere în vizualizarea culturii. Funcția Quack"], Hot: ["Comenzi rapide pentru tastatură pentru Windows", "Îți schimbă viața"], Isl: ["Vizualizarea insulei", "Creșterea înălțimii listei de orașe și sate. Funcția Quack"], Ish: ["Prezentare generală a satelor țărănești (căpitan)", "Ascundeți automat orașul. Funcția Quack"], Hio: ["Privire de ansamblu asupra pesterilor (Administrator)", "Permite sortarea oraselor. Funcția Quack"], Hid: ["Pestera", "Introdu 1500 monede de argint automat in campul selectat. Funcția Quack"], Tol: ["Lista orașelor din BB-Code", "Copiaza & lipeste. Funcția Quack"], Cib: ["Butonul vizualizare oraș", 'Adauga buton pentru deschiderea "vezi orasul" in meniul lateral al Grepolisului. Funcția Quack'], Ciw: ["Vezi oras", "Afiseaza vederea orasului in fereastra. Funcția Quack"], Tti: ["Resurse comerciale pentru festivaluri", "Faceți clic pe el și sunt schimbate doar către un festival. Funcția Quack"], Mse: ["Mesaje cu codul BB", "Conversia mesajelor în codul BB. Funcția Quack"], Rep: ["Rapoarte", "Adăugarea unui filtru de culori. Funcția Quack"], BBt: ["Butonul BBcode Informații jucător", "Adăugarea unui buton BBcode (jucător și alianță)"], Rtt: ["Îndepărtarea sfaturilor de instrumente ale unității", ""], Cup: ["Avansarea culturii (Administrator)", "A modificat prezentarea barei de progres și a adăugat o bară de progres pentru culturi. Funcția Akiway"], Cuo: ["Puncte de cultură (Administrator)", "Adăugați un contor pentru punctele de cultură. Funcția Quack"], Rct: ["Comerț -> Contor de resurse (Administrator)", "Un număr al tuturor resurselor din orașul dvs."], err: ["Trimite rapoarte de eroare automatic", "Dacă activezi această opțiune, poți ajuta în identificarea erorilor."], her: ["Cucerirea Tracică", "Reducerea hărții cuceririi tracice."], }, Town_icons: { LandOff: "Atac Terestru", LandDef: "Apărare Terestră", NavyOff: "Atac Naval", NavyDef: "Apărare Navală", FlyOff: "Zburătoare ofensive", FlyDef: "Zburătoare defensive", Out: "Afară", Emp: "Gol", }, Color: { Blue: 'Albastru', Red: 'Roșu', Green: 'Verde', Pink: 'Roz', White: "alb", }, labels: { uni: "Vedere de ansamblu unități", total: "Total", available: "Disponibile", outer: "Afară", con: "Alege orașul", std: "Standard", gre: "Grepolis", nat: "Natură", ppl: "Oameni", Par: "Petrecere", oth: "Altele", hal: "Halloween", xma: "Crăciun", eas: "Paște", lov: "Dragoste", ttl: "Vedere de ansamblu: Apărarea orașului", inf: "Informațiile orașului:", dev: "Deviere", det: "Detalii unități terestre", prm: "Bonusurile premium", sil: "Volumul argintului", mov: "Mișcările trupelor:", leg: "ML Participare", stg: "Stagiu", tot: "Total", str: "Puterea unităților", los: "Pierderi", mod: "fără modificator de influență", dsc: "Comparare unități", hck: "Neascuțit", prc: "Ascuțit", dst: "Distanță", sea: "Naval", att: "Ofensiv", def: "Defensiv", spd: "Viteză", bty: "Pradă de război (resurse)", cap: "Capacitate de transport", res: "Cost (resurse)", fav: "Favoruri", tim: "Timp de recrutare (s)", rat: "Raportul resurselor față de tipul de unitate", shr: "Ponderarea capacității de stocare a orașului țintă", per: "Procent resurse", lab: "Unități trimise", rec: "Resurse", improved_movement: "Mișcare îmbunătățită a trupelor", donat: "Donații", Tran: "Traduceri", Happy: "An Nou Fericit!", Merry: "Ho Ho Ho, Crăciun fericit!", tow: "Orașul BBCode", ingame_name: ["Nu ezita sa ma contactezi daca preferi sa fi numit dupa numele de joc", ""] }, tutoriel: { tuto: "Informații utile", reme: ["Mulțumesc tuturor celor care au contribuit dezvoltării DIO-Tools", ""], Trou: ["Tutorial Specializări Trupe Grepolis - Tutorialul lui david1327", "Tot ce trebuie să ști despre puterile / slăbiciunile trupelor de pe Grepolis"], util: ["Site-uri utilitare pentru Grepolis - Tutorialul lui david1327", "O multitudine de unelte pentru Grepolis: Statisticici, Hărți, Unelte, Scripturi, Forum ... toate sunt listate aici."] }, Quack: { delete_mul: "Ștergeți mai multe mesaje", delete_sure: "Esti sigur ca vrei sa stergi acest post?", no_selection: "Nici un post selectat", mark_All: "Marchează-le pe toate", no_overload: 'Nu supraincarcati', delete: 'Sterge', cityfestivals: 'Festival oras', olympicgames: 'Jocuri olimpice', triumph: 'Parada triumfala', theater: 'Piese de teatru' }, hotkeys: { hotkeys: 'Taste', Senate: 'Senat', city_select: 'Selectare oras', last_city: 'Ultimul oras', next_city: 'Urmatorul oras', jump_city: 'Salt la orasul curent', captain: 'Capitan', trade_ov: 'Negot', command_ov: 'Comenzi', recruitment_ov: 'Recrutare', troop_ov: 'Privire de ansamblu a trupelor', troops_outside: 'Trupe din afara orasului', building_ov: 'Constructii', culture_ov: 'Cultura', gods_ov: 'Zei', cave_ov: 'Pesteri', city_groups_ov: 'Grupe orase', city_list: 'Lista orase', attack_planner: 'Planificator atacuri', farming_villages: 'Sate de farmat', menu: 'Meniu', city_view: 'Vezi oras ', messages: 'Mesaje', reports: 'Rapoarte', alliance: 'Alianta', alliance_forum: 'Forum Alianta', settings: 'Setari', profile: 'Profil', ranking: 'Clasament', notes: 'Notite', council: 'Consiliul eroilor' }, messages: { ghosttown: 'Oras fantoma', no_cities: 'Nici un oras pe aceasta insula', all: 'toate', export: 'Converteste mesajul in BB-Code', Tol: 'Copiaza & lipeste (Funcția Quack)', copy: 'A copia', bbmessages: 'Mesaje ale BB-Code', copybb: 'BB-Code a fost copiat', écrit: 'a scris următoarele:', }, caves: { stored_silver: 'Monede de argint stocate', silver_to_store: 'Monede de argint ce pot fi stocate', name: 'Nume', wood: 'Lemn', stone: 'Piatra', silver: 'Monede de argint ', }, grepo_mainmenu: { city_view: 'Vezi Oras', island_view: 'Vezi Insula' }, transport_calc: { recruits: 'Numar unitati in asteptare de recrutare', }, reports: { choose_folder: "", enacted: "", conquered: "", spying: "", spy: "", support: "", support2: "", supporting: "", attacking: "", farming_village: "", gold: "", Quests: "", Reservations: "", }, translations: { info: 'Info', trans: 'Traducere pentru limbă', translations: 'Traduceri', trans_sure: 'Sunteți sigur că traducerea dvs. este gata să fie generată?', trans_success: 'Traducerea a fost trimisă cu succes', trans_fail: 'Traducerea nu a putut fi trimisă', trans_infotext1: 'Traducere disponibilă', trans_infotext2: 'Pentru a modifica sau a crea o nouă limbă, alegeți limba din meniul derulant', trans_infotext3: 'Când un text conține etichete HTML (deci tot ce este înconjurat de paranteze <>) vă rog să le păstrați acolo unde le-ați găsit', trans_infotext4: 'Când ați terminat traducerea, apăsați', trans_infotext5: 'Pentru a vă putea adăuga la credite, va fi generat porecla dvs.', trans_infotext6: 'Copiați mesajul generat și lipiți-l într-un comentariu', please_note: 'Vă rugăm să rețineți', credits: 'Credite', no_translation: 'Nu s-a găsit nicio traducere', choose_lang: 'Alege limba', add_lang: 'Adăugați o nouă limbă', language: 'Limba', enter_lang_name: 'Vă rugăm să introduceți un nume de limbă', send: 'Generați mesaj', name: 'Nume', }, buttons: { sav: "Salvați", ins: "Introduceți", res: "Resetați" }, },
         //////////////////////////////////////////////
         //   Néerlandais Translation by Firebloem   //
         //////////////////////////////////////////////
-        nl: { Notification: {}, link: { forum: "https://nl.forum.grepolis.com/index.php?threads/dio-tools-david1327.39609/", }, Settings: { dsc: "DIO-Tools biedt onder andere, enkele displays, een smileybox,<br> handelsopties en enkele wijzigingen in de lay-out.", act: "Functies van de toolset activeren/deactiveren:", prv: "Voorbeeld van verschillende functies:", version_old: "Versie is niet actueel", version_new: "Versie is bijgewerkt", version_dev: "Ontwikkelaarsversie", version_update: "Update", Donate: "Doneer", Update: "Bijwerken " + dio_version, Feature: "Nieuwe functie", Feature2: "Nieuwe versie", Learn_more: "Kom meer te weten", cat_units: "Eenheden", cat_icons: "Stad pictogrammen", cat_forum: "Forum", cat_trade: "Handel", cat_wonders: "Wereld Wonder", cat_layout: "Lay-out", cat_other: "Diversen", cat_Quack: "Quack", install: "installeer", reminder: "Herinner mij later", Available: "Er is een nieuwe versie beschikbaar", reqreload: "Het is nodig om de site opnieuw te laden", reload: "Opnieuw laden", }, Options: { ava: ["Eenheden overzicht", "Telt de eenheden van alle steden"], ava2: ["Oceaan nummer", "Uitbreidingseenheid"], sml: ["Smileys", "Verlengt de bbcodebalk met een smileytabel"], str: ["Eenheidssterkte", "Voegt eenheidstabellen toe op verschillende gebieden"], tra: ["Transportcapaciteit", "Toont de bezette en beschikbare transportcapaciteit in het eenhedenmenu"], per: ["Procentuele handel", "Verlengt het handelsvenster met een procentuele transactie"], rec: ["Wervingshandel", "Vergroot het handelsvenster met een wervingshandel"], cnt: ["Verovering", "Telt de aanvallen/ondersteuningen in het veroveringsvenster"], way: ["Troepen snelheid", "Toont verbeterde troepsnelheid in het aanval/ondersteuningsvenster"], sim: ["Simulator", "Aanpassing van de simulatorlay-out & permanente weergave van de uitgebreide modificatietabel"], act: ["Activiteit vakken", "Verbeterde weergave van handels- en troep activiteitentabel (positiegeheugen)"], pop: ["Gunst pop-up", "Veranderd de gunst pop-up"], tsk: ["Taakbalk", "Vergroot de taakbalk"], rew: ["Beloning venster", 'Minimaliseert het dagelijkse belonings venster bij het opstarten'], bbc: ["Verdedigingsformulier", "Verlengt de bbcode-balk met een automatisch verdedigingsformulier"], com: ["Eenheidsvergelijking", "Voegt eenheid vergelijkingstabellen toe"], tic: ["Stad pictogrammen", "Elke stad ontvangt een pictogram voor het stadstype (automatische detectie)", " Extra pictogrammen zijn beschikbaar voor handmatige selectie"], til: ["Stedenlijst", "Voegt de stadspictogrammen toe aan de stedenlijst"], tim: ["Kaart", "Stelt de stadspictogrammen in op de strategische kaart"], tiw: ["Pictogram popup", ""], wwc: ["Calculator", "Deel berekening & grondstoffen teller + vorige & volgende knoppen op voltooide wereldwonderen (momenteel niet deactiveren!)"], wwr: ["Ranking", "Vernieuwde ranglijsten voor wereldwonderen"], wwi: ["Pictogrammen", 'Voegt wereldwonderpictogrammen toe op de strategische kaart'], con: ["Contextmenu", 'Wisselt "Selecteer stad" en "Stadsoverzicht" in het contextmenu'], sen: ["Verzonden eenheden", 'Toont verzonden eenheden in het aanval/ondersteuningsvenster'], tov: ["Stadsoverzicht", 'Vervangt het nieuwe stadsoverzicht door de oude vensterstijl'], scr: ["Muis wiel", 'U kunt de weergaven wijzigen met het muiswiel'], Scr: ["Scrollbar", 'Wijzig de stijl van de schuifbalk'], tow: ["Stad bbcode", "Voegt de stad bbcode toe aan het stadstabblad"], Fdm: ["Selecteer en verwijder meerdere berichten", "U kunt meer dan één bericht verwijderen. Quack-functie"], Sel: ["Toevoegen (niet overbelasten / Verwijderen)", "Verbetering van nieuwe tools in het aanvals- en ondersteuningsvenster. Quack-functie"], Cul: ["Cultuuroverzicht (Bestuurder)", "Voeg een teller toe voor het feest in de cultuurweergave. Kwakelfunctie"], Hot: ["Sneltoetsen voor Windows", "Het verandert je leven"], Isl: ["Visualisatie van het eiland", "Verhoog de hoogte van de lijst met steden en dorpen. Quack-functie"], Ish: ["Overzicht van boerendorpen (kapitein)", "Verberg automatisch de stad. Quack-functie"], Hio: ["Grottenoverzicht (Bestuurder)", "Het sorteren van steden mogelijk maken. Quack-functie"], Hid: ["Grot", "Zilver over 15000 automatisch in het invoerveld toevoegen. Quack-functie"], Tol: ["Lijst met steden in BB-Code", "Kopiëren & plakken. Quack-functie"], Cib: ["Stadszicht knop", "Een button voor het openen van de stadsoverzicht aan het zijkant menu toevoegen. Quack-functie"], Ciw: ["Stadsoverzicht", "Laat het stadsoverzicht zien in een scherm. Quack-functie"], Tti: ["Ruil bronnen voor festivals", "Klik erop en het wordt alleen uitgewisseld voor een festival. Quack-functie"], Mse: ["BB-Code-berichten", "Converteer berichten naar BB-Code. Quack-functie"], Rep: ["Reports", "Een kleurenfilter toevoegen. Quack-functie"], BBt: ["BBcode-knop Spelerinfo", "Toevoeging van een BBcode-knop (speler en alliantie)"], Rtt: ["Verwijderen van de tooltips van de unit", ""], Cup: ["Cultuurbevordering (Beheerder)", "De presentatie van de voortgangsbalk gewijzigd en een voortgangsbalk voor gewassen toegevoegd. Functie van Akiway"], Cuo: ["Cultuurpunten (Beheerder)", "Voeg een teller toe voor de Cultuurpunten. Quack-functie"], Rct: ["Handel -> Grondstoffenteller (Beheerder)", "Een telling van alle grondstoffen in je stad"], err: ["Stuur automatisch bugrapporten", "Als u deze optie activeert, kunt u helpen bij het identificeren van bugs."], her: ["Thracische verovering", "Verkleinen van de kaart van de verovering van Thracië."], }, movement: {}, Town_icons: { LandOff: "Landoffensief", LandDef: "Landverdediging", NavyOff: "Zee-offensief", NavyDef: "Zee-verdediging", FlyOff: "Vliegend Offensief", FlyDef: "Vliegend Verdediging", Out: "Buiten", Emp: "Leeg", }, Color: { Blue: 'Blauw', Red: 'Rood', Green: 'Groen', Pink: 'Roze', White: "Wit", }, labels: { uni: "Eenheden overzicht", total: "Totaal", available: "Beschikbaar", outer: "Buiten", con: "Stad selecteren", std: "Standaard", gre: "Grepolis", nat: "Natuur", ppl: "Mensen", Par: "Feest", oth: "Anders", hal: "Halloween", xma: "Kerstmis", eas: "Pasen", lov: "Liefde", ttl: "Overzicht: Stadsverdediging", inf: "Stadsinformatie:", dev: "Afwijking", det: "Gedetailleerde landeenheden", prm: "Premium bonussen", sil: "Zilver volume", mov: "Troepenbewegingen:", leg: "WW Aandeel", stg: "Stadium", tot: "Totaal", str: "Eenheidssterkte", los: "Verloren", mod: "zonder invloed van modificator", dsc: "Eenheidsvergelijking", hck: "Slag", prc: "Steek", dst: "Afstand", sea: "Zee", att: "Offensief", def: "Defensief", spd: "Snelheid", bty: "Buit (grondstoffen)", cap: "Transportcapaciteit", res: "Kosten (grondstoffen)", fav: "Gunst", tim: "Bouwtijd (s)", rat: "Grondstoffenverhouding van een eenheidstype", shr: "Deel van de opslagcapaciteit van de doelstad", per: "Procentuele handel", lab: "Verzonden eenheden", rec: "Middelen", improved_movement: "Verbeterde troepbeweging", Tran: "Vertalingen", donat: "Doneren", Happy: "Gelukkig nieuwjaar!", Merry: "Ho Ho Ho, Merry Christmas!", tow: "BBCode stad", loc: "Lokaal", ingame_name: ["Aarzel niet om contact met me op te nemen als je liever gebeld wordt met je bijnaam ", " Omdat het een grote hoeveelheid werk is die lang kan duren, ben ik altijd erg dankbaar voor elke vorm van ondersteuning. Daarom wil ik iedereen bedanken die ondersteuning heeft geboden voor dit project, hetzij door donaties, kennis, creativiteit, foutmeldingen of slechts enkele bemoedigende woorden."], raf: "Bij accepteren zal de pagina vernieuwen", }, tutoriel: { tuto: "=Grepolis Gidsen=", reme: "Ik dank iedereen die heeft bijgedragen aan de ontwikkeling van DIO-Tools", Trou: ["Grepolis Troepen Specialisatie Tutorial - tuto de david1327", "Wat u moet weten over de troepen van grepolis, Sterke/zwakke punten van de eenheden"], util: ["Hulpprogramma's voor grepolis - Tuto de david1327", "Een veelheid aan tools voor Grepolis: Statistieken, Kaarten, Tools, Script, Forum ... ze worden hier allemaal vermeld."] }, Quack: { delete_mul: "Verwijder meerdere berichten", delete_sure: "Wil je deze berichten echt verwijderen?", no_selection: "Geen berichten geselecteerd", mark_All: "Markeer alles", no_overload: 'niet overbelasten', delete: 'Verwijderen', cityfestivals: 'Stadsfeest', olympicgames: 'Olympische Spelen', triumph: 'Zegetocht', theater: 'Theatervoorstellingen' }, hotkeys: { hotkeys: 'Sneltoetsen', Senate: 'Senaat', city_select: 'Stedenkeuze', last_city: 'Vorige stad', next_city: 'Volgende stad', jump_city: 'Spring naar de huidige stad', administrator: 'Bestuurder', captain: 'Kapitein', trade_ov: 'Handel', command_ov: 'Bevelen', recruitment_ov: 'Rekrutering', troop_ov: 'Troepenoverzicht', troops_outside: 'Troepen buiten', building_ov: 'Gebouwen', culture_ov: 'Cultuur', gods_ov: 'Goden', cave_ov: 'Grotten', city_groups_ov: 'Stadsgroepen', city_list: 'Stedenlijst', attack_planner: 'Aanvalsplanner', farming_villages: 'Boerendorpen', city_view: 'Stadsoverzicht', messages: 'Berichten', reports: 'Rapporten', alliance: 'Alliantie', alliance_forum: 'Alliantieforum', settings: 'Instellingen', profile: 'Profiel', ranking: 'Ranglijst', notes: 'Notities', council: 'Raad van Helden' }, messages: { ghosttown: 'Spookstad', no_cities: 'Geen steden op dit eiland', all: 'alle', export: 'Converteer bericht in BB-code', Tol: 'Kopiëren & plakken (Quack-functie)', copy: 'kopiëren', bbmessages: 'BB-Code-berichten', copybb: 'BBCode is gekopieerd', écrit: 'heeft het volgende geschreven:', cli: "Dit bericht is niet gekopieerd", }, caves: { stored_silver: 'Opgeslagen zilverstukken', silver_to_store: 'Maximaal op te slaan zilverstukken', name: 'Naam', wood: 'Hout', stone: 'Steen', silver: 'Zilverstukken', search_for: "Zoeken naar" }, grepo_mainmenu: { city_view: 'Stadsoverzicht', island_view: 'Eilandoverzicht' }, transport_calc: { recruits: 'Eenheden in de rekruteringsrij meetellen', slowtrans: "Tel trage transport schepen", fasttrans: "Tel snelle transport schepen", Lack: "Gebrek", Still: "Nog steeds", pop: "Vrij inwoners. Voor de", Optipop: "Optimale bevolking voor", army: "Je hebt geen troepen", }, reports: { choose_folder: "Kies map", enacted: "uitgevaardigd", conquered: "Veroverd", spying: "Spioneren", spy: "Spion", support: "Ondersteunen", support2: "Kan niet ondersteunen", supporting: "Gestationeerd", attacking: "Aanval", farming_village: "Booerendorp", gold: "Je hebt ontvangen", Quests: "Quests", Reservations: "Reserveringen", }, translations: { info: 'Info', trans: 'Vertaling voor taal', translations: 'Vertalingen', trans_sure: 'Weet u zeker dat uw vertaling klaar is om gegenereerd te worden?', trans_success: 'De vertaling is succesvol verzonden', trans_fail: 'De vertaling kon niet verzonden worden', trans_infotext1: 'Vertaling beschikbaar', trans_infotext2: 'Om een nieuwe taal te wijzigen of aan te maken, kiest u de taal in het drop-down menu', trans_infotext3: 'Als een tekst HTML-tags bevat (dus alles wat tussen <> haakjes staat), vraag ik je om ze te bewaren waar je ze hebt gevonden', trans_infotext4: 'Als je klaar bent met vertalen, druk dan op', trans_infotext5: 'Om u aan de aftiteling te kunnen toevoegen, wordt uw nickname gegenereerd', trans_infotext6: 'Kopieer het gegenereerde bericht en plak het in een opmerking', please_note: 'Let op', credits: 'Credits', no_translation: 'Geen vertaling gevonden', choose_lang: 'Kies taal', add_lang: 'Voeg een nieuwe taal toe', language: 'Taal', enter_lang_name: 'Voer een taalnaam in', send: 'Genereer bericht', name: 'naam', }, buttons: { sav: "Opslaan", ins: "Invoegen", res: "Reset" } },
+        nl: { Notification: {}, link: { forum: "https://nl.forum.grepolis.com/index.php?threads/dio-tools-david1327.39609/", }, Settings: { dsc: "DIO-Tools biedt onder andere, enkele displays, een smileybox,<br> handelsopties en enkele wijzigingen in de lay-out.", act: "Functies van de toolset activeren/deactiveren:", prv: "Voorbeeld van verschillende functies:", version_old: "Versie is niet actueel", version_new: "Versie is bijgewerkt", version_dev: "Ontwikkelaarsversie", version_update: "Update", Donate: "Doneer", Update: "Bijwerken", Feature: "Nieuwe functie", Feature2: "Nieuwe versie", Learn_more: "Kom meer te weten", cat_units: "Eenheden", cat_icons: "Stad pictogrammen", cat_forum: "Forum", cat_trade: "Handel", cat_wonders: "Wereld Wonder", cat_layout: "Lay-out", cat_other: "Diversen", cat_Quack: "Quack", install: "installeer", reminder: "Herinner mij later", Available: "Er is een nieuwe versie beschikbaar", reqreload: "Het is nodig om de site opnieuw te laden", reload: "Opnieuw laden", }, Options: { ava: ["Eenheden overzicht", "Telt de eenheden van alle steden"], ava2: ["Oceaan nummer", "Uitbreidingseenheid"], sml: ["Smileys", "Verlengt de bbcodebalk met een smileytabel"], str: ["Eenheidssterkte", "Voegt eenheidstabellen toe op verschillende gebieden"], tra: ["Transportcapaciteit", "Toont de bezette en beschikbare transportcapaciteit in het eenhedenmenu"], per: ["Procentuele handel", "Verlengt het handelsvenster met een procentuele transactie"], rec: ["Wervingshandel", "Vergroot het handelsvenster met een wervingshandel"], cnt: ["Verovering", "Telt de aanvallen/ondersteuningen in het veroveringsvenster"], way: ["Troepen snelheid", "Toont verbeterde troepsnelheid in het aanval/ondersteuningsvenster"], sim: ["Simulator", "Aanpassing van de simulatorlay-out & permanente weergave van de uitgebreide modificatietabel"], act: ["Activiteit vakken", "Verbeterde weergave van handels- en troep activiteitentabel (positiegeheugen)"], pop: ["Gunst pop-up", "Veranderd de gunst pop-up"], tsk: ["Taakbalk", "Vergroot de taakbalk"], rew: ["Beloning venster", 'Minimaliseert het dagelijkse belonings venster bij het opstarten'], bbc: ["Verdedigingsformulier", "Verlengt de bbcode-balk met een automatisch verdedigingsformulier"], com: ["Eenheidsvergelijking", "Voegt eenheid vergelijkingstabellen toe"], tic: ["Stad pictogrammen", "Elke stad ontvangt een pictogram voor het stadstype (automatische detectie)", " Extra pictogrammen zijn beschikbaar voor handmatige selectie"], til: ["Stedenlijst", "Voegt de stadspictogrammen toe aan de stedenlijst"], tim: ["Kaart", "Stelt de stadspictogrammen in op de strategische kaart"], tiw: ["Pictogram popup", ""], wwc: ["Calculator", "Deel berekening & grondstoffen teller + vorige & volgende knoppen op voltooide wereldwonderen (momenteel niet deactiveren!)"], wwr: ["Ranking", "Vernieuwde ranglijsten voor wereldwonderen"], wwi: ["Pictogrammen", 'Voegt wereldwonderpictogrammen toe op de strategische kaart'], con: ["Contextmenu", 'Wisselt "Selecteer stad" en "Stadsoverzicht" in het contextmenu'], sen: ["Verzonden eenheden", 'Toont verzonden eenheden in het aanval/ondersteuningsvenster'], tov: ["Stadsoverzicht", 'Vervangt het nieuwe stadsoverzicht door de oude vensterstijl'], scr: ["Muis wiel", 'U kunt de weergaven wijzigen met het muiswiel'], Scr: ["Scrollbar", 'Wijzig de stijl van de schuifbalk'], tow: ["Stad bbcode", "Voegt de stad bbcode toe aan het stadstabblad"], Fdm: ["Selecteer en verwijder meerdere berichten", "U kunt meer dan één bericht verwijderen. Quack-functie"], Sel: ["Toevoegen (niet overbelasten / Verwijderen)", "Verbetering van nieuwe tools in het aanvals- en ondersteuningsvenster. Quack-functie"], Cul: ["Cultuuroverzicht (Bestuurder)", "Voeg een teller toe voor het feest in de cultuurweergave. Kwakelfunctie"], Hot: ["Sneltoetsen voor Windows", "Het verandert je leven"], Isl: ["Visualisatie van het eiland", "Verhoog de hoogte van de lijst met steden en dorpen. Quack-functie"], Ish: ["Overzicht van boerendorpen (kapitein)", "Verberg automatisch de stad. Quack-functie"], Hio: ["Grottenoverzicht (Bestuurder)", "Het sorteren van steden mogelijk maken. Quack-functie"], Hid: ["Grot", "Zilver over 15000 automatisch in het invoerveld toevoegen. Quack-functie"], Tol: ["Lijst met steden in BB-Code", "Kopiëren & plakken. Quack-functie"], Cib: ["Stadszicht knop", "Een button voor het openen van de stadsoverzicht aan het zijkant menu toevoegen. Quack-functie"], Ciw: ["Stadsoverzicht", "Laat het stadsoverzicht zien in een scherm. Quack-functie"], Tti: ["Ruil bronnen voor festivals", "Klik erop en het wordt alleen uitgewisseld voor een festival. Quack-functie"], Mse: ["BB-Code-berichten", "Converteer berichten naar BB-Code. Quack-functie"], Rep: ["Reports", "Een kleurenfilter toevoegen. Quack-functie"], BBt: ["BBcode-knop Spelerinfo", "Toevoeging van een BBcode-knop (speler en alliantie)"], Rtt: ["Verwijderen van de tooltips van de unit", ""], Cup: ["Cultuurbevordering (Beheerder)", "De presentatie van de voortgangsbalk gewijzigd en een voortgangsbalk voor gewassen toegevoegd. Functie van Akiway"], Cuo: ["Cultuurpunten (Beheerder)", "Voeg een teller toe voor de Cultuurpunten. Quack-functie"], Rct: ["Handel -> Grondstoffenteller (Beheerder)", "Een telling van alle grondstoffen in je stad"], err: ["Stuur automatisch bugrapporten", "Als u deze optie activeert, kunt u helpen bij het identificeren van bugs."], her: ["Thracische verovering", "Verkleinen van de kaart van de verovering van Thracië."], }, movement: {}, Town_icons: { LandOff: "Landoffensief", LandDef: "Landverdediging", NavyOff: "Zee-offensief", NavyDef: "Zee-verdediging", FlyOff: "Vliegend Offensief", FlyDef: "Vliegend Verdediging", Out: "Buiten", Emp: "Leeg", }, Color: { Blue: 'Blauw', Red: 'Rood', Green: 'Groen', Pink: 'Roze', White: "Wit", }, labels: { uni: "Eenheden overzicht", total: "Totaal", available: "Beschikbaar", outer: "Buiten", con: "Stad selecteren", std: "Standaard", gre: "Grepolis", nat: "Natuur", ppl: "Mensen", Par: "Feest", oth: "Anders", hal: "Halloween", xma: "Kerstmis", eas: "Pasen", lov: "Liefde", ttl: "Overzicht: Stadsverdediging", inf: "Stadsinformatie:", dev: "Afwijking", det: "Gedetailleerde landeenheden", prm: "Premium bonussen", sil: "Zilver volume", mov: "Troepenbewegingen:", leg: "WW Aandeel", stg: "Stadium", tot: "Totaal", str: "Eenheidssterkte", los: "Verloren", mod: "zonder invloed van modificator", dsc: "Eenheidsvergelijking", hck: "Slag", prc: "Steek", dst: "Afstand", sea: "Zee", att: "Offensief", def: "Defensief", spd: "Snelheid", bty: "Buit (grondstoffen)", cap: "Transportcapaciteit", res: "Kosten (grondstoffen)", fav: "Gunst", tim: "Bouwtijd (s)", rat: "Grondstoffenverhouding van een eenheidstype", shr: "Deel van de opslagcapaciteit van de doelstad", per: "Procentuele handel", lab: "Verzonden eenheden", rec: "Middelen", improved_movement: "Verbeterde troepbeweging", Tran: "Vertalingen", donat: "Doneren", Happy: "Gelukkig nieuwjaar!", Merry: "Ho Ho Ho, Merry Christmas!", tow: "BBCode stad", loc: "Lokaal", ingame_name: ["Aarzel niet om contact met me op te nemen als je liever gebeld wordt met je bijnaam ", " Omdat het een grote hoeveelheid werk is die lang kan duren, ben ik altijd erg dankbaar voor elke vorm van ondersteuning. Daarom wil ik iedereen bedanken die ondersteuning heeft geboden voor dit project, hetzij door donaties, kennis, creativiteit, foutmeldingen of slechts enkele bemoedigende woorden."], raf: "Bij accepteren zal de pagina vernieuwen", }, tutoriel: { tuto: "=Grepolis Gidsen=", reme: "Ik dank iedereen die heeft bijgedragen aan de ontwikkeling van DIO-Tools", Trou: ["Grepolis Troepen Specialisatie Tutorial - tuto de david1327", "Wat u moet weten over de troepen van grepolis, Sterke/zwakke punten van de eenheden"], util: ["Hulpprogramma's voor grepolis - Tuto de david1327", "Een veelheid aan tools voor Grepolis: Statistieken, Kaarten, Tools, Script, Forum ... ze worden hier allemaal vermeld."] }, Quack: { delete_mul: "Verwijder meerdere berichten", delete_sure: "Wil je deze berichten echt verwijderen?", no_selection: "Geen berichten geselecteerd", mark_All: "Markeer alles", no_overload: 'niet overbelasten', delete: 'Verwijderen', cityfestivals: 'Stadsfeest', olympicgames: 'Olympische Spelen', triumph: 'Zegetocht', theater: 'Theatervoorstellingen' }, hotkeys: { hotkeys: 'Sneltoetsen', Senate: 'Senaat', city_select: 'Stedenkeuze', last_city: 'Vorige stad', next_city: 'Volgende stad', jump_city: 'Spring naar de huidige stad', administrator: 'Bestuurder', captain: 'Kapitein', trade_ov: 'Handel', command_ov: 'Bevelen', recruitment_ov: 'Rekrutering', troop_ov: 'Troepenoverzicht', troops_outside: 'Troepen buiten', building_ov: 'Gebouwen', culture_ov: 'Cultuur', gods_ov: 'Goden', cave_ov: 'Grotten', city_groups_ov: 'Stadsgroepen', city_list: 'Stedenlijst', attack_planner: 'Aanvalsplanner', farming_villages: 'Boerendorpen', city_view: 'Stadsoverzicht', messages: 'Berichten', reports: 'Rapporten', alliance: 'Alliantie', alliance_forum: 'Alliantieforum', settings: 'Instellingen', profile: 'Profiel', ranking: 'Ranglijst', notes: 'Notities', council: 'Raad van Helden' }, messages: { ghosttown: 'Spookstad', no_cities: 'Geen steden op dit eiland', all: 'alle', export: 'Converteer bericht in BB-code', Tol: 'Kopiëren & plakken (Quack-functie)', copy: 'kopiëren', bbmessages: 'BB-Code-berichten', copybb: 'BBCode is gekopieerd', écrit: 'heeft het volgende geschreven:', cli: "Dit bericht is niet gekopieerd", }, caves: { stored_silver: 'Opgeslagen zilverstukken', silver_to_store: 'Maximaal op te slaan zilverstukken', name: 'Naam', wood: 'Hout', stone: 'Steen', silver: 'Zilverstukken', search_for: "Zoeken naar" }, grepo_mainmenu: { city_view: 'Stadsoverzicht', island_view: 'Eilandoverzicht' }, transport_calc: { recruits: 'Eenheden in de rekruteringsrij meetellen', slowtrans: "Tel trage transport schepen", fasttrans: "Tel snelle transport schepen", Lack: "Gebrek", Still: "Nog steeds", pop: "Vrij inwoners. Voor de", Optipop: "Optimale bevolking voor", army: "Je hebt geen troepen", }, reports: { choose_folder: "Kies map", enacted: "uitgevaardigd", conquered: "Veroverd", spying: "Spioneren", spy: "Spion", support: "Ondersteunen", support2: "Kan niet ondersteunen", supporting: "Gestationeerd", attacking: "Aanval", farming_village: "Booerendorp", gold: "Je hebt ontvangen", Quests: "Quests", Reservations: "Reserveringen", }, translations: { info: 'Info', trans: 'Vertaling voor taal', translations: 'Vertalingen', trans_sure: 'Weet u zeker dat uw vertaling klaar is om gegenereerd te worden?', trans_success: 'De vertaling is succesvol verzonden', trans_fail: 'De vertaling kon niet verzonden worden', trans_infotext1: 'Vertaling beschikbaar', trans_infotext2: 'Om een nieuwe taal te wijzigen of aan te maken, kiest u de taal in het drop-down menu', trans_infotext3: 'Als een tekst HTML-tags bevat (dus alles wat tussen <> haakjes staat), vraag ik je om ze te bewaren waar je ze hebt gevonden', trans_infotext4: 'Als je klaar bent met vertalen, druk dan op', trans_infotext5: 'Om u aan de aftiteling te kunnen toevoegen, wordt uw nickname gegenereerd', trans_infotext6: 'Kopieer het gegenereerde bericht en plak het in een opmerking', please_note: 'Let op', credits: 'Credits', no_translation: 'Geen vertaling gevonden', choose_lang: 'Kies taal', add_lang: 'Voeg een nieuwe taal toe', language: 'Taal', enter_lang_name: 'Voer een taalnaam in', send: 'Genereer bericht', name: 'naam', }, buttons: { sav: "Opslaan", ins: "Invoegen", res: "Reset" } },
         //////////////////////////////////////////////
         //      GREEK Translation by AbstractGR     //
         //////////////////////////////////////////////
-        gr: { Notification: {}, link: {}, Settings: { dsc: 'Το DIO-Tools προσφέρει, ανάμεσα σε άλλα πράγματα, κάποιες νέες απεικονίσεις, μενού με smiley, επιλογές εμπορίου και κάποιες αλλαγές στο σχέδιο του παιχνιδιού.', act: 'Ενεργοποίησε/απενεργοποίησε τα χαρακτηριστικά του συνόλου των εργαλείων:', prv: 'Προεπισκόπηση μερικών χαρακτηριστικών:', version_old: 'Η έκδοση δεν είναι ενημερωμένη', version_new: 'Η έκδοση είναι ενημερωμένη', version_dev: 'Έκδοση προγραμματιστή', version_update: 'Αναβάθμιση', Donate: 'Δωρεά', Update: 'Έκδοση' + dio_version, Feature: 'Νέο χαρακτηριστικό', Feature2: 'Νέα έκδοση', Learn_more: 'Μάθε περισσότερα', cat_units: 'Μονάδες', cat_icons: 'Εικονίδια πόλεων', cat_forum: 'Φόρουμ', cat_trade: 'Εμπόριο', cat_wonders: 'Θαύμα του κόσμου', cat_layout: 'Σχέδιο', cat_other: 'Διάφορα', cat_Quack: "Quack", }, Options: { ava: ['Επισκόπηση μονάδων', 'Μετράει όλες τις μονάδες από όλες τις πόλεις'], ava2: ['Αριθμός ωκεανού', 'Μονάδα επέκτασης'], sml: ['Smilies', 'Επεκτείνει τη μπάρα bbcode ανά μενού με smilies'], str: ['Δύναμη μονάδας', 'Προσθέτει τους πίνακες με τις δυνάμεις των μονάδων σε πολλά σημε'], tra: ['Χωρητικότητα μεταφορικών', 'Δείχνει τα χρησιμοποιούμενη και διαθέσιμη χωρητικότητα των μεταφορικών στο μενού με τις μονάδες'], per: ['Ποσοστιαίο εμπόριο', 'Επεκτείνει το παράθυρο του εμπορίου με μια επιλογή ποσοστιαίου εμπορίου'], rec: ['Κόστος στρατολόγησης', 'Επεκτείνει το παράθυρο εμπορίου με μια επιλογή για το κόστος στρατολόγησης'], cnt: ['Κατακτήσεις', 'Μετράει τις επιθέσεις/υποστηρίξεις στο παράθυρο κατάκτησης'], way: ['Ταχύτητα μονάδας', 'Παρουσιάζει τη βελτιωμένη ταχύτητα μονάδας στο παράθυρο επίθεσης/υποστήριξης'], sim: ['Προσομοιωτής', 'Προσαρμογή του προσομοιωτή & μόνιμη παρουσίαση του μενού τροποποίησης σαν επέκταση'], act: ['Μενού δραστηριότητας', 'Βελτιωμένη παρουσίαση του εμπορίου και της στρατολόγησης(μνήμη θέσης)'], pop: ['Αναδυόμενο μενού εύνοιας', 'Αλλάζει το αναδυόμενο μενού εύνοιας'], tsk: ['Μπάρα έργων', 'Αυξάνει τη μπάρα έργων'], rew: ['Καθημερινή ανταμοιβή', 'Ελαχιστοποιεί το παράθυρο καθημερινής ανταμοιβής κατά την εκκίνηση'], bbc: ['Φόρμα άμυνας', 'Επεκτείνει τη μπάρα κωδικών bb με μια αυτοματοποιημένη φόρμα άμυνας'], com: ['Σύγκριση μονάδων', 'Προσθέτει πίνακες με συγκρίσεις μονάδων'], tic: ['Εικονίδια πόλεων', 'Κάθε πόλη αποκτά ένα εικονίδιο ανάλογα το τύπο πόλης (αυτόματη αναγνώριση),Επιπρόσθετα εικονίδια είναι διαθέσιμα για χειροκίνητη επιλογή'], til: ['Λίστα πόλεων', 'Προσθέτει τα εικονίδια πόλεων στη λίστα πόλεων'], tim: ['Χάρτης', 'Θέτει τα εικονίδια πόλεων στο στρατηγικό χάρτη'], tiw: ['Αναδυόμενα παράθυρα εικονιδίων', ''], wwc: ['Αριθμομηχανή', 'Κοινοποιεί τους υπολογισμούς & τους μετρητές πόρων + κουμπιά για προηγούμενο & επόμενο σε τελειωμένα θαύματα του κόσμου (προσωρινά δεν μπορεί να απενεργοποιηθεί!)'], wwr: ['Κατάταξη', 'Εκ νέου σχεδιασμός για τις κατατάξεις των θαυμάτων του κόσμου'], wwi: ['Εικονίδια', 'Προσθέτει εικονίδια για θαύμα του κόσμου στο στρατηγικό χάρτη'], con: ['Μενού περιεχομένου', 'Ανταλλάσει την "Επιλογή πόλης" με την "Προεπισκόπηση πόλης" στο μενού περιεχομένου'], sen: ['Σταλμένες μονάδες', 'Δείχνει τις μονάδες που έχουν αποσταλεί στο παράθυρο επίθεσης/υποστήριξης'], tov: ['Επισκόπηση πόλης', 'Αντικαθιστά την νέα επισκόπηση πόλης με το παλιό στύλ παραθύρου'], scr: ['Ροδέλα ποντικιού', 'Μπορείς να αλλάξεις τις όψεις της πόλης με τη ροδέλα του ποντικιού'], Scr: ['Scrollbar', 'Άλλαξε το στυλ του scrollbar (Δεν είναι διαθέσιμο στο firefox)'], tow: ['bbcode πόλης', 'Προσθέτει τον bbcode της πόλης στο παράθυρο επιλογής πόλης'], Fdm: ['Διάλεξε και σβήσε πολλά μηνύματα', 'Μπορείς να σβήσεις περισσότερα από ένα μηνύματα. Λειτουργία Quack'], Sel: ['Πρόσθεσε (Όχι υπερχείλιση/Σβήσιμο)', ' Βελτίωση των νέων εργαλείων στο παράθυρο επίθεσης και άμυνας. Λειτουργία Quack'], Cul: ['Επισκόπηση πολιτιστικού επιπέδου (Διαχειριστής)', 'Προσθέτει μετρητή για την ομάδα στην επισκόπηση πολιτιστικού επιπέδου. Λειτουργία Quack'], Hot: ['Κουμπιά για συντομία ενεργειών για τα Windows', 'Αλλάζει τη ζωή σου'], Isl: ['Απεικόνιση του νησιού', 'Αυξάνει το ύψος της λίστας των πόλεων και των χωριών του νησιού'], Ish: ['Επισκόπηση αγροτικών χωριών (Καπετάνιος)', 'Αυτόματα κρύβει τη πόλη. Λειτουργία Quack'], Hio: ['Επισκόπηση σπηλιών (Διαχειριστής)', 'Επιτρέπει στην ταξινόμηση των πόλεων. Λειτουργία Quack'], Hid: ['Σπηλιά', 'Εισάγει αυτόματα ασήμι στο πεδίο εισαγωγής της σπηλιάς αν είναι πάνω από 15000. Λειτουργία Quack'], Tol: ['Λίστα από πόλεις σε κωδικούς BB', 'Αντιγραφή & επικόλληση. Λειτουργία Quack'], Cib: ['Κουμπί επισκόπησης πόλης', 'Προσθέτει ένα κουμπί για το άνοιγμα της επισκόπησης της πόλης στο πλάγιο μενού του Grepolis. Λειτουργία Quack'], Ciw: ['Επισκόπηση πόλης', 'Παρουσίαση της επισκόπησης της πόλης σε παράθυρο. Λειτουργία Quack'], Tti: ['Εμπόριο πόρων για γιορτές', 'Κλίκαρε πάνω του και θα ανταλλάξει πόρους ώστε να φτάσουν για γιορτή πόλης. Λειτουργία Quack'], Mse: ['Μηνύματα σε bbcode', 'Μετατροπή μηνυμάτων σε bbcode. Λειτουργία Quack'], Rep: ['Αναφορές', 'Πρόσθεση φίλτρου χρώματος. Λειτουργία Quack'], BBt: ['Κουμπί bbcode για πληροφορίες παίχτη', 'Προσθήκη κουμπιού με bbcode (παίχτη και συμμαχίας)'], Rtt: ['Αφαίρεση του μηνύματος επεξήγησης των μονάδων', ''], Cup: ['Προβιβασμός επιπέδου Πολιτισμού (Διαχειριστής)', 'Άλλαξε την παρουσίαση της μπάρας προόδου και πρόσθεσε μια μπάρα προόδου για τους πόρους. Λειτουργία του Akiway'], Cuo: ["Σημεία Πολιτισμού (Διαχειριστής)", "Προσθέστε έναν μετρητή για τα Σημεία Πολιτισμού. Λειτουργία Quack"], Rct: ['Εμπόριο -> Μετρητής πόρων (Διαχειριστής)', 'Μια μέτρηση όλων των πόρων στην πόλη σου'], FLASK: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του FLASK-TOOLS', Mole: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του Mole Hole', err: ['Στείλε αναφορές για bug αυτόματα', 'Αν ενεργοποιήσεις αυτή την επιλογή, μπορείς να βοηθήσεις στην εύρεση προβλημάτων του παιχνιδιού.'], }, Town_icons: { LandOff: 'Επιθετικά ξηράς', LandDef: 'Αμυντικά ξηράς', NavyOff: 'Επιθετικός στόλος', NavyDef: 'Αμυντικός στόλος', FlyOff: 'Ιπτάμενα επιθετικά', FlyDef: 'Ιπτάμενα αμυντικά', Out: 'Εξωτερικά', Emp: 'Άδειο', }, Color: { Blue: 'Μπλε', Red: 'Κόκκινο', Green: 'Πράσινο', Pink: 'Ροζ', White: 'Άσπρο', }, labels: { uni: 'Προεπισκόπηση μονάδων', total: 'Σύνολο', available: 'Διαθέσιμα', outer: 'Έξω', con: 'Διάλεξε πόλη', std: 'Πρότυπο', nat: 'Φύση', ppl: 'Άνθρωποι', Par: 'Party', oth: 'Άλλα', hal: 'Απόκριες', xma: 'Χριστούγεννα', eas: 'Πάσχα', lov: 'Αγάπη', ttl: 'Προεπισκόπηση: Άμυνα πόλης', inf: 'Πληροφορίες πόλης:', dev: 'Απόκλιση', det: 'Λεπτομερής μονάδες ξηράς', prm: 'Δώρα premium', sil: 'Όγκος ασημιού', mov: 'Κινήσεις στρατευμάτων:', leg: 'Μερίδιο θαύματος του κόσμου', stg: 'Στάδιο', tot: 'Σύνολο', str: 'Δύναμη μονάδας', los: 'Ήττα', mod: 'χωρίς επιρροή τροποποίησης', dsc: 'Σύγκριση μονάδων', hck: 'Κρουστικό', prc: 'Διατρητικό', dst: 'Εκήβολο', sea: 'Θάλασσα', att: 'Επιθετικά', def: 'Αμυντικά', spd: 'Ταχύτητα', bty: 'Λεία (πόροι)', cap: 'Χωρητικότητα μεταφορικών', res: 'Κόστη (πόροι)', fav: 'Εύνοια', tim: 'Χρόνος στρατολόγησης (δ)', rat: 'Αναλογία πόρων ενός τύπου μονάδων', shr: 'Μερίδιο της χωρητικότητας της αποθήκης του στοχευμένης πόλης', per: 'Ποσοστιαίο εμπόριο', lab: 'Σταλμένες μονάδες', rec: 'Πόροι', improved_movement: 'Βελτιωμένη κίνηση στρατευμάτων', Tran: 'Μεταφράσεις', donat: 'Δωρεές', Happy: 'Χαρούμενο το νέο έτος!', Merry: 'Χο χο χο, Καλά Χριστούγεννα!', tow: 'Κωδικός BB πόλης', ingame_name: ['Μη διστάσετε να επικοινωνήσετε μαζί μου αν προτιμάτε να καλείστε με το όνομα του παιχνιδιού που έχετε', 'Καθώς είναι μεγάλο το έργο και μπορεί να είναι αρκετά χρονοβόρο προσπαθώ πάντα να είμαι ευγνώμων με κάθε είδους υποστήριξη. Για αυτό θα ήθελα να ευχαριστήσω όλους που με έχουν υποστηρίξει σε αυτό το έργο- είτε από δωρεές, γνώση, δημιουργηκότητα, αναφορές προβλημάτων ή με λίγα ενθαρρυντικά λόγια.'], }, tutoriel: { tuto: 'Χρήσιμες πληροφορίες', reme: 'Ευχαριστώ όλους εκείνους που συνείσφεραν στην ανάπτυξη του DIO tools,', Trou: ['Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - tuto de david1327', 'Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων'], util: ['Χρήσιμες ιστοσελίδες για το grepolis - tuto de david1327', 'Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.'], }, Quack: { delete_mul: 'Διαγραφή πολλαπλών μηνυμάτων', delete_sure: 'Θες να διαγράψεις αυτά τα μηνύματα;', no_selection: 'Δεν έχουν επιλεγεί μηνύματα', mark_All: 'Σημείωσε τα όλα', no_overload: 'Χωρίς υπερφόρτωση', delete: 'Διέγραψε', cityfestivals: 'Γιορτές πόλης', olympicgames: 'Ολυμπιακοί αγώνες', triumph: 'Παρελάσεις θριάμβου', theater: 'Θεατρικές παραστάσεις', }, hotkeys: { hotkeys: 'Πλήκτρα γρήγορης πρόσβασης', Senate: 'Σύγκλητος', city_select: 'Επιλογή πόλης', last_city: 'Τελευταία πόλη', next_city: 'Επόμενη πόλη', jump_city: 'Πήγαινε στη τρέχουσα πόλη', administrator: 'Διαχειριστής', captain: 'Καπετάνιος', trade_ov: 'Εμπόριο', command_ov: 'Εντολές', recruitment_ov: 'Στρατολόγηση', troop_ov: 'Επισκόπηση στρατευμάτων', troops_outside: 'Εξωτερικά στρατεύματα', building_ov: 'Κτήρια', culture_ov: 'Πολιτισμός', gods_ov: 'Θεοί', cave_ov: 'Κρύψιμο προεπισκόπησης', city_groups_ov: 'Ομάδες πόλεων', city_list: 'Λίστα πόλεων', attack_planner: 'Συντονιστής επίθεσης', farming_villages: 'Αγροτικά χωριά', menu: 'Μενού', city_view: 'Επισκόπηση πόλης', messages: 'Μηνύματα', reports: 'Αναφορές', alliance: 'Συμμαχία', alliance_forum: 'Φόρουμ συμμαχίας', settings: 'Ρυθμίσεις', profile: 'Προφίλ', ranking: 'Κατάταξη', notes: 'Σημειώσεις', chat: 'Συνομιλία', council: 'Συμβούλιο των Ηρώων', }, messages: { ghosttown: 'Πόλη φάντασμα', no_cities: 'Δεν υπάρχουν πόλεις σε αυτό το νησί', all: 'όλα', export: 'Μετατροπή μηνύματα σε κωδικούς BB', Tol: 'Αντιγραφή & Επικόλληση (Λειτουργία Quack)', copy: 'Αντιγραφή', bbmessages: 'Μηνύματα κωδικών BB ', copybb: 'Ο κωδικός BB έχει αντιγραφεί', écrit: 'έχει γράψει τα παρακάτω:', }, caves: { stored_silver: 'Αποθηκευμένα ασημένα νομίσματα', silver_to_store: 'Ασημένια νομίσματα που μπορούν να αποθηκευτούν', name: 'Όνομα', wood: 'Ξύλο', stone: 'Πέτρα', silver: 'Ασημένια νομίσματα', search_for: 'Ψάξε για', }, grepo_mainmenu: { city_view: 'Επισκόπηση πόλης', island_view: 'Επισκόπηση νησιού', }, transport_calc: { recruits: 'Μέτρημα μονάδες στην ουρά στρατολόγησης', slowtrans: 'Μέτρημα αργών μεταφορικών πλοίων', fasttrans: 'Μέτρημα γρήγορων μεταφορικών πλοίων', Lack: 'Έλλειψη', Still: 'Ακίνητος', pop: 'διαθέσιμος πληθυσμός. Για την', Optipop: 'Βέλτιστος πληθυσμός για', army: 'Δεν έχεις στρατό.', }, reports: { choose_folder: 'Διάλεξε φάκελο', enacted: 'εκτέλεσε', conquered: 'κατάκτησε', spying: 'κατασκοπεύει', spy: 'Κατάσκοπος', support: 'υποστήριξη', support2: "", supporting: 'υποστηρίζει', attacking: 'επιτίθεται', farming_village: 'αγροτικό χωριό', gold: 'Έχεις λάβει', Quests: 'Αποστολές', Reservations: 'Κρατήσεις', }, translations: { info: 'Πληροφορίες', trans: 'Μετάφραση για γλώσσα', translations: 'Μεταφράσεις', trans_sure: 'Είσαι σίγουρος ότι η μετάφραση σου είναι έτοιμη να δημιουργηθεί;', trans_success: 'Η μετάφραση έχει σταλεί επιτυχώς', trans_fail: 'Η μετάφραση δεν μπορούσε να σταλεί', trans_infotext1: 'Διαθέσιμη μετάφραση', trans_infotext2: 'Για να τροποποιήσεις ή δημιουργήσεις μια νέα γλώσσα,διάλεξε τη γλώσσα στο αναπτυσσόμενο μενού', trans_infotext3: 'Όταν ένα κείμενο περιέχει ετικέτες HTML (δηλαδή όλα τα κείμενα που περιέχουν πριν και μετά <> αγκύλες) σου ζητώ να τις αφήσεις όπως τις βρήκες ', trans_infotext4: 'Όταν έχεις τελειώσει με τη μετάφραση πάτα', trans_infotext5: 'Για να είναι δυνατόν να προστεθείς στη λίστα συντελεστών,το ψευδώνυμο σου θα παραχθεί', trans_infotext6: 'Αντέγραψε το παραγμένο μήνυμα, και επικόλλησε το σε ένα σχόλιο', please_note: 'Παρακαλώ λάβε υπόψιν', credits: 'Λίστα συντελεστών', no_translation: 'Δεν βρέθηκε μετάφραση', choose_lang: 'Διάλεξε γλώσσα', add_lang: 'Πρόσθεσε νέα γλώσσα', language: 'Γλώσσα', enter_lang_name: 'Παρακαλώ εισήγαγε το νέο όνομα γλώσσας', send: 'Πάραγε μήνυμα', name: 'Όνομα', }, buttons: { sav: 'Αποθήκευση', ins: 'Εισαγωγή', res: 'Επαναφορά', }, },
+        gr: { Notification: {}, link: {}, Settings: { dsc: 'Το DIO-Tools προσφέρει, ανάμεσα σε άλλα πράγματα, κάποιες νέες απεικονίσεις, μενού με smiley, επιλογές εμπορίου και κάποιες αλλαγές στο σχέδιο του παιχνιδιού.', act: 'Ενεργοποίησε/απενεργοποίησε τα χαρακτηριστικά του συνόλου των εργαλείων:', prv: 'Προεπισκόπηση μερικών χαρακτηριστικών:', version_old: 'Η έκδοση δεν είναι ενημερωμένη', version_new: 'Η έκδοση είναι ενημερωμένη', version_dev: 'Έκδοση προγραμματιστή', version_update: 'Αναβάθμιση', Donate: 'Δωρεά', Update: 'Έκδοση', Feature: 'Νέο χαρακτηριστικό', Feature2: 'Νέα έκδοση', Learn_more: 'Μάθε περισσότερα', cat_units: 'Μονάδες', cat_icons: 'Εικονίδια πόλεων', cat_forum: 'Φόρουμ', cat_trade: 'Εμπόριο', cat_wonders: 'Θαύμα του κόσμου', cat_layout: 'Σχέδιο', cat_other: 'Διάφορα', cat_Quack: "Quack", }, Options: { ava: ['Επισκόπηση μονάδων', 'Μετράει όλες τις μονάδες από όλες τις πόλεις'], ava2: ['Αριθμός ωκεανού', 'Μονάδα επέκτασης'], sml: ['Smilies', 'Επεκτείνει τη μπάρα bbcode ανά μενού με smilies'], str: ['Δύναμη μονάδας', 'Προσθέτει τους πίνακες με τις δυνάμεις των μονάδων σε πολλά σημε'], tra: ['Χωρητικότητα μεταφορικών', 'Δείχνει τα χρησιμοποιούμενη και διαθέσιμη χωρητικότητα των μεταφορικών στο μενού με τις μονάδες'], per: ['Ποσοστιαίο εμπόριο', 'Επεκτείνει το παράθυρο του εμπορίου με μια επιλογή ποσοστιαίου εμπορίου'], rec: ['Κόστος στρατολόγησης', 'Επεκτείνει το παράθυρο εμπορίου με μια επιλογή για το κόστος στρατολόγησης'], cnt: ['Κατακτήσεις', 'Μετράει τις επιθέσεις/υποστηρίξεις στο παράθυρο κατάκτησης'], way: ['Ταχύτητα μονάδας', 'Παρουσιάζει τη βελτιωμένη ταχύτητα μονάδας στο παράθυρο επίθεσης/υποστήριξης'], sim: ['Προσομοιωτής', 'Προσαρμογή του προσομοιωτή & μόνιμη παρουσίαση του μενού τροποποίησης σαν επέκταση'], act: ['Μενού δραστηριότητας', 'Βελτιωμένη παρουσίαση του εμπορίου και της στρατολόγησης(μνήμη θέσης)'], pop: ['Αναδυόμενο μενού εύνοιας', 'Αλλάζει το αναδυόμενο μενού εύνοιας'], tsk: ['Μπάρα έργων', 'Αυξάνει τη μπάρα έργων'], rew: ['Καθημερινή ανταμοιβή', 'Ελαχιστοποιεί το παράθυρο καθημερινής ανταμοιβής κατά την εκκίνηση'], bbc: ['Φόρμα άμυνας', 'Επεκτείνει τη μπάρα κωδικών bb με μια αυτοματοποιημένη φόρμα άμυνας'], com: ['Σύγκριση μονάδων', 'Προσθέτει πίνακες με συγκρίσεις μονάδων'], tic: ['Εικονίδια πόλεων', 'Κάθε πόλη αποκτά ένα εικονίδιο ανάλογα το τύπο πόλης (αυτόματη αναγνώριση),Επιπρόσθετα εικονίδια είναι διαθέσιμα για χειροκίνητη επιλογή'], til: ['Λίστα πόλεων', 'Προσθέτει τα εικονίδια πόλεων στη λίστα πόλεων'], tim: ['Χάρτης', 'Θέτει τα εικονίδια πόλεων στο στρατηγικό χάρτη'], tiw: ['Αναδυόμενα παράθυρα εικονιδίων', ''], wwc: ['Αριθμομηχανή', 'Κοινοποιεί τους υπολογισμούς & τους μετρητές πόρων + κουμπιά για προηγούμενο & επόμενο σε τελειωμένα θαύματα του κόσμου (προσωρινά δεν μπορεί να απενεργοποιηθεί!)'], wwr: ['Κατάταξη', 'Εκ νέου σχεδιασμός για τις κατατάξεις των θαυμάτων του κόσμου'], wwi: ['Εικονίδια', 'Προσθέτει εικονίδια για θαύμα του κόσμου στο στρατηγικό χάρτη'], con: ['Μενού περιεχομένου', 'Ανταλλάσει την "Επιλογή πόλης" με την "Προεπισκόπηση πόλης" στο μενού περιεχομένου'], sen: ['Σταλμένες μονάδες', 'Δείχνει τις μονάδες που έχουν αποσταλεί στο παράθυρο επίθεσης/υποστήριξης'], tov: ['Επισκόπηση πόλης', 'Αντικαθιστά την νέα επισκόπηση πόλης με το παλιό στύλ παραθύρου'], scr: ['Ροδέλα ποντικιού', 'Μπορείς να αλλάξεις τις όψεις της πόλης με τη ροδέλα του ποντικιού'], Scr: ['Scrollbar', 'Άλλαξε το στυλ του scrollbar (Δεν είναι διαθέσιμο στο firefox)'], tow: ['bbcode πόλης', 'Προσθέτει τον bbcode της πόλης στο παράθυρο επιλογής πόλης'], Fdm: ['Διάλεξε και σβήσε πολλά μηνύματα', 'Μπορείς να σβήσεις περισσότερα από ένα μηνύματα. Λειτουργία Quack'], Sel: ['Πρόσθεσε (Όχι υπερχείλιση/Σβήσιμο)', ' Βελτίωση των νέων εργαλείων στο παράθυρο επίθεσης και άμυνας. Λειτουργία Quack'], Cul: ['Επισκόπηση πολιτιστικού επιπέδου (Διαχειριστής)', 'Προσθέτει μετρητή για την ομάδα στην επισκόπηση πολιτιστικού επιπέδου. Λειτουργία Quack'], Hot: ['Κουμπιά για συντομία ενεργειών για τα Windows', 'Αλλάζει τη ζωή σου'], Isl: ['Απεικόνιση του νησιού', 'Αυξάνει το ύψος της λίστας των πόλεων και των χωριών του νησιού'], Ish: ['Επισκόπηση αγροτικών χωριών (Καπετάνιος)', 'Αυτόματα κρύβει τη πόλη. Λειτουργία Quack'], Hio: ['Επισκόπηση σπηλιών (Διαχειριστής)', 'Επιτρέπει στην ταξινόμηση των πόλεων. Λειτουργία Quack'], Hid: ['Σπηλιά', 'Εισάγει αυτόματα ασήμι στο πεδίο εισαγωγής της σπηλιάς αν είναι πάνω από 15000. Λειτουργία Quack'], Tol: ['Λίστα από πόλεις σε κωδικούς BB', 'Αντιγραφή & επικόλληση. Λειτουργία Quack'], Cib: ['Κουμπί επισκόπησης πόλης', 'Προσθέτει ένα κουμπί για το άνοιγμα της επισκόπησης της πόλης στο πλάγιο μενού του Grepolis. Λειτουργία Quack'], Ciw: ['Επισκόπηση πόλης', 'Παρουσίαση της επισκόπησης της πόλης σε παράθυρο. Λειτουργία Quack'], Tti: ['Εμπόριο πόρων για γιορτές', 'Κλίκαρε πάνω του και θα ανταλλάξει πόρους ώστε να φτάσουν για γιορτή πόλης. Λειτουργία Quack'], Mse: ['Μηνύματα σε bbcode', 'Μετατροπή μηνυμάτων σε bbcode. Λειτουργία Quack'], Rep: ['Αναφορές', 'Πρόσθεση φίλτρου χρώματος. Λειτουργία Quack'], BBt: ['Κουμπί bbcode για πληροφορίες παίχτη', 'Προσθήκη κουμπιού με bbcode (παίχτη και συμμαχίας)'], Rtt: ['Αφαίρεση του μηνύματος επεξήγησης των μονάδων', ''], Cup: ['Προβιβασμός επιπέδου Πολιτισμού (Διαχειριστής)', 'Άλλαξε την παρουσίαση της μπάρας προόδου και πρόσθεσε μια μπάρα προόδου για τους πόρους. Λειτουργία του Akiway'], Cuo: ["Σημεία Πολιτισμού (Διαχειριστής)", "Προσθέστε έναν μετρητή για τα Σημεία Πολιτισμού. Λειτουργία Quack"], Rct: ['Εμπόριο -> Μετρητής πόρων (Διαχειριστής)', 'Μια μέτρηση όλων των πόρων στην πόλη σου'], FLASK: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του FLASK-TOOLS', Mole: 'Μη συμβατή η ενεργοποίηση των παραμέτρων του Mole Hole', err: ['Στείλε αναφορές για bug αυτόματα', 'Αν ενεργοποιήσεις αυτή την επιλογή, μπορείς να βοηθήσεις στην εύρεση προβλημάτων του παιχνιδιού.'], }, Town_icons: { LandOff: 'Επιθετικά ξηράς', LandDef: 'Αμυντικά ξηράς', NavyOff: 'Επιθετικός στόλος', NavyDef: 'Αμυντικός στόλος', FlyOff: 'Ιπτάμενα επιθετικά', FlyDef: 'Ιπτάμενα αμυντικά', Out: 'Εξωτερικά', Emp: 'Άδειο', }, Color: { Blue: 'Μπλε', Red: 'Κόκκινο', Green: 'Πράσινο', Pink: 'Ροζ', White: 'Άσπρο', }, labels: { uni: 'Προεπισκόπηση μονάδων', total: 'Σύνολο', available: 'Διαθέσιμα', outer: 'Έξω', con: 'Διάλεξε πόλη', std: 'Πρότυπο', nat: 'Φύση', ppl: 'Άνθρωποι', Par: 'Party', oth: 'Άλλα', hal: 'Απόκριες', xma: 'Χριστούγεννα', eas: 'Πάσχα', lov: 'Αγάπη', ttl: 'Προεπισκόπηση: Άμυνα πόλης', inf: 'Πληροφορίες πόλης:', dev: 'Απόκλιση', det: 'Λεπτομερής μονάδες ξηράς', prm: 'Δώρα premium', sil: 'Όγκος ασημιού', mov: 'Κινήσεις στρατευμάτων:', leg: 'Μερίδιο θαύματος του κόσμου', stg: 'Στάδιο', tot: 'Σύνολο', str: 'Δύναμη μονάδας', los: 'Ήττα', mod: 'χωρίς επιρροή τροποποίησης', dsc: 'Σύγκριση μονάδων', hck: 'Κρουστικό', prc: 'Διατρητικό', dst: 'Εκήβολο', sea: 'Θάλασσα', att: 'Επιθετικά', def: 'Αμυντικά', spd: 'Ταχύτητα', bty: 'Λεία (πόροι)', cap: 'Χωρητικότητα μεταφορικών', res: 'Κόστη (πόροι)', fav: 'Εύνοια', tim: 'Χρόνος στρατολόγησης (δ)', rat: 'Αναλογία πόρων ενός τύπου μονάδων', shr: 'Μερίδιο της χωρητικότητας της αποθήκης του στοχευμένης πόλης', per: 'Ποσοστιαίο εμπόριο', lab: 'Σταλμένες μονάδες', rec: 'Πόροι', improved_movement: 'Βελτιωμένη κίνηση στρατευμάτων', Tran: 'Μεταφράσεις', donat: 'Δωρεές', Happy: 'Χαρούμενο το νέο έτος!', Merry: 'Χο χο χο, Καλά Χριστούγεννα!', tow: 'Κωδικός BB πόλης', ingame_name: ['Μη διστάσετε να επικοινωνήσετε μαζί μου αν προτιμάτε να καλείστε με το όνομα του παιχνιδιού που έχετε', 'Καθώς είναι μεγάλο το έργο και μπορεί να είναι αρκετά χρονοβόρο προσπαθώ πάντα να είμαι ευγνώμων με κάθε είδους υποστήριξη. Για αυτό θα ήθελα να ευχαριστήσω όλους που με έχουν υποστηρίξει σε αυτό το έργο- είτε από δωρεές, γνώση, δημιουργηκότητα, αναφορές προβλημάτων ή με λίγα ενθαρρυντικά λόγια.'], }, tutoriel: { tuto: 'Χρήσιμες πληροφορίες', reme: 'Ευχαριστώ όλους εκείνους που συνείσφεραν στην ανάπτυξη του DIO tools,', Trou: ['Φροντιστήριο για τις ειδικότητες των μονάδων του Grepolis - tuto de david1327', 'Ό,τι χρειάζεται να ξέρεις για τα στρατεύματα του grepolis Δυνάμεις/αδυναμίες των μονάδων'], util: ['Χρήσιμες ιστοσελίδες για το grepolis - tuto de david1327', 'Ένα πλήθος από εργαλεία για το Grepolis: Στατιστικά,Χάρτες,Εργαλεία,Σκριπτς,Φόρουμ ... αναφέρονται όλα εδώ.'], }, Quack: { delete_mul: 'Διαγραφή πολλαπλών μηνυμάτων', delete_sure: 'Θες να διαγράψεις αυτά τα μηνύματα;', no_selection: 'Δεν έχουν επιλεγεί μηνύματα', mark_All: 'Σημείωσε τα όλα', no_overload: 'Χωρίς υπερφόρτωση', delete: 'Διέγραψε', cityfestivals: 'Γιορτές πόλης', olympicgames: 'Ολυμπιακοί αγώνες', triumph: 'Παρελάσεις θριάμβου', theater: 'Θεατρικές παραστάσεις', }, hotkeys: { hotkeys: 'Πλήκτρα γρήγορης πρόσβασης', Senate: 'Σύγκλητος', city_select: 'Επιλογή πόλης', last_city: 'Τελευταία πόλη', next_city: 'Επόμενη πόλη', jump_city: 'Πήγαινε στη τρέχουσα πόλη', administrator: 'Διαχειριστής', captain: 'Καπετάνιος', trade_ov: 'Εμπόριο', command_ov: 'Εντολές', recruitment_ov: 'Στρατολόγηση', troop_ov: 'Επισκόπηση στρατευμάτων', troops_outside: 'Εξωτερικά στρατεύματα', building_ov: 'Κτήρια', culture_ov: 'Πολιτισμός', gods_ov: 'Θεοί', cave_ov: 'Κρύψιμο προεπισκόπησης', city_groups_ov: 'Ομάδες πόλεων', city_list: 'Λίστα πόλεων', attack_planner: 'Συντονιστής επίθεσης', farming_villages: 'Αγροτικά χωριά', menu: 'Μενού', city_view: 'Επισκόπηση πόλης', messages: 'Μηνύματα', reports: 'Αναφορές', alliance: 'Συμμαχία', alliance_forum: 'Φόρουμ συμμαχίας', settings: 'Ρυθμίσεις', profile: 'Προφίλ', ranking: 'Κατάταξη', notes: 'Σημειώσεις', chat: 'Συνομιλία', council: 'Συμβούλιο των Ηρώων', }, messages: { ghosttown: 'Πόλη φάντασμα', no_cities: 'Δεν υπάρχουν πόλεις σε αυτό το νησί', all: 'όλα', export: 'Μετατροπή μηνύματα σε κωδικούς BB', Tol: 'Αντιγραφή & Επικόλληση (Λειτουργία Quack)', copy: 'Αντιγραφή', bbmessages: 'Μηνύματα κωδικών BB ', copybb: 'Ο κωδικός BB έχει αντιγραφεί', écrit: 'έχει γράψει τα παρακάτω:', }, caves: { stored_silver: 'Αποθηκευμένα ασημένα νομίσματα', silver_to_store: 'Ασημένια νομίσματα που μπορούν να αποθηκευτούν', name: 'Όνομα', wood: 'Ξύλο', stone: 'Πέτρα', silver: 'Ασημένια νομίσματα', search_for: 'Ψάξε για', }, grepo_mainmenu: { city_view: 'Επισκόπηση πόλης', island_view: 'Επισκόπηση νησιού', }, transport_calc: { recruits: 'Μέτρημα μονάδες στην ουρά στρατολόγησης', slowtrans: 'Μέτρημα αργών μεταφορικών πλοίων', fasttrans: 'Μέτρημα γρήγορων μεταφορικών πλοίων', Lack: 'Έλλειψη', Still: 'Ακίνητος', pop: 'διαθέσιμος πληθυσμός. Για την', Optipop: 'Βέλτιστος πληθυσμός για', army: 'Δεν έχεις στρατό.', }, reports: { choose_folder: 'Διάλεξε φάκελο', enacted: 'εκτέλεσε', conquered: 'κατάκτησε', spying: 'κατασκοπεύει', spy: 'Κατάσκοπος', support: 'υποστήριξη', support2: "", supporting: 'υποστηρίζει', attacking: 'επιτίθεται', farming_village: 'αγροτικό χωριό', gold: 'Έχεις λάβει', Quests: 'Αποστολές', Reservations: 'Κρατήσεις', }, translations: { info: 'Πληροφορίες', trans: 'Μετάφραση για γλώσσα', translations: 'Μεταφράσεις', trans_sure: 'Είσαι σίγουρος ότι η μετάφραση σου είναι έτοιμη να δημιουργηθεί;', trans_success: 'Η μετάφραση έχει σταλεί επιτυχώς', trans_fail: 'Η μετάφραση δεν μπορούσε να σταλεί', trans_infotext1: 'Διαθέσιμη μετάφραση', trans_infotext2: 'Για να τροποποιήσεις ή δημιουργήσεις μια νέα γλώσσα,διάλεξε τη γλώσσα στο αναπτυσσόμενο μενού', trans_infotext3: 'Όταν ένα κείμενο περιέχει ετικέτες HTML (δηλαδή όλα τα κείμενα που περιέχουν πριν και μετά <> αγκύλες) σου ζητώ να τις αφήσεις όπως τις βρήκες ', trans_infotext4: 'Όταν έχεις τελειώσει με τη μετάφραση πάτα', trans_infotext5: 'Για να είναι δυνατόν να προστεθείς στη λίστα συντελεστών,το ψευδώνυμο σου θα παραχθεί', trans_infotext6: 'Αντέγραψε το παραγμένο μήνυμα, και επικόλλησε το σε ένα σχόλιο', please_note: 'Παρακαλώ λάβε υπόψιν', credits: 'Λίστα συντελεστών', no_translation: 'Δεν βρέθηκε μετάφραση', choose_lang: 'Διάλεξε γλώσσα', add_lang: 'Πρόσθεσε νέα γλώσσα', language: 'Γλώσσα', enter_lang_name: 'Παρακαλώ εισήγαγε το νέο όνομα γλώσσας', send: 'Πάραγε μήνυμα', name: 'Όνομα', }, buttons: { sav: 'Αποθήκευση', ins: 'Εισαγωγή', res: 'Επαναφορά', }, },
     };
     LANG.ar = LANG.es;
     LANG.pt = LANG.br;
@@ -780,6 +818,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         dio_Rtt: false,	// removeTooltipps
         dio_Buc: true,	// buildingControl
         dio_Cuc: true,	// cultureControl
+        dio_BBl: true,	// BBcodeList
+        dio_Onb: true,	// OceanNumbers
+        dio_Amm: true,	// ally_mass_mail
+        dio_Idl: true,	// idle
+        dio_Saw: true,	// Save_wall
+        dio_Att: true,	// AttacksAlarms
+
+
 
         dio_err: false,	// Error Reports
         dio_her: true,	// Thrakische Eroberung
@@ -791,6 +837,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         dio_ddd: false,
         dio_eee: false,
 
+        dio_Sav: true,
         dio_tro: false,
     };
 
@@ -891,15 +938,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         '#dio_settings .checkbox_new .cbx_caption { white-space:nowrap; margin-right:10px; font-weight:bold; } ' +
         '#dio_settings .checkbox_new.disabled { cursor: pointer; } ' +
 
-        '#dio_settings .dio_settings_tabs {width:auto; border:2px solid darkgreen; background:#2B241A; padding:1px 1px 0px 1px; right:auto; border-top-left-radius:5px; border-top-right-radius:5px; border-bottom:0px;} ' +
+        '#dio_settings .dio_settings_tabs {display: flex; max-width: 598px; border:2px solid darkgreen; background:#2B241A; padding:1px 1px 0px 1px; right:auto; border-top-left-radius:5px; border-top-right-radius:5px; border-bottom:0px;} ' +
+        '#dio_settings .dio_settings_tabs li { flex: 1; float:left; } ' +
+        '#dio_settings .dio_settings_tabs .middle { max-width: 75px; } ' +
 
         '#dio_settings .submenu_link {color: #000;} ' +
-
-        '#dio_settings .dio_settings_tabs li { float:left; } ' +
 
         '#dio_settings .dio_icon_small { margin:0px; } ' +
 
         '#dio_settings img { max-width:90px; max-height:90px; margin-right:10px; } ' +
+        '#dio_settings #dio_GRCT_table img { max-width:120px; } ' +
 
         '#dio_settings .content { border:2px solid darkgreen; border-radius:5px; border-top-left-radius:0px; background:rgba(31, 25, 12, 0.1); top:23px; position:relative; padding:10px 5px 10px 10px; height:392px; overflow-y:auto; margin-right:12px;} ' +
         '#dio_settings .content .content_category { display:none; } ' +
@@ -913,12 +961,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         '#dio_hall table td.value { text-align: right; } ' +
 
         '#dio_hall table td.laurel.green { background: url("/images/game/ally/founder.png") no-repeat; height:18px; width:18px; background-size:100%; } ' +
-        '#dio_hall table td.laurel.green2 { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 0%; height:18px; width:18px; } ' +
-        '#dio_hall table td.laurel.bronze { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 25%; height:18px; width:18px; } ' +
-        '#dio_hall table td.laurel.silver { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 50%; height:18px; width:18px; } ' +
-        '#dio_hall table td.laurel.gold { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 75%; height:18px; width:18px; } ' +
-        '#dio_hall table td.laurel.blue { background: url("' + Home_img + 'laurel-sprite.png") no-repeat 100%; height:18px; width:18px; } ' +
+        '#dio_hall table td.laurel.green2 { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 0%; height:18px; width:18px; } ' +
+        '#dio_hall table td.laurel.bronze { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 25%; height:18px; width:18px; } ' +
+        '#dio_hall table td.laurel.silver { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 50%; height:18px; width:18px; } ' +
+        '#dio_hall table td.laurel.gold { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 75%; height:18px; width:18px; } ' +
+        '#dio_hall table td.laurel.blue { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 100%; height:18px; width:18px; } ' +
         '#dio_settings .radiobutton .disabled { color: #000000; } ' +
+
+        '#dio_langdiv { cursor: pointer; } ' +
 
         '#dio_settings .défaut_s { background:url(' + Home_url + '/img/dio/btn/reset-icon.png) no-repeat; width:30px; height:30px; position: absolute; bottom: -19px; left: 3px; z-index: 100; cursor:pointer;} ' +
         '</style>').appendTo('head');
@@ -927,7 +977,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         var wid = $(".settings-menu").get(0).parentNode.id;
 
         if (!$("#dio_tools").get(0)) {
-            $(".settings-menu ul:last").append('<li id="dio_li"><img id="dio_icon" src="' + Home_img + 'smiley-emoticons-smile.gif"></div> <a id="dio_tools"> DIO-Tools-David1327</a></li>');
+            $(".settings-menu ul:last").append('<li id="dio_li"><img id="dio_icon" src="' + Home_url + '/img/smileys/smile.gif"></div> <a id="dio_tools"> DIO-Tools-David1327</a></li>');
         }
 
         $(".settings-link").click(function () {
@@ -957,9 +1007,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 var trans = [(DATA.test.lang ? "Actuel " + (DATA.test.lang).toUpperCase() : getTexts("translations", "translations")), getTexts("buttons", "res") + " (" + (MID).toUpperCase() + ")"];
                 (typeof (navigator) ? (LANG[Navigator] ? trans.push(getTexts("labels", "loc") + " " + Navigator.toUpperCase()) : "") : "");
                 var dio_supported_lang = [getTexts("translations", "add_edit")];
-                $.each(LANG, function (a, b) {
-                    if (a != "AUTO") dio_supported_lang.push(a);
-                });
+                $.each(LANG, function (a, b) { if (a != "AUTO") dio_supported_lang.push(a); });
+                dio_supported_lang.sort()
 
                 $('.settings-container').append(
                     '<div id="dio_settings" class="player_settings section"><div id="dio_bg_medusa"></div><div id="dio_bg_david1327"></div>' +
@@ -978,17 +1027,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                     // Settings navigation
                     '<ul class="menu_inner dio_settings_tabs">' +
-                    '<li><a class="submenu_link active" id="dio_units"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_units") + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_icons"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_icons") + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_forum"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_forum") + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_trade"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_trade") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link active" id="dio_units"><span class="left"><span class="right"><span class="middle" title="' + getTexts("Settings", "cat_units") + '" >' + getTexts("Settings", "cat_units") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_icons"><span class="left"><span class="right"><span class="middle" title="' + getTexts("Settings", "cat_icons") + '" >' + getTexts("Settings", "cat_icons") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_forum"><span class="left"><span class="right"><span class="middle" title="' + getTexts("Settings", "cat_forum") + '" >' + getTexts("Settings", "cat_forum") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_trade"><span class="left"><span class="right"><span class="middle" title="' + getTexts("Settings", "cat_trade") + '" >' + getTexts("Settings", "cat_trade") + '</span></span></span></a></li>' +
                     //((!$('.temple_commands').is(':visible')) ? (
-                    //    '<li><a class="submenu_link" id="dio_wonder"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_wonders") + '</span></span></span></a></li>' ) : "") +
-                    '<li><a class="submenu_link" id="dio_layout"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_layout") + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_reports"><span class="left"><span class="right"><span class="middle">' + getTexts("labels", "att") + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_other"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_other") + '</span></span></span></a></li>' +
-                    '<li><a class="submenu_link" id="dio_Premium"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_Premium") + '</span></span></span></a></li>' +
+                    //    '<li><a class="submenu_link" id="dio_wonder"><span class="left"><span class="right"><span class="middle" title="" >' + getTexts("Settings", "cat_wonders") + '</span></span></span></a></li>' ) : "") +
+                    '<li><a class="submenu_link" id="dio_layout"><span class="left"><span class="right"><span class="middle" title="' + getTexts("Settings", "cat_layout") + '" >' + getTexts("Settings", "cat_layout") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_reports"><span class="left"><span class="right"><span class="middle" title="' + getTexts("labels", "att") + '" >' + getTexts("labels", "att") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_other"><span class="left"><span class="right"><span class="middle" title="' + getTexts("Settings", "cat_other") + '" >' + getTexts("Settings", "cat_other") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_Premium"><span class="left"><span class="right"><span class="middle" title="' + getTexts("Settings", "cat_Premium") + '" >' + getTexts("Settings", "cat_Premium") + '</span></span></span></a></li>' +
                     '<li><a class="submenu_link" id="dio_Quack"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "cat_Quack") + '</span></span></span></a></li>' +
+                    '<li><a class="submenu_link" id="dio_GRCT"><span class="left"><span class="right"><span class="middle">GRCT</span></span></span></a></li>' +
                     '</ul>' +
 
                     // Settings content
@@ -1075,10 +1125,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<td><img src="' + Home_url + '/img/dio/settings/smiley-box.90px.png" alt="dio_smiley_box" ></td>' +
                     '<td><div id="dio_sml" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "sml")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "sml")[1] + '</p>' +
-                    '<img src="' + Home_img + 'smiley-emoticons-mttao-wassermann.gif" /> <img src="' + Home_img + 'smiley-emoticons-cigrqlp2odi2kqo24.gif" /> ' +
-                    '<img src="' + Home_img + 'smiley-emoticons-cigmv8wnffb3v0ifg.gif" /> ' +
-                    '<img src="' + Home_img + 'smiley-emoticons-cj2byjendffymp88t.gif" alt="" /> <img src="' + Home_img + 'smiley-emoticons-cj1l9gndtu3nduyvi.gif" /> ' +
-                    '<img src="' + Home_img + 'smiley-emoticons-cigrmpfofys5xtiks.gif" alt="" />' + //'<img src="' + Home_img + 'smiley-emoticons-i-lovo-grepolis.gif" />'+
+                    '<img src="' + Home_url + '/img/smileys/mttao_wassermann.gif" /> ' +
+                    '<img src="' + Home_url + '/img/smileys/herzen02.gif" /> ' +
+                    '<img src="' + Home_url + '/img/smileys/i-love-grepolis.gif" /> ' +
+                    '<img src="' + Home_url + '/img/smileys/i-lovo-grepolis.gif" /> ' +
+                    '<img src="' + Home_url + '/img/smileys/twitter.gif" /> ' +
+                    '<img src="' + Home_url + '/img/smileys/bier.gif" /> ' +
                     '<br><br><br></td>' +
                     '</tr><tr>' +
                     '<td><img src="' + Home_url + '/img/dio/settings/formulaire-de-defense.90px.png" alt="def_formular" ></td>' +
@@ -1174,7 +1226,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<td><div id="dio_BBt" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "BBt")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "BBt")[1] + '</p><br></td>' +
                     '</tr><tr>' +
-                    '<td><img src="' + Home_img + 'smiley-emoticons-kciuki.gif" alt="" /></td>' +
+                    '<td><img src="' + Home_url + '/img/smileys/kciuki.gif" alt="" /></td>' +
                     '<td><div id="dio_Rew" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "rew")[0] + '</div></div>' +
                     '<p>' + getTexts("Options", "rew")[1] + '</p><br></td>' +
                     '</tr><tr>' +
@@ -1259,6 +1311,44 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         '<p>' + getTexts("Options", "Rep")[1] + '</p><br></td>') : "") +
                     '</tr></table>' +
 
+                    // GRCT
+                    '<table id="dio_GRCT_table" class="content_category"><tr>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/BBcode_List.png" alt="" /></td>' +
+                    '<td><div id="dio_BBl" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "BBl")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "BBl")[1] + '</p><br></td>' +
+                    '</tr><tr>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/Message_de_groupe.png" alt="" style="margin-top: -6px; "></td>' +
+                    '<td><div id="dio_Amm" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Amm")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Amm")[1] + '</p><br></td>' +
+                    '</tr><tr>' +
+                    '<td></td><td><div style="font-weight: bold;">' + getTexts("Settings", "Comp_GRCT") + '</div></td>' +
+                    '</tr><tr>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/Numéro-d-ocean.png" alt="" style="margin-top: -15px; "></td>' +
+                    '<td><div id="dio_Onb" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Onb")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Onb")[1] + '</p><br></td>' +
+                    '</tr><tr>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/Joueur_inactif.png" alt="" /></td>' +
+                    '<td><div id="dio_Idl" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Idl")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Idl")[1] + '</p><br></td>' +
+                    '</tr><tr>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/Sauvegarde-des-remparts.png" alt="" /></td>' +
+                    '<td><div id="dio_Saw" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Saw")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Saw")[1] + '</p><br></td>' +
+                    '</tr><tr>' +
+                    '<td><img src="' + Home_url + '/img/dio/settings/Alarme-d-attaque.png" alt="" /></td>' +
+                    '<td><div id="dio_Att" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Att")[0] + '</div></div>' +
+                    '<p>' + getTexts("Options", "Att")[1] + '</p>' +
+                    '<div id="dio_volume" style="display:none;" ><label for="volumeControl">' + getTexts("labels", "Volume") + ' </label><input type="range" id="dio_volumeControl" min="0" max="1" step="0.1" value="' + DATA.volumeControl + '"><br>' +
+                    //'<label for="customUrlInput">URL https://  .mp3:</label>' +
+                    //'<input type="text" id="customUrlInput" placeholder="https://    .mp3" value="' + AttacksAlarms.musicURL + '">' +
+                    //'<button id="setCustomUrlBtn">Définir l\'URL</button>' +
+                    '</div></td>' +
+                    /*'</tr><tr>' +
+                    '<td><img src="" alt="" /></td>' +
+                    '<td><div id="dio_" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">?????</div></div>' +
+                    '<p>?????</p><br></td>' +*/
+                    '</tr></table>' +
+
                     '</DIV>' +
 
                     // Links (Forum, PM, ...)
@@ -1324,7 +1414,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 });
 
                 //
-                $('#tuto').tooltip(getTexts("Settings", "Update") + " / " + getTexts("labels", "donat") + " / " + getTexts("translations", "translations") + " / BUG");
+                $('#tuto').tooltip(getTexts("Settings", "Update") + " " + dio_version + " / " + getTexts("labels", "donat") + " / " + getTexts("translations", "translations") + " / BUG");
                 $('#tuto').click(() => { Notification.activate(); });
 
                 $('#dio_settings .défaut_s').tooltip(dio_icon + getTexts("buttons", "res"));
@@ -1341,22 +1431,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 });
 
                 $("#dio_settings .checkbox_new").click(function () {
-                    $(this).toggleClass("checked").toggleClass("disabled").toggleClass("green");
+                    $(this).toggleClass("checked").toggleClass("green");
                     toggleActivation(this.id);
-
+                    if (Options_def[this.id] === undefined) $(this).toggleClass("disabled")
                     DATA.options[this.id] = $(this).hasClass("checked");
 
                     saveValue("options", JSON.stringify(DATA.options));
                 });
 
                 $('#dio_settings .radiobutton .option').click(function () {
-                    $('#dio_settings .radiobutton .option').removeClass("checked").addClass("disabled").removeClass("green");
+                    $('#dio_settings .radiobutton .option').removeClass("checked").removeClass("green");
                     DATA.options.dio_aaa = false;
                     DATA.options.dio_bbb = false;
                     DATA.options.dio_ccc = false;
                     DATA.options.dio_ddd = false;
                     DATA.options.dio_eee = false;
-                    $(this).toggleClass("checked").toggleClass("disabled").toggleClass("green");
+                    $(this).toggleClass("checked").toggleClass("green");
                     toggleActivation(this.id);
 
                     DATA.options[this.id] = $(this).hasClass("checked");
@@ -1366,7 +1456,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 for (var e in DATA.options) {
                     if (DATA.options.hasOwnProperty(e)) {
                         if (DATA.options[e] === true) { $("#" + e).addClass("checked").addClass("green"); }
-                        else { $("#" + e).addClass("disabled"); }
                     }
                 }
 
@@ -1382,6 +1471,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         DATA.options[this.id] = act;
                     });
                     saveValue("options", JSON.stringify(DATA.options));
+                });
+
+                //$('#dio_volumeControl').val(DATA.volumeControl);
+                // Récupérez la valeur du contrôle de volume et mettez à jour le volume audio
+                $('#dio_volumeControl').on('input', function () {
+                    var volume = $(this).val();
+                    AttacksAlarms.audioElement[0].volume = volume;
+                    AttacksAlarms.audio.volume = (volume > 0.3 ? volume : 0.3) // Contrôle de volume
+                    //$(this).val(volume);
+                    saveValue("volumeControl", JSON.stringify(volume));
+                });
+                // Gérez l'événement du clic sur le bouton
+                $("#setCustomUrlBtn").on("click", function () {
+                    var customUrl = $("#customUrlInput").val();
+
+                    // Vérifiez si l'URL est non vide avant de la définir
+                    if (customUrl.trim() !== "") {
+                        AttacksAlarms.setMusicURL(customUrl);
+                    } else {
+                        uw.HumanMessage.error(dio_icon + "Veuillez entrer une URL.")
+                        //uw.HumanMessage.error(dio_icon + getTexts("wall", "erreur"))
+                    }
                 });
             }
             $('.section').each(function () { this.style.display = "none"; });
@@ -1536,9 +1647,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             case "dio_Cuc":
                 FEATURE = cultureControl;
                 break;
+            case "dio_BBl":
+                FEATURE = BBcodeList;
+                break;
+            case "dio_Onb":
+                FEATURE = OceanNumbers;
+                break;
+            case "dio_Amm":
+                FEATURE = ally_mass_mail;
+                break;
+            case "dio_Idl":
+                FEATURE = idle;
+                break;
+            case "dio_Saw":
+                FEATURE = Save_wall;
+                break;
+            case "dio_Att":
+                FEATURE = AttacksAlarms;
+                break;
 
 
-            case "dio_tro":
+
+            case "dio_Sav":
                 FEATURE = Save_troops;
                 break;
 
@@ -1629,7 +1759,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         $('<style id="dio_quest_container" type="text/css"> #tutorial_quest_container { top: 130px } </style>').appendTo('head');
 
         // Velerios
-        $('<style id="dio_velerios" type="text/css"> #ph_trader_image { background-image: url(' + Home_img + 'marchand-phenicien.jpg); } </style>').appendTo('head');
+        //$('<style id="dio_velerios" type="text/css"> #ph_trader_image { background-image: url(' + Home_img + 'marchand-phenicien.jpg); } </style>').appendTo('head');
 
         // Specific player wishes
         if (PID == 1212083) { $('<style id="dio_wishes" type="text/css"> #world_end_info { display: none; } </style>').appendTo('head'); }
@@ -1750,7 +1880,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_scr) setTimeout(() => { MouseWheelZoom.activate(); }, 0);
                     if (DATA.options.dio_sim) setTimeout(() => { Simulator.activate(); }, 0);
                     if (DATA.options.dio_sen) setTimeout(() => { SentUnits.activate(); }, 0);
-                    if (DATA.options.dio_tro) setTimeout(() => { Save_troops.activate(); }, 0);
+                    if (DATA.options.dio_Sav) setTimeout(() => { Save_troops.activate(); }, 0);
+                    if (DATA.options.dio_sen || DATA.options.dio_Sav) { ObserverSEND_UNITS() }
                     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
                         if (DATA.options.dio_wwc) setTimeout(() => { WorldWonderCalculator.activate(); }, 0);
                     }
@@ -1775,6 +1906,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_Cuc) setTimeout(() => { cultureControl.activate(); }, 100);
                     if (DATA.options.dio_Buc) setTimeout(() => { buildingControl.activate(); }, 100);
                     if (DATA.options.dio_Cup) setTimeout(() => { cultureProgress.activate(); }, 0);
+                    if (DATA.options.dio_BBl) setTimeout(() => { BBcodeList.activate(); }, 0);
+                    if (DATA.options.dio_Onb) setTimeout(() => { OceanNumbers.activate(); }, 0);
+                    if (DATA.options.dio_Amm) setTimeout(() => { ally_mass_mail.activate(); }, 0);
+                    if (DATA.options.dio_Idl) setTimeout(() => { idle.activate(); }, 0);
+                    if (DATA.options.dio_Saw) setTimeout(() => { Save_wall.activate(); }, 0);
+                    if (DATA.options.dio_Att) setTimeout(() => { AttacksAlarms.activate(); }, 0);
+
 
                     // compatibility flask-tools ?
                     if (typeof (uw.FLASK_GAME) !== "undefined") setTimeout(() => { compatibility.flask_tools(); }, 2000);
@@ -1785,6 +1923,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     setTimeout(() => { dio.style(); }, 0);
 
                     cache();
+                    player_idle();
+                    setInterval(() => { player_idle(); console.log("actualisé") }, 1860000);
+                    setInterval(() => { cache(); }, 4000000);
                     // Execute once to get alliance ratio
                     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
                         setTimeout(() => { uw.getPointRatioFromCache() }, 10000);
@@ -1823,10 +1964,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 dio.wnd = wnd.getJQElement().find(".gpwindow_content");
             }
 
-            //console.log(action)
+            /* eslint-disable no-fallthrough */
             switch (action) {
                 case "/map_data/get_chunks":
                     if (DATA.options.dio_tim) Map.add();
+                    if (DATA.options.dio_Onb) OceanNumbers.add();
                     break;
                 case "/notify/fetch":
                     if (uw.WM.isOpened("notes")) {
@@ -1841,7 +1983,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_Rew) Reward.activate();
                     if (DATA.options.dio_Rtt) dio.removeTooltipps();
                 ///if (DATA.options.dio_Hid) hidesIndexIron.add();
-                // eslint no-fallthrough: "error"
                 case "/frontend_bridge/execute":
                     if (DATA.options.dio_sml) SmileyBox.add(action);
                     if (DATA.options.dio_bbc) addForm(action);
@@ -1862,12 +2003,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_str) UnitStrength.Barracks.add();
                     if (DATA.options.dio_Rtt) dio.removeTooltipps();
                     if (DATA.options.dio_Rtt) dio.removeTooltipps("barracks");
+                    reload.add(action)
                     break;
                 case "/building_docks/index":
                 case "/building_docks/build":
                 case "/building_docks/cancel":
                     if (DATA.options.dio_Rtt) dio.removeTooltipps();
                     if (DATA.options.dio_Rtt) dio.removeTooltipps("docks");
+                    reload.add(action)
                     break;
                 case "/building_place/index":
                 case "/building_place/units_beyond":
@@ -1890,7 +2033,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 case "/town_overviews/start_all_celebrations":
                     if (DATA.options.dio_Cul) cultureOverview.add();
                     if (DATA.options.dio_Cuc) cultureControl.init();
-                // eslint no-fallthrough: "error"
                 case "/building_place/culture":
                     if (DATA.options.dio_Cup) cultureProgress.add();
                     if (DATA.options.dio_Cuo) culturePoints.activate();
@@ -1906,23 +2048,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     break;
                 case "/island_info/index":
                     if (DATA.options.dio_Isl) islandFarmingVillages.activate();
+                    if (DATA.options.dio_Idl) idle.add(action.split("/")[1], uw.Layout.wnd.GetByID(wnd.getID()));
+                    if (DATA.options.dio_BBl) BBcodeList.island_info();
                     break;
                 case "/alliance_forum/forum":
                     if (DATA.options.dio_Fdm) ForumDeleteMultiple.activate();
-                // eslint no-fallthrough: "error"
+                    break;
                 case "/message/view":
                 //markMessage();
-                // eslint no-fallthrough: "error"
                 case "/message/new":
                 case "/message/forward":
+                    if (DATA.options.dio_Idl) idle.add(action.split("/")[1])
                     if (DATA.options.dio_Mse) MessageExport.add();
-                // eslint no-fallthrough: "error"
                 case '/message/default':
                 case '/message/index':
                 case '/message/create':
                 case '/message/reply':
                 //markMessages();
-                // eslint no-fallthrough: "error"
                 case "/player_memo/load_memo_content":
                     if (DATA.options.dio_sml) SmileyBox.add(action);
                     if (DATA.options.dio_bbc) addForm(action);
@@ -1977,7 +2119,19 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_cnt) countMovements();
                     break;
                 case "/player/get_profile_html":
-                    if (DATA.options.dio_BBt) BBtowninfo.profile();
+                    //if (DATA.options.dio_BBt) BBtowninfo.profile();
+                    if (DATA.options.dio_BBt) BBtowninfo.add(action.split("/")[1]);
+                    //if (DATA.options.dio_BBt)
+                    if (DATA.options.dio_BBl) BBcodeList.player_towns();
+                    if (DATA.options.dio_Idl) idle.add(action.split("/")[1]);
+                    break;
+                case "/alliance/profile":
+                    //if (DATA.options.dio_BBt) BBtowninfo.profile_alliance();
+                    if (DATA.options.dio_BBt) BBtowninfo.add(action.split("/")[1]);
+                    //if (DATA.options.dio_BBt)
+                    if (DATA.options.dio_BBl) BBcodeList.alliance_player();
+                    if (DATA.options.dio_Amm) ally_mass_mail.add();
+                    if (DATA.options.dio_Idl) idle.add(action.split("/")[1]);
                     break;
                 case "/town_info/trading":
                     addTradeMarks(15, 18, 15, "red");
@@ -2025,6 +2179,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     break;
                 case "/building_wall/index":
                     if (DATA.options.dio_Rtt) dio.removeTooltipps("wall");
+                    if (DATA.options.dio_Saw) Save_wall.add();
+                    //test
+                    break;
+                case "/ranking/index":
+                case "/ranking/global":
                     break;
             }
         });
@@ -2056,9 +2215,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             // Halloween -> 15 days
             dio.img_Halloween = dio.daystamp(295, 321); // 23. Oktober / 8. November
 
-            if (dio.img_Xmas) { dio_img = Home_img + "icon-xmas.gif"; }
-            if (dio.img_Easter) { dio_img = Home_img + "icon-paques.png"; }
-            //if (dio.img_Halloween) { dio_img = Home_img + "icon-paques.png"; }
+            if (dio.img_Xmas) { dio_img = Home_url + "/img/dio/icon-xmas.gif"; }
+            if (dio.img_Easter) { dio_img = Home_url + "/img/dio/icon-paques.png"; }
+            //if (dio.img_Halloween) { dio_img = Home_url + ""; }
 
             $('<style id="dio_BBplayer_style"> ' +
                 '.dio_icon { background:url(' + dio_img + ') no-repeat 0px 0px; background-size: 100%;} ' +
@@ -2200,6 +2359,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             if (lang == "zz") lang = "en"
             return lang;
         },
+        Extract_alliance(element) {
+            let onclickAttributeValue = element.attr('onclick'); // Sélectionnez l'élément <a> contenant le nom de l'alliance dans l'attribut onclick
+            let alliance = onclickAttributeValue.match(/\('(.*?)',/)[1].replace(/\\/g, ''); // Utilisez une expression régulière pour extraire le nom du joueur
+            return alliance;
+        },
     };
 
     // Fix buggy grepolis values
@@ -2234,7 +2398,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         }
         M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
         if ((tem = ua.match(/version\/(\d+)/i)) !== null) M.splice(1, 1, tem[1]);
-
         return M.join(' ');
     }
 
@@ -2274,6 +2437,29 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             } catch (error) { errorHandling(error, "cache alliances"); }
         }
     }
+    function player_idle() {
+        if ("object" != typeof uw.MM.DIO) { setTimeout(() => { player_idle(); }, 1E4); }
+        else {
+            try {
+                $.ajax({ method: "get", url: "https://api.grepodata.com/data/" + WID + "/player_idle.json" }).done(function (data) {
+                    try {
+                        // Parcours de l'objet JSON pour construire le tableau souhaité
+                        $.each(data, function (key, value) {
+                            // Création d'un objet avec les propriétés id et idle
+                            var objet = { id: key, idle: value };
+                            // Ajout de l'objet au tableau résultat
+                            uw.MM.DIO.player_idle[key] = objet;
+                        });
+                    } catch (error) { errorHandling(error, "player_idle done"); }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    // Gérer les erreurs de la requête AJAX ici
+                    console.error("DIO-TOOLS | player_idle | " + textStatus + " AJAX " + errorThrown);
+                });
+            } catch (error) { errorHandling(error, "player_idle"); }
+        }
+    }
+
+    if ("object" == typeof uw.MM.DIO) console.log(uw.MM.DIO.player_idle[uw.MM.DIO.cachePlayers.david1327.id].idle)
 
     // Error Handling / Remote diagnosis / Automatic bug reports
     function errorHandling(e, fn) {
@@ -2396,10 +2582,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     }
 
     // Adds points to numbers
-    function pointNumber(number) {
+    function pointNumber(number, space) {
         var sep;
-        if (LID === "de") { sep = "."; }
-        else { sep = ","; }
+        if (LID === "de") sep = ".";
+        else sep = ",";
+        if (space) sep = " ";
 
         number = number.toString();
         if (number.length > 3) {
@@ -2516,7 +2703,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         init: () => {
 
             // Window
-            createWindowType("DIO_Notification", getTexts("tutoriel", "tuto"), 820, 550, true, ["center", "center", 100, 100]);
+            createWindowType("DIO_Notification", getTexts("tutoriel", "tuto"), 830, 550, true, ["center", "center", 100, 100]);
             createWindowType("DIO_Notification_v", getTexts("Settings", "version_old"), 450, 150, true);
 
             // Style
@@ -2533,11 +2720,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 '#NotifText table td.value { text-align: right; } ' +
 
                 '#NotifText table td.laurel.green { background: url("/images/game/ally/founder.png") no-repeat; height:17px; width:17px; background-size:100%; } ' +
-                '#NotifText table td.laurel.green2 { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 0%; height:17px; width:17px; } ' +
-                '#NotifText table td.laurel.bronze { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 25%; height:17px; width:17px; } ' +
-                '#NotifText table td.laurel.silver { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 50%; height:17px; width:17px; } ' +
-                '#NotifText table td.laurel.gold { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 75%; height:17px; width:17px; } ' +
-                '#NotifText table td.laurel.blue { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 100%; height:17px; width:17px; } ' +
+                '#NotifText table td.laurel.green2 { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 0%; height:15px; width:15px; } ' +
+                '#NotifText table td.laurel.bronze { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 25%; height:15px; width:15px; } ' +
+                '#NotifText table td.laurel.silver { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 50%; height:15px; width:15px; } ' +
+                '#NotifText table td.laurel.gold { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 75%; height:15px; width:15px; } ' +
+                '#NotifText table td.laurel.blue { background: url("' + Home_url + '/img/dio/logo/laurel-sprite.png") no-repeat 100%; height:15px; width:15px; } ' +
                 '</style>').appendTo('head');
 
             // NotificationType
@@ -2661,13 +2848,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
                         '<a id="link_forum" href="' + Home_url + '/fr/news/mise-a-jour/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + " " + dio_version + '</span></a>';
                 } else {
                     HTML_tab1 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
                         '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
                         '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + " " + dio_version + '</span></a>';
                 }
 
                 HTML_tab1 += '</div>' +
@@ -2677,15 +2864,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<div id="dio_donate_btn" style="position:relative; right: -94px; top: 484px; -webkit-filter: hue-rotate(45deg);">' + dio.createBtnDonate(getTexts("Settings", "Donate"), null, null, 0, getTexts("link", "Donate")) + '</div>' +
                     '</div>';
 
-                HTML_tab1 += grepoGameBorder + /*getTexts("Settings", "Update") +*/ 'News</div>';
+                HTML_tab1 += grepoGameBorder + /*getTexts("Settings", "Update") + " " + dio_version +*/ 'News</div>';
 
                 //
                 var version = dio_version[2] += dio_version[3]
                 var beforeversion = dio_version.replace(version, version - 1);
                 beforeversion = beforeversion.split(".")[0] + "." + beforeversion.split(".")[1]
                 if (DATA.error[beforeversion]) { deleteValue("error"); }
-                if (dio.lang() == "fr") HTML_tab1 += '<iframe src="' + Home_url + '/fr/grepo/News.html " scrolling="auto" style="border:none;width: -moz-available;width: 810px;;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
-                else HTML_tab1 += '<iframe src="' + Home_url + '/en/grepo/News.html " scrolling="auto" style="border:none;width: 810px;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
+                if (dio.lang() == "fr") HTML_tab1 += '<iframe src="' + Home_url + '/fr/grepo/News.html " scrolling="auto" style="border:none;width: -moz-available;width: 820px;;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
+                else HTML_tab1 += '<iframe src="' + Home_url + '/en/grepo/News.html " scrolling="auto" style="border:none;width: 820px;margin-bottom: 5px;height: 420px;" allowtransparency="true"></iframe>';
                 return HTML_tab1;
 
             }
@@ -2705,13 +2892,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
                         '<a id="link_forum" href="' + Home_url + '/fr/news/mise-a-jour/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + " " + dio_version + '</span></a>';
                 } else {
                     HTML_tab2 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
                         '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
                         '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + " " + dio_version + '</span></a>';
                 }
 
                 HTML_tab2 += '</div>' +
@@ -2724,23 +2911,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 HTML_tab2 += grepoGameBorder + getTexts("labels", "donat") + '</div>';
 
                 var don, donNb = 0, reste, donationsListe = [
-                    [1, 5, 60, 56.51, 'Christiane G'], [2, 1, 50, 47.2, 'Nepomuk P'], [3, 3, 30, 27.48, 'Eli M'], [3, 1, 30, 28.78, 'glaglatoulle'], [4, 2, 22, 20.66, 'Ulla R'], [5, 4, 21, 18.73, 'Davryll'], [6, 1, 20, 19.07, 'Sven K'], [6, 1, 20, 19.07, 'Elwira G'], [6, 1, 20, 19.07, 'kanokwan s'], [6, 2, 20, 18.32, 'Ines L'], [6, 1, 20, 19.07, 'Artur Z'], [7, 7, 18.55, 15.54, 'adriano g'], [8, 1, 15, 14.21, 'Attila'], [8, 2, 15, 13.86, 'etienne1306'], [9, 2, 10.51, 9.5, 'Kornelia M'], [10, 1, 10, 9.36, 'Jean-Paul B'], [10, 1, 10, 9.36, 'Uwe J'], [10, 1, 10, 9.36, 'filippo v'], [10, 1, 10, 9.16, 'Eric A'], [10, 1, 10, 9.36, 'SABINE B'], [10, 1, 10, 9.36, 'Christian P'], [10, 1, 10, 9.36, 'benoit A'], [10, 1, 10, 9.36, 'Doris H'], [10, 1, 10, 9.36, 'Gabory A'], [10, 1, 10, 9.36, 'Herbert L'], [10, 1, 10, 9.36, 'Ocaso'], [10, 1, 10, 9.36, 'Andreas S'], [10, 1, 10, 9.36, 'Andreas A'], [11, 1, 5.55, 5.04, 'Annette H'], [11, 1, 5.55, 5.04, 'Susi K'], [12, 1, 5.51, 5, 'Arphox'], [12, 1, 5.51, 5, 'Laurent R'], [13, 1, 5, 4.4, 'Therese S'], [13, 1, 5, 4.5, 'Dorthe D'], [13, 1, 5, 4.5, 'Swen A'], [13, 1, 5, 4.5, 'Comte M'], [13, 1, 5, 4.5, 'Dylan D'], [13, 1, 5, 5.5, 'Max P'], [13, 1, 5, 4.5, 'José-Miguel A'], [13, 1, 5, 4.5, 'Sven O'], [13, 1, 5, 4.5, 'Thomas C'], [13, 1, 5, 4.5, 'Mateusz O'], [13, 1, 5, 4.5, 'Societatea-d-S B'], [13, 1, 5, 4.5, 'Petr M'], [13, 1, 5, 4.5, 'Kallerberg'], [13, 1, 5, 4.5, 'Detlef Z'], [13, 1, 5, 4.5, 'Antonio-Acuña B'], [13, 1, 5, 4.5, 'Denai'], [13, 1, 5, 4.5, 'florian p'], [13, 1, 5, 4.5, 'Diana S'], [13, 1, 5, 4.5, 'Raul-Garcia C'], [14, 3, 3.39, 2.24, 'Gyorgy C'], [15, 1, 2.5, 2.08, 'Martin G'], [16, 1, 2, 1.59, 'Marie-Laure D'], [17, 1, 1.39, 1, 'Eduard B'], [18, 1, 1, 0.38, 'Francesco L'],
+                    [1, 4, 101.26, 94.9, 'Ines L'], [2, 5, 60, 56.51, 'Christiane G'], [3, 1, 50, 47.2, 'Nepomuk P'], [3, 2, 50, 47.85, 'Artur Z'], [4, 18, 47.7, 39.96, 'adriano g'], [5, 14, 41, 34.43, 'Davryll'], [6, 1, 31.26, 29.6, 'Nigel T'], [7, 1, 30, 28.78, 'glaglatoulle'], [7, 3, 30, 27.48, 'elifoxo'], [8, 2, 22, 20.66, 'Ulla R'], [9, 2, 21.32, 20, 'Heinz E'], [10, 1, 20, 19.07, 'Sven K'], [10, 1, 20, 19.07, 'Uwe S'], [10, 1, 20, 19.07, 'Elwira G'], [10, 1, 20, 19.07, 'kanokwan s'], [11, 1, 15, 14.21, 'Walther M'], [11, 2, 15, 13.86, 'etienne1306'], [11, 1, 15, 14.21, 'Attila'], [12, 1, 10.66, 10, 'Arkadiusz W'], [13, 2, 10.51, 9.5, 'Kornelia M'], [14, 1, 10, 9.36, 'filippo v'], [14, 1, 10, 9.36, 'Doris H'], [14, 1, 10, 9.36, 'Andreas S'], [14, 1, 10, 9.36, 'Andreas A'], [14, 1, 10, 9.36, 'benoit A'], [14, 1, 10, 9.36, 'Herbert L'], [14, 1, 10, 9.36, 'Gabory A'], [14, 1, 10, 9.36, 'Christian P'], [14, 1, 10, 9.16, 'Eric A'], [14, 1, 10, 9.36, 'Ocaso'], [14, 1, 10, 9.36, 'Uwe J'], [14, 1, 10, 9.36, 'SABINE B'], [14, 1, 10, 9.36, 'Jean-Paul B'], [15, 1, 7, 6.45, 'thomas c'], [16, 1, 5.55, 5.04, 'Annette H'], [16, 1, 5.55, 5.04, 'Matthias H'], [16, 1, 5.55, 5.04, 'Susi K'], [17, 1, 5.51, 5, 'Laurent R'], [17, 1, 5.51, 5, 'Arphox'], [18, 1, 5, 4.5, 'Diana S'], [18, 1, 5, 4.5, 'Raul-Garcia C'], [18, 1, 5, 4.5, 'Denai'], [18, 1, 5, 4.5, 'Antonio-Acuña B'], [18, 1, 5, 4.5, 'Kallerberg'], [18, 1, 5, 4.5, 'florian p'], [18, 1, 5, 4.5, 'Mateusz O'], [18, 1, 5, 4.5, 'José-Miguel A'], [18, 1, 5, 4.4, 'Therese S'], [18, 1, 5, 4.5, 'Thomas C'], [18, 1, 5, 4.5, 'Ulrich S'], [18, 1, 5, 4.5, 'Petr M'], [18, 1, 5, 4.5, 'Swen A'], [18, 1, 5, 4.5, 'Detlef Z'], [18, 1, 5, 4.5, 'Sven O'], [18, 1, 5, 4.5, 'Dorthe D'], [18, 1, 5, 4.5, 'Yvonne H'], [18, 1, 5, 4.5, 'Societatea-d-S B'], [18, 1, 5, 5.5, 'Max P'], [18, 1, 5, 4.5, 'Dylan D'], [18, 1, 5, 4.5, 'Comte M'], [19, 3, 3.39, 2.24, 'Gyorgy C'], [20, 1, 2.5, 2.08, 'Martin G'], [21, 2, 2.39, 1.62, 'Eduard B'], [22, 1, 2, 1.59, 'Marie-Laure D'], [22, 1, 2, 1.59, 'Ute N'], [23, 1, 1.39, 1, 'laurent k'], [23, 1, 1.39, 1, 'Puiu D'], [24, 1, 1, 0.38, 'Francesco L'],
                 ];
-                $.each(donationsListe, function () {
-                    donNb++;
-                });
+                $.each(donationsListe, function () { donNb++; });
                 don = Math.round(donNb / 4)
                 reste = (donNb - 4 * don)
                 if (reste < 0) reste = 0
 
-                HTML_tab2 += '<div id="NotifText">';
+                HTML_tab2 += '<div id="NotifText"><div>';
 
-                if (dio.lang() == "fr") HTML_tab2 += '<iframe src="' + Home_url + '/fr/grepo/Donations.html" scrolling="auto" style="border:none; overflow:hidden; height: 260px; width: 795px;" allowTransparency="true"></iframe>'; //scrolling="no"
-                else HTML_tab2 += '<iframe src="' + Home_url + '/en/grepo/Donations.html" scrolling="auto" style="border:none; overflow:hidden; height: 260px; width: 795px;" allowTransparency="true"></iframe>'; //scrolling="no";
+                if (dio.lang() == "fr") HTML_tab2 += '<iframe src="' + Home_url + '/fr/grepo/Donations.html" scrolling="auto" style="border:none; overflow:hidden; height: 260px; width: 800px;" allowTransparency="true"></iframe>'; //scrolling="no"
+                else HTML_tab2 += '<iframe src="' + Home_url + '/en/grepo/Donations.html" scrolling="auto" style="border:none; overflow:hidden; height: 260px; width: 800px;" allowTransparency="true"></iframe>'; //scrolling="no";
 
-                HTML_tab2 += '<p>' + getTexts("labels", "ingame_name")[0] + '</p>' +
+                HTML_tab2 += '</div><p>' + getTexts("labels", "ingame_name")[0] + '</p>' +
                     '<p>' + getTexts("labels", "ingame_name")[1] + '</p>' +
-                    '<table style="float:left; margin-right: 8px; margin-left: -5px;">' +
+                    '<table style="float:left; margin-right: 1px; margin-left: -9px;">' +
                     '<tr><th colspan="3">' + getTexts("labels", "donat") + '</th></tr>' +
                     (function () {
                         var donNb2 = -1, donations = [], donations2 = [], donations3 = [], donations4 = [], donation_table = "", donation_table2 = "", donation_table3 = "", donation_table4 = "";
@@ -2769,7 +2954,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         for (d = 0; d < donations3.length; d++) { donation_table3 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations3[d][4] + '</td><td class="value">' + donations3[d][2] + '€</td></tr>'; }
                         for (d = 0; d < donations4.length; d++) { donation_table4 += '<tr class="donation"><td class="laurel green2"></td><td>' + donations4[d][4] + '</td><td class="value">' + donations4[d][2] + '€</td></tr>'; }
 
-                        return donation_table + '</table><table style="float:left; margin-right: 8px; margin-top: 30px;">' + donation_table2 + '</table><table style="float:left; margin-right: 8px; margin-top: 30px;">' + donation_table3 + '</table><table style="float:left; margin-top: 30px;">' + donation_table4;
+                        return donation_table + '</table><table style="float:left; margin-right: 1px; margin-top: 30px;">' + donation_table2 + '</table><table style="float:left; margin-right: 1px; margin-top: 30px;">' + donation_table3 + '</table><table style="float:left; margin-top: 30px;">' + donation_table4;
                     })() +
                     '</table>' +
                     '</div>';
@@ -2779,9 +2964,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             function tab3() {
                 var HTML_tab3 = "";
                 var supported_lang = [getTexts("translations", "info"), getTexts("translations", "add_lang")];
-                $.each(LANG, function (a, b) {
-                    if (a != "AUTO") { supported_lang.push(a); }
-                });
+                var languages = [];
+                $.each(LANG, function (a) { if (a != "AUTO") languages.push(a); }); // Parcourez les langues et ajoutez-les au tableau
+                languages.sort(); // Triez le tableau alphabétiquement
+                $.each(languages, function (index, language) { supported_lang.push(language); });
 
                 HTML_tab3 += '<div style="overflow-x: hidden; padding-left: 5px; position: relative;"></div>' +
                     '</div>' +
@@ -2794,13 +2980,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
                         '<a id="link_forum" href="' + Home_url + '/fr/news/mise-a-jour/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + " " + dio_version + '</span></a>';
                 } else {
                     HTML_tab3 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
                         '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>' +
 
                         '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + '</span></a>';
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + " " + dio_version + '</span></a>';
                 }
 
                 HTML_tab3 += '</div>' +
@@ -2819,8 +3005,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<li>' + getTexts("translations", "trans_infotext1") + '</li>' +
                     '<div id="langdiv" sel="0">'; // style="opacity:0.30;"
 
-                $.each(LANG, function (a) {
-                    if (a != "AUTO") { HTML_tab3 += '<img value="' + a + '" src="' + Home_url + '/img/flag/flag.16.' + a + '.png" style="margin:0 5px;">'; }
+                $.each(languages, function (index, language) {
+                    if (language != getTexts("translations", "info") & language != getTexts("translations", "add_lang")) { HTML_tab3 += '<img value="' + language + '" src="' + Home_url + '/img/flag/flag.16.' + language + '.png" style="margin:0 5px;">'; }
                 });
 
                 HTML_tab3 += '</div>' +
@@ -2846,12 +3032,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 HTML_tab3 += '<table>' +
                     (function () {
                         var translations = [
-                            ["DE", "Diony / Krieger des Lichts"],
+                            ["DE", "Diony / Krieger des Lichts / Anastasia23"],
                             ["EN", "Diony"],
                             ["IT", "amliam / Pyrux"],
                             ["FR", "eclat49 / David1327"],
                             ["RU", "MrBobr"],
-                            ["PL", "anpu"],
+                            ["PL", "anpu / Drbrzeszczot"],
                             ["ES", "Juana de Castilla"],
                             ["BR", "HELL / BUGS"],
                             ["CZ", "Piwus"],
@@ -2860,6 +3046,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             ["GR", "AbstractGR"],
                         ];
 
+                        translations.sort()
                         var translation_table = "";
                         for (var d = 0; d < translations.length; d++) {
                             translation_table += '<tr class="translation"><td style="list-style:square outside;padding-right: 5px"></td><td><img src="' + Home_url + '/img/flag/flag.16.' + translations[d][0].toLowerCase() + '.png" style="margin:0 5px;"></td><td>' + translations[d][0] + ':</td><td class="value">' + translations[d][1] + '</td></tr>';
@@ -3199,7 +3386,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     dio.grepo_submenu("dioset_tab4", "BUG")[0].outerHTML +
                     dio.grepo_submenu("dioset_tab3", getTexts("translations", "translations"))[0].outerHTML +
                     dio.grepo_submenu("dioset_tab2", getTexts("labels", "donat"))[0].outerHTML +
-                    dio.grepo_submenu("dioset_tab1", /*getTexts("Settings", "Update")*/"News")[0].outerHTML + '</ul>');
+                    dio.grepo_submenu("dioset_tab1", /*getTexts("Settings", "Update") + " " + dio_version*/"News")[0].outerHTML + '</ul>');
             }
             $("#diomenu_settings_tabs li a").removeClass("active");
             if (dio.bug) {
@@ -3709,9 +3896,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 '#dio_town_popup .fury_icon { width:22px; height:15px; background: url(' + Home_url + '/img/dio/logo/fury.png) no-repeat; margin-left:2px; display: inline-block; vertical-align: middle; background-size: 75%;} ' +
 
                 // support Icon
-                '#dio_town_popup .support_icon { width:16px; height:16px; background: url(' + Home_img + 'support-16px.png); margin: 1px; margin-bottom: 2px; display: inline-block; vertical-align: middle; background-size: 100%;} ' +
+                '#dio_town_popup .support_icon { width:16px; height:16px; background: url(' + Home_url + '/img/dio/logo/support-16px.png); margin: 1px; margin-bottom: 2px; display: inline-block; vertical-align: middle; background-size: 100%;} ' +
                 // attack Icon
-                '#dio_town_popup .attack_icon { width:16px; height:16px; background: url(' + Home_img + 'attack-16px.png); margin: 1px; margin-bottom: 2px; display: inline-block; vertical-align: middle; background-size: 100%;} ' +
+                '#dio_town_popup .attack_icon { width:16px; height:16px; background: url(' + Home_url + '/img/dio/logo/attack-16px.png); margin: 1px; margin-bottom: 2px; display: inline-block; vertical-align: middle; background-size: 100%;} ' +
 
                 // Bei langen Stadtnamen wird sonst der Rand abgeschnitten:
                 '#dio_town_popup .popup_middle_right { min-width: 11px; } ' +
@@ -4225,6 +4412,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
             // Copy function and prevent an error
             uw.MM.DIO = {
+                player_idle: {},
                 getPlayer: {},
                 info_dio: {
                     name: "DIO-TOOLS-David1327",
@@ -4928,11 +5116,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             //tooltip
             $('#dio_help_available_units').tooltip('Wiki (' + dio_icon + getTexts("Options", "ava")[0] + ')');
 
-            for (unit in unitArray) {
-                if (unitArray.hasOwnProperty(unit)) {
-                    $('#dio' + unit).tooltip(uw.GameData.units[unit].name);
-                }
-            }
+            /*             for (unit in unitArray) {
+                            if (unitArray.hasOwnProperty(unit)) {
+                                $('#dio' + unit).tooltip(uw.GameData.units[unit].name);
+                            }
+                        } */
             $('#dio_close_available_units').click(() => {
                 if (!uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_UNITS)) {
                     AvailableUnits.openWindow();
@@ -4980,6 +5168,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                 // Neue Variante
                 this.innerHTML = '<span style="font-size:0.9em">' + (UnitCounter.units[DATA.bullseyeUnit.mode || "available"][DATA.bullseyeUnit.current_group].all[unit] || 0) + '</span>';
+                $('#dio' + unit).tooltip(uw.GameData.units[unit].name + " (" + (UnitCounter.units[DATA.bullseyeUnit.mode || "available"][DATA.bullseyeUnit.current_group].all[unit] || 0) + ")");
             });
         }
     };
@@ -5025,10 +5214,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 '#dio_comparison table { width:500px; } ' +
                 '#dio_comparison .hack .t_hack, #dio_comparison .pierce .t_pierce, #dio_comparison .distance .t_distance, #dio_comparison .sea .t_sea { display:inline-table; } ' +
 
-                '#dio_comparison .box_content { background:url(' + Home_img + 'casque-1.png) 94% 94% no-repeat; background-size:140px; } ' +
+                '#dio_comparison .box_content { background:url(' + Home_url + '/img/dio/logo/casque-big.png) 94% 94% no-repeat; background-size:140px; } ' +
 
                 '#dio_comparison .compare_type_icon { height:25px; width:25px; background:url(https://gp' + LID + '.innogamescdn.com/images/game/units/units_info_sprite2.51.png); background-size:100%; } ' +
-                '#dio_comparison .compare_type_icon.booty { background:url(' + Home_img + 'butin-sac.png); background-size:100%; } ' +
+                '#dio_comparison .compare_type_icon.booty { background:url(' + Home_url + '/img/dio/logo/butin-sac.png); background-size:100%; } ' +
                 '#dio_comparison .compare_type_icon.time { background:url(https://gp' + LID + '.innogamescdn.com/images/game/res/time.png); background-size:100%; } ' + //   // ' + Home_img + 'time.png
                 '#dio_comparison .compare_type_icon.favor { background:url(https://gp' + LID + '.innogamescdn.com/images/game/res/favor.png); background-size:100%; } ' + // ' + Home_img + 'faveur.png
                 '#dio_comparison .compare_type_icon.wood { background:url(https://gp' + LID + '.innogamescdn.com/images/game/res/wood.png); background-size:100%; } ' +
@@ -5659,7 +5848,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 if (this.classList.length == 2) {
                     $(this).addClass("dio_li_island");
                     $(this).append(
-                        '<div class="dio_colordivider" style="background-image: url(' + Home_img + '13-4.jpg); display: block; height: 24px; margin: -4px -2px;"></div>' +
+                        '<div class="dio_colordivider" style="background-image: url(' + Home_url + '/img/dio/add/color.png); display: block; height: 24px; margin: -4px -2px;"></div>' +
                         '<div class="checkbox_new checked disabled" style="position: absolute; right: 2px; top: 5px; display: none;"><div class="cbx_icon"></div></div>'
                     );
                     $(this).find("span").css({
@@ -5716,7 +5905,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      * ******************************************************************************************************************************/
 
     function countMovements() {
-        var sup = 0, att = 0;
+        /*var sup = 0, att = 0;
         $('.tab_content #unit_movements .support').each(function () {
             sup++;
         });
@@ -5744,7 +5933,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             '#move_counter .movement { float:left; margin:0px 5px 0px 0px; height:23px; width:23px; position:relative; } ' +
             '#move_counter .def { background:url(https://gp' + LID + '.innogamescdn.com/images/game/autogenerated/olympus/sprite_images/olympus_temple_info_16afe3f.png) no-repeat -327px -289px; margin-top: -2px; } ' +
             '#move_counter .off { background:url(https://gp' + LID + '.innogamescdn.com/images/game/autogenerated/olympus/sprite_images/olympus_temple_info_16afe3f.png) no-repeat -303px -289px; margin-top: -2px; }' +
-            '</style>').appendTo("head");
+            '</style>').appendTo("head");*/
     }
 
     /*******************************************************************************************************************************
@@ -5792,6 +5981,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             break;
                         case "info":
                             if (DATA.options.dio_BBt) BBtowninfo.towninfo(wnd);
+                            if (DATA.options.dio_BBt) BBtowninfo.add(action);
+                            if (DATA.options.dio_Idl) idle.add(action);
                             break;
                         case "support":
                         case "attack":
@@ -5799,6 +5990,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                 ShortDuration.add(wndID, action);
                             } else $("#dio_short_duration_stylee").remove();
                             if (DATA.options.dio_sen) SentUnits.add(wndID, action);
+                            if (DATA.options.dio_Sav) Save_troops.add(wndID, action);
                             break;
                         case "rec_mark":
                             break;
@@ -5824,32 +6016,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     /*******************************************************************************************************************************
      * ● Sent units box
      *******************************************************************************************************************************/
-
-    var Save_troops = {
-        activate: () => {
-            $.Observer(uw.GameEvents.command.send_unit).subscribe('DIO_SEND_UNITS', function (e, data) {
-
-                // Copier les valeurs actuelles des champs de saisie
-                var inputValues = $(".town_info_input").map(function () {
-                    return $(this).val();
-                }).get();
-                // Restaurer les valeurs des champs de saisie
-                setTimeout(() => {
-                    $(".town_info_input").each(function (index) {
-                        $(this).val(inputValues[index]);
-                    });
-                }, 200);
-            });
-        },
-        deactivate: () => {
-            $.Observer(uw.GameEvents.command.send_unit).unsubscribe('DIO_SEND_UNITS');
-        },
-    }
-
-    var SentUnits = {
-        activate: () => {
-            $.Observer(uw.GameEvents.command.send_unit).subscribe('DIO_SEND_UNITS', function (e, data) {
-
+    let actObserver
+    function ObserverSEND_UNITS() {
+        if (!actObserver) actObserver = true
+        else return
+        $.Observer(uw.GameEvents.command.send_unit).subscribe('DIO_SEND_UNITS', function (e, data) {
+            if (DATA.options.dio_sen) {
                 // We handle revolt in the same pool as a regular attack & portal olympus
                 if (data.sending_type === "revolt" || data.sending_type === "portal_attack_olympus") data.sending_type = "attack";
                 if (data.sending_type === "portal_support_olympus") data.sending_type = "support";
@@ -5862,20 +6034,67 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     }
                 }
                 SentUnits.update(data.sending_type);
+            }
+            if (DATA.options.dio_Sav && DATA.options.dio_tro) {
+                // Copier les valeurs actuelles des champs de saisie
+                var inputValues = $(".town_info_input").map(function () { return $(this).val(); }).get();
+                var inputValuess = $(".cbx_include_hero").map(function () { return console.log($(this)[0].classList); $(this)[0].classList; }).get();
+                console.log(inputValuess)
+                // Restaurer les valeurs des champs de saisie
+                setTimeout(() => { $(".town_info_input").each(function (index) { $(this).val(inputValues[index]); }); }, 200);
+            }
+        });
+    }
+
+    var Save_troops = {
+        activate: () => {
+            if (!DATA.options.dio_sen) { ObserverSEND_UNITS() }
+            $('<style id="dio_Save_troops_style"> ' +
+                '#dio_tro { margin-right: 10px; }' +
+                '</style>').appendTo("head");
+        },
+        add: (wndID) => {
+            if (!$(wndID + ' #dio_tro').get(0)) {
+                $(wndID + ".button_wrapper > a.button").before('<div id="dio_tro" class="checkbox_new large"><div class="cbx_icon"></div><div class="cbx_caption"></div></div>');
+                $(wndID + "#btn_attack_town").before('<div id="dio_tro" class="checkbox_new large"><div class="cbx_icon"></div><div class="cbx_caption"></div></div>');
+            }
+            else return
+
+            if (DATA.options.dio_tro === true) { $("#dio_tro.checkbox_new").addClass("checked"); }
+            $(wndID + "#dio_tro.checkbox_new").click(() => {
+                $("#dio_tro.checkbox_new").toggleClass("checked");
+                DATA.options.dio_tro = $(wndID + "#dio_tro").hasClass("checked");
+                saveValue("options", JSON.stringify(DATA.options));
             });
+
+            //tooltip
+            $(wndID + '#dio_tro').tooltip(dio_icon + "BETA save sent troops (revolt, attack, support)");
+        },
+        deactivate: () => {
+            if (!DATA.options.dio_sen || !DATA.options.dio_Sav) {
+                $.Observer(uw.GameEvents.command.send_unit).unsubscribe('DIO_SEND_UNITS');
+                actObserver = false
+            }
+            $('#dio_Save_troops_style').remove();
+        },
+    }
+
+    var SentUnits = {
+        activate: () => {
+            if (!DATA.options.dio_Sav) { ObserverSEND_UNITS() }
             $('<style id="dio_SentUnits_style"> ' +
                 '#dio_table_box .icon_sent { height: 20px; margin-top: -2px; width: 20px; background-position-y: -26px; padding-left: 0px; margin-left: 0px; } ' +
-                '#dio_table_box .sent_units_box { position: absolute; right: 0px; bottom: 26px; width: 192px; } ' +
+                '#dio_table_box .sent_units_box { position: absolute; right: 0px; bottom: 0px; width: 192px; } ' +
                 '#dio_table_box .troops { padding: 6px 0px 6px 6px; } ' +
                 '#dio_table_box .troops hr { width: 172px;border: 1px solid rgb(185, 142, 93);margin: 3px 0px 2px -1px; } ' +
                 '.attack_support_window .additional_info_wrapper { margin-top: -8px; } ' +
-                '#dio_tro { position: absolute; bottom: -2px;}' +
                 '</style>').appendTo("head");
-
-
         },
         deactivate: () => {
-            $.Observer(uw.GameEvents.command.send_unit).unsubscribe('DIO_SEND_UNITS');
+            if (!DATA.options.dio_sen || !DATA.options.dio_Sav) {
+                $.Observer(uw.GameEvents.command.send_unit).unsubscribe('DIO_SEND_UNITS');
+                actObserver = false
+            }
             $('#dio_table_box').remove();
             $('#dio_SentUnits_style').remove();
             $('#dio_SentUnits_modif_style').remove();
@@ -5890,10 +6109,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 '.attack_support_window .additional_info_wrapper .town_info_duration_pos { min-height: 62px!important; } ' +
 
                 '</style>').appendTo(wndID + '.attack_support_window');
-
-            if (!$(wndID + ' #dio_tro').get(0)) {
-                $(wndID + '.attack_support_window').before('<div id="dio_tro" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption"></div></div>');
-            }
 
             if ((uw.ITowns.getTown(uw.Game.townId).researches().attributes.breach == true || uw.ITowns.getTown(uw.Game.townId).researches().attributes.stone_storm == true) & DATA.options.dio_sen) {
                 $('<style id="dio_SentUnits_breach_style">' +
@@ -5931,26 +6146,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     sentUnitsArray[action] = {};
                     SentUnits.update(action);
                 });
-
-                $(wndID + '#dio_tro').tooltip(dio_icon + "BETA save sent troops (revolt, attack, support)");
-
-                $(wndID + "#dio_tro.checkbox_new").click(function () {
-                    $(this).toggleClass("checked").toggleClass("disabled").toggleClass("green");
-                    toggleActivation("dio_tro");
-
-                    DATA.options[this.id] = $(this).hasClass("checked");
-
-                    saveValue("options", JSON.stringify(DATA.options));
-                });
-
-                for (var e in DATA.options) {
-                    if (e === "dio_tro") {
-                        if (DATA.options.hasOwnProperty(e)) {
-                            if (DATA.options[e] === true) { $(wndID + "#" + e).addClass("checked").addClass("green"); }
-                            else { $("#" + e).addClass("disabled"); }
-                        }
-                    }
-                }
             }
         },
         update: (action) => {
@@ -7599,73 +7794,73 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             });
             $(bbcodeBarId + ' .dio_def_form').css({ backgroundPosition: '-89px 0px' });
             var imgArray = {
-                wall: Home_img + '40px-remparts.png', 	// 'https://gp'+ LID + '.innogamescdn.com/images/game/main/wall.png',
-                tower: Home_img + '40px-tour.png', 		// 'https://gp'+ LID + '.innogamescdn.com/images/game/main/tower.png',
-                hide: Home_img + '40px-grotte.png', 		// 'https://gp'+ LID + '.innogamescdn.com/images/game/main/hide.png'
+                wall: 'https://gp' + LID + '.innogamescdn.com/images/game/main/wall.png',
+                tower: 'https://gp' + LID + '.innogamescdn.com/images/game/main/tower.png',
+                hide: 'https://gp' + LID + '.innogamescdn.com/images/game/main/hide.png',
 
-                spy: Home_img + '40px-spy.png',
-                pop: Home_img + '40px-pop.png',
+                spy: Home_url + '/img/dio/logo/40/40px-spy.png',
+                pop: Home_url + '/img/dio/logo/40/40px-pop.png',
 
-                rev1: Home_img + '40px-rev1.png',
-                rev0: Home_img + '40px-rev0.png',
-                eo1: Home_img + '40px-eo1.png',
-                eo0: Home_img + '40px-eo0.png',
-                att: Home_img + '40px-att.png',
-                sup: Home_img + '40px-sup.png',
+                rev1: Home_url + '/img/dio/logo/40/40px-rev1.png',
+                rev0: Home_url + '/img/dio/logo/40/40px-rev0.png',
+                eo1: Home_url + '/img/dio/logo/40/40px-eo1.png',
+                eo0: Home_url + '/img/dio/logo/40/40px-eo0.png',
+                att: Home_url + '/img/dio/logo/40/40px-att.png',
+                sup: Home_url + '/img/dio/logo/40/40px-sup.png',
 
-                zeus: Home_img + '40px-zeus.png',
-                hera: Home_img + '40px-hera.png',
-                athena: Home_img + '40px-athena.png',
-                poseidon: Home_img + '40px-poseidon.png',
-                hades: Home_img + '40px-hades.png',
-                artemis: Home_img + '40px-artemis.png',
-                nogod: Home_img + '40px-nogod.png',
-                aphrodite: Home_img + '40px-aphrodite.png',
-                ares: Home_img + '40px-ares.png',
+                zeus: Home_url + '/img/dio/logo/40/40px-zeus.png',
+                hera: Home_url + '/img/dio/logo/40/40px-hera.png',
+                athena: Home_url + '/img/dio/logo/40/40px-athena.png',
+                poseidon: Home_url + '/img/dio/logo/40/40px-poseidon.png',
+                hades: Home_url + '/img/dio/logo/40/40px-hades.png',
+                artemis: Home_url + '/img/dio/logo/40/40px-artemis.png',
+                nogod: Home_url + '/img/dio/logo/40/40px-nogod.png',
+                aphrodite: Home_url + '/img/dio/logo/40/40px-aphrodite.png',
+                ares: Home_url + '/img/dio/logo/40/40px-ares.png',
 
-                captain: Home_img + '40px-captain.png',
-                commander: Home_img + '40px-commander.png',
-                priest: Home_img + '40px-priest.png',
+                captain: Home_url + '/img/dio/logo/40/40px-captain.png',
+                commander: Home_url + '/img/dio/logo/40/40px-commander.png',
+                priest: Home_url + '/img/dio/logo/40/40px-priest.png',
 
-                phalanx: Home_img + '40px-phalange.png',
-                ram: Home_img + '40px-belier.png',
+                phalanx: Home_url + '/img/dio/logo/40/40px-phalanx.png',
+                ram: Home_url + '/img/dio/logo/40/40px-ram.png',
 
-                militia: Home_img + '40px-milice.png', 				// 'https://wiki.en.grepolis.com/images/9/9b/Militia_40x40.png',
-                sword: Home_img + 'combattant-a-l-epee-1.png', 	// 'https://wiki.en.grepolis.com/images/9/9c/Sword_40x40.png',
-                slinger: Home_img + 'frondeur-1.png', 				// 'https://wiki.en.grepolis.com/images/d/dc/Slinger_40x40.png',
-                archer: Home_img + 'archer-1.png', 				// 'https://wiki.en.grepolis.com/images/1/1a/Archer_40x40.png',
-                hoplite: Home_img + 'hoplite-1.png', 				// 'https://wiki.en.grepolis.com/images/b/bd/Hoplite_40x40.png',
-                rider: Home_img + 'cavalier-1.png', 				// 'https://wiki.en.grepolis.com/images/e/e9/Rider_40x40.png',
-                chariot: Home_img + 'char-1.png', 					// 'https://wiki.en.grepolis.com/images/b/b8/Chariot_40x40.png',
-                catapult: Home_img + 'catapulte-1.png', 				// 'https://wiki.en.grepolis.com/images/f/f0/Catapult_40x40.png',
-                godsent: Home_img + '40px-ed.png', 					// 'https://wiki.de.grepolis.com/images/6/6e/Grepolis_Wiki_225.png',
+                militia: Home_url + '/img/dio/logo/40/40px-milice.png', 				// 'https://wiki.en.grepolis.com/images/9/9b/Militia_40x40.png',
+                sword: Home_url + '/img/dio/logo/40/40px-sword.png', 	// 'https://wiki.en.grepolis.com/images/9/9c/Sword_40x40.png',
+                slinger: Home_url + '/img/dio/logo/40/40px-slinger.png', 				// 'https://wiki.en.grepolis.com/images/d/dc/Slinger_40x40.png',
+                archer: Home_url + '/img/dio/logo/40/40px-archer.png', 				// 'https://wiki.en.grepolis.com/images/1/1a/Archer_40x40.png',
+                hoplite: Home_url + '/img/dio/logo/40/40px-hoplite.png', 				// 'https://wiki.en.grepolis.com/images/b/bd/Hoplite_40x40.png',
+                rider: Home_url + '/img/dio/logo/40/40px-rider.png', 				// 'https://wiki.en.grepolis.com/images/e/e9/Rider_40x40.png',
+                chariot: Home_url + '/img/dio/logo/40/40px-chariot.png', 					// 'https://wiki.en.grepolis.com/images/b/b8/Chariot_40x40.png',
+                catapult: Home_url + '/img/dio/logo/40/40px-catapult.png', 				// 'https://wiki.en.grepolis.com/images/f/f0/Catapult_40x40.png',
+                godsent: Home_url + '/img/dio/logo/40/40px-godsent.png', 					// 'https://wiki.de.grepolis.com/images/6/6e/Grepolis_Wiki_225.png',
 
-                def_sum: Home_img + '40px-def-sum.png',
+                def_sum: Home_url + '/img/dio/logo/40/40px-def_sum.png',
 
-                minotaur: Home_img + '40px-minotaure.jpg', 	// 'https://wiki.de.grepolis.com/images/7/70/Minotaur_40x40.png',
-                manticore: Home_img + '40px-manticore.jpg', 	// 'https://wiki.de.grepolis.com/images/5/5e/Manticore_40x40.png',
-                zyclop: Home_img + '40px-cyclope.jpg', 	// 'https://wiki.de.grepolis.com/images/6/66/Zyklop_40x40.png',
-                sea_monster: Home_img + '40px-hydre.jpg', 		// 'https://wiki.de.grepolis.com/images/7/70/Sea_monster_40x40.png',
-                harpy: Home_img + '40px-harpie.jpg', 		// 'https://wiki.de.grepolis.com/images/8/80/Harpy_40x40.png',
-                medusa: Home_img + '40px-meduse.jpg', 		// 'https://wiki.de.grepolis.com/images/d/db/Medusa_40x40.png',
-                centaur: Home_img + '40px-centaure.jpg', 	// 'https://wiki.de.grepolis.com/images/5/53/Centaur_40x40.png',
-                pegasus: Home_img + '40px-pegase.jpg', 		// 'https://wiki.de.grepolis.com/images/5/54/Pegasus_40x40.png',
-                cerberus: Home_img + '40px-cerbere.jpg', 	// 'https://wiki.de.grepolis.com/images/6/67/Zerberus_40x40.png',
-                fury: Home_img + '40px-erinye.jpg', 		// 'https://wiki.de.grepolis.com/images/6/67/Erinys_40x40.png',
-                griffin: Home_img + '40px-griffon.jpg', 	// 'https://wiki.de.grepolis.com/images/d/d1/Unit_greif.png',
-                calydonian_boar: Home_img + '40px-sc.jpg', 	// 'https://wiki.de.grepolis.com/images/9/93/Unit_eber.png',
-                spartoi: Home_img + '40px-spartoi.png',
-                siren: Home_img + '40px-siren-1.png',
-                satyr: Home_img + '40px-satyr.png',
-                ladon: Home_img + '40px-ladon.png',
+                minotaur: Home_url + '/img/dio/logo/40/40px-minotaur.png', 	// 'https://wiki.de.grepolis.com/images/7/70/Minotaur_40x40.png',
+                manticore: Home_url + '/img/dio/logo/40/40px-manticore.png', 	// 'https://wiki.de.grepolis.com/images/5/5e/Manticore_40x40.png',
+                zyclop: Home_url + '/img/dio/logo/40/40px-zyclop.png', 	// 'https://wiki.de.grepolis.com/images/6/66/Zyklop_40x40.png',
+                sea_monster: Home_url + '/img/dio/logo/40/40px-sea_monster.png', 		// 'https://wiki.de.grepolis.com/images/7/70/Sea_monster_40x40.png',
+                harpy: Home_url + '/img/dio/logo/40/40px-harpy.png', 		// 'https://wiki.de.grepolis.com/images/8/80/Harpy_40x40.png',
+                medusa: Home_url + '/img/dio/logo/40/40px-medusa.png', 		// 'https://wiki.de.grepolis.com/images/d/db/Medusa_40x40.png',
+                centaur: Home_url + '/img/dio/logo/40/40px-centaur.png', 	// 'https://wiki.de.grepolis.com/images/5/53/Centaur_40x40.png',
+                pegasus: Home_url + '/img/dio/logo/40/40px-pegasus.png', 		// 'https://wiki.de.grepolis.com/images/5/54/Pegasus_40x40.png',
+                cerberus: Home_url + '/img/dio/logo/40/40px-cerberus.png', 	// 'https://wiki.de.grepolis.com/images/6/67/Zerberus_40x40.png',
+                fury: Home_url + '/img/dio/logo/40/40px-fury.png', 		// 'https://wiki.de.grepolis.com/images/6/67/Erinys_40x40.png',
+                griffin: Home_url + '/img/dio/logo/40/40px-griffin.png', 	// 'https://wiki.de.grepolis.com/images/d/d1/Unit_greif.png',
+                calydonian_boar: Home_url + '/img/dio/logo/40/40px-calydonian_boar.png', 	// 'https://wiki.de.grepolis.com/images/9/93/Unit_eber.png',
+                spartoi: Home_url + '/img/dio/logo/40/40px-spartoi.png',
+                siren: Home_url + '/img/dio/logo/40/40px-siren.png',
+                satyr: Home_url + '/img/dio/logo/40/40px-satyr.png',
+                ladon: Home_url + '/img/dio/logo/40/40px-ladon.png',
 
-                big_transporter: Home_img + '40px-bt.png', 		// 'https://wiki.en.grepolis.com/images/0/04/Big_transporter_40x40.png',
-                bireme: Home_img + '40px-bireme.png', 	// 'https://wiki.en.grepolis.com/images/4/44/Bireme_40x40.png',
-                attack_ship: Home_img + '40px-bf.png', 		// 'https://wiki.en.grepolis.com/images/e/e6/Attack_ship_40x40.png',
-                demolition_ship: Home_img + '40px-brulot.png', 	// 'https://wiki.en.grepolis.com/images/e/ec/Demolition_ship_40x40.png',
-                small_transporter: Home_img + '40px-btr.png', 	// 'https://wiki.en.grepolis.com/images/8/85/Small_transporter_40x40.png',
-                trireme: Home_img + '40px-triere.png', 	// 'https://wiki.en.grepolis.com/images/a/ad/Trireme_40x40.png',
-                colonize_ship: Home_img + '40px-bc.png', 		// 'https://wiki.en.grepolis.com/images/d/d1/Colonize_ship_40x40.png',
+                big_transporter: Home_url + '/img/dio/logo/40/40px-big_transporter.png', 		// 'https://wiki.en.grepolis.com/images/0/04/Big_transporter_40x40.png',
+                bireme: Home_url + '/img/dio/logo/40/40px-bireme.png', 	// 'https://wiki.en.grepolis.com/images/4/44/Bireme_40x40.png',
+                attack_ship: Home_url + '/img/dio/logo/40/40px-attack_ship.png', 		// 'https://wiki.en.grepolis.com/images/e/e6/Attack_ship_40x40.png',
+                demolition_ship: Home_url + '/img/dio/logo/40/40px-demolition_ship.png', 	// 'https://wiki.en.grepolis.com/images/e/ec/Demolition_ship_40x40.png',
+                small_transporter: Home_url + '/img/dio/logo/40/40px-small_transporter.png', 	// 'https://wiki.en.grepolis.com/images/8/85/Small_transporter_40x40.png',
+                trireme: Home_url + '/img/dio/logo/40/40px-trireme.png', 	// 'https://wiki.en.grepolis.com/images/a/ad/Trireme_40x40.png',
+                colonize_ship: Home_url + '/img/dio/logo/40/40px-colonize_ship.png', 		// 'https://wiki.en.grepolis.com/images/d/d1/Colonize_ship_40x40.png',
 
                 move_icon: 'https://gp' + LID + '.innogamescdn.com/images/game/unit_overview/', // '?',
 
@@ -7682,7 +7877,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 '<div id="f_uni" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "det") + '</div></div><br><br>' +
                 '<div id="f_prm" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "prm") + '</div></div><br><br>' +
                 '<div id="f_sil" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "sil") + '</div></div><br><br>' +
-                /*'<div id="f_mov" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "mov") + '</div></div><br><br>' +*/
+                '<div id="f_mov" class="checkbox_new checked"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("labels", "mov") + '</div></div><br><br>' +
                 '<div><a class="button" id="dio_insert" href="#"><span class="left"><span class="right"><span class="middle"><small>' + dio_icon + '' + getTexts("buttons", "ins") + '</small></span></span></span><span></span></a></div>' +
                 '</div></div></div>').appendTo(bbcodeBarId + ' .bb_button_wrapper');
 
@@ -7766,33 +7961,45 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 var bb_count_str = parseInt(str.match(/\[/g).length, 10), bb_count_move = 0;
 
                 var i = 0;
-                /*if ($('#f_mov').hasClass("checked")) {
-                move_table += '\n[i][b]' + getTexts("labels", "mov", true) + '[/b][/i]\n[table]';
+                if ($('#f_mov').hasClass("checked")) {
+                    move_table += '\n[i][b]' + getTexts("labels", "mov", true) + '[/b][/i]\n[table]';
 
-                $('#toolbar_activity_commands').mouseover();
+                    $('#toolbar_activity_commands').mouseover();
 
-                $('#toolbar_activity_commands_list .content .command').each(function () {
-                    var cl = $(this).children()[0].className.split(" ");
-                    if ((cl[cl.length - 1] === "returning" || cl[cl.length - 1] === "revolt_arising" || cl[cl.length - 1] === "revolt_running") && ((bb_count_str + bb_count_move) < 480)) {
-                        move_table += (i % 1) ? "" : "[**]";
-                        i++;
-                        move_table += "[img]" + imgArray.move_icon + cl[2] + ".png[/img][||]";
-                        move_table += getArrivalTime($(this).children()[1].innerHTML) + (uw.Game.market_id === "de" ? " Uhr[||]" : " [||]");
-                        move_table += "[town]" + JSON.parse(atob($(this).children()[2].firstChild.href.split("#")[1])).id + "[/town]";
-                        move_table += (i % 1) ? "[||]" : "[/**]";
+                    $('#toolbar_activity_commands_list .content .command').each(function () {
+                        var cl = $(this).children()[0].className.split(" ");
+                        console.log($(this).children()[0].className.split(" "))
+                        console.log(cl[cl.length - 1])
+                        if (/*(cl[cl.length - 1] === "returning" || cl[cl.length - 1] === "revolt_arising" || cl[cl.length - 1] === "revolt_running") &&*/ ((bb_count_str + bb_count_move) < 480)) {
+                            move_table += (i % 1) ? "" : "[**]";
+                            i++;
+                            move_table += "[img]" + imgArray.move_icon + cl[2] + ".png[/img][||]";
+                            move_table += getArrivalTime($(this).children()[1].innerHTML) + (uw.Game.market_id === "de" ? " Uhr[||]" : " [||]");
+                            console.log($(this).parent()[0])
+                            // Récupérez l'URL de chaque lien
+                            const url = $(this).find('.gp_town_link').attr('href');
+                            // Utilisez la fonction replaceBBtowns pour extraire l'ID de la ville de l'URL
+                            const townIdMatch = url.match(/#(.*?)$/);
+                            //if (townIdMatch && townIdMatch[1]) {
+                            const ville = $.parseJSON(atob(townIdMatch[1])).id;
+                            move_table += "[town]" + ville + "[/town]";
+                            //move_table += "[town]" + JSON.parse(atob($(this).children()[2].firstChild.href.split("#")[1])).id + "[/town]";
+                            move_table += (i % 1) ? "[||]" : "[/**]";
+                            console.log(move_table)
+                        }
+                        bb_count_move = parseInt(move_table.match(/\[/g).length, 10);
+                    });
+                    if ((bb_count_str + bb_count_move) > 480) {
+                        move_table += '[**]...[/**]';
                     }
-                    bb_count_move = parseInt(move_table.match(/\[/g).length, 10);
-                });
-                if ((bb_count_str + bb_count_move) > 480) {
-                    move_table += '[**]...[/**]';
+                    console.log(move_table)
+
+                    $('#toolbar_activity_commands').mouseout();
+
+                    //console.log((bb_count_str + bb_count_move));
+                    move_table += (i % 1) ? "[/**]" : "";
+                    move_table += "[*][|][color=#800000][size=6][i] (" + getTexts("labels", "dev", true) + ": ±1s)[/i][/size][/color][/*][/table]\n";
                 }
-
-                $('#toolbar_activity_commands').mouseout();
-
-                //console.log((bb_count_str + bb_count_move));
-                move_table += (i % 1) ? "[/**]" : "";
-                move_table += "[*][|][color=#800000][size=6][i] (" + getTexts("labels", "dev", true) + ": ±1s)[/i][/size][/color][/*][/table]\n";
-            }*/
 
                 str += move_table + '[img]' + imgArray.bordure + '[/img]\n';
 
@@ -7805,11 +8012,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         try {
             var server_time = $('.server_time_area').get(0).innerHTML.split(" ")[0].split(":"), arrival_time, s, m, h;
             duration_time = duration_time.split(":");
+            console.log(duration_time)
 
             s = parseInt(server_time[2], 10) + parseInt(duration_time[2], 10);
             m = parseInt(server_time[1], 10) + parseInt(duration_time[1], 10) + ((s >= 60) ? 1 : 0);
-            h = parseInt(server_time[0], 10) + parseInt(duration_time[0], 10) + ((m >= 60) ? 1 : 0);
+            h = parseInt(server_time[0], 10) + parseInt(duration_time[0].split(">")[1], 10) + ((m >= 60) ? 1 : 0);
 
+            console.log(duration_time[0].split(">")[1])
             s = s % 60;
             m = m % 60;
             h = h % 24;
@@ -8242,34 +8451,36 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      *******************************************************************************************************************************/
 
     var ActivityBoxes = {
+        timeout: null,
         activate: () => {
             try {
+                //if (0 == $("#dio_taclWrap").length) $("#toolbar_activity_commands_list").wrap($("<div/>", {"class":"dio_taclWrap", id:"dio_taclWrap"}))
+
                 $("#toolbar_activity_recruits_list").hover(
                     function () {
                         if ($("#dio_plusmenuRecruits").length == 0) {
                             $("#toolbar_activity_recruits_list").append('<div id="dio_plusmenuRecruits" class="dio_plusmenu"><div id="dio_plusdraghandleRecruits" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
                             $('#dio_plusmenuRecruits .dio_plusback').click(() => { dio_plus_destroy("dio_plusmenuRecruits"); });
+                            $('#dio_plusmenuRecruits .dio_plusback').tooltip(dio_icon);
                         }
                     }, function () { $('#dio_plusmenuRecruits').remove(); }
                 );
-                /*$("#toolbar_activity_commands_list").hover(
-                function () {
-                if ($("#dio_plusmenuCommands").length == 0) {
-                    $("#toolbar_activity_commands_list").append('<div id="dio_plusmenuCommands" class="dio_plusmenu"><div id="dio_plusdraghandleCommands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
-                    $('#dio_plusmenuCommands .dio_plusback').click(() => {
-                        dio_plus_destroy("dio_plusmenuCommands");
+                $("#toolbar_activity_commands_list .sandy-box").hover(
+                    function () {
+                        if ($("#dio_plusmenuCommands").length == 0) {
+                            $("#toolbar_activity_commands_list .sandy-box").append('<div id="dio_plusmenuCommands" class="dio_plusmenu"><div id="dio_plusdraghandleCommands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
+                            $('#dio_plusmenuCommands .dio_plusback').click(() => { dio_plus_destroy("dio_plusmenuCommands"); });
+                            $('#dio_plusmenuCommands .dio_plusback').tooltip(dio_icon);
+                        }
+                    }, function () {
+                        $('#dio_plusmenuCommands').remove();
                     });
-                }
-            }, function () {
-                $('#dio_plusmenuCommands').remove();
-            });*/
                 $("#toolbar_activity_trades_list").hover(
                     function () {
                         if ($("#dio_plusmenuTrades").length == 0) {
                             $("#toolbar_activity_trades_list").append('<div id="dio_plusmenuTrades" class="dio_plusmenu"><div id="dio_plusdraghandleTrades" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
-                            $('#dio_plusmenuTrades .dio_plusback').click(() => {
-                                dio_plus_destroy("dio_plusmenuTrades");
-                            });
+                            $('#dio_plusmenuTrades .dio_plusback').click(() => { dio_plus_destroy("dio_plusmenuTrades"); });
+                            $('#dio_plusmenuTrades .dio_plusback').tooltip(dio_icon);
                         }
                     }, function () { $('#dio_plusmenuTrades').remove(); }
                 );
@@ -8277,21 +8488,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     function () {
                         if ($("#dio_plusmenuTemple_commands").length == 0) {
                             $("#toolbar_activity_temple_commands_list").append('<div id="dio_plusmenuTemple_commands" class="dio_plusmenu"><div id="dio_plusdraghandleTemple_commands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
-                            $('#dio_plusmenuTemple_commands .dio_plusback').click(() => {
-                                dio_plus_destroy("dio_plusmenuTemple_commands");
-                            });
+                            $('#dio_plusmenuTemple_commands .dio_plusback').click(() => { dio_plus_destroy("dio_plusmenuTemple_commands"); });
+                            $('#dio_plusmenuTemple_commands .dio_plusback').tooltip(dio_icon);
                         }
                     }, function () { $('#dio_plusmenuTemple_commands').remove(); }
                 );
 
                 $('<style id="dio_plusmenustyle" type="text/css">' +
-                    '.displayImp {display: block !important;}' +
+                    '.displayImp {display: block !important; z-index: 5000 !important;}' +
+                    '.dio_commands { height: 0px; overflow: visible!important; }' +
                     '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
                     '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(' + Home_url + '/img/dio/btn/draghandle.png)}' +
                     '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(' + Home_url + '/img/dio/btn/plusback.png)}' +
                     '#toolbar_activity_recruits_list {min-width: 113px;}' +
                     '.dropdown-list .item_no_results, .dropdown-list.ui-draggable>div {cursor:text!important;}' +
+                    '#toolbar_activity_commands_list .unit_movements .details_wrapper, #toolbar_activity_commands_list .unit_movements .icon { visibility: visible }' +
+                    '#toolbar_activity_commands_list .cancel { display: none !important; }' +
                     '</style>').appendTo('head');
+
 
                 $('#toolbar_activity_recruits_list').draggable({
                     cursor: "move",
@@ -8299,32 +8513,44 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     start: function () {
                         $("#dio_plusmenuRecruitsSTYLE").remove();
                         $('#toolbar_activity_recruits_list').addClass("displayImp");
+                        $(".dio_plusdraghandle").css({ cursor: "grabbing" });
                     },
                     stop: function () {
+                        $(".dio_plusdraghandle").css({ cursor: "grab" });
                         var dio_position = $('#toolbar_activity_recruits_list').position();
                         $('<style id="dio_plusmenuRecruitsSTYLE" type="text/css">#toolbar_activity_recruits_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
                     }
                 });
-                /*$('#toolbar_activity_commands_list').draggable({
-                cursor : "move",
-                handle : ".dio_plusdraghandle",
-                start : function () {
-                    $("#dio_plusmenuCommandsSTYLE").remove();
-                    $('#toolbar_activity_commands_list').addClass("displayImp");
-                },
-                stop : function () {
-                    var dio_position = $('#toolbar_activity_commands_list').position();
-                    $('<style id="dio_plusmenuCommandsSTYLE" type="text/css">#toolbar_activity_commands_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
-                }
-            });*/
+                $('#toolbar_activity_commands_list .sandy-box').draggable({
+                    cursor: "move",
+                    handle: ".dio_plusdraghandle",
+                    start: function () {
+                        $("#dio_plusmenuCommandsSTYLE").remove();
+                        $('#toolbar_activity_commands_list').addClass("displayImp");
+                        $('#toolbar_activity_commands_list').addClass("dio_commands");
+                        clearTimeout(ActivityBoxes.timeout);
+                        ActivityBoxes.timeout = null;
+                        var dio_position = $('#toolbar_activity_commands_list .sandy-box').position();
+                        if (dio_position.left === 0 && dio_position.top === 0) $("#toolbar_activity_commands_list .sandy-box").css({ "top": "+40px !important" });
+                        $(".dio_plusdraghandle").css({ cursor: "grabbing" });
+                    },
+                    stop: function () {
+                        $(".dio_plusdraghandle").css({ cursor: "grab" });
+                        ActivityBoxes.add()
+                        var dio_position = $('#toolbar_activity_commands_list .sandy-box').position();
+                        $('<style id="dio_plusmenuCommandsSTYLE" type="text/css">#toolbar_activity_commands_list .sandy-box {left: ' + dio_position.left + 'px !important; top: ' + dio_position.top + 'px !important;}</style>').appendTo('head');
+                    }
+                });
                 $('#toolbar_activity_trades_list').draggable({
                     cursor: "move",
                     handle: ".dio_plusdraghandle",
                     start: function () {
                         $("#dio_plusmenuTradesSTYLE").remove();
                         $('#toolbar_activity_trades_list').addClass("displayImp");
+                        $(".dio_plusdraghandle").css({ cursor: "grabbing" });
                     },
                     stop: function () {
+                        $(".dio_plusdraghandle").css({ cursor: "grab" });
                         var dio_position = $('#toolbar_activity_trades_list').position();
                         $('<style id="dio_plusmenuTradesSTYLE" type="text/css">#toolbar_activity_trades_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
                     }
@@ -8335,48 +8561,54 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     start: function () {
                         $("#dio_plusmenuTemple_commandsSTYLE").remove();
                         $('#toolbar_activity_temple_commands_list').addClass("displayImp");
+                        $(".dio_plusdraghandle").css({ cursor: "grabbing" });
                     },
                     stop: function () {
+                        $(".dio_plusdraghandle").css({ cursor: "grab" });
                         var dio_position = $('#toolbar_activity_temple_commands_list').position();
                         $('<style id="dio_plusmenuTemple_commandsSTYLE" type="text/css">#toolbar_activity_temple_commands_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
                     }
                 });
 
                 function dio_plus_destroy(dioJQselector) {
-                    /*if (dioJQselector == "dio_plusmenuCommands") {
-                    $('#toolbar_activity_commands_list').hide();
-                    $('#toolbar_activity_commands_list').on("mouseleave", function () {
-                        $('#toolbar_activity_commands_list').hide();
-                    });
-                    $('#toolbar_activity_recruits, #toolbar_activity_trades').on("mouseenter", function () {
-                        $('#toolbar_activity_commands_list').hide();
-                    });
-                }*/
-                    $("#" + dioJQselector).parent().removeClass("displayImp");
+                    if (dioJQselector == "dio_plusmenuCommands") {
+                        $("#" + dioJQselector).parent().parent().removeClass("displayImp");
+                        $('#toolbar_activity_commands_list').removeClass("dio_commands");
+                        $('<style id="dio_plusmenuCommandsSTYLE" type="text/css">#toolbar_activity_commands_list .sandy-box {left:initial !important; top:initial !important; }</style>').appendTo('head');
+                        clearTimeout(ActivityBoxes.timeout);
+                        ActivityBoxes.timeout = null;
+                        $('#toolbar_activity_commands_list .cancel').click();
+                    }
+                    else $("#" + dioJQselector).parent().removeClass("displayImp");
                     $("#" + dioJQselector + "STYLE").remove();
                 }
+
+                $('#toolbar_activity_recruits').dblclick(() => { dio_plus_destroy("dio_plusmenuRecruits"); });
+                $('#toolbar_activity_commands').dblclick(() => { dio_plus_destroy("dio_plusmenuCommands"); });
+                $('#toolbar_activity_trades').dblclick(() => { dio_plus_destroy("dio_plusmenuTrades"); });
+                $('#toolbar_activity_temple_commands').dblclick(() => { dio_plus_destroy("dio_plusmenuTemple_commands"); });
+
             } catch (error) { errorHandling(error, "ActivityBoxes"); }
+        },
+        add: () => {
+            ActivityBoxes.timeout = setInterval(() => {
+                $("#toolbar_activity_commands").trigger("mouseenter");
+            }, 1000);
         },
         deactivate: () => {// toolbar_activity_temple_commands
             $('#dio_plusmenustyle').remove();
 
             $('#dio_plusmenuRecruits').remove();
             $("#dio_plusmenuRecruitsSTYLE").remove();
-            //$('#dio_plusmenuCommands').remove();
-            //$("#dio_plusmenuCommandsSTYLE").remove();
+            $('#dio_plusmenuCommands').remove();
+            $("#dio_plusmenuCommandsSTYLE").remove();
             $('#dio_plusmenuTrades').remove();
             $('#dio_plusmenuTradesSTYLE').remove();
             $('#dio_plusmenuTemple_commands').remove();
             $("#dio_plusmenuTemple_commandsSTYLE").remove();
 
-            $('#toolbar_activity_recruits_list').click(() => { dio_plus_destroy("dio_plusmenuRecruits"); });
-            $('#toolbar_activity_trades_list').click(() => { dio_plus_destroy("dio_plusmenuTrades"); });
-            $('#toolbar_activity_temple_commands_list').click(() => { dio_plus_destroy("dio_plusmenuTemple_commands"); });
-
-            function dio_plus_destroy(dioJQselector) {
-                $("#" + dioJQselector).parent().removeClass("displayImp");
-                $("#" + dioJQselector + "STYLE").remove();
-            }
+            clearTimeout(ActivityBoxes.timeout);
+            ActivityBoxes.timeout = null;
         },
     };
 
@@ -8450,73 +8682,97 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      * ● BBcode button Player Info : Addition of a BBcode button (player and alliance)
      *******************************************************************************************************************************/
 
+    var nb_clipboard = 0, nb_clipboard_ally = 0
     var BBtowninfo = {
         activate: () => {
 
             if ($('.dio_BBplayer').get(0)) { $('div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({ "padding-left": "23px" }); }
             $('<style id="dio_BBtowninfo_style"> ' +
                 // Button
-                '.dio_BBplayer { background: url(https://gp' + LID + '.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -28px; height: 22px; width: 21px; } ' +
-                '.dio_BBalliance { background: url(https://gp' + LID + '.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -5px; height: 22px; width: 21px; } ' +
+                '.dio_BBplayer { background: url(https://gp' + LID + '.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -28px; height: 22px; width: 21px; cursor: pointer; } ' +
+                '.dio_BBalliance { background: url(https://gp' + LID + '.innogamescdn.com/images/game/autogenerated/common/bbcodes/bbcodes_6e4f630.png) no-repeat -207px -5px; height: 22px; width: 21px; cursor: pointer; } ' +
                 // clipboard
-                '.dio_clipboard-player { background: url(' + Home_url + '/img/dio/btn/icon-clipboard.png) #ffedc5; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
-                '.dio_clipboard-alliance { background: url(' + Home_url + '/img/dio/btn/icon-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
+                '.dio_clipboard-player { background: url(' + Home_url + '/img/dio/btn/icon-clipboard.png) #ffedc5; background-size: 99%; position: relative; float: left; height: 18px; width: 18px; z-index: 553; display: none; cursor: pointer;} ' +
+                '.dio_clipboard-alliance { background: url(' + Home_url + '/img/dio/btn/icon-clipboard.png) #ffe9b7; background-size: 99%; position: relative; float: left; height: 18px; width: 18px; z-index: 553; display: none; cursor: pointer;} ' +
                 '.dio_clipboard-town { background: url(' + Home_url + '/img/dio/btn/icon-clipboard.png) #ffe9b7; background-size: 99%; position:absolute; height: 18px; width: 18px; z-index: 553; display: none;} ' +
                 // Style (text)
-                '.input_BBplayer { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
-                '.input_BBalliance { background-color: #ffe2a0; display: none; position: absolute; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
+                '.input_BBplayer { background-color: #ffe2a0; display: none; position: relative; float: left; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
+                '.input_BBalliance { background-color: #ffe2a0; display: none; position: relative; float: left; width: 180px; height: 14px; text-align: center; z-index: 554; } ' +
                 '#town_bbcode_id { background-color: #ffe2a0; } ' +
-
                 '</style>').appendTo("head");
+
+            BBtowninfo.add("player")
+            BBtowninfo.add("alliance")
+            BBtowninfo.add("info")
         },
-        profile: () => {
-            try {
-                var c = dio.wndId;
-                BBtowninfo.add(c);
+        add: (action) => {
+            let gpwnd, action_class, action_id_ally, action_id = action, each_player = '#player_info.bold h3';
+            if (action == "info") { each_player = $('.gp_player_link').parent().parent().find('.list_item_left'); action_id = "player"; }
+            if (action == "alliance") each_player = '#player_info h3.bold';
+            action_class = action_id
+            action_id = action_id + nb_clipboard
+            action_id_ally = "alliance" + nb_clipboard_ally
 
-                var grcrt = false, num = 2;
-                //grcrt ?
-                if (typeof (uw.GRCRT_Notifications) !== "undefined") { grcrt = true; num += 2; }
-                //Mole Hole ?
-                if (typeof (uw.mhCol) !== "undefined") { num += 1; }
-
-                // Function
-                if (!$('#dio_gpwnd_' + c + '_BBplayer').get(0)) {
-
-                    // BBCode player
-                    $('<a id="dio_gpwnd_' + c + '_BBplayer" class="dio_BBplayer" style="float: left; margin-right: 2px;"></a><input id="input_gpwnd_' + c + '_BBplayer" class="input_BBplayer" style="top:25px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" type="text" onfocus="this.select();" onclick="this.select();"></div>').appendTo("div#gpwnd_" + c + " div#player_info h3");
-                    $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:27px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo("div#gpwnd_" + c + " div#player_info h3").tooltip(dio_icon + getTexts("messages", "copy"));
-                    $('#dio_gpwnd_' + c + '_BBplayer').click(() => {
-                        $('#dio_gpwnd_' + c + '_clipboard-player').toggle();
-                        $('#input_gpwnd_' + c + '_BBplayer').toggle();
-                        $('#input_gpwnd_' + c + '_BBplayer').val("[player]" + $("div#gpwnd_" + c + " div#player_info h3").text().trim() + "[/player]");
-                    });
-
-                    // BBCode alliance
-                    if ($("div#gpwnd_" + c + " div#player_info a").text().trim() !== "") {
-                        $("div#gpwnd_" + c + " div#player_info div#player_points").before('<a id="dio_gpwnd_' + c + '_BBalliance" class="dio_BBalliance" style="position: relative; top: -2px; float: left; margin-right: 1px; left: -1px;"></a><input id="input_gpwnd_' + c + '_BBalliance" class="input_BBalliance" style="top:50px;' + (grcrt ? "left: 63px;" : "left: 40px;") + '" onclick="this.select();" onfocus="this.select();"></div>');
-                        $("div#gpwnd_" + c + " div#player_info div#player_points").after('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:51px;' + (grcrt ? "left: 249px;" : "left: 226px;") + '" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>');
-                        $('#dio_gpwnd_' + c + '_BBalliance').click(() => {
-                            $('#dio_gpwnd_' + c + '_clipboard-alliance').toggle();
-                            //alliance name ?
-                            var text = $("div#gpwnd_" + c + " div#player_info.bold")[0].children[num].attributes[2].textContent,
-                                re = /Layout.allianceProfile.open\('(.*?)',(.*?)\)/mg,
-                                alliance_id = text.replace(re, "$2"); var alliance_name = text.replace(re, "$1").replace(/\\/mg, "");
-                            $('#input_gpwnd_' + c + '_BBalliance').toggle();
-                            $('#input_gpwnd_' + c + '_BBalliance').val("[ally]" + alliance_name + "[/ally]");
-                        });
+            // Sélectionnez tous les éléments h3 enfants de #player_info
+            $(each_player).each(function () {
+                if (!$(this).parent().find('.dio_BB' + action_class).get(0)) {
+                    nb_clipboard++
+                    //$(this).parent().parent().find('#player_info h3').css({ "margin-right": "-400px" });
+                    // Ajoutez le contenu à l'intérieur de chaque élément h3
+                    if (action == "info") {
+                        $(this).parent().parent().find('.even img').css({ "padding-left": "23px" });
+                        $(this).parent().find('.list_item_left').append('<a id="dio_BB' + action_id + '" class="dio_BB' + action_class + '" style="top:1px ;left: 0px; position:absolute;"></a><input id="input_BB' + action_id + '" class="input_BB' + action_class + '" style="position: absolute; left: 20px; top: 3px;" onfocus="this.select();" onclick="this.select();"></div>');
+                        $(this).parent().find('.list_item_left').append('<a id="dio_clipboard-' + action_id + '" class="dio_clipboard-player" style="position: absolute; top:4px ; left: 206px;" data-clipboard-target="#input_BB' + action_id + '"></a>');
+                    } else {
+                        $(this).before('<div id="dio_BB' + action_id + '" class="dio_BB' + action_class + '" style="float: left; margin-right: 2px; margin-top: 5px;"></div><input id="input_BB' + action_id + '" class="input_BB' + action_class + '" style="margin-top: 6px;" type="text" onfocus="this.select();" onclick="this.select();"></div>');
+                        $(this).before('<div id="dio_clipboard-' + action_id + '" class="dio_clipboard-' + action_class + '" style="margin-top: 7px;" data-clipboard-target="#input_BB' + action_id + '"></div>');
                     }
-                };
-                // Tooltip
-                $('#dio_gpwnd_' + c + '_BBplayer').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").player.name);
-                $('#dio_gpwnd_' + c + '_BBalliance').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").ally.name);
-                $('#dio_gpwnd_' + c + '_clipboard-alliance').tooltip(dio_icon + getTexts("messages", "copy"));
-            } catch (error) { errorHandling(error, "BBtowninfo (profile)"); }
+                    $(this).parent().find('#dio_BB' + action_id).click(function (e) {
+                        $(this).parent().parent().find('#dio_clipboard-' + action_id).toggle();
+                        $(this).parent().parent().find('#input_BB' + action_id).toggle();
+                        let text = "";
+                        if (action == "info") text = "[player]" + $(this).parent().find("a.gp_player_link").text().trim() + "[/player]";
+                        else if (action == "alliance") text = "[ally]" + $(this).parent().parent().parent().parent().find('.ui-dialog-title').text().trim() + "[/ally]";
+                        else text = "[player]" + $(this).parent().parent().find("#player_info h3").text().trim() + "[/player]";
+                        $(this).parent().find('#input_BB' + action_id).val(text);
+                    });
+                    dio.clipboard('#dio_clipboard-' + action_id, '#input_BB' + action_id, "BBtowninfo (add)", null);
+                    if (action == "alliance") $(this).parent().find('#dio_BB' + action_id).tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").ally.name);
+                    else $(this).parent().find('#dio_BB' + action_id).tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").player.name);
+                    $(this).parent().find('#dio_clipboard-' + action_id).tooltip(dio_icon + getTexts("messages", "copy"));
+                }
+            });
+
+
+
+            let each_alliance = "#player_info a[onclick^='Layout.allianceProfile.open']";
+            if (action == "info") each_alliance = ".game_list a[onclick^='Layout.allianceProfile.open']";
+            $(each_alliance).each(function () {
+                if (!$(this).parent().find('.dio_BBalliance').get(0)) {
+                    nb_clipboard_ally++
+                    // Ajoutez le contenu à l'intérieur de chaque élément h3
+                    if (action == "info") {
+                        $(this).parent().parent().find('.odd.clearfix').css({ "padding-left": "23px" });
+                        $(this).parent().parent().find('.odd.clearfix').append('<a id="dio_BB' + action_id_ally + '" class="dio_BBalliance" style="top: 1px; left: 0px; position: absolute;"></a><input id="input_BB' + action_id_ally + '" class="input_BBalliance" style="position: absolute; left: 20px; top: 3px;" type="text" onfocus="this.select();" onclick="this.select();"></div>');
+                        $(this).parent().parent().find('.odd.clearfix').append('<a id="dio_clipboard-' + action_id_ally + '" class="dio_clipboard-alliance" style="position: absolute; top:4px ; left: 206px;" data-clipboard-target="#input_BB' + action_id_ally + '"></a>');
+                    } else {
+                        $(this).before('<div id="dio_BB' + action_id_ally + '" class="dio_BBalliance" style="float: left; margin-right: 2px;"></div><input id="input_BB' + action_id_ally + '" class="input_BBalliance" style="top:1px;" type="text" onfocus="this.select();" onclick="this.select();"></div>');
+                        $(this).before('<div id="dio_clipboard-' + action_id_ally + '" class="dio_clipboard-alliance" style="top:2px;" data-clipboard-target="#input_BB' + action_id_ally + '"></div>');
+                    }
+                    $(this).parent().find('#dio_BB' + action_id_ally).click(function (e) {
+                        $(this).parent().find('#dio_clipboard-' + action_id_ally).toggle();
+                        $(this).parent().find('#input_BB' + action_id_ally).toggle();
+                        $(this).parent().find('#input_BB' + action_id_ally).val("[ally]" + dio.Extract_alliance($(this).parent().find("a[onclick^='Layout.allianceProfile.open']")) + "[/ally]");
+                    });
+                    dio.clipboard('#dio_clipboard-' + action_id_ally, '#input_BB' + action_id_ally, "BBtowninfo (add)", null);
+                    $(this).parent().find('#dio_BB' + action_id_ally).tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").ally.name);
+                    $(this).parent().find('#dio_clipboard-' + action_id_ally).tooltip(dio_icon + getTexts("messages", "copy"));
+                }
+            });
+
         },
         towninfo: (c) => {
             try {
-                BBtowninfo.add(c);
-
                 var MH = false;
                 if (typeof (uw.mhCol) !== "undefined") {
                     MH = true;
@@ -8524,48 +8780,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 }
 
                 // Function
-                if (!$('#dio_gpwnd_' + c + '_BBplayer').get(0)) {
-                    $('div#gpwnd_' + c + ' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img, div#gpwnd_' + c + ' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.odd.clearfix').css({ "padding-left": "23px" });
-
-                    // BBCode player
-                    if ($("div#gpwnd_" + c + " div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even div.list_item_left a.gp_player_link").is(':visible')) {
-                        $('<a id="dio_gpwnd_' + c + '_BBplayer" class="dio_BBplayer" style="top:1px ;left: 0px; position:absolute;"></a><input id="input_gpwnd_' + c + '_BBplayer" class="input_BBplayer" style="left: 20px; top: 3px;" onfocus="this.select();" onclick="this.select();"></div>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.even div.list_item_left');
-                        $('<a id="dio_gpwnd_' + c + '_clipboard-player" class="dio_clipboard-player" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBplayer"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.even div.list_item_left').tooltip(dio_icon + getTexts("messages", "copy"));
-                        $('#dio_gpwnd_' + c + '_BBplayer').click(() => {
-                            $('#dio_gpwnd_' + c + '_clipboard-player').toggle();
-                            $('#input_gpwnd_' + c + '_BBplayer').toggle();
-                            $('#input_gpwnd_' + c + '_BBplayer').val("[player]" + $("div#gpwnd_" + c + " div#info_tab_content li.even div.list_item_left a.gp_player_link").text().trim() + "[/player]");
-                        });
-
-                        // BBCode alliance
-                        $('<a id="dio_gpwnd_' + c + '_BBalliance" class="dio_BBalliance" style="top: 1px; left: 0px; position: absolute;"></a><input id="input_gpwnd_' + c + '_BBalliance" class="input_BBalliance" style="left: 20px; top: 3px;" onclick="this.select();" onfocus="this.select();"></div>').appendTo('div#gpwnd_' + c + ' ul.game_list li.odd.clearfix');
-                        $('<a id="dio_gpwnd_' + c + '_clipboard-alliance" class="dio_clipboard-alliance" style="top:4px ; left: 206px;" data-clipboard-target="#input_gpwnd_' + c + '_BBalliance"></a>').appendTo('div#gpwnd_' + c + ' div#info_tab_content li.odd.clearfix').tooltip(dio_icon + getTexts("messages", "copy"));
-                        $('#dio_gpwnd_' + c + '_BBalliance').click(() => {
-                            $('#dio_gpwnd_' + c + '_clipboard-alliance').toggle();
-                            $('#input_gpwnd_' + c + '_BBalliance').toggle();
-                            $('#input_gpwnd_' + c + '_BBalliance').val("[ally]" + $("div#gpwnd_" + c + " div#info_tab_content li.odd.clearfix a").text().trim() + "[/ally]");
-                        });
-                    } else { $('div#gpwnd_' + c + ' div#info_tab_content div#towninfo_towninfo div.game_border ul.game_list li.even img').css({ "padding-left": "0px" }); }
-
+                if (!$('#gpwnd_' + c + ' .dio_clipboard-town').get(0)) {
                     // clipboard town
                     $('div#gpwnd_' + c + ' #town_bbcode_link').append('<a id="dio_gpwnd_' + c + '_clipboard-town" class="dio_clipboard-town" style="top:3px; ' + (MH ? "left: 171px;" : "right: 169px;") + '" data-clipboard-text="' + $('div#gpwnd_' + c + ' #town_bbcode_id').val() + '"></a>');
                     $('div#gpwnd_' + c + ' #town_bbcode_link').click(() => {
                         $('#dio_gpwnd_' + c + '_clipboard-town').toggle();
                     });
-                };
 
-                // Tooltip
-                $('#dio_gpwnd_' + c + '_BBplayer').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").player.name);
-                $('#dio_gpwnd_' + c + '_BBalliance').tooltip(dio_icon + 'BBCode ' + uw.DM.getl10n("bbcodes").ally.name);
+                    // Clipboard
+                    dio.clipboard('#dio_gpwnd_' + c + '_clipboard-town', '#input_gpwnd_' + c + '_BBtown', "BBtowninfo (add)", null);
+                };
             } catch (error) { errorHandling(error, "BBtowninfo (towninfo)"); }
-        },
-        add: (c) => {
-            try {
-                // Clipboard
-                dio.clipboard('#dio_gpwnd_' + c + '_clipboard-player', '#input_gpwnd_' + c + '_BBplayer', "BBtowninfo (add)", null);
-                dio.clipboard('#dio_gpwnd_' + c + '_clipboard-alliance', '#input_gpwnd_' + c + '_BBalliance', "BBtowninfo (add)", null);
-                dio.clipboard('#dio_gpwnd_' + c + '_clipboard-town', '#div#gpwnd_' + c + ' #town_bbcode_id', "BBtowninfo (add)", null);
-            } catch (error) { errorHandling(error, "BBtowninfo (add)"); }
         },
         deactivate: () => {
             $('#dio_BBtowninfo_style').remove();
@@ -9331,7 +9556,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 }
 
                 function formatTime (time) {
-                    try {if (JSON.stringify(time).length < 2) time = '0' + time;} catch { return time}
+                    try {if (JSON.stringify(time).length < 2) time = '0' + time;} catch (error) { return time}
                     return time;
                 }*/
                 Classtest(buil);
@@ -9390,12 +9615,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                     try {
                                         let selectedDate = new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000)
                                         selectedSort = formatTime (selectedDate.getHours()) + ":" + formatTime (selectedDate.getMinutes())
-                                    } catch { selectedSort = formatTime (new Date().getHours()) + ":" + formatTime (new Date().getMinutes())}
+                                    } catch (error) { selectedSort = formatTime (new Date().getHours()) + ":" + formatTime (new Date().getMinutes())}
                                 } else {*/
                                 try {
                                     const diffIn = dio.dateDiff(new Date(), new Date(parseInt($(e).find(selection)[0].dataset.timestamp) * 1000));
                                     selectedSort = parseInt(diffIn.min + 60 * diffIn.hour);
-                                } catch { selectedSort = 0; }
+                                } catch (error) { selectedSort = 0; }
                                 ///}
                                 if ($(selec)[0].innerText !== uw.DM.getl10n("inventory").tooltip.hours) filter = parseInt(minute) + 60 * parseInt(hour);
                                 else filter = numericfilter
@@ -9435,14 +9660,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     var dio_ArrayUnsorted = $('#culture_overview_towns>li').get();
                     dio_ArrayUnsorted.sort(function (a, b) {
                         var regexpInS = RegExp(/eta/);
-                        //try {console.log($(a).find(selection)[0].children[1].children[3].children[1].dataset.timestamp) } catch { "" }
+                        //try {console.log($(a).find(selection)[0].children[1].children[3].children[1].dataset.timestamp) } catch (error) { "" }
                         if (regexpInS.test(selection)) {
                             //console.log("text")
-                            //try {console.log(parseInt($(a).find(selection)[0].dataset.timestamp)) || 0} catch { }
-                            //try { a = parseInt($(a).find(selection)[0].children[1].children[3].children[1].dataset.timestamp) || 0 } catch { a = 0 }
-                            //try { b = parseInt($(b).find(selection)[0].children[1].children[3].children[1].dataset.timestamp) || 0 } catch { b = 0 }
-                            try { a = parseInt($(a).find(selection)[0].dataset.timestamp) || 0 } catch { a = 0 }
-                            try { b = parseInt($(b).find(selection)[0].dataset.timestamp) || 0 } catch { b = 0 }
+                            //try {console.log(parseInt($(a).find(selection)[0].dataset.timestamp)) || 0} catch (error) { }
+                            //try { a = parseInt($(a).find(selection)[0].children[1].children[3].children[1].dataset.timestamp) || 0 } catch (error) { a = 0 }
+                            //try { b = parseInt($(b).find(selection)[0].children[1].children[3].children[1].dataset.timestamp) || 0 } catch (error) { b = 0 }
+                            try { a = parseInt($(a).find(selection)[0].dataset.timestamp) || 0 } catch (error) { a = 0 }
+                            try { b = parseInt($(b).find(selection)[0].dataset.timestamp) || 0 } catch (error) { b = 0 }
                             //console.log($(b).find(selection))
                         } else {
                             a = $(a).find(selection).text().toLowerCase();
@@ -9976,7 +10201,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 var dioXMAS = $('#dio_xmas');
 
                 dioXMAS.css({
-                    background: 'url("' + Home_img + 'smiley-emoticons-weihnachtsmann-nordpol.gif") no-repeat',
+                    background: 'url("' + Home_url + '/img/smileys/weihnachtsmann-nordpol.gif") no-repeat',
                     height: '51px',
                     width: '61px',
                     position: 'absolute',
@@ -9993,10 +10218,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                 // TODO: Jahreszahl dynamisch setzen
                 $('<a href="' + Home_url + '/" target="_blank"><div id="dio_newYear">' +
-                    '<img src="' + Home_img + 'sign2-' + Year.substr(0, 1) + '.gif">' +
-                    '<img src="' + Home_img + 'sign2-' + Year.substr(1, 1) + '.gif">' +
-                    '<img src="' + Home_img + 'sign2-' + Year.substr(2, 1) + '.gif">' +
-                    '<img src="' + Home_img + 'sign2-' + Year.substr(3, 1) + '.gif">' +
+                    '<img src="' + Home_url + '/img/smileys/sign2_' + Year.substr(0, 1) + '.gif">' +
+                    '<img src="' + Home_url + '/img/smileys/sign2_' + Year.substr(1, 1) + '.gif">' +
+                    '<img src="' + Home_url + '/img/smileys/sign2_' + Year.substr(2, 1) + '.gif">' +
+                    '<img src="' + Home_url + '/img/smileys/sign2_' + Year.substr(3, 1) + '.gif">' +
                     '</div></a>').appendTo('#ui_box');
 
                 var dioNewYear = $('#dio_newYear');
@@ -10007,7 +10232,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     left: '70px',
                     zIndex: '10'
                 });
-                dioNewYear.tooltip('<img src="' + Home_img + 'smiley-emoticons-party.gif">  ' + getTexts("labels", "Happy"));
+                dioNewYear.tooltip('<img src="' + Home_url + '/img/smileys/party.gif">  ' + getTexts("labels", "Happy"));
             }
         }
     };
@@ -10517,7 +10742,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (!$('.dio_town_bb').get(0)) { townslist.add(); }
                 }
             }, 100); //0.1s
-            createWindowType("DIO_BBCODE", getTexts("labels", "tow"), 470, 375, true, [240, 70]); //[240, 70]
+            createWindowType("DIO_BBCODE", getTexts("labels", "tow"), 500, 375, true, [240, 70]); //[240, 70]
             $('<style id="dio_town_list_bb_style"> ' +
                 '#dio_town_list_bb { background: url("' + Home_url + '/img/dio/btn/subforum-old.png") no-repeat; height: 15px; width: 15px; position: absolute; right: 6px; top: 2px;} ' +
                 '.dio_town_bb { position: absolute; top: 2px; right: 20px; width: 30px; height: 20px; } ' +
@@ -10538,105 +10763,54 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
                         }
                         let cities_towngroup = uw.ITowns.town_group_towns.getTowns(towngrp_id)
-                        let bb_contentP1 = "[quote][size=9][player]" + pName + "[/player][/size] ";
-                        let bb_contentP2 = bb_contentP1, bb_contentP3 = bb_contentP1, bb_contentP4 = bb_contentP1, bb_contentP5 = bb_contentP1;
+                        let header = "[quote][size=9][player]" + pName + "[/player][/size] ";
                         let bb_premium = 0, bb_premiumb = "", bb_premiumc = false;
 
                         if (uw.Game.premium_features.curator >= uw.Timestamp.now()) {
                             bb_premium = uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + ": " + uw.MM.getCollections().TownGroup[0]._byId[towngrp_id].attributes.name + " ";
-                            bb_contentP1 += bb_premium; bb_contentP2 += bb_premium; bb_contentP3 += bb_premium; bb_contentP4 += bb_premium; bb_contentP5 += bb_premium;
+                            header += bb_premium;
                             bb_premiumb = "(" + bb_premium + ")";
                             bb_premiumc = true;
                         }
-                        let bb_count = 0, bb_nombre_ville = 0, bb_nonbre = 0;
+                        let bb_count = 0, i, bb_content = {};
                         const bb_ville = uw.DM.getl10n("market").city;
+                        let bb_nombre_ville = cities_towngroup.length;
+                        //bb_nombre_ville = 600
+                        let bb_nonbre = Math.floor((bb_nombre_ville - 1) / 60) + 1;
+
+                        for (let i = 1; i <= bb_nonbre; i++) { bb_content[`P${i}`] = `${header} ${rr(bb_nombre_ville, bb_ville, i, bb_nonbre)}\n[table]\n`; }
+                        function rr(bb_nombre_ville, bb_ville, A, bb_nonbre) { return `(${bb_nombre_ville} ${bb_ville})${bb_nombre_ville > 60 ? `(${A}/${bb_nonbre})` : ''}`; }
 
                         $.each(cities_towngroup, function (key, town) {
-                            bb_nombre_ville++;
-                        });
-
-                        if (bb_nombre_ville < 61) { bb_nonbre = 1; }
-                        else if (bb_nombre_ville < 121) { bb_nonbre = 2; }
-                        else if (bb_nombre_ville < 181) { bb_nonbre = 3; }
-                        else if (bb_nombre_ville < 241) { bb_nonbre = 4; }
-                        else { bb_nonbre = 5; }
-
-                        if (bb_nombre_ville < 301) {
-                            bb_contentP1 += "(" + bb_nombre_ville + " " + bb_ville + ") " + (bb_nombre_ville < 61 ? "" : "(1/" + bb_nonbre + ")");
-                            bb_contentP2 += "(" + bb_nombre_ville + " " + bb_ville + ") (2/" + bb_nonbre + ")";
-                            bb_contentP3 += "(" + bb_nombre_ville + " " + bb_ville + ") (3/" + bb_nonbre + ")";
-                            bb_contentP4 += "(" + bb_nombre_ville + " " + bb_ville + ") (4/" + bb_nonbre + ")";
-                            bb_contentP5 += "(" + bb_nombre_ville + " " + bb_ville + ") (5/" + bb_nonbre + ")";
-                        } else {
-                            bb_contentP1 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (1/5)";
-                            bb_contentP2 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (2/5)";
-                            bb_contentP3 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (3/5)";
-                            bb_contentP4 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (4/5)";
-                            bb_contentP5 += "(" + bb_ville + " 300/" + bb_nombre_ville + ") (5/5)";
-                            bb_nonbre = 5;
-                        }
-
-                        bb_contentP1 += "\n[table]\n"; bb_contentP2 += "\n[table]\n"; bb_contentP3 += "\n[table]\n"; bb_contentP4 += "\n[table]\n"; bb_contentP5 += "\n[table]\n";
-                        $.each(cities_towngroup, function (key, town) {
-
                             bb_count++;
-                            if (bb_count < 61) { bb_contentP1 += townslist.content(bb_count, town); }
-                            else if (bb_count < 121) { bb_contentP2 += townslist.content(bb_count, town); }
-                            else if (bb_count < 181) { bb_contentP3 += townslist.content(bb_count, town); }
-                            else if (bb_count < 241) { bb_contentP4 += townslist.content(bb_count, town); }
-                            else if (bb_count < 301) { bb_contentP5 += townslist.content(bb_count, town); }
-                            else { }
+                            let group = Math.ceil(bb_count / 60);
+                            bb_content[`P${group}`] += townslist.content(bb_count, town);
                         });
                         const wnd = uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_DIO_BBCODE) || uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
-                        let dio_version_PUB;
+                        let dio_version_PUB, footer;
                         if (MID == 'fr') dio_version_PUB = "[url=" + Home_url + "/fr/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
                         else dio_version_PUB = "[url=" + Home_url + "/en/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
-                        bb_contentP1 += "[/table]" + dio_version_PUB; bb_contentP2 += "[/table]" + dio_version_PUB; bb_contentP3 += "[/table]" + dio_version_PUB; bb_contentP4 += "[/table]" + dio_version_PUB; bb_contentP5 += "[/table]" + dio_version_PUB;
+                        footer = "[/table]" + dio_version_PUB;
                         const expRahmen_a = "<button id='dio_close_bb' role='button' class='close_a close_b ui-dialog-titlebar-close'></button><div id='dio_townslist' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
                             "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
                             "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
                             "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
-                        let expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 120px; width: 99%;'>";
-                        if (bb_nombre_ville < 61) {
-                            expRahmen_bP1 = "<div style='height: 280px; overflow-x: hidden;'><textarea id='expTextareaP1' style='height: 235px; width: 99%;'>";
-                        }
-                        const expRahmen_bP2 = "<textarea id='expTextareaP2' style='height: 120px; width: 98%;'>";
-                        const expRahmen_bP3 = "<textarea id='expTextareaP3' style='height: 120px; width: 98%;'>";
-                        const expRahmen_bP4 = "<textarea id='expTextareaP4' style='height: 120px; width: 98%;'>";
-                        const expRahmen_bP5 = "<textarea id='expTextareaP5' style='height: 120px; width: 98%;'>";
-                        const expRahmen_cP1 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + (bb_nombre_ville < 61 ? "" : " (1/" + bb_nonbre + ")"), "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP1"') + "</div>";
-                        const expRahmen_cP2 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (2/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP2"') + "</div>";
-                        const expRahmen_cP3 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (3/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP3"') + "</div>";
-                        const expRahmen_cP4 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (4/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP4"') + "</div>";
-                        const expRahmen_cP5 = "</textarea><div style='text-align: center;'>" + dio.createButton(getTexts("messages", "copy") + " (5/" + bb_nonbre + ")", "dio-copy-townslist", null, 'data-clipboard-target="#expTextareaP5"') + "</div>";
-
                         const expRahmen_d = "</div><div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
                         const expRahmen_e = "<div style='font-weight: bold; margin-left: 5px;'>" + uw.DM.getl10n("layout").town_name_area.no_towns_in_group + " " + bb_premiumb + "</div>";
 
-                        let expTitel = "";
+                        let expTitel = (bb_premiumc ? bb_premium + "(" + bb_nombre_ville + " " + bb_ville + ")" : bb_nombre_ville + " " + bb_ville) + "</div>";
 
-                        if (bb_nombre_ville > 300) {
-                            expTitel = (bb_premiumc ? bb_premium + "(" + bb_ville + " 300/" + bb_nombre_ville + ")" : bb_ville + " 300/" + bb_nombre_ville) + "</div>";
-                        } else {
-                            expTitel = (bb_premiumc ? bb_premium + "(" + bb_nombre_ville + " " + bb_ville + ")" : bb_nombre_ville + " " + bb_ville) + "</div>";
+                        let bb_content_F = "<div style='height: 280px; overflow-x: hidden;'>"
+                        for (let i = 1; i <= bb_nonbre; i++) {
+                            let textareaId = `expTextareaP${i}`, buttonLabel = getTexts("messages", "copy"), Height = 240;
+                            if (bb_nombre_ville >= 61) { buttonLabel += ` (${i}/${bb_nonbre})`; Height = 120; }
+                            bb_content_F += `<textarea id="${textareaId}" style="height: ${Height}px; width: 98%;">${bb_content[`P${i}`]}${footer}</textarea><div style="text-align: center;">${dio.createButton(buttonLabel, "dio-copy-townslist", null, `data-clipboard-target="#${textareaId}"`)}</div>`;
                         }
-
-                        wnd.setContent(expRahmen_a + expTitel +
-                            (bb_nombre_ville > 0 ? (expRahmen_bP1 + bb_contentP1 + expRahmen_cP1) : expRahmen_e) +
-                            (bb_nombre_ville > 60 ? (expRahmen_bP2 + bb_contentP2 + expRahmen_cP2) : "") +
-                            (bb_nombre_ville > 120 ? (expRahmen_bP3 + bb_contentP3 + expRahmen_cP3) : "") +
-                            (bb_nombre_ville > 180 ? (expRahmen_bP4 + bb_contentP4 + expRahmen_cP4) : "") +
-                            (bb_nombre_ville > 240 ? (expRahmen_bP5 + bb_contentP5 + expRahmen_cP5) : "") +
-                            expRahmen_d);
+                        if (bb_nombre_ville < 61) $("#expTextareaP1").css({ height: "-webkit-fill-available", height: "max-content" });
+                        wnd.setContent(expRahmen_a + expTitel + (bb_nombre_ville > 0 ? bb_content_F : expRahmen_e) + expRahmen_d);
 
                         $('.close_a').click(() => { uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close(); });
-
-                        $('#dio-copy-townslist').click(() => {
-                            if ($('#town_groups_list').length) { $('.button.js-button-caption').click(); }
-                            setTimeout(() => { uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close(); }, 300)
-                        });
                     });
-
                 }
                 $('#dio_town_list_bb').tooltip(dio_icon + getTexts("Options", "Tol")[0]);
             } catch (error) { errorHandling(error, "townslist"); }
@@ -10651,6 +10825,249 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             }
             clearTimeout(townslist.timeout);
             townslist.timeout = null;
+        },
+    };
+
+    /*******************************************************************************************************************************
+     * BBcode List
+     *******************************************************************************************************************************/
+
+    var BBcodeList = {
+        activate: () => {
+            createWindowType("DIO_BBCODE", "BBCode", 570, 375, true, [240, 70]); //[240, 70]
+            $('<style id="dio_BBcodeList_style"> ' +
+                //'#dio_player_towns { background: url("' + Home_url + '/img/dio/btn/subforum-old.png") no-repeat; height: 15px; width: 15px;} ' +
+                //'#dio_alliance_player { background: url("' + Home_url + '/img/dio/btn/subforum-old.png") no-repeat; height: 15px; width: 15px;} ' +
+                '.dio_list { z-index: 6; background: url("' + Home_url + '/img/dio/btn/subforum-old.png") no-repeat; height: 15px; width: 15px;    position: relative; top: 3px; float: right; cursor: pointer; right: 6px; } ' +
+                '.dio_title_bb { margin:1px 6px 13px 3px; color:rgb(126,223,126); } ' +
+                '#dio_close_bb { display: inline-block; float: none; position: relative; top: 5px; margin-left: 10px; } ' +
+                '#dio_close_bb.close_b { position: absolute; top: -37px; right: -8px; } ' +
+                '</style>').appendTo('head');
+        },
+        player_towns: () => {
+            try {
+                dio.clipboard("#dio-copy-BBcodeList", null, "BBcodeList", null)
+                if (!$('#player_towns #dio_player_towns').get(1)) {
+                    if ($('#player_towns .game_border_top').length == 1) $($('#player_towns .game_border_top')[0]).before('<div id="dio_player_towns" class="dio_list"></div>');
+                    else $($('#player_towns .game_border_top')[1]).before('<div id="dio_player_towns" class="dio_list"></div>');
+                    $('#player_towns #dio_player_towns').click(function (e) {
+                        // Utilisez le sélecteur jQuery pour cibler l'élément h3 et récupérer son contenu
+                        let playerName = $(this).parent().parent().parent().find("#player_info h3").text().trim();
+                        let allianceName = "";
+                        let element = $(this).parent().parent().parent().find('a[onclick^="Layout.allianceProfile.open"]');
+                        if (element.text().trim() !== "") allianceName = dio.Extract_alliance(element);
+                        let ID = $("#player_towns .game_header.bold").text().trim().split(' ')[0].trim();
+
+                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
+                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                        }
+
+                        // Sélectionnez tous les éléments de liste avec la classe "gp_town_link"
+                        const townLinks = $(this).parent().find(".gp_town_link");
+                        // Initialisez un tableau vide pour stocker les données des villes
+                        const citiesData = [];
+                        let bb_nombre_ville = 0
+                        // Parcourez chaque élément de liste et extrayez les informations nécessaires
+                        townLinks.each(function () {
+                            // Récupérez l'URL de chaque lien
+                            const url = $(this).attr('href');
+
+                            // Utilisez la fonction replaceBBtowns pour extraire l'ID de la ville de l'URL
+                            const townIdMatch = url.match(/#(.*?)$/);
+                            if (townIdMatch && townIdMatch[1]) {
+                                const townId = $.parseJSON(atob(townIdMatch[1])).id;
+                                const townName = $(this).text().trim();
+                                const points = $(this).next().text().trim().split('|')[0].trim(); //.split(' ')[0]
+                                const ocean = $(this).next().text().trim().split('|')[1].trim();
+
+                                // Ajoutez les données de la ville au tableau citiesData
+                                citiesData.push({
+                                    town_id: townId,
+                                    name: townName,
+                                    points: points,
+                                    sea_id: ocean
+                                });
+                            }
+                            bb_nombre_ville++
+                        });
+
+                        //bb_nombre_ville = 600
+                        let header = "[quote][size=9][player]" + playerName + "[/player][/size]";
+                        if (allianceName != "") header = "[quote][size=9][player]" + playerName + "[/player] ([ally]" + allianceName + "[/ally])[/size]";
+                        let bb_count = 0, i, bb_content = {};
+                        let bb_nonbre = Math.floor((bb_nombre_ville - 1) / 60) + 1;
+
+                        for (let i = 1; i <= bb_nonbre; i++) { bb_content[`P${i}`] = `${header} ${rr(bb_nombre_ville, ID, i, bb_nonbre)}\n[table]\n`; }
+                        function rr(bb_nombre_ville, ID, A, bb_nonbre) { return `(${bb_nombre_ville} ${ID})${bb_nombre_ville > 60 ? `(${A}/${bb_nonbre})` : ''}`; }
+
+                        $.each(citiesData, function (key, town) {
+                            bb_count++;
+                            let group = Math.ceil(bb_count / 60);
+                            bb_content[`P${group}`] += "[*]" + bb_count + ".[|][town]" + citiesData[key].town_id + "[/town][|]" + citiesData[key].points + "[|]" + citiesData[key].sea_id + "[/*]\n"
+                        });
+                        BBcodeList.add(ID, bb_content, bb_nombre_ville)
+                    });
+                }
+                $('#dio_player_towns').tooltip(dio_icon + getTexts("Options", "Tol")[0]);
+            } catch (error) { errorHandling(error, "BBcodeList"); }
+
+        },
+        alliance_player: () => {
+            try {
+                dio.clipboard("#dio-copy-BBcodeList", null, "BBcodeList", null)
+                if (!$('#ally_towns #dio_alliance_player').get(0)) {
+                    let ID = $("#ally_towns .game_header.bold").text().trim();
+                    $('#ally_towns .game_border_top').before('<div id="dio_alliance_player" class="dio_list"></div>');
+                    $('#dio_alliance_player').click(function (e) {
+
+                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
+                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                        }
+
+                        let allyName = $(this).parent().parent().parent().parent().parent().find('.ui-dialog-title').text().trim();
+
+                        // Utiliser jQuery pour sélectionner les éléments de la liste des membres
+                        const members = $(".members_list li:eq(1) ul li.even");
+                        // Initialiser un tableau pour stocker les données extraites
+                        const memberData = [];
+                        let bb_nombre_members = 0
+                        // Parcourir chaque élément de la liste des membres
+                        members.each(function (index, element) {
+                            // Extraire le nom du joueur
+                            const playerName = $(element).find("a.gp_player_link").attr("title");
+
+                            // Extraire les points du joueur
+                            if ($(element).find("div.small-descr").text() == 0) return
+                            const points = $(element).find("div.small-descr").text().split(',')[0].trim();
+
+                            // Extraire le nombre de villes du joueur
+                            const cities = $(element).find("div.small-descr").text().split(',')[1].trim();
+
+                            // Ajouter les données extraites au tableau
+                            memberData.push({
+                                player: playerName,
+                                points: points,
+                                cities: cities
+                            });
+                            bb_nombre_members++
+                        });
+
+                        //bb_nombre_ville = 600
+                        let header = "[quote][size=9][ally]" + allyName + "[/ally][/size]";
+                        let bb_count = 0, i, bb_content = {};
+                        let bb_nonbre = Math.floor((bb_nombre_members - 1) / 60) + 1;
+
+                        for (let i = 1; i <= bb_nonbre; i++) { bb_content[`P${i}`] = `${header} ${rr(bb_nombre_members, ID, i, bb_nonbre)}\n[table]\n`; }
+                        function rr(bb_nombre_ville, ID, A, bb_nonbre) { return `(${bb_nombre_ville} ${ID})${bb_nombre_ville > 60 ? `(${A}/${bb_nonbre})` : ''}`; }
+
+                        $.each(memberData, function (key, town) {
+                            bb_count++;
+                            let group = Math.ceil(bb_count / 60);
+                            bb_content[`P${group}`] += "[*]" + bb_count + ".[|][player]" + memberData[key].player + "[/player][|]" + memberData[key].points + "[|]" + memberData[key].cities + "[/*]\n"
+                        });
+                        BBcodeList.add(ID, bb_content, bb_nombre_members)
+                    });
+                    $('#dio_alliance_player').tooltip(dio_icon + "BBcode " + ID);
+                }
+            } catch (error) { errorHandling(error, "alliance_player"); }
+
+        },
+        island_info: () => {
+            try {
+                dio.clipboard("#dio-copy-BBcodeList", null, "BBcodeList", null)
+                if (!$('.island_info_wrapper #dio_island_info').get(0)) {
+                    console.log("ok")
+                    let ID = $(".island_info_wrapper .game_header.bold").text().split('(')[0].trim();
+                    $('.island_info_wrapper .island_info_left .game_border_top').before('<div id="dio_island_info" class="dio_list"></div>');
+                    $('#dio_island_info').click(function (e) {
+
+                        if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
+                            uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                        }
+
+                        let Island = $(this).parent().parent().parent().parent().parent().find('.island_info h4').text().trim().split(' ')[1];
+                        let Ocean = $(this).parent().parent().parent().parent().parent().find('.islandinfo_coords').text().trim();
+                        let spaces = $(this).parent().parent().parent().parent().parent().find('.islandinfo_free').text().trim();
+
+                        let header = "[quote][size=9][island]" + Island + "[/island]\n" + Ocean + "\n" + spaces + "[/size]\n[table]\n";
+                        // Utiliser jQuery pour sélectionner les éléments de la liste des membres
+
+                        let Cities = "";
+                        let by_name = $('#island_info_towns_left_sorted_by_name:visible')
+                        let by_score = $('#island_info_towns_left_sorted_by_score:visible')
+                        let by_player = $('#island_info_towns_left_sorted_by_player:visible')
+                        if (by_name.length > 0) Cities = $('#island_info_towns_left_sorted_by_name li')
+                        if (by_score.length > 0) Cities = $('#island_info_towns_left_sorted_by_score li')
+                        if (by_player.length > 0) Cities = $('#island_info_towns_left_sorted_by_player li')
+
+                        // Initialiser un tableau pour stocker les données extraites
+                        let memberCities = 1, bb_content = {};
+                        bb_content.P1 = header
+                        // Parcourir chaque élément de la liste des membres
+                        Cities.each(function () {
+
+                            // Récupérez l'URL de chaque lien
+                            const url = $(this).find('.gp_town_link').attr('href');
+                            // Utilisez la fonction replaceBBtowns pour extraire l'ID de la ville de l'URL
+                            const townIdMatch = url.match(/#(.*?)$/);
+                            if (townIdMatch && townIdMatch[1]) {
+                                const ville = $.parseJSON(atob(townIdMatch[1])).id;
+                                // Récupérer les valeurs des éléments
+                                const rang = memberCities++; // Calculer le rang du joueur
+                                const points = $(this).find('.small:first').text(); // Récupérer les chiffres dans la parenthèse => .match(/\d+/)[0]
+                                let joueur = "[player]" + $(this).find('.gp_player_link').text() + "[/player]";
+                                if (joueur == "[player][/player]") joueur = $(this).find('.small.player_name').text()
+                                let alliance = "[ally]" + $(this).find('.gp_alliance_link').text() + "[/ally]";
+                                if (alliance == "[ally][/ally]") alliance = ""; // Si l'alliance n'est pas disponible, afficher ''
+
+                                // Ajouter les valeurs au tableau des données
+                                bb_content.P1 += "[*]" + rang + ".[|][town]" + ville + "[/town][|]" + points + "[|]" + joueur + "[|]" + alliance + "[/*]\n";
+                            }
+                        });
+                        console.log(bb_content.P1)
+                        BBcodeList.add(ID, bb_content, 20 - spaces.split(':')[1].trim())
+                    });
+                    $('#dio_island_info').tooltip(dio_icon + "BBcode " + ID);
+                }
+            } catch (error) { errorHandling(error, "island_info"); }
+
+        },
+        add: (ID, bb_content, bb_nombre_ville) => {
+            try {
+                let bb_nonbre = Math.floor((bb_nombre_ville - 1) / 60) + 1;
+                const wnd = uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_DIO_BBCODE) || uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+                let dio_version_PUB, footer;
+                if (MID == 'fr') dio_version_PUB = "[url=" + Home_url + "/fr/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
+                else dio_version_PUB = "[url=" + Home_url + "/en/]DIO-TOOLS-David1327[/url] - v." + dio_version + "[/quote]";
+                footer = "[/table]" + dio_version_PUB;
+                const expRahmen_a = "<div id='dio_BBcodeList' class='inner_box'><div class='game_border'><div class='game_border_top'></div>" +
+                    "<div class='game_border_bottom'></div><div class='game_border_left'></div>" +
+                    "<div class='game_border_right'></div><div class='game_border_corner corner1'></div>" +
+                    "<div class='game_border_corner corner2'></div><div class='game_border_corner corner3'></div><div class='game_border_corner corner4'></div><div class='game_header bold' style='height:18px;'><div style='float:left; padding-right:10px;'></div>";
+                const expRahmen_d = "</div><div style='overflow-x: hidden; padding-left: 5px; position: relative;'></div></div></div>";
+                const expRahmen_e = "<div style='font-weight: bold; margin-left: 5px;'>" + + "</div>";
+
+                let expTitel = bb_nombre_ville + " " + ID + "</div>";
+
+                let bb_content_F = "<div style='height: 280px; overflow-x: hidden;'>"
+                for (let i = 1; i <= bb_nonbre; i++) {
+                    let textareaId = `expTextareaP${i}`, buttonLabel = getTexts("messages", "copy"), Height = 240;
+                    if (bb_nombre_ville >= 61) { buttonLabel += ` (${i}/${bb_nonbre})`; Height = 120; }
+                    bb_content_F += `<textarea id="${textareaId}" style="height: ${Height}px; width: 98%;">${bb_content[`P${i}`]}${footer}</textarea><div style="text-align: center;">${dio.createButton(buttonLabel, "dio-copy-BBcodeList", null, `data-clipboard-target="#${textareaId}"`)}</div>`;
+                }
+                if (bb_nombre_ville < 61) $("#expTextareaP1").css({ height: "240px" });
+                wnd.setContent(expRahmen_a + expTitel + (bb_nombre_ville > 0 ? bb_content_F : expRahmen_e) + expRahmen_d);
+                $('#dio_town_list_bbb').tooltip(dio_icon + getTexts("Options", "Tol")[0]);
+            } catch (error) { errorHandling(error, "BBcodeList"); }
+        },
+        content: (bb_count, town) => {
+            return "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+        },
+        deactivate: () => {
+            $('#dio_BBcodeList_style').remove();
+            if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE)) {
+                uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_BBCODE).close();
+            }
         },
     };
 
@@ -10674,30 +11091,50 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         $("DIV#gpwnd_" + wndid + " DIV#message_message_list .game_header:first").append('<div id="dio_messageExport" style="float:right; margin-right:-5px; margin-top:-21px; cursor:pointer;">' + dio.createButton(getTexts("messages", "bbmessages")) + '</div><div id="dio_messageExportTMP" style="display:none"></div>');
                     }
                     $("#dio_messageExport").tooltip(getTexts("messages", "export"));
+
+
+                    let author, alliance, alliance2, message, i, player, add_Ally;
+                    author = $("#message_partner a.gp_player_link").text().trim();
+
+
+                    if (typeof (uw.MM.DIO.cachePlayers[author.replace(/ /g, '+')]) !== "undefined") {
+                        player = uw.MM.DIO.cachePlayers[author.replace(/ /g, '+')]
+                        if (player.alliance_id !== "" & !$("#message_partner a[onclick^='Layout.allianceProfile.open']").get(0)) {
+                            alliance = uw.MM.DIO.cacheAlliances[player.alliance_id].name.replace(/\+/g, ' ')
+                            add_Ally = uw.hCommon.alliance("n", uw.MM.DIO.cacheAlliances[player.alliance_id].name.replace(/\+/g, ' '), player.alliance_id)
+                            $('#message_partner a.gp_player_link').after('<span class="alliance_name"> (' + add_Ally + ')</span>')
+                        };
+                    };
+
                     $("#dio_messageExport").click(function () {
 
-                        let bb_content = "[quote]";
+                        let header = "[quote]";
+                        //let bb_content = {}
+                        let bb_content = "";
 
                         // Titre
-                        let author, alliance, alliance2, message, i;
                         if ($("#message_message_list .subject").is(":visible")) {
                             message = $("#message_message_list .subject").text().trim();
                         } else {
                             (message = $("#message_message_list .game_header").clone()).find("*").remove();
                             message = message.html().trim();
                         }
-                        author = '[player]' + $("#message_partner a.gp_player_link").text().trim() + '[/player]';
+
+
                         alliance = $("#message_partner a.gp_alliance_link").text().trim();
                         alliance2 = $("#message_partner span a").text().trim();
 
+                        author = '[player]' + author + '[/player]'
                         if (author === "[player][/player]") author = "Grepolis";
 
                         if (alliance) { i = "(" + author + " [ally]" + alliance + "[/ally])" }
                         else if (alliance2) { i = "(" + author + " [ally]" + alliance2 + "[/ally])" }
                         else { i = "(" + author + ")" };
 
-                        bb_content += "[b]" + uw.DM.getl10n("layout").main_menu.items.messages + ":[/b] " + message + " " + i + "\n";
-                        bb_content += '[img]' + Home_url + '/img/dio/logo/transition-mini.png[/img]';
+                        header += "[b]" + uw.DM.getl10n("layout").main_menu.items.messages + ":[/b] " + message + " " + i + "\n";
+                        header += '[img]' + Home_url + '/img/dio/logo/transition-mini.png[/img]';
+
+                        bb_content += header;
 
 
                         let format_search = [
@@ -10774,6 +11211,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         };
 
                         $(".message_post_container .message_post").each(function (index, element) {
+                            /*index = "p" + index
+                            console.log(index)
+                            bb_content[index] = "";*/
                             const dio_messageExportTMP = $("#dio_messageExportTMP");
                             dio_messageExportTMP.empty();
 
@@ -10859,6 +11299,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             bb_content += "\n";
                         });
 
+                        /*if (bb_content.p0.split("]").length) console.log(bb_content.p0.split("]").length)
+                        console.log(bb_content)
+                        console.log(bb_content.p0)
+                        console.log(bb_content.p1)*/
+
                         //bb_content = bb_content.slice(0, -1);
                         if (MID == 'fr') bb_content += "[url=" + Home_url + "/fr/]DIO-TOOLS-David1327[/url] - v." + dio_version;
                         else bb_content += "[url=" + Home_url + "/en/]DIO-TOOLS-David1327[/url] - v." + dio_version;
@@ -10884,6 +11329,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             const that = this;
                             setTimeout(() => { $(that).select(); }, 10);
                         });
+
+
+                        var maxCharacters = 499;
+
+                        // Diviser le texte en un tableau de sections en utilisant "]"
+                        var sections = bb_content.split("]");
+                        if (sections.length >= 400) console.log(sections)
+                        else console.log("++++")
+
+
+
                     });
                 }
             } catch (error) { errorHandling(error, "MessageExport"); }
@@ -10991,6 +11447,540 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         },
     };
 
+
+    /*******************************************************************************************************************************
+    * GRCT
+    * ----------------------------------------------------------------------------------------------------------------------------
+    * | ● Numéro d'océan : Ajoute le numéro de l'océan
+    * | ● Message de groupe : Ajoute un bouton pour envoyer un message au monde d'une alliance
+    * | ● Inactif : Afficher les joueurs inactifs
+    * | ● Sauvegarde des remparts : Sauvegarde des troupes des remparts
+    * | ● Alarme d'attaque
+    * ----------------------------------------------------------------------------------------------------------------------------
+    *******************************************************************************************************************************/
+
+    /*******************************************************************************************************************************
+     * Numéro d'océan : Ajoute le numéro de l'océan
+     *******************************************************************************************************************************/
+
+    var OceanNumbers = {
+        activate: () => {
+            $('<style id="dio_Ocean_Numbers_style">' +
+                '.dio_NumbersON { border: 1px solid #fff; position: absolute; display: block; z-index: 2; opacity: .1; width: 12800px; height: 12800px; }' +
+                '</style>').appendTo("head");
+            OceanNumbers.add()
+        },
+        add: () => {
+            if ($("#grcrtListSaved").is(":visible")) return;
+            if (0 == $("#map_move_container").length) {
+                setTimeout(function () {
+                    if (DATA.options.dio_Onb) OceanNumbers.add();
+                }, 100);
+            } else {
+                if ($("div#dio_oceanNumbers").length == 0) {
+                    $("#map_move_container").append($("<div/>", { id: "dio_oceanNumbers", style: "position:absolute; top:0; left:0;" }));
+                    (uw.require("map/helpers") || uw.MapTiles).map2Pixel(100, 100);
+                    for (var d = 0; 10 > d; d++) {
+                        for (var k = 0; 10 > k; k++) {
+                            var m = (uw.require("map/helpers") || uw.MapTiles).map2Pixel(100 * k, 100 * d);
+                            $("div#dio_oceanNumbers").append($("<div/>", { "class": "dio_NumbersON", style: "left:" + m.x + "px; top: " + m.y + "px; background-image: url(" + Home_url + "/img/dio/map/" + k + d + ".png);" }));
+                        }
+                    }
+                }
+            }
+        },
+        deactivate: () => {
+            $('#dio_Ocean_Numbers_style').remove();
+        },
+    };
+
+    /*******************************************************************************************************************************
+     * Message de groupe
+     *******************************************************************************************************************************/
+
+    var ally_mass_mail = {
+        activate: () => {
+            $('<style id="dio_ally_mass_mail_style"> ' +
+                '#dio_ally_mass_mail { background: url("https://gp' + LID + '.innogamescdn.com/images/game/ally/mass_mail.png") no-repeat; height: 22px; width: 22px; margin-right: 3px; position: relative; float: left; cursor: pointer; right: 0px; } ' +
+                '#grcrt_ally_mass_mail { display: none; } ' +
+                '</style>').appendTo('head');
+        },
+        add: () => {
+            if (!$('#ally_towns #dio_ally_mass_mail').get(0)) {
+                let ID = $("#ally_towns .game_header.bold").text().trim();
+                $('#ally_towns .game_border_top').before('<div id="dio_ally_mass_mail"></div>');
+                $('#dio_ally_mass_mail').tooltip(dio_icon + ID);
+
+                $('#dio_ally_mass_mail').click(() => {
+                    // Utiliser jQuery pour sélectionner les éléments de la liste des membres
+                    const members = $(".members_list li ul li.even");
+                    let listmembers = "";
+                    // Parcourir chaque élément de la liste des membres
+                    members.each(function (index, element) {
+                        // Extraire le nom du joueur
+                        if ($(element).find("a.gp_player_link").attr("title") != undefined) listmembers += $(element).find("a.gp_player_link").attr("title") + ";";
+                    });
+                    uw.Layout.newMessage.open({ recipients: listmembers });
+                });
+            };
+        },
+        deactivate: () => {
+            $('#dio_ally_mass_mail_style').remove();
+        },
+    };
+
+    /*******************************************************************************************************************************
+     * Inactif : Afficher les joueurs inactifs
+     *******************************************************************************************************************************/
+
+    var idle = {
+        activate: () => {
+            $('<style id="dio_idle_style"> ' +
+                '.dio_idle { min-width: 20px; min-height: 11px; background: url(https://cdn.grcrt.net/ui/idle_loader2.gif) no-repeat; float: left; margin-right: 4px; margin-top: 3px; } ' +
+                '.dio_idle_days.dg { background-position: 0px 0px; } ' +
+                '.dio_idle_days.dy { background-position: 0px -12px; } ' +
+                '.dio_idle_days.dr { background-position: 0px -24px; } ' +
+                '.dio_idle_days { background: url(https://cdn.grcrt.net/ui/idle.png) 0 0 no-repeat; color: white; text-align: center; font-size: 8px; vertical-align: middle; text-shadow: 1px 1px black; min-width: 20px; min-height: 11px; padding-top: 1px; cursor: help; } ' +
+                '</style>').appendTo('head');
+
+
+            idle.add("island_info")
+            idle.add("player")
+            idle.add("alliance")
+            idle.add("message")
+            idle.add("info")
+        },
+        add: (action, b) => {
+            if ($("#grcrt_mnu").is(":visible") && action != "message") return
+
+            if (action == "island_info") {
+                let Ally = uw.MM.DIO.cacheAlliances, add_player, add_Ally, player;
+                $('.island_info_left .gp_town_link').each(function () { // Sélectionne tous les <span class="small player_name"> dans la liste avec l'ID 'island_info_towns_left_sorted_by_name'
+                    let nomDuJoueur = $(this).parent().find('.player_name').text(); // Récupère le texte à l'intérieur de l'élément <span>
+                    if (typeof (uw.MM.DIO.cachePlayers[nomDuJoueur.replace(/ /g, '+')]) !== "undefined") {
+                        player = uw.MM.DIO.cachePlayers[nomDuJoueur.replace(/ /g, '+')]
+                        add_player = uw.hCommon.player(nomDuJoueur, player.id)
+                        $(this).parent().find('.player_name').replaceWith($('<span class="small player_name"></span>').append(add_player)); // Remplace l'élément <span> par le nouvel élément <span> avec le lien <a>
+                        if (player.alliance_id !== "") {
+                            add_Ally = uw.hCommon.alliance("n", uw.MM.DIO.cacheAlliances[player.alliance_id].name.replace(/\+/g, ' '), player.alliance_id)
+                            $(this).parent().find('.player_name').after('<span class="small alliance_name"> (' + add_Ally + ')</span>')
+                        };
+
+                    };
+                });
+            };
+
+            let ina = "Inactif"; //STATS.INACTIVE
+            let each = '';
+            if (action == "island_info") each = '.island_info_left .gp_player_link';
+            if (action == "player") each = '#player_info.bold h3';
+            if (action == "alliance") each = '#ally_towns .gp_player_link';
+            if (action == "message") each = '#message_message_list .gp_player_link';
+            if (action == "info") each = '#towninfo_towninfo .gp_player_link';
+            // Sélectionnez tous les éléments avec la classe "gp_player_link" ou "small player_name"
+            $(each).each(function () {
+                //if ($(this).parent().find('.dio_idle').get(0)) $('.dio_idle').remove()
+                if (!$(this).parent().find('.dio_idle').get(0)) {
+                    let idle_nb = -1;
+                    // Créez une nouvelle div avec la classe "dio_idle" et le texte du lien
+                    let playerName = $(this).attr('title');
+                    if (playerName !== undefined) playerName = $(this).attr('title').replace(/ /g, '+');
+                    else playerName = $(this).text().replace(/ /g, '+');
+                    let newDiv = $('<div class="dio_idle"></div>');
+                    // Ajoutez la nouvelle div avant l'élément avec la classe "gp_player_link" ou "founder_icon"
+                    if (action == "player") $(this).before($('<div class="dio_idle" style="margin-top: 10px; "></div>'))
+                    else if ($(this).parent().find('.founder_icon').get(0)) $(this).parent().find('.founder_icon').before(newDiv);
+                    else $(this).before(newDiv);
+                    if (typeof (uw.MM.DIO.cachePlayers[playerName]) !== "undefined") {
+                        $(this).parent().find('.dio_idle').addClass("dio_idle_days").addClass("dg");
+                        idle_nb = -2;
+                        if (typeof (uw.MM.DIO.player_idle[uw.MM.DIO.cachePlayers[playerName].id]) !== "undefined") {
+                            idle_nb = uw.MM.DIO.player_idle[uw.MM.DIO.cachePlayers[playerName].id].idle / 24;
+                        }
+                    }
+                    $(this).parent().find('.dio_idle').html(0 > parseInt(idle_nb) ? (idle_nb == -2 ? "?" : "") : parseInt(idle_nb));
+
+                    $(this).parent().find('.dio_idle').tooltip('<div style="white-space: nowrap; min-width: 220px;">' + dio_icon + "<b>" + ina + ": </b>" + (0 > parseInt(idle_nb) ? "???" : uw.hours_minutes_seconds(3600 * parseInt(24 * idle_nb)) || "0") + '<br/><span style="font-size:75%;">Powered by GREPODATA ≈' + uw.hours_minutes_seconds(3600) + '</span></div>');
+                    7 <= idle_nb ? $(this).parent().find('.dio_idle').toggleClass("dg dr") : 2 <= idle_nb && $(this).parent().find('.dio_idle').toggleClass("dg dy");
+                }
+            });
+        },
+        deactivate: () => {
+            $('#dio_idle_style').remove();
+            $('.dio_idle').remove();
+        },
+    };
+
+    /*******************************************************************************************************************************
+     * Sauvegarde des remparts : Sauvegarde des troupes des remparts
+     *******************************************************************************************************************************/
+
+    var Save_wall = {
+        activate: () => {
+            $('<style id="dio_Save_wall_style"> ' +
+                '.dio_wall_diff { float: right; padding-right: 4px; font-weight: 700; letter-spacing: -1px; color: green; max-width: 48px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }' +
+                '.dio_wall_units { width: 54px; height: 71px; float: left; }' +
+                '#dio_Saved_Button { float: right; margin-right: -6px; margin-top: 3px; cursor: pointer; }' +
+                '#dio_ConvSaved { position: relative; float: left; margin: 5px; font-weight: bold; color: rgb(0, 0, 0); }' +
+                '.dio_wall_compare_dd { float: left; text-align: right; }' +
+                '.dio_dd_list { margin-left: 5px; float: right; margin-top: -2px; }' +
+                '.dio_dd_list select { width: 112px !important; font: 11px Verdana,Arial,Helvetica,sans-serif; cursor: pointer; }' +
+                '</style>').appendTo('head');
+
+            if ($("#building_wall").is(":visible")) Save_wall.add();
+        },
+        add: () => {
+            if ($("#grcrtListSaved").is(":visible")) return
+            const sauvegardes = DATA.wall; // Tableau pour stocker les sauvegardes
+
+            if (!$(".dio_wall_compare").is(":visible")) {
+                $("#building_wall .game_border").append(
+                    '<div id="dio_Saved_Button" style="">' + dio.createButton(uw.DM.getl10n("notes").btn_save) + '</div>' +
+                    '<div id="dio_ConvSaved" style="">' + getTexts("wall", "wallnotsaved") + '</div>' + //Les remparts ne sont pas enregistrés
+                    '');
+
+                $("#building_wall .game_list .even:eq(0)").append(
+                    '<div class="dio_wall_compare">' +
+                    '<hr>' +
+                    '<div class="dio_wall_compare_dd" style="width: 49%;"><a id="supprimerButton" class="cancel" style="float:right; margin-top: -2px;"></a><label for="">' + getTexts("wall", "listsaved") + '</label><div id="dio_Dropdown_save" class="dio_dd_list" style="">' + dio.grepo_dropdown_flag("sauvegardeDropdown", null, null, null, null)[0].outerHTML + '</div></div>' +
+                    '<div class="dio_wall_compare_dd" style="width: 49%;"><label for="">' + getTexts("wall", "liststate") + '</label><div id="dio_Dropdown_comparer" class="dio_dd_list" style="">' + dio.grepo_dropdown_flag("comparerDropdownn", null, null, null, null)[0].outerHTML + '</div></div>' +
+                    '<br style="clear:both"></div>' +
+                    '');
+            }
+
+            $('#supprimerButton').tooltip(dio_icon + uw.DM.getl10n("notes").btn_delete);
+
+            // Fonction pour sauvegarder les données actuelles
+            function sauvegarderAujourdhui(t) {
+                const currentDate = new Date();
+                const formattedDate = ("0" + currentDate.getDate()).slice(-2) + "." +
+                    ("0" + (currentDate.getMonth() + 1)).slice(-2) + "|" +
+                    ("0" + currentDate.getHours()).slice(-2) + ":" +
+                    ("0" + currentDate.getMinutes()).slice(-2) + ":" +
+                    ("0" + currentDate.getSeconds()).slice(-2);
+
+                const dataAujourdhui = []; // Utilisez un seul tableau pour toutes les données
+
+                // Sélectionnez toutes les données des éléments .wall_report_unit
+                $('.odd .list_item_left:eq(1) .wall_report_unit, .odd .list_item_right:eq(1) .wall_report_unit').each(function () {
+                    const unitCount = parseInt($(this).data('unit_count'));
+                    const list = $(this).parent().parent().parent()[0].attributes[0].nodeValue.split('_')[2];
+                    const type = '1' + list + $(this).data('type');
+                    if (!t) dataAujourdhui.push({ type, count: unitCount });
+                    if (!$('#' + type + '_difference').get(0)) $(this).after($('<div id="' + type + '_difference" class="dio_wall_diff">-</div>'));
+                });
+
+                $('.odd .list_item_left:eq(2) .wall_report_unit, .odd .list_item_right:eq(2) .wall_report_unit').each(function () {
+                    const unitCount = parseInt($(this).data('unit_count'));
+                    const list = $(this).parent().parent().parent()[0].attributes[0].nodeValue.split('_')[2];
+                    const type = '2' + list + $(this).data('type');
+                    if (!t) dataAujourdhui.push({ type, count: unitCount });
+                    if (!$('#' + type + '_difference').get(0)) $(this).after($('<div id="' + type + '_difference" class="dio_wall_diff">-</div>'));
+                });
+
+                if (!t) {
+                    sauvegardes.push({ date: formattedDate, data: dataAujourdhui });
+                    saveValue(WID + '_wall', JSON.stringify(sauvegardes));
+                    uw.HumanMessage.success(dio_icon + getTexts("wall", "msghuman"));
+                }
+            }
+
+            // Fonction pour comparer les données actuelles avec une sauvegarde sélectionnée
+            function comparerDonnees(selectedSaveIndex) {
+                const selectedSave = sauvegardes[selectedSaveIndex];
+                const dataAujourdhui = [];
+                $('.dio_wall_diff').text("-").off('mouseenter mouseleave');
+
+                // Sélectionnez toutes les données des éléments .wall_report_unit
+                $('.odd .list_item_left:eq(1) .wall_report_unit, .odd .list_item_right:eq(1) .wall_report_unit').each(function () {
+                    const unitCount = parseInt($(this).data('unit_count'));
+                    const list = $(this).parent().parent().parent()[0].attributes[0].nodeValue.split('_')[2];
+                    const type = '1' + list + $(this).data('type');
+                    dataAujourdhui.push({ type, count: unitCount });
+                });
+
+                $('.odd .list_item_left:eq(2) .wall_report_unit, .odd .list_item_right:eq(2) .wall_report_unit').each(function () {
+                    const unitCount = parseInt($(this).data('unit_count'));
+                    const list = $(this).parent().parent().parent()[0].attributes[0].nodeValue.split('_')[2];
+                    const type = '2' + list + $(this).data('type');
+                    dataAujourdhui.push({ type, count: unitCount });
+                });
+
+                const differences = [];
+
+                // Comparez les données avec la sauvegarde sélectionnée
+                for (let i = 0; i < dataAujourdhui.length; i++) {
+                    const { type, count: countAujourdhui } = dataAujourdhui[i];
+                    let countSauvegarde = 0;
+                    for (let j = 0; j < selectedSave.data.length; j++) {
+                        if (selectedSave.data[j].type === type) {
+                            countSauvegarde = selectedSave.data[j].count;
+                            break;
+                        }
+                    }
+                    const diff = countAujourdhui - countSauvegarde;
+                    differences.push({ type, diff });
+                    $('#' + type + '_difference').text(pointNumber(diff, true)); // Mettez à jour l'interface utilisateur avec les différences si nécessaire
+                    if (diff >= 100000) $('#' + type + '_difference').tooltip(pointNumber(diff, true));
+                }
+                return differences; // Retournez les différences si besoin pour d'autres utilisations
+            }
+
+            // Fonction pour mettre à jour l'interface utilisateur avec les différences
+            function mettreAJourDifferences(selectedSaveIndex) {
+                const differences = comparerDonnees(selectedSaveIndex);
+                if (differences.length > 0) { } // Mettez à jour l'interface utilisateur avec les différences si nécessaire
+                else { uw.HumanMessage.error(dio_icon + getTexts("wall", "erreur")); }
+            }
+
+            // Fonction pour comparer deux sauvegardes et mettre à jour les différences dans l'interface utilisateur
+            function comparerSauvegardes(indexSauvegarde1, indexSauvegarde2) {
+                const sauvegarde1 = sauvegardes[indexSauvegarde1];
+                const sauvegarde2 = sauvegardes[indexSauvegarde2];
+
+                $('.dio_wall_diff').text("-").off('mouseenter mouseleave');
+
+                sauvegarde1.data.forEach(data => {
+                    const { type, count: countAujourdhui } = data;
+                    const countSauvegarde2 = sauvegarde2.data.find(data => data.type === type);
+                    if (countSauvegarde2) {
+                        const diff = countAujourdhui - countSauvegarde2.count;
+                        $('#' + type + '_difference').text(pointNumber(diff, true)); // Mettez à jour l'interface utilisateur avec les différences si nécessaire
+                        if (diff >= 100000) $('#' + type + '_difference').tooltip(pointNumber(diff, true));
+                    } else {
+                        $('#' + type + '_difference').text(pointNumber(countAujourdhui, true)); // Mettez à jour l'interface utilisateur avec les différences si nécessaire
+                        if (countAujourdhui >= 100000) $('#' + type + '_difference').tooltip(pointNumber(countAujourdhui, true));
+                    }
+                });
+            }
+
+            // Fonction pour mettre à jour le menu déroulant avec les nouvelles sauvegardes (du plus récent au plus ancien)
+            function mettreAJourMenuDeroulant() {
+                const dropdown = $('#sauvegardeDropdown');
+                dropdown.empty();
+
+                const sauvegardesInversees = sauvegardes.slice().reverse();
+
+                sauvegardesInversees.forEach((save, index) => {
+                    dropdown.append($('<option>', { value: sauvegardes.length - 1 - index, text: save.date }));
+                });
+                mettreAJourMenuDeroulant2()
+                if (dropdown.val() !== null) $('#dio_ConvSaved').text(getTexts("wall", "wallsaved") + ' ' + sauvegardes[dropdown.val()].date); //Les remparts sont enregistrés:
+            }
+
+            // Appeler la fonction de comparaison lorsque le menu déroulant est modifié
+            $('#sauvegardeDropdown').on('change', function () {
+                const selectedSaveIndex1 = $(this).val();
+                const selectedSaveIndex2 = $('#comparerDropdownn').val();
+                if (selectedSaveIndex1 !== null) {
+                    if (selectedSaveIndex2 === 'auto') mettreAJourDifferences(selectedSaveIndex1); // Si "Mode Auto" est sélectionné, appeler la fonction comparerDonnees automatiquement
+                    else if (selectedSaveIndex1 !== null && selectedSaveIndex2 !== null) comparerSauvegardes(selectedSaveIndex1, selectedSaveIndex2);// Sinon, appeler la fonction comparerSauvegardes avec l'indice de sauvegarde sélectionné
+                    $('#dio_ConvSaved').text(getTexts("wall", "wallsaved") + ' ' + sauvegardes[selectedSaveIndex1].date); //Les remparts sont enregistrés:
+                }
+                mettreAJourMenuDeroulant2()
+            });
+
+            // Appeler la fonction de comparaison lorsque le menu déroulant comparerDropdownn est modifié
+            $('#comparerDropdownn').on('change', function () {
+                const selectedSaveIndex1 = $('#sauvegardeDropdown').val();
+                const selectedSaveIndex2 = $(this).val();
+                if (selectedSaveIndex2 === 'auto' && selectedSaveIndex1 !== null) mettreAJourDifferences(selectedSaveIndex1); // Si "Mode Auto" est sélectionné, appeler la fonction comparerDonnees automatiquement
+                else if (selectedSaveIndex1 !== null && selectedSaveIndex2 !== null) comparerSauvegardes(selectedSaveIndex1, selectedSaveIndex2); // Sinon, appeler la fonction comparerSauvegardes avec l'indice de sauvegarde sélectionné
+            });
+
+            // Fonction pour supprimer la sauvegarde sélectionnée
+            function supprimerSauvegardeSelectionnee() {
+                try {
+                    let selectedSaveIndex = $('#sauvegardeDropdown').val();
+                    if (selectedSaveIndex !== null) {
+                        uw.hOpenWindow.showConfirmDialog(getTexts("wall", "deletecurrent"), getTexts("wall", "wantdeletecurrent"), function () {
+                            sauvegardes.splice(selectedSaveIndex, 1);
+                            mettreAJourMenuDeroulant();
+                            selectedSaveIndex = $('#sauvegardeDropdown').val();
+                            if (selectedSaveIndex !== null) mettreAJourDifferences(selectedSaveIndex);
+                            saveValue(WID + '_wall', JSON.stringify(sauvegardes));
+                            uw.HumanMessage.success(dio_icon + uw.DM.getl10n("notes").btn_delete);
+                        });
+                    } else uw.HumanMessage.error(dio_icon + getTexts("wall", "nosaved"));
+                } catch (error) { uw.HumanMessage.error(dio_icon + getTexts("wall", "erreur")); }
+            }
+
+            $('#supprimerButton').on('click', function () { supprimerSauvegardeSelectionnee(); }); // Appeler la fonction de suppression lorsque le bouton est cliqué
+
+            // Fonction pour sauvegarder les données actuelles et mettre à jour le menu déroulant
+            $('#dio_Saved_Button').on('click', function () {
+                sauvegarderAujourdhui();
+                mettreAJourMenuDeroulant();
+                const selectedSaveIndex = $('#sauvegardeDropdown').val();
+                if (selectedSaveIndex !== null) mettreAJourDifferences(selectedSaveIndex);
+            });
+
+            // Ajouter le deuxième menu déroulant
+            const comparerDropdown = $('#comparerDropdownn');
+            comparerDropdown.empty(); // Effacer toutes les options actuelles du menu déroulant
+
+            // Ajouter l'option "Mode Auto" pour la première sélection
+            comparerDropdown.append($('<option>', { value: 'auto', text: getTexts("wall", "Auto") }));
+
+            // Fonction pour mettre à jour le menu déroulant avec les nouvelles sauvegardes (du plus récent au plus ancien)
+            function mettreAJourMenuDeroulant2() {
+                const dropdown = $('#sauvegardeDropdown');
+                const selectedSaveIndex2 = $('#comparerDropdownn').val();
+                comparerDropdown.empty(); // Effacer toutes les options actuelles du menu déroulant
+
+                // Ajouter l'option "Mode Auto" pour la première sélection
+                comparerDropdown.append($('<option>', { value: 'auto', text: 'Mode Auto' }));
+
+                // Ajouter uniquement les éléments qui sont supérieurs à la valeur sélectionnée dans le premier menu déroulant
+                const selectedSaveIndex = dropdown.val();
+                if (selectedSaveIndex !== null) {
+                    const selectedSave = sauvegardes[selectedSaveIndex];
+                    for (let i = sauvegardes.length - 1; i >= 0; i--) { // Inverser l'ordre ici
+                        if (i !== selectedSaveIndex && sauvegardes[i].date < selectedSave.date) {
+                            comparerDropdown.append($('<option>', { value: i, text: sauvegardes[i].date }));
+                        }
+                    }
+                }
+                $('#comparerDropdownn').val(selectedSaveIndex2);
+                if ($('#comparerDropdownn').val() == null) $('#comparerDropdownn').val("auto")
+                // Ensuite, déclenchez manuellement l'événement change pour que la fonction de comparaison soit appelée :
+                $('#comparerDropdownn').change();
+            }
+
+            // Appeler les fonctions au chargement de la page
+            $(document).ready(function () {
+                mettreAJourMenuDeroulant();
+                if (!$(".dio_wall_units").is(":visible")) {
+                    const wallReportUnitElements = $('.wall_report_unit');
+
+                    for (let i = 0; i < wallReportUnitElements.length; i++) {
+                        const wallReportUnitElement = wallReportUnitElements.eq(i);
+                        const wrapperDiv = $('<div class="dio_wall_units">');
+                        wallReportUnitElement.wrapAll(wrapperDiv);
+                    }
+                }
+                sauvegarderAujourdhui(true);
+                const selectedSaveIndex = $('#sauvegardeDropdown').val();
+                if (selectedSaveIndex !== null) mettreAJourDifferences(selectedSaveIndex);
+            });
+
+        },
+        deactivate: () => {
+            $('#dio_Save_wall_style').remove();
+            $('#dio_Saved_Button').remove();
+            $('.dio_wall_compare').remove();
+            $('#dio_ConvSaved').remove();
+            $('.dio_wall_diff').remove();
+        },
+    };
+
+    /*******************************************************************************************************************************
+     * Alarme d'attaque
+     *******************************************************************************************************************************/
+
+    var AttacksAlarms = {
+        AttacksCount: 0,
+        audioElement: $("<audio loop>"), // Créez dynamiquement l'élément audio
+        audio: new Audio(Home_url + "/audio/car_lock.mp3"),
+        musicURL: DATA.URLAlarm, //Home_url + "/audio/alarm.mp3",
+        activate: () => {
+            if ($("#grcrtListSaved").is(":visible")) return
+
+            $('<style id="AttacksAlarms_style"> ' +
+                '#dio_volume { display: block!important; }' +
+                '#dio_volumeControl { display: inline-block; vertical-align: middle; }' +
+                '#dioSound { position: absolute; bottom: 85px; left: 15px; z-index: 1002; }' +
+                '</style>').appendTo('head');
+
+            //var musicURL = Home_url + "/audio/alarm.mp3"; // Mettez l'URL de votre musique ici
+            //AttacksAlarms.audioElement.attr("src", AttacksAlarms.musicURL); // Met à jour l'URL de la musique
+            //var audio = new Audio(Home_url + "/audio/car_lock.mp3");
+
+            $.Observer(uw.GameEvents.attack.incoming).subscribe('DIO_ATTACKS_ALARMS', function (i, e) {
+                if ($("#grcrt_mnu").is(":visible") || $("#grcrtSound").is(":visible")) { $.Observer(uw.GameEvents.attack.incoming).unsubscribe('DIO_ATTACKS_ALARMS'); return; }
+                if (e.count === 0) AttacksAlarms.stopMusic();
+                else if (e.count > AttacksAlarms.AttacksCount) AttacksAlarms.playMusic();
+                AttacksAlarms.AttacksCount = e.count;
+            });
+
+            $('body').on('click', '#dioSound', function () { // Attachez l'événement click à un élément parent statique (par exemple, body)
+                AttacksAlarms.stopMusic();
+                AttacksAlarms.audio.play();
+                //uw.HumanMessage.success('?????');
+            });
+            setTimeout(() => { if ($(".activity.attack_indicator.active").is(":visible")) AttacksAlarms.playMusic(); AttacksAlarms.AttacksCount = $(".activity.attack_indicator.active .count.js-caption").text() }, 3500)
+
+            AttacksAlarms.audioElement[0].volume = DATA.volumeControl // Contrôle de volume
+            AttacksAlarms.audio.volume = (DATA.volumeControl > 0.3 ? DATA.volumeControl : 0.3) // Contrôle de volume
+        },
+        playMusic: () => { // Fonction pour lancer la musique
+            if ($("#grcrt_mnu").is(":visible") || $("#grcrtSound").is(":visible")) return;
+            uw.HumanMessage.error(getTexts("movement", "off") + " !!");
+            AttacksAlarms.audioElement.attr("src", AttacksAlarms.musicURL); // Met à jour l'URL de la musique
+            AttacksAlarms.audioElement[0].play(); // Commence la lecture
+            $('#dioSound').remove();
+            $("#ui_box").append('<img src="' + Home_url + '/img/dio/btn/mute.png" id="dioSound" style="">');
+            $('#dioSound').tooltip(dio_icon + "Disable alarm"); //disable alarm  //éteindre l'alarme
+        },
+        stopMusic: () => { // Fonction pour arrêter la musique
+            AttacksAlarms.audioElement[0].pause();
+            AttacksAlarms.audioElement[0].currentTime = 0;
+            $('#dioSound').remove();
+            $('#MH_logo .game_arrow_delete').click();
+        },
+        setMusicURL: (url) => {
+            // Fonction pour vérifier si une chaîne est une URL YouTube ou valide
+            let youtubePattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})$/i;
+            let urlPattern = /^(https?:\/\/)?[a-zA-Z0-9-]+\.[a-z]{2,}(:[0-9]+)?(\/.*)?$/i;
+
+            let isValidYouTubeURL = youtubePattern.test(url);
+            let isValidmp3URL = url.toLowerCase().endsWith(".mp3"); // Vérifie si l'URL se termine par ".mp3"
+            let isValidURL = urlPattern.test(url);
+            let isValidHTTPS = url.toLowerCase().startsWith("https://");
+
+            //if (isValidYouTubeURL || isValidmp3URL || isValidURL) {
+            if (isValidmp3URL & isValidHTTPS) {
+                AttacksAlarms.musicURL = url;
+                saveValue("URLAlarm", JSON.stringify(url));
+                uw.HumanMessage.success(dio_icon + "URL personnalisée définie avec succès !") //uw.HumanMessage.success(dio_icon + getTexts("wall", "deletecurrent"))
+            } else uw.HumanMessage.error(dio_icon + "L'URL doit commencer par 'https://' et se terminer par '.mp3'.");
+            //} else uw.HumanMessage.error(dio_icon + "Veuillez entrer une URL valide.") //uw.HumanMessage.error(dio_icon + getTexts("wall", "erreur"))
+        },
+        deactivate: () => {
+            $.Observer(uw.GameEvents.attack.incoming).unsubscribe('DIO_ATTACKS_ALARMS');
+            AttacksAlarms.stopMusic();
+            $('#AttacksAlarms_style').remove();
+        },
+    };
+
+    /*******************************************************************************************************************************
+     * Actualisation de la fenêtre (caserne et port)
+     *******************************************************************************************************************************/
+
+    var reload = {
+        activate: () => {
+        },
+        add: (action) => {
+            let building;
+            if (action == "/building_docks/index") building = "docks";
+            else if (action == "/building_barracks/index") building = "barracks";
+            else return;
+
+            if (!$('.dio_reload.' + building).get(0) & !$('.grc_reload').get(0)) {
+                $("." + building + ".window_background").parent().parent().parent().parent().find(".ui-dialog-titlebar").append('<a class="dio_reload ' + building + ' down_big reload" style="float: right; height: 22px; margin: -1px 0 1px;" rel="1000"></a>');
+                $(".dio_reload." + building).tooltip(dio_icon);
+                $(".dio_reload." + building).click(() => {
+                    $("." + building + ".window_background").parent().parent().parent().parent().find(".ui-dialog-titlebar-close").click();
+                    if (building == "docks") uw.DocksWindowFactory.openDocksWindow();
+                    else uw.BarracksWindowFactory.openBarracksWindow();
+                });
+            }
+        },
+        deactivate: () => {
+            $('.dio_reload').remove();
+        },
+    };
+
     /*******************************************************************************************************************************
      * autre
      *******************************************************************************************************************************/
@@ -11003,5 +11993,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     };*/
 
     /*try {
-           } catch (error) { errorHandling(error, "MessageExport"); }*/
+    //code
+           } catch (error) { }*/
+
+    //(MID === "zz" ? "aa" : "bb")
 }

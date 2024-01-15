@@ -10,13 +10,13 @@ LANGadd = {
         },
         link: {
             ///update
-            update: "https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327.html",
-            update_direct: "https://www.tuto-de-david1327.com/annuaire/scripts/dio-tools-david1327-js.html",
+            update: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js",
+            update_direct: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js",
             ///donate:
             Donate: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url",
             ///autre
-            Update: "https://www.tuto-de-david1327.com/en/annonces/dio-tools-david1327/update-to-version-" + updateversion + ".html",
-            contact: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/",
+            Update: "https://dio-david1327.github.io/en/News/Update/",
+            contact: "https://dio-david1327.github.io/en/",
             forum: "https://en.forum.grepolis.com/index.php?threads/dio-tools-david1327.62408/",
             link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html",
             link_utile: "https://www.tuto-de-david1327.com/en/pages/info/utility-sites.html",
@@ -24,7 +24,7 @@ LANGadd = {
             available_units: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/units-overview.html",
             UnitComparison: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/unit-comparison.html",
             MessageExport: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/bb-code-messages.html",
-            Translations: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/translations.html",
+            Translations: "https://dio-david1327.github.io/en/wiki/translations.html",
         },
         Settings: {
             dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.",
@@ -39,7 +39,7 @@ LANGadd = {
             Donate: "Donate",
 
             forum: "Tuto de david1327",
-            Update: "Update " + dio_version,
+            Update: "Update",
             Feature: "New Feature",
             Feature2: "New version",
             Learn_more: "Learn more",
@@ -59,6 +59,9 @@ LANGadd = {
             Available: "New version Available",
             reqreload: "Refresh required",
             reload: "Refresh",
+
+            Comp_GRCT: "The following functions are not compatible with GRCT",
+            Non_compatible: "Not compatible, enable in the settings of ",
         },
         Options: {
             //bir: ["Bireme counter", "Counts the biremes of a city and sums these"],
@@ -116,7 +119,15 @@ LANGadd = {
             Cic: ["City view", "City view construction mode is selected by default"],
             Cuc: ["Culture overview filtering (Administrator)", "Allow sorting of cities."],
             Buc: ["Building overview filtering (Administrator)", "Allow sorting of cities."],
+            BBl: ["BBcode List", "Generates a BB-code list, ideal for displaying alliance members or a player's cities"],
+            Amm: ["Group Message (alliance)", "Adds a button on the alliance profile to facilitate sending group messages"],
+            Onb: ["Ocean Number", "Integrates ocean numbers into the island view, improving navigation."],
+            Idl: ["Inactive Player", "Displays inactive players for more effective management. Powered by GREPODATA"],
+            Saw: ["Wall Backup", "Allows for the backup of troops in the walls, ensuring enhanced protection"],
+            Att: ["Attack Alarm", "Receive instant warnings when under attack, reinforcing your security"],
 
+            Comp_GRCT: "The following functions are not compatible with GRCT",
+            Non_compatible: "Not compatible, enable in the settings of ",
             err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."],
             //her: ["Thracian Conquest", "Downsizing of the map of the Thracian conquest."],
         },
@@ -207,6 +218,7 @@ LANGadd = {
             ingame_name: ["Do not hesitate to contact me if you prefer to be called by your ingame name", "Since this is a great deal of work that can be very time-consuming I am always very grateful for any type of support. Therefore I would like to thank everyone who has offered support for this project - whether through donations, knowledge, creativity, bug reports or just some encouraging words."],
             raf: "By confirming the page will refresh",
             con: "Unit strength: Total strength of siege troops",
+            Volume: "Volume",
         },
         tutoriel: {
             tuto: "Useful info",
@@ -338,6 +350,18 @@ LANGadd = {
             send: 'Generate message',
             name: 'Name',
             add_edit: 'Add / edit',
+        },
+        wall: {
+            wallnotsaved: "Wall is not saved",
+            wallsaved: "Wall is saved",
+            msghuman: "The information has been saved",
+            erreur: "An error occurred while writing",
+            wantdeletecurrent: "Do you want to delete the current record of the wall ?",
+            deletecurrent: "Delete the current record",
+            listsaved: "Saved on the wall the day",
+            liststate: "Condition of the wall on the day",
+            nosaved: "No backup",
+            Auto: "Auto mode",
         },
         buttons: {
             sav: "Save", ins: "Insert", res: "Reset"

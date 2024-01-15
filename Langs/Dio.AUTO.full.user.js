@@ -39,7 +39,7 @@ LANGadd = {
             //Donate: "Faire un don",
 
             //forum: "",
-            //Update: "Mise à jour " + dio_version,
+            //Update: "Mise à jour",
             //Feature: "Nouvelle fonctionnalité",
             //Feature2: "Nouvelle version",
             //Learn_more: "En savoir plus",
@@ -325,6 +325,18 @@ LANGadd = {
             //enter_lang_name: 'Entrer un nom de langue',
             //send: 'Générer message',
             //name: 'Nom',
+        },
+        wall: {
+            //wallnotsaved: "Les remparts ne sont pas enregistr\u00e9s",
+            //wallsaved: "Les remparts sont enregistr\u00e9s",
+            //msghuman: "L'information a \u00e9t\u00e9 sauvegard\u00e9e",
+            //erreur: "Une erreur s'est produite lors de l'\u00e9criture",
+            //wantdeletecurrent:"Voulez vous effacer les donn\u00e9es actuelles des remparts?",
+            //deletecurrent:"Effacer les donn\u00e9es actuelles",
+            //listsaved:"Sauvegarder sur le mur le jour",
+            //liststate: "État du mur le jour",
+            //nosaved: "Aucune sauvegarde",
+            //Auto: "Mode Auto",
         },
         buttons: {
             sav: uw.DM.getl10n("notes").btn_save/*"sauvegarder"*/, /*ins: "Insérer",*/ res: uw.DM.getl10n("academy").tabs[1]/*"Réinitialiser"*/,
