@@ -12,10 +12,10 @@
 
 **Currently available in version david1327**
 
-* 1) Installing [Tampermonkey](https://www.tampermonkey.net/){:target="_blank"}
-* 2) Installing [DIO-TOOLS-David1327](https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js){:target="_blank"}
-* 3) Refresh Grepolis<br>
-=> [Detailed installation](https://dio-david1327.github.io/en/pages/Installation.html){:target="_blank"}
+1) Installing <a href="https://www.tampermonkey.net/" target="_blank">Tampermonkey</a>
+2) Installing <a href="https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js" target="_blank">DIO-TOOLS-David1327</a>
+3) Refresh Grepolis<br>
+=> <a href="https://dio-david1327.github.io/en/pages/Installation.html" target="_blank">Detailed installation</a>
 
 DIO-Tools is officially approved by Grepolis on (EN), (IT), (PL), (DE), (BR), (CZ), (ES), (AR).<br>
 DIO-Tools is authorized on (FR), (US), (SK), (HU), (RO), (NL), (GR).<br>
@@ -32,7 +32,7 @@ Almost every function can be disabled in the options.
 - Form of defense
 
 
-[Detailed description of functions](https://dio-david1327.github.io/en/pages/Features/){:target="_blank"}<br>
+[Detailed description of functions](https://dio-david1327.github.io/en/pages/Features/)<br>
 
 <center><div><img alt="Z6cvhf6p" height="75" src="https://dio-david1327.github.io/img/dio/APERCU.png" style="max-width:100%;"></div>
 
