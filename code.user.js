@@ -6224,11 +6224,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         },
         add: (wndID, action) => {
             try {
+                // game windows sometimes remains in grepolis's window array even if it is closed
+                if ($(wndID).length !== 1){
+                    document.querySelectorAll('.attack_support_window').forEach(function (el) {
+                        if(el.querySelector('.dio_duration')) return;
+                        const newWndId = el.parentElement.id;
+                        ShortDuration.add('#' + newWndId, action);
+                    })
+                    return;
+                }
+
                 $('<style id="dio_short_duration_stylee">' +
                     '.attack_support_window .additional_info_wrapper .nightbonus { position: absolute; left: 242px; top: 45px; } ' +
                     '.attack_support_window .fight_bonus.morale { position: absolute; left: 238px; top: 23px; } ' +
                     '.attack_support_window span.max_booty { margin-left: -2px; } ' +
-                    '</style>').appendTo(wndID + '.attack_support_window');
+                    '</style>').appendTo(wndID + ' .attack_support_window');
 
                 $('<table class="dio_duration">' +
                     '<tr><td class="way_icon"></td><td class="dio_way"></td><td class="arrival_icon"></td><td class="dio_arrival"></td><td colspan="2" class="dio_night"></td></tr>' +
@@ -6240,15 +6250,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         '<td>&nbsp;╚&gt;&nbsp;</td><td><span class="hades_duration">~0:00:00</span></td>' +
                         '<td>&nbsp;&nbsp;&nbsp;╚&gt;</td><td><span class="hades_visibility">~00:00:00 </span></td>' +
                         '<td class="power_icon45x45 power cap_of_invisibility"></td><td></td></tr>' : "") +
-                    '</table>').prependTo(wndID + ".duration_container");
+                    '</table>').prependTo(wndID + " .duration_container");
                 //}
-                $(wndID + ".nightbonus").appendTo(wndID + ".dio_night");
-                $(wndID + '.way_duration').appendTo(wndID + ".dio_way");
-                $(wndID + ".arrival_time").appendTo(wndID + ".dio_arrival");
+                $(wndID + " .nightbonus").appendTo(wndID + " .dio_night");
+                $(wndID + ' .way_duration').appendTo(wndID + " .dio_way");
+                $(wndID + " .arrival_time").appendTo(wndID + " .dio_arrival");
 
                 // Tooltip
-                $(wndID + '.short_duration_row .short_icon').tooltip(dio.getTooltip("unit_movement_boost") + dio_icon)
-                $(wndID + '.hades_duration_row .cap_of_invisibility').tooltip(dio.getTooltip("cap_of_invisibility") + dio_icon)
+                $(wndID + ' .short_duration_row .short_icon').tooltip(dio.getTooltip("unit_movement_boost") + dio_icon)
+                $(wndID + ' .hades_duration_row .cap_of_invisibility').tooltip(dio.getTooltip("cap_of_invisibility") + dio_icon)
                 //$(wndID + '.short_duration_row').tooltip(dio_icon + (LANG.hasOwnProperty(LID) ? getTexts("labels", "improved_movement") : "") + " (+30% " + uw.DM.getl10n("barracks", "tooltips").speed.trim() + ")");
                 //$(wndID + '.hades_duration_row').tooltip(dio_icon + getTexts("labels", "cap_of_invisibility"));
 
@@ -6273,9 +6283,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             }
         },
         calculate: (wndID, action) => {
+            if(!$(wndID).get(0)) return;
             try {
                 var setup_time = 900 / uw.Game.game_speed,
-                    duration_time = $(wndID + '.duration_container .way_duration').get(0).innerHTML.replace("~", "").split(":"),
+                    duration_time = $(wndID + ' .duration_container .way_duration').get(0).innerHTML.replace("~", "").split(":"),
                     // TODO: hier tritt manchmal Fehler auf TypeError: Cannot read property "innerHTML" of undefined at calcShortDuration (<anonymous>:3073:86)
                     duration_time_short, duration_time_hades,
                     arrival_time_short, arrival_time_hades,
@@ -6289,8 +6300,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                 var hasLighthouse = uw.ITowns.getTown(uw.Game.townId).buildings().get("lighthouse");
                 // Atalanta aktiviert?
-                if ($(wndID + '.unit_container.heroes_pickup .atalanta').get(0)) {
-                    if ($(wndID + '.cbx_include_hero').hasClass("checked")) {
+                if ($(wndID + ' .unit_container.heroes_pickup .atalanta').get(0)) {
+                    if ($(wndID + ' .cbx_include_hero').hasClass("checked")) {
                         // Beschleunigung hängt vom Level ab, Level 1 = 11%, Level 20 = 30%
                         var atalanta_level = uw.MM.getCollections().PlayerHero[0].models[1].get("level");
                         atalanta_factor = (atalanta_level + 10) / 100;
@@ -6312,7 +6323,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 if (m < 10) { m = "0" + m; }
                 if (s < 10) { s = "0" + s; }
 
-                $(wndID + '.short_duration').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
+                $(wndID + ' .short_duration').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
 
                 // Ankunftszeit errechnen
                 arrival_time_short = Math.round((Timestamp.server() + uw.Game.server_gmt_offset)) + duration_time_short;
@@ -6328,7 +6339,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 if (m < 10) { m = "0" + m; }
                 if (s < 10) { s = "0" + s; }
 
-                $(wndID + '.short_arrival').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
+                $(wndID + ' .short_arrival').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
 
                 clearInterval(arrival_interval[wndID]);
 
@@ -6345,8 +6356,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (m < 10) { m = "0" + m; }
                     if (s < 10) { s = "0" + s; }
 
-                    if ($(wndID + '.short_arrival').get(0)) {
-                        $(wndID + '.short_arrival').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
+                    if ($(wndID + ' .short_arrival').get(0)) {
+                        $(wndID + ' .short_arrival').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
                     } else {
                         clearInterval(arrival_interval[wndID]);
                     }
@@ -6360,7 +6371,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (m < 10) { m = "0" + m; }
                     if (s < 10) { s = "0" + s; }
 
-                    $(wndID + '.hades_duration').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
+                    $(wndID + ' .hades_duration').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
 
                     // Ankunftszeit errechnen
                     arrival_time_hades = Math.round((Timestamp.server() + uw.Game.server_gmt_offset)) + duration_time_hades;
@@ -6375,7 +6386,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (m < 10) { m = "0" + m; }
                     if (s < 10) { s = "0" + s; }
 
-                    $(wndID + '.hades_visibility').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
+                    $(wndID + ' .hades_visibility').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
 
                     clearInterval(hades_interval[wndID]);
 
@@ -6392,8 +6403,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         if (m < 10) { m = "0" + m; }
                         if (s < 10) { s = "0" + s; }
 
-                        if ($(wndID + '.hades_visibility').get(0)) {
-                            $(wndID + '.hades_visibility').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
+                        if ($(wndID + ' .hades_visibility').get(0)) {
+                            $(wndID + ' .hades_visibility').get(0).innerHTML = "~" + h + ":" + m + ":" + s;
                         } else {
                             clearInterval(hades_interval[wndID]);
                         }
