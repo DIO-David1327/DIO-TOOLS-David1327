@@ -8444,10 +8444,75 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      *******************************************************************************************************************************/
 
     var ActivityBoxes = {
-        timeout: null,
+        observer_commands_list: null,
+
         activate: () => {
             try {
+
+                $('<style id="dio_plusmenustyle" type="text/css">' +
+                '.displayImp {display: block !important; z-index: 5000 !important;}' +
+                '.dio_commands { height: 0px; overflow: visible!important; }' +
+                '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
+                '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(' + Home_url + '/img/dio/btn/draghandle.png)}' +
+                '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(' + Home_url + '/img/dio/btn/plusback.png)}' +
+                '#toolbar_activity_recruits_list {min-width: 113px;}' +
+                '.dropdown-list .item_no_results, .dropdown-list.ui-draggable>div {cursor:text!important;}' +
+                '#toolbar_activity_commands_list .unit_movements .details_wrapper, #toolbar_activity_commands_list .unit_movements .icon { visibility: visible }' +
+                '#toolbar_activity_commands_list .cancel { display: none !important; }' +
+                '</style>').appendTo('head');
+
                 //if (0 == $("#dio_taclWrap").length) $("#toolbar_activity_commands_list").wrap($("<div/>", {"class":"dio_taclWrap", id:"dio_taclWrap"}))
+                
+                /**
+                 * COMMAND TOOLBAR
+                 */
+
+                const toolbarCommand = document.querySelector('#toolbar_activity_commands_list');
+                if(typeof observer_commands_list !== 'object'){
+                    observer_commands_list = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            if(toolbarCommand.style.display !== "none" || !toolbarCommand.classList.contains('dio_commands')) return;
+                            $('#toolbar_activity_commands').trigger('mouseenter');
+                        });
+                    });
+                    observer_commands_list.observe(
+                        toolbarCommand, 
+                        {attributes: true, childList: true, subtree: true }
+                    );
+
+                    $.Observer(GameEvents.command.send_unit).subscribe('DIO_COMMANDS_TOOLBAR', function() {
+                        if(!toolbarCommand.classList.contains('dio_commands')) return;
+                        $('#toolbar_activity_commands').trigger('mouseenter');
+                    });
+                }
+
+                if ($("#dio_plusmenuCommands").length == 0) {
+                    $("#toolbar_activity_commands_list .sandy-box").append('<div id="dio_plusmenuCommands" class="dio_plusmenu"><div id="dio_plusdraghandleCommands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
+                    $('#dio_plusmenuCommands .dio_plusback').click(() => { dio_plus_destroy("dio_plusmenuCommands"); });
+                    $('#dio_plusmenuCommands .dio_plusback').tooltip(dio_icon); 
+                }
+
+                $('#toolbar_activity_commands_list .sandy-box').draggable({
+                    cursor: "move",
+                    handle: ".dio_plusdraghandle",
+                    start: function () {
+                        $("#dio_plusmenuCommandsSTYLE").remove();
+                        $('#toolbar_activity_commands_list').addClass("displayImp");
+                        $('#toolbar_activity_commands_list').addClass("dio_commands");
+                        var dio_position = $('#toolbar_activity_commands_list .sandy-box').position();
+                        if (dio_position.left === 0 && dio_position.top === 0) $("#toolbar_activity_commands_list .sandy-box").css({ "top": "+40px !important" });
+                        $(".dio_plusdraghandle").css({ cursor: "grabbing" });
+                    },
+                    stop: function () {
+                        $(".dio_plusdraghandle").css({ cursor: "grab" });
+                        var dio_position = $('#toolbar_activity_commands_list .sandy-box').position();
+                        $('<style id="dio_plusmenuCommandsSTYLE" type="text/css">#toolbar_activity_commands_list .sandy-box {left: ' + dio_position.left + 'px !important; top: ' + dio_position.top + 'px !important;}</style>').appendTo('head');
+                    }
+                });
+
+                /**
+                 * OTHER TOOLBARS
+                 */
 
                 $("#toolbar_activity_recruits_list").hover(
                     function () {
@@ -8458,16 +8523,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         }
                     }, function () { $('#dio_plusmenuRecruits').remove(); }
                 );
-                $("#toolbar_activity_commands_list .sandy-box").hover(
-                    function () {
-                        if ($("#dio_plusmenuCommands").length == 0) {
-                            $("#toolbar_activity_commands_list .sandy-box").append('<div id="dio_plusmenuCommands" class="dio_plusmenu"><div id="dio_plusdraghandleCommands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
-                            $('#dio_plusmenuCommands .dio_plusback').click(() => { dio_plus_destroy("dio_plusmenuCommands"); });
-                            $('#dio_plusmenuCommands .dio_plusback').tooltip(dio_icon);
-                        }
-                    }, function () {
-                        $('#dio_plusmenuCommands').remove();
-                    });
+
                 $("#toolbar_activity_trades_list").hover(
                     function () {
                         if ($("#dio_plusmenuTrades").length == 0) {
@@ -8487,18 +8543,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     }, function () { $('#dio_plusmenuTemple_commands').remove(); }
                 );
 
-                $('<style id="dio_plusmenustyle" type="text/css">' +
-                    '.displayImp {display: block !important; z-index: 5000 !important;}' +
-                    '.dio_commands { height: 0px; overflow: visible!important; }' +
-                    '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
-                    '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(' + Home_url + '/img/dio/btn/draghandle.png)}' +
-                    '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(' + Home_url + '/img/dio/btn/plusback.png)}' +
-                    '#toolbar_activity_recruits_list {min-width: 113px;}' +
-                    '.dropdown-list .item_no_results, .dropdown-list.ui-draggable>div {cursor:text!important;}' +
-                    '#toolbar_activity_commands_list .unit_movements .details_wrapper, #toolbar_activity_commands_list .unit_movements .icon { visibility: visible }' +
-                    '#toolbar_activity_commands_list .cancel { display: none !important; }' +
-                    '</style>').appendTo('head');
-
 
                 $('#toolbar_activity_recruits_list').draggable({
                     cursor: "move",
@@ -8514,26 +8558,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         $('<style id="dio_plusmenuRecruitsSTYLE" type="text/css">#toolbar_activity_recruits_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
                     }
                 });
-                $('#toolbar_activity_commands_list .sandy-box').draggable({
-                    cursor: "move",
-                    handle: ".dio_plusdraghandle",
-                    start: function () {
-                        $("#dio_plusmenuCommandsSTYLE").remove();
-                        $('#toolbar_activity_commands_list').addClass("displayImp");
-                        $('#toolbar_activity_commands_list').addClass("dio_commands");
-                        clearTimeout(ActivityBoxes.timeout);
-                        ActivityBoxes.timeout = null;
-                        var dio_position = $('#toolbar_activity_commands_list .sandy-box').position();
-                        if (dio_position.left === 0 && dio_position.top === 0) $("#toolbar_activity_commands_list .sandy-box").css({ "top": "+40px !important" });
-                        $(".dio_plusdraghandle").css({ cursor: "grabbing" });
-                    },
-                    stop: function () {
-                        $(".dio_plusdraghandle").css({ cursor: "grab" });
-                        ActivityBoxes.add()
-                        var dio_position = $('#toolbar_activity_commands_list .sandy-box').position();
-                        $('<style id="dio_plusmenuCommandsSTYLE" type="text/css">#toolbar_activity_commands_list .sandy-box {left: ' + dio_position.left + 'px !important; top: ' + dio_position.top + 'px !important;}</style>').appendTo('head');
-                    }
-                });
+                
                 $('#toolbar_activity_trades_list').draggable({
                     cursor: "move",
                     handle: ".dio_plusdraghandle",
@@ -8567,9 +8592,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (dioJQselector == "dio_plusmenuCommands") {
                         $("#" + dioJQselector).parent().parent().removeClass("displayImp");
                         $('#toolbar_activity_commands_list').removeClass("dio_commands");
+                        document.getElementById("toolbar_activity_commands_list").style.diplay = "none";
                         $('<style id="dio_plusmenuCommandsSTYLE" type="text/css">#toolbar_activity_commands_list .sandy-box {left:initial !important; top:initial !important; }</style>').appendTo('head');
-                        clearTimeout(ActivityBoxes.timeout);
-                        ActivityBoxes.timeout = null;
                         $('#toolbar_activity_commands_list .cancel').click();
                     }
                     else $("#" + dioJQselector).parent().removeClass("displayImp");
@@ -8583,14 +8607,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
             } catch (error) { errorHandling(error, "ActivityBoxes"); }
         },
-        add: () => {
-            ActivityBoxes.timeout = setInterval(() => {
-                $("#toolbar_activity_commands").trigger("mouseenter");
-            }, 1000);
-        },
         deactivate: () => {// toolbar_activity_temple_commands
             $('#dio_plusmenustyle').remove();
-
             $('#dio_plusmenuRecruits').remove();
             $("#dio_plusmenuRecruitsSTYLE").remove();
             $('#dio_plusmenuCommands').remove();
@@ -8600,8 +8618,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             $('#dio_plusmenuTemple_commands').remove();
             $("#dio_plusmenuTemple_commandsSTYLE").remove();
 
-            clearTimeout(ActivityBoxes.timeout);
-            ActivityBoxes.timeout = null;
+            observer_commands_list.disconnect();
+            $.Observer(uw.GameEvents.command.send_unit).unsubscribe('DIO_COMMANDS_TOOLBAR')
         },
     };
 
