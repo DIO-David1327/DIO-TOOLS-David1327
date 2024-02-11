@@ -11994,10 +11994,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             else return;
 
             if (!$('.dio_reload.' + building).get(0) & !$('.grc_reload').get(0)) {
-                $("." + building + ".window_background").parent().parent().parent().parent().find(".ui-dialog-titlebar").append('<a class="dio_reload ' + building + ' down_big reload" style="float: right; height: 22px; margin: -1px 0 1px;" rel="1000"></a>');
+                $(`.${building}.window_background`).parent().parent().parent().find(".ui-dialog-titlebar")
+                    .append(`<a class="dio_reload ${building} down_big reload" style="float: right; height: 22px; margin: -1px 0 1px;" rel="1000"></a>`);
                 $(".dio_reload." + building).tooltip(dio_icon);
                 $(".dio_reload." + building).click(() => {
-                    $("." + building + ".window_background").parent().parent().parent().parent().find(".ui-dialog-titlebar-close").click();
+                    $("." + building + ".window_background").parent().parent().parent().find(".ui-dialog-titlebar-close").click();
                     if (building == "docks") uw.DocksWindowFactory.openDocksWindow();
                     else uw.BarracksWindowFactory.openBarracksWindow();
                 });
