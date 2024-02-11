@@ -787,7 +787,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         dio_tic: true,	// Town icons
         dio_tic2: true,	// Town icons
         dio_til: true,	// Town icons: Town list
-        dio_tim: true,	// Town icons: Map
+        dio_tim: true,	// Town icons: MapIcons
         dio_tiw: true,	// Town Popup
         dio_tpt: true,	// Town Popup troop
         dio_tis: true,	// Town Popup support
@@ -1557,7 +1557,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 FEATURE = TownPopup;
                 break;
             case "dio_tim":
-                FEATURE = Map;
+                FEATURE = MapIcons;
                 break;
             case "dio_til":
                 if (typeof (uw.FLASK_GAME) == "undefined") { FEATURE = TownList; }
@@ -1843,7 +1843,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                     if (DATA.options.dio_tic) setTimeout(() => { TownIcons.activate(); }, 0);
                                     if (DATA.options.dio_tic) setTimeout(() => { TownIcons.auto.activate(); }, 0);
                                     if (DATA.options.dio_tiw) setTimeout(() => { TownPopup.activate(); }, 0);
-                                    if (DATA.options.dio_tim) setTimeout(() => { Map.activate(); }, 100);
+                                    if (DATA.options.dio_tim) setTimeout(() => { MapIcons.activate(); }, 100);
                                     if (DATA.options.dio_til & (typeof (uw.FLASK_GAME) == "undefined")) setTimeout(() => { TownList.activate(); }, 0);
 
                                 } catch (e) {
@@ -1974,7 +1974,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             /* eslint-disable no-fallthrough */
             switch (action) {
                 case "/map_data/get_chunks":
-                    if (DATA.options.dio_tim) Map.add();
+                    if (DATA.options.dio_tim) MapIcons.add();
                     if (DATA.options.dio_Onb) OceanNumbers.add();
                     break;
                 case "/notify/fetch":
@@ -1986,7 +1986,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     }
                     break;
                 case "/frontend_bridge/fetch": // Daily Reward
-                    if (DATA.options.dio_tim) Map.add();
                     if (DATA.options.dio_Rew) Reward.activate();
                     if (DATA.options.dio_Rtt) dio.removeTooltipps();
                 ///if (DATA.options.dio_Hid) hidesIndexIron.add();
@@ -3566,7 +3565,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      * Body Handler
      * ----------------------------------------------------------------------------------------------------------------------------
      * | ● Town icon
-     * | ● Town icon (Map)
+     * | ● Town icon (MapIcons)
      * | ● Town Popup
      * | ● Town list: Adds town type to the town list
      * | ● Swap Context Icons
@@ -3772,7 +3771,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     TownList.change();
 
                     // Update town icons on the map
-                    if (DATA.options.dio_tim) { Map.add(); } //setOnMap();
+                    if (DATA.options.dio_tim) { MapIcons.add(); } //setOnMap();
 
                     saveValue(WID + "_townTypes", JSON.stringify(manuTownTypes));
                     saveValue(WID + "_townAuto", JSON.stringify(manuTownAuto));
@@ -3827,9 +3826,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     $(style_str).appendTo('head');
 
     /*******************************************************************************************************************************
-     * Town icon (Map)
+     * Town icon (MapIcons)
      *******************************************************************************************************************************/
-    var Map = {
+    var MapIcons = {
         // TODO: activate aufspliten in activate und add
         activate: () => {
             //style
@@ -3840,13 +3839,37 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 "#minimap_canvas.expanded.night, #map.night .flagpole { filter: brightness(0.7); -webkit-filter: brightness(0.7); } " +
                 "#minimap_click_layer { display:none; }" +
                 "</style>").appendTo("head");
-            Map.add();
-            $("#ui_box > div.topleft_navigation_area > div.coords_box > div.btn_jump_to_coordination.circle_button.jump_to_coordination > div, #ui_box > div.topleft_navigation_area > div.bull_eye_buttons > div.btn_jump_to_town.circle_button.jump_to_town > div, #minimap_canvas, #map").click(() => {
-                if (DATA.options.dio_tim) setTimeout(() => { Map.add(); }, 500);
+            
+            let interval = false;
+            $(`#minimap_canvas, #map`).on("mousedown", () => {
+                if (interval) clearInterval(interval);
+                interval = setInterval(() => {
+                    MapIcon.add();
+                }, 333);
             });
+            $(`#minimap_canvas, #map`).on("mouseup", () => {
+                MapIcon.add();
+                clearInterval(interval);
+                interval = false;
+            });
+
             $("#minimap_canvas").dblclick(() => {
-                if (DATA.options.dio_tim) setTimeout(() => { Map.add(); }, 500);
+                if (DATA.options.dio_tim) setTimeout(() => { MapIcons.add(); }, 500);
             });
+
+            $.Observer(GameEvents.map.jump).subscribe('map_add_jump', (e, data) => {
+                setTimeout(() => {
+                    MapIcons.add();
+                }, 200);
+            });
+            $.Observer(GameEvents.map.zoom_in).subscribe('map_add_zoomin', (e, data) => {
+                MapIcons.add();
+            });
+            $.Observer(GameEvents.map.zoom_out).subscribe('map_add_zoomout', (e, data) => {
+                MapIcons.add();
+            });
+
+            MapIcons.add();
         },
         add: () => {
             try {
@@ -3866,11 +3889,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         }
                     });
                 }
-            } catch (error) { errorHandling(error, "Map.add"); }
+            } catch (error) { errorHandling(error, "MapIcons.add"); }
         },
         deactivate: () => {
             $('#dio_townicons_map').remove();
             $(".own_town .flagpole, #main_area .m_town").css({ "background": "" });
+            $.Observer(GameEvents.map.jump).unsubscribe('map_add_jump');
+            $.Observer(GameEvents.map.zoom_in).unsubscribe('map_add_zoomin');
+            $.Observer(GameEvents.map.zoom_out).unsubscribe('map_add_zoomout');
         }
     };
 
