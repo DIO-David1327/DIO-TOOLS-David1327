@@ -303,7 +303,7 @@ LANGadd = {
             farming_village: 'Bauerndorf',
             gold: "Du hast erhalten",
             Quests: 'Quests',
-            Reservations: 'Reservierungen',
+            Reservations: 'reservierungen',
         },
         translations: {
             info: 'Info',

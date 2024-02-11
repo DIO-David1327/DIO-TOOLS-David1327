@@ -322,7 +322,7 @@ LANGadd = {
             farming_village: "zemědělská vesnice",
             gold: "Obdržel jsi",
             Quests: "Úkoly",
-            Reservations: "Rezervace",
+            Reservations: "rezervace",
         },
         translations: {
             info: 'Info',

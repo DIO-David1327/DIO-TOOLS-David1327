@@ -27,6 +27,7 @@ LANGadd = {
             Translations: "https://dio-david1327.github.io/en/wiki/translations.html",
         },
         Settings: {
+            Settings: "Settings",
             dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.",
             act: "Activate/deactivate features of the toolset:",
             prv: "Preview of several features:",
@@ -64,6 +65,7 @@ LANGadd = {
             Non_compatible: "Not compatible, enable in the settings of ",
         },
         Options: {
+            Options: "Options",
             //bir: ["Bireme counter", "Counts the biremes of a city and sums these"],
             ava: ["Units overview", "Counts the units of all cities"],
             ava2: ["Ocean number", "Extension unit"],
@@ -132,12 +134,14 @@ LANGadd = {
             //her: ["Thracian Conquest", "Downsizing of the map of the Thracian conquest."],
         },
         movement: {
+            movement: 'Movement',
             off: 'Incoming attack',
             offs: 'Incoming attacks',
             def: 'Incoming support',
             defs: 'Incoming support',
         },
         Town_icons: {
+            Town_icons: "Town icons",
             LandOff: "Land Offensive",
             LandDef: "Land Defensive",
             NavyOff: "Navy Offensive",
@@ -148,6 +152,7 @@ LANGadd = {
             Emp: "Empty",
         },
         Color: {
+            Color: 'Color',
             Blue: 'Blue',
             Red: 'Red',
             Green: 'Green',
@@ -155,6 +160,7 @@ LANGadd = {
             White: "White",
         },
         labels: {
+            labels: "Labels",
             uni: "Units overview",
             total: "Total",
             available: "Available",
@@ -278,6 +284,7 @@ LANGadd = {
             council: 'Council of Heroes'
         },
         messages: {
+            messages: "Messages",
             ghosttown: "Ghost town",
             no_cities: "No cities on this island",
             all: "all",
@@ -290,6 +297,7 @@ LANGadd = {
             cli: "The message was not copied",
         },
         caves: {
+            caves: "Caves",
             stored_silver: 'Stored silver coins',
             silver_to_store: 'Storable silver coins',
             name: 'Name',
@@ -299,10 +307,12 @@ LANGadd = {
             search_for: 'Search for'
         },
         grepo_mainmenu: {
+            grepo_mainmenu: "Grepo mainmenu",
             city_view: "City view",
             island_view: "Island view"
         },
         transport_calc: {
+            transport_calc: "Transport capacity",
             recruits: "Count units in recruitment queue",
             slowtrans: "Count slow transport ships",
             fasttrans: "Count fast transport ships",
@@ -313,6 +323,7 @@ LANGadd = {
             army: "You don't have an army.",
         },
         reports: {
+            reports: "Reports",
             choose_folder: 'Choose folder',
             enacted: 'enacted',
             conquered: 'conquered',
@@ -325,9 +336,10 @@ LANGadd = {
             farming_village: 'farming village',
             gold: 'You have received',
             Quests: 'Quests',
-            Reservations: 'Reservations',
+            Reservations: 'Your reservation for',
         },
         translations: {
+            translations: 'Translations',
             info: 'Info',
             trans: 'Translation for language',
             translations: 'Translations',
@@ -352,6 +364,7 @@ LANGadd = {
             add_edit: 'Add / edit',
         },
         wall: {
+            wall: "Wall",
             wallnotsaved: "Wall is not saved",
             wallsaved: "Wall is saved",
             msghuman: "The information has been saved",
@@ -362,6 +375,52 @@ LANGadd = {
             liststate: "Condition of the wall on the day",
             nosaved: "No backup",
             Auto: "Auto mode",
+        },
+        Radar: {
+            Radar: "Search cities",
+            find: "Search",
+            maxunittime: "Maximum time",
+            townname: "Town",
+            unittime: "Time",
+            townowner: "Owner",
+            townreserved: "Reservation",
+            townpoints: "Minimal town points",
+            btnsavedefault: "Save values as default",
+            all: "Any town",
+            showcities: "Show cities"
+        },
+        TSL: {
+            TSL: 'Towns Sorted List',
+            tooltip: 'show sorted town'
+        },
+        AO: {
+            AO: 'Academy Overview'
+        },
+        ABH: {
+            ABH: 'Army Builder Helper',
+            unitframe: 'choose your unit',
+            description1: 'In this city, you have [population] free population',
+            description2: 'Which is enough to build [max_units]',
+            description3: 'You [yesno] have a [research] researched.',
+            description4: 'You can queue up maximum of [max_queue] units',
+            target: 'choose your build target',
+            package: 'resource package per shipment (units)',
+            btnsave: 'save settings',
+            tooltipok: 'click, to select default unit for which you\'ll be sending resources',
+            tooltipnotok: 'unit has not been researched',
+            hasresearch: 'DO',
+            noresearch: 'DO NOT',
+            settingsaved: 'Settings for [city] have been saved',
+            btnreset: 'reset',
+            resleft: 'resources left to send',
+            imgtooltip: 'click, to fill in resources',
+        },
+        Stats: {
+            player: 'Player stats',
+            ally: 'Alliance stats',
+            town: 'Town stats',
+            inactive: 'Inactive',
+            chkinactive: 'Show inactive players',
         },
         buttons: {
             sav: "Save", ins: "Insert", res: "Reset"
