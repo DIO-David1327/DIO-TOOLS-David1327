@@ -6239,7 +6239,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '.attack_support_window .fight_bonus.morale { position: absolute; left: 238px; top: 23px; } ' +
                     '.attack_support_window span.max_booty { margin-left: -2px; } ' +
                     '</style>').appendTo(wndID + ' .attack_support_window');
-
+                document.querySelector(`${wndID} .duration_container`).style.width = "500px";
                 $('<table class="dio_duration">' +
                     '<tr><td class="way_icon"></td><td class="dio_way"></td><td class="arrival_icon"></td><td class="dio_arrival"></td><td colspan="2" class="dio_night"></td></tr>' +
                     '<tr class="short_duration_row" style="color:darkgreen">' +
@@ -10343,16 +10343,17 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 for (var e in wnds) {
                     if (wnds.hasOwnProperty(e)) {
                         var wndid = wnds[e].getID();
-
+                        
                         var testel = $('DIV#gpwnd_' + wndid + ' A.dio_balanced');
                         if (testel.length > 0) continue;
 
                         var handler = wnds[e].getHandler();
 
                         $('DIV#gpwnd_' + wndid + ' A.select_all_units').after(' | <a class="dio_balanced" style="position:relative; top:4px" href="#">' + getTexts("Quack", "no_overload") + '</a> | <a class="dio_delete" style="position:relative; top:4px" href="#">' + uw.DM.getl10n("market").delete_all_market_offers + '</a>');
-
                         $('.gtk-deselect-units').css({ "display": "none" });
                         $('.attack_support_window .town_units_wrapper .ship_count').css({ "margin-left": "0px" });
+                        document.querySelector(`div#gpwnd_${wndid} div.town_info_units`).style.width = "100%";
+                        document.querySelector(`div#gpwnd_${wndid} div.units_info`).style.whiteSpace = "nowrap";
 
                         var dio_bl_groundUnits = new Array('sword', 'slinger', 'archer', 'hoplite', 'rider', 'chariot', 'catapult', 'minotaur', 'zyklop', 'medusa', 'cerberus', 'fury', 'centaur', 'calydonian_boar', 'godsent');
 
