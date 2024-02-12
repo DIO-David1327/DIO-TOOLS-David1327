@@ -11967,6 +11967,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      *******************************************************************************************************************************/
 
     var AttacksAlarms = {
+        notificationFetcher: null,
         AttacksCount: 0,
         audioElement: $("<audio loop>"), // Créez dynamiquement l'élément audio
         audio: new Audio(Home_url + "/audio/car_lock.mp3"),
@@ -12003,6 +12004,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
             AttacksAlarms.audioElement[0].volume = DATA.volumeControl // Contrôle de volume
             AttacksAlarms.audio.volume = (DATA.volumeControl > 0.3 ? DATA.volumeControl : 0.3) // Contrôle de volume
+            
+            // Grepolis by default gets notification every 5 min, we get it every 10 sec to avoid missing any attack
+            if(!compatibility.grcrt.isInjected()){
+                AttacksAlarms.notificationFetcher = setInterval(function(){
+                    gpAjax.ajaxGet("notify", "fetch", {no_sysmsg: !1}, !1, function() {})
+                }, 10 * 1000);
+            }
         },
         playMusic: () => { // Fonction pour lancer la musique
             if ($("#grcrt_mnu").is(":visible") || $("#grcrtSound").is(":visible")) return;
@@ -12045,6 +12053,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             $.Observer(uw.GameEvents.attack.incoming).unsubscribe('DIO_ATTACKS_ALARMS');
             AttacksAlarms.stopMusic();
             $('#AttacksAlarms_style').remove();
+            if(AttacksAlarms.notificationFetcher !== null){
+                clearInterval(AttacksAlarms.notificationFetcher);
+                AttacksAlarms.notificationFetcher = null;
+            }
         },
     };
 
