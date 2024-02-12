@@ -3883,11 +3883,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             $(`#minimap_canvas, #map`).on("mousedown", () => {
                 if (interval) clearInterval(interval);
                 interval = setInterval(() => {
-                    MapIcon.add();
+                    MapIcons.add();
                 }, 333);
             });
             $(`#minimap_canvas, #map`).on("mouseup", () => {
-                MapIcon.add();
+                MapIcons.add();
                 clearInterval(interval);
                 interval = false;
             });
