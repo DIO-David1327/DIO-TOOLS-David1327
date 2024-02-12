@@ -2062,17 +2062,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_sml) SmileyBox.add(action);
                     if (DATA.options.dio_bbc) addForm(action);
                     break;
+                // those routes send you back to the main page
+                case "/message/reply": 
+                case "/message/create":
+                case "/message/default":
+                case "/message/index":
+                case "/message/send_forward":
+                    colorizeMessage("List");
+                    break;
                 case "/message/view":
-                //markMessage();
-                case "/message/new":
-                case "/message/forward":
+                    colorizeMessage("View");
                     if (DATA.options.dio_Idl) idle.add(action.split("/")[1])
                     if (DATA.options.dio_Mse) MessageExport.add();
-                case '/message/default':
-                case '/message/index':
-                case '/message/create':
-                case '/message/reply':
-                //markMessages();
+                    if (DATA.options.dio_sml) SmileyBox.add(action);
+                    if (DATA.options.dio_bbc) addForm(action);
+                    break;
+                case "/message/forward":
+                case "/message/new":
                 case "/player_memo/load_memo_content":
                     if (DATA.options.dio_sml) SmileyBox.add(action);
                     if (DATA.options.dio_bbc) addForm(action);
@@ -12070,6 +12076,109 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             $('.dio_reload').remove();
         },
     };
+
+    /*******************************************************************************************************************************
+     * Colorize message List and view
+     *******************************************************************************************************************************/
+
+    function colorizeMessage(view){
+        if( compatibility.grcrt.isMessageColor() ) return;
+        if( view !== "List" && view !== "View" ) return;
+
+        const messageWnd = uw.GPWindowMgr.getByType(uw.GPWindowMgr.TYPE_MESSAGE)[0];
+        if (!messageWnd) return;
+        let alliances = {};
+        alliances[uw.Game.alliance_id] = "own";
+
+        MM.getOnlyCollectionByName("AlliancePact").models.forEach(pact => {
+            if (pact.getInvitationPending()) return;
+            if(pact.getAlliance1Id() !== uw.Game.alliance_id){
+                alliances[pact.getAlliance1Id()] = pact.getRelation() === 'war' ? "ENEMY" : "PACT";
+            } else {
+                alliances[pact.getAlliance1Id()] = pact.getRelation() === 'war' ? "ENEMY" : "PACT";
+            }
+        });
+
+        const viewSelectors = view === "List" ? ['a.gp_player_link','li.message_item'] : ['.message_poster a.gp_player_link',".message_poster"];
+        messageWnd.getJQElement().find($(viewSelectors[0])).each((i, element) => {
+            const hash = $(element).attr('href');
+            if(!hash) return;
+
+            const color = getPlayerColor(hash, alliances);
+            if(!color) return;
+
+            const style = [
+                'background: '+hexToRGB('#'+ color, 0.4),
+                'background: -webkit-linear-gradient(left,'+ hexToRGB('#'+color,0.1)+','+ hexToRGB('#'+color,0.5)+')',
+                'background: -o-linear-gradient(right,'+ hexToRGB('#'+color,0.1)+','+ hexToRGB('#'+color,0.5)+')',
+                'background: -moz-linear-gradient(right,'+ hexToRGB('#'+color,0.1)+','+ hexToRGB('#'+color,0.5)+')',
+                'background: linear-gradient(to right,'+ hexToRGB('#'+color,0.1)+','+ hexToRGB('#'+color,0.5)+')'
+            ].join(';');
+            $(element).closest(viewSelectors[1]).attr('style',style);
+        });
+    }
+
+    function hexToRGB(hex, alpha = 1){
+        const r = parseInt(hex.substring(1,3), 16);
+        const g = parseInt(hex.substring(3,5), 16);
+        const b = parseInt(hex.substring(5,7), 16);
+        return 'rgba('+r+','+g+','+b+','+alpha+')';
+    }
+
+    function getPlayerColor(hash, alliance){
+        const
+            modelCustomColor = MM.getOnlyCollectionByName("CustomColor"),
+            defaultColors = require("helpers/default_colors"),
+            filters = require("enums/filters"),
+            playerLinkJson = JSON.parse(uw.atob(hash.split(/#/)[1]));
+        let  color = undefined;
+
+            if (playerLinkJson.id == Game.player_id) {
+                color = defaultColors.getDefaultColorForPlayer(Game.player_id)
+            }
+
+            if(!color){
+                color = modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.PLAYER,playerLinkJson.id) && modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.PLAYER,playerLinkJson.id).getColor()
+            }
+            const playerData = MM.DIO.cachePlayers[playerLinkJson.name];
+            if(!color){
+                if(playerData && playerData.alliance_id){
+                    if(playerData.alliance_id == Game.alliance_id){
+                        color = (
+                                modelCustomColor.getCustomColorByIdAndType(filters.ALLIANCE_TYPES.OWN_ALLIANCE,playerData.alliance_id) &&
+                                modelCustomColor.getCustomColorByIdAndType(filters.ALLIANCE_TYPES.OWN_ALLIANCE,playerData.alliance_id).getColor()
+                                ||
+                                defaultColors.getDefaultColorForAlliance(playerData.alliance_id)
+                            )
+                    } else {
+                        color = (
+                            (
+                                alliance[playerData.alliance_id] &&
+                                (
+                                    modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES[alliance[playerData.alliance_id]],playerData.alliance_id)  &&
+                                    modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES[alliance[playerData.alliance_id]],playerData.alliance_id).getColor()
+                                    ||
+                                    defaultColors.getDefaultColorForAlliance(playerData.alliance_id)
+                                )
+                            )
+                            ||
+                            (
+                                playerData.alliance_id &&
+                                (
+                                    modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.ALLIANCE,playerData.alliance_id) &&
+                                    modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.ALLIANCE,playerData.alliance_id).getColor()
+                                    ||
+                                    defaultColors.getDefaultColorForAlliance(playerData.alliance_id)
+                                )
+                            )
+                        )
+                    }
+                } else {
+                    color = defaultColors.getDefaultColorForPlayer(playerLinkJson.id,Game.player_id)
+                }
+            }
+            return color;
+    }
 
     /*******************************************************************************************************************************
      * autre
