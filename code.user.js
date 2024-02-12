@@ -1836,7 +1836,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                                     getAllUnits();
 
-                                    setInterval(() => { getAllUnits(); }, 5000); // 15min
+                                    setInterval(() => { getAllUnits(); }, 30 * 1000);
                                     setTimeout(() => { getLatestVersion(); }, 2000);
                                     if (DATA.options.dio_ava) setTimeout(() => { AvailableUnits.activate(); }, 0);
                                     if (DATA.options.dio_ava2) setTimeout(() => { AvailableUnits.ocean.activate(); }, 0);
@@ -1906,7 +1906,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_Hio) setTimeout(() => { hidesOverview.activate(); }, 1000);
                     if (DATA.options.dio_Rtt) setTimeout(() => { removetooltipps.activate(); }, 100);
                     if (DATA.options.dio_Rct) setTimeout(() => { resCounter.activate(); }, 0);
-                    if (DATA.options.dio_Hid) setTimeout(() => { hidesIndexIron.activate(); }, 0);
                     if (DATA.options.dio_Tol) setTimeout(() => { townslist.activate(); }, 100);
                     if (DATA.options.dio_BBt) setTimeout(() => { BBtowninfo.activate(); }, 100);
                     if (DATA.options.dio_Cul) setTimeout(() => { cultureOverview.activate(); }, 100);
@@ -1932,7 +1931,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     cache();
                     player_idle();
                     setInterval(() => { player_idle(); console.log("actualisé") }, 1860000);
-                    setInterval(() => { cache(); }, 4000000);
+                    setInterval(() => { cache(); }, 60 * 60 * 1000);
                     // Execute once to get alliance ratio
                     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
                         setTimeout(() => { uw.getPointRatioFromCache() }, 10000);
@@ -1985,22 +1984,12 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         }
                     }
                     break;
-                case "/frontend_bridge/fetch": // Daily Reward
-                    if (DATA.options.dio_Rew) Reward.activate();
-                    if (DATA.options.dio_Rtt) dio.removeTooltipps();
-                ///if (DATA.options.dio_Hid) hidesIndexIron.add();
-                case "/frontend_bridge/execute":
-                    if (DATA.options.dio_sml) SmileyBox.add(action);
-                    if (DATA.options.dio_bbc) addForm(action);
-                    break;
                 case "/player/index":
                     settings();
                     if (diosettings) {
                         $('#dio_tools').click();
                         diosettings = false;
                     }
-                    break;
-                case "/building_hide/index":
                     break;
                 case "/building_barracks/index":
                 case "/building_barracks/build":
@@ -2201,6 +2190,33 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 case "/ranking/index":
                 case "/ranking/global":
                     break;
+
+                case "/frontend_bridge/execute":
+                    case "/frontend_bridge/fetch":
+                        let sentJson, method = opt.type;
+                        try{
+                            if(method === "GET") sentJson = JSON.parse(decodeURIComponent(url[1].split("&")[3]).split("=")[1]);
+                            if(method === "POST")sentJson = JSON.parse(decodeURIComponent(opt.data.split("=")[1]));
+                        } catch (e) {}
+                        //console.log("sentJson", sentJson);
+    
+                        if (action === "/frontend_bridge/fetch"){
+                            if (sentJson?.window_type === "hide"){
+                                if (DATA.options.dio_Hid) hidesIndexIron.add2();
+                            }
+                            if(sentJson?.window_type === "notes"){
+                                if (DATA.options.dio_sml) SmileyBox.add(action);
+                                if (DATA.options.dio_bbc) addForm(action);
+                            }
+                        }
+    
+                        if (action === "/frontend_bridge/execute"){
+                            if(sentJson?.action_name === "save"){
+                                if (DATA.options.dio_sml) SmileyBox.add(action);
+                                if (DATA.options.dio_bbc) addForm(action);
+                            }
+                        }
+                        break;
             }
         });
     }
@@ -4868,7 +4884,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     var AvailableUnits = {
         timeout: null,
         activate: () => {
-            AvailableUnits.timeout = setInterval(() => { UnitCounter.count(); }, 1000);
+            AvailableUnits.timeout = setInterval(() => { UnitCounter.count(); }, 10 * 1000);
             var DioMenuFix = !1;
             $("#dio_available_units_bullseye").length && 0 == DioMenuFix && (
                 DioMenuFix = !0,
@@ -7130,7 +7146,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             activate: () => {
                 UnitStrength.Menu.timeout = setInterval(() => {
                     if ($("#dio_strength").css('display') != 'none') { UnitStrength.Menu.update() }
-                }, 500);
+                }, 10 * 1000);
                 $('<div id="dio_strength" class="cont def" style="display:none;",><hr>' +
                     '<span class="bold text_shadow cont_left strength_font">' +
                     '<table style="margin:0px;">' +
@@ -7386,7 +7402,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     }
                 });
 
-                TransportCapacity.timeout = setInterval(() => { TransportCapacity.update(); }, 800);
+                TransportCapacity.timeout = setInterval(() => { TransportCapacity.update(); }, 10 * 1000);
 
                 $("#dio_tr_recruit").click(() => { TransportCapacity.update(); });
                 $("#dio_transporter").toggleClick(
@@ -8471,21 +8487,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     // Minimize Daily reward window on startup
     var Reward = {
         activate: () => {
-            if (MutationObserver) {
-                var startup = new MutationObserver(function (mutations) {
-                    mutations.forEach(function (mutation) {
-                        if (mutation.addedNodes[0]) {
-                            if ($('.daily_login').get(0)) { //  && !uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_SHOW_ON_LOGIN).isMinimized()
-                                $('.daily_login').find(".minimize").click();
-                                //uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_SHOW_ON_LOGIN).minimize();
-                            }
+            const body = document.querySelector('body');
+            const startup = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.addedNodes[0]) {
+                        if ($('.daily_login').get(0)) { //  && !uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_SHOW_ON_LOGIN).isMinimized()
+                            $('.daily_login').find(".minimize").click();
+                            startup.disconnect();
+                            //uw.GPWindowMgr.getOpenFirst(uw.Layout.wnd.TYPE_SHOW_ON_LOGIN).minimize();
                         }
-                    });
+                    }
                 });
-                startup.observe($('body').get(0), { attributes: false, childList: true, characterData: false });
-
-                setTimeout(() => { startup.disconnect(); }, 3000);
-            }
+            });
+            startup.observe( body , { subtree: true, childList: true, attributes: false, characterData: false });
+            setTimeout( function () { startup.disconnect() }, 5_000);
         },
         deactivate: () => { },
     };
@@ -9848,18 +9863,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      *******************************************************************************************************************************/
 
     var hidesIndexIron = {
-        timeout: null,
-        activate: () => {
-            hidesIndexIron.timeout = setInterval(() => {
-                if ($('#hide_espionage').length || $('#hides_overview_wrapper').length) {
-                    if ($('#hide_espionage').length & !$('#dio_hidesIndexIron').get(0)) { hidesIndexIron.add2(); }
-                    if ($('#hides_overview_wrapper').length & !$('#dio_hidesIndexIron2').get(0)) {
-                        hidesIndexIron.add();
-                        setTimeout(() => { $('#dio_hidesIndexIron2').remove(); }, 50000);
-                    }
-                }
-            }, 800);
-        },
         add: () => {
             try {
                 if (!$("#dio_hidesIndexIron2").is(":visible") & $('#hides_overview_wrapper').length) {
@@ -9910,8 +9913,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         deactivate: () => {
             $('#dio_hidesIndexIron').remove();
             $('#dio_hidesIndexIron2').remove();
-            clearTimeout(hidesIndexIron.timeout);
-            hidesIndexIron.timeout = null;
         },
     };
 
