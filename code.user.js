@@ -3491,6 +3491,23 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '</style>').appendTo('head');
             };
         },
+
+        grcrt: {
+            grcrSettingsKey: `${uw.Game.player_name}_${uw.Game.world_id}`,
+            isInjected: () => { return (typeof(uw.RepConv) !== "undefined") },
+            isMessageColor: () => {
+                if (!compatibility.grcrt.isInjected()) return false;
+                return uw.RepConv.settings[`${compatibility.grcrt.grcrSettingsKey}_mcol`];
+            },
+            isTownList: () => {
+                if (!compatibility.grcrt.isInjected()) return false;
+                return uw.RepConv.settings[`${compatibility.grcrt.grcrSettingsKey}_town_popup`];
+            },
+            isIdle: () => {
+                if (!compatibility.grcrt.isInjected()) return false;
+                return uw.RepConv.settings[`${compatibility.grcrt.grcrSettingsKey}_idle`];
+            }
+        }
     };
 
     /*******************************************************************************************************************************
@@ -3975,20 +3992,28 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
         },
         deactivate: () => {
-            $("#dio_town_popup_style").remove();
+            //$("#dio_town_popup_style").remove();
             // Events entfernen
             $('#minimap_islands_layer').off('click', '.m_town');
             $('#minimap_islands_layer').off("mousedown");
 
             $('#minimap_islands_layer').off('mouseout', '.m_town');
             $('#minimap_islands_layer').off('mouseover', '.m_town');
+
+            $('#map_towns').off('mouseout', '.own_town .flagpole');
+            $('#map_towns').off('mouseover', '.own_town .flagpole');
         },
         add: (that) => {
             var townID = 0;
             var popup_left = 0, popup_top = 0, classSize = "";
             //console.debug("TOWN", $(that).offset(), that.id);
 
-            if (that.id === "") {
+            if (that.classList.contains('town_name')){
+                townID = parseInt(that.parentNode.dataset.townid);
+                popup_left = ($(that).offset().left - 150);
+                popup_top = ($(that).offset().top + 20);
+            }
+            else if (that.id === "") {
                 // Island view
                 townID = parseInt($(that).parent()[0].id.substring(10), 10);
                 if (DATA.options.dio_tim) {
@@ -4010,6 +4035,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     popup_top = ($(that).offset().top + 15);
                 }
             }
+            
             // Own town?
             if (typeof (uw.ITowns.getTown(townID)) !== "undefined") {
 
@@ -4263,9 +4289,43 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         },
         change: () => {
             if (!$('#town_groups_list .dio_icon_small').get(0)) {
+
+                if(DATA.options.dio_Tol) townslist.add();
+
+                let townHero = {};
+                if( !compatibility.grcrt.isTownList() && !window.MH?.initiated){
+                    const heroes = MM.getCollections()['PlayerHero'][0];
+                    if (heroes) {
+                        heroes.getHeroes().forEach( function(hero) {
+                            if (hero.getOriginTownId() !== null){
+                                townHero[hero.getOriginTownId()] = {
+                                    id: hero.getId(),
+                                    name: hero.getName(),
+                                    level: hero.getLevel()
+                                }
+                            }
+                        })
+                    }
+                    let hoverTimeout;
+                    $("#town_groups_list").off('mouseover', '.item.town_group_town .town_name');
+                    $('#town_groups_list').on('mouseover', '.item.town_group_town .town_name', function () {
+                        hoverTimeout = setTimeout(() => {
+                            if(!$('#town_groups_list').get(0)) return;
+                            TownPopup.add(this);
+                        }, 500);
+                    });
+                    $('#town_groups_list').on('click', '.item.town_group_town', function () { TownPopup.remove(); });
+
+                    $("#town_groups_list").off('mouseout', '.item.town_group_town .town_name');
+                    $('#town_groups_list').on('mouseout', '.item.town_group_town .town_name', function () {
+                        TownPopup.remove();
+                        clearTimeout(hoverTimeout);
+                    });
+                }
+
                 $("#town_groups_list .town_group_town").each(function () {
                     try {
-                        var town_item = $(this), town_id = town_item.attr('name'), townicon_div, percent_div = "", percent = -1, pop_space = "full";
+                        var town_item = $(this), town_id = town_item.attr('name'), townicon_div, percent_div = "", hero_div = "", percent = -1, pop_space = "full";
 
                         if (population[town_id]) { percent = population[town_id].percent; }
                         if (percent < 75) { pop_space = "threequarter"; }
@@ -4276,7 +4336,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             townicon_div = '<div class="dio_icon_small townicon_' + (manuTownTypes[town_id] || autoTownTypes[town_id] || "no") + '"></div>';
                             // TODO: Notlösung...
                             if (percent != -1) { percent_div = '<div class="pop_percent ' + pop_space + '">' + percent + '%</div>'; }
-                            town_item.prepend(townicon_div + percent_div);
+                            if (townHero[town_id]) hero_div = '<div class="hero_icon hero25x25 '+ townHero[town_id].id +'"><div class="value" style="color: white; float: right; text-shadow: 1px 1px 0 #000; padding-top: 5px;" >'+ townHero[town_id].level +'</div></div>'
+                            town_item.prepend(townicon_div + hero_div + percent_div);
                         }
                     } catch (error) { errorHandling(error, "TownList.change"); }
                 });
