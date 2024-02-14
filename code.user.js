@@ -2147,9 +2147,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 case "/town_info/support":
                     //console.debug(JSON.parse(xhr.responseText));
                     TownTabHandler(action.split("/")[2]);
-                    if (DATA.options.dio_Sel & typeof (uw.FLASK_GAME) == "undefined") {
-                        selectunitshelper.activate();
-                    }
                     if (DATA.options.dio_Rtt) dio.removeTooltipps("attack");
                     break;
                 case "/report/index":
@@ -6106,7 +6103,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     function TownTabHandler(action) {
         try {
             var wndArray, wndID, wndA, wnd;
-            wndArray = uw.Layout.wnd.getOpen(uw.Layout.wnd.TYPE_TOWN);
+            wndArray = uw.GPWindowMgr.getByType(uw.GPWindowMgr.TYPE_TOWN)
             for (var e in wndArray) {
                 if (wndArray.hasOwnProperty(e)) {
                     wndID = "#gpwnd_" + wndArray[e].getID() + " ";
@@ -6141,6 +6138,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                 ShortDuration.add(wndID, action);
                             } else $("#dio_short_duration_stylee").remove();
                             if (DATA.options.dio_sen) SentUnits.add(wndID, action);
+                            if (DATA.options.dio_Sel & typeof (uw.FLASK_GAME) == "undefined") {
+                                selectunitshelper.add(wnd, wndArray[e].getHandler());
+                            }
                             break;
                         case "rec_mark":
                             break;
@@ -6209,18 +6209,18 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 '.attack_support_window .additional_info_wrapper .town_info_duration_pos_alt { min-height: 50px; } ' +
                 '.attack_support_window .additional_info_wrapper .town_info_duration_pos { min-height: 62px!important; } ' +
 
-                '</style>').appendTo(wndID + '.attack_support_window');
+                '</style>').appendTo(wndID + ' .attack_support_window');
 
             if ((uw.ITowns.getTown(uw.Game.townId).researches().attributes.breach == true || uw.ITowns.getTown(uw.Game.townId).researches().attributes.stone_storm == true) & DATA.options.dio_sen) {
                 $('<style id="dio_SentUnits_breach_style">' +
                     '.attack_support_window .send_units_form .attack_type_wrapper .attack_table_box { text-align:left;  transform:scale(0.94); margin: -5px 0px -5px -20px;}' +
                     '.attack_support_window .table_box .table_box_content .content_box { min-width:137px ; }' +
-                    '</style>').appendTo(wndID + '.attack_support_window');
+                    '</style>').appendTo(wndID + ' .attack_support_window');
             } else {
                 $('<style id="dio_SentUnits_breach_style">' +
                     '.attack_support_window .send_units_form .attack_type_wrapper .attack_table_box { text-align:left; transform:scale(1); margin: -2px 0px -2px 12px;}' +
                     '.attack_support_window .table_box .table_box_content .content_box { min-width:180px; }' +
-                    '</style>').appendTo(wndID + '.attack_support_window');
+                    '</style>').appendTo(wndID + ' .attack_support_window');
             };
             if (!$(wndID + '.sent_units_box').get(0)) {
                 $('<div id="dio_table_box">' +
@@ -6238,11 +6238,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '<div class="right"></div>' +
                     '<div class="caption js-caption">' + getTexts("buttons", "res") + '<div class="effect js-effect"></div></div>' +
                     '</div>' +
-                    '</div></div></div>').appendTo(wndID + '.attack_support_window');
+                    '</div></div></div>').appendTo(wndID + ' .attack_support_window');
 
                 SentUnits.update(action);
 
-                $(wndID + '#btn_sent_units_reset').click(() => {
+                $(wndID + ' #btn_sent_units_reset').click(() => {
                     // Overwrite old array
                     sentUnitsArray[action] = {};
                     SentUnits.update(action);
@@ -6307,16 +6307,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         },
         add: (wndID, action) => {
             try {
-                // game windows sometimes remains in grepolis's window array even if it is closed
-                if ($(wndID).length !== 1){
-                    document.querySelectorAll('.attack_support_window').forEach(function (el) {
-                        if(el.querySelector('.dio_duration')) return;
-                        const newWndId = el.parentElement.id;
-                        ShortDuration.add('#' + newWndId, action);
-                    })
-                    return;
-                }
-
                 $('<style id="dio_short_duration_stylee">' +
                     '.attack_support_window .additional_info_wrapper .nightbonus { position: absolute; left: 242px; top: 45px; } ' +
                     '.attack_support_window .fight_bonus.morale { position: absolute; left: 238px; top: 23px; } ' +
@@ -10405,118 +10395,108 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      *******************************************************************************************************************************/
 
     var selectunitshelper = {
-        activate: () => {
+        add: (wndid, handler) => {
             try {
-                var wnds = uw.GPWindowMgr.getOpen(uw.Layout.wnd.TYPE_TOWN);
-                for (var e in wnds) {
-                    if (wnds.hasOwnProperty(e)) {
-                        var wndid = wnds[e].getID();
-                        
-                        var testel = $('DIV#gpwnd_' + wndid + ' A.dio_balanced');
-                        if (testel.length > 0) continue;
+                var testel = $('DIV#gpwnd_' + wndid + ' A.dio_balanced');
+                if (testel.length > 0) return;
 
-                        var handler = wnds[e].getHandler();
+                $('DIV#gpwnd_' + wndid + ' A.select_all_units').after(' | <a class="dio_balanced" style="position:relative; top:4px" href="#">' + getTexts("Quack", "no_overload") + '</a> | <a class="dio_delete" style="position:relative; top:4px" href="#">' + uw.DM.getl10n("market").delete_all_market_offers + '</a>');
+                $('.gtk-deselect-units').css({ "display": "none" });
+                $('.attack_support_window .town_units_wrapper .ship_count').css({ "margin-left": "0px" });
+                document.querySelector(`div#gpwnd_${wndid} div.town_info_units`).style.width = "100%";
+                document.querySelector(`div#gpwnd_${wndid} div.units_info`).style.whiteSpace = "nowrap";
 
-                        $('DIV#gpwnd_' + wndid + ' A.select_all_units').after(' | <a class="dio_balanced" style="position:relative; top:4px" href="#">' + getTexts("Quack", "no_overload") + '</a> | <a class="dio_delete" style="position:relative; top:4px" href="#">' + uw.DM.getl10n("market").delete_all_market_offers + '</a>');
-                        $('.gtk-deselect-units').css({ "display": "none" });
-                        $('.attack_support_window .town_units_wrapper .ship_count').css({ "margin-left": "0px" });
-                        document.querySelector(`div#gpwnd_${wndid} div.town_info_units`).style.width = "100%";
-                        document.querySelector(`div#gpwnd_${wndid} div.units_info`).style.whiteSpace = "nowrap";
+                var dio_bl_groundUnits = new Array('sword', 'slinger', 'archer', 'hoplite', 'rider', 'chariot', 'catapult', 'minotaur', 'zyklop', 'medusa', 'cerberus', 'fury', 'centaur', 'calydonian_boar', 'godsent');
 
-                        var dio_bl_groundUnits = new Array('sword', 'slinger', 'archer', 'hoplite', 'rider', 'chariot', 'catapult', 'minotaur', 'zyklop', 'medusa', 'cerberus', 'fury', 'centaur', 'calydonian_boar', 'godsent');
+                $('DIV#gpwnd_' + wndid + ' A.dio_balanced').click(function () {
+                    var units = new Array();
+                    var item;
 
-                        $('DIV#gpwnd_' + wndid + ' A.dio_balanced').click(function () {
-                            var units = new Array();
-                            var item;
-
-                            for (var i = 0; i < dio_bl_groundUnits.length; i++) {
-                                if (handler.data.units[dio_bl_groundUnits[i]]) {
-                                    item = { name: dio_bl_groundUnits[i], count: handler.data.units[dio_bl_groundUnits[i]].count, population: handler.data.units[dio_bl_groundUnits[i]].population };
-                                    units.push(item);
-                                }
-                            }
-                            var berth = "";
-                            if (handler.data.researches && handler.data.researches.berth) {
-                                berth = handler.data.researches.berth;
-                            } else {
-                                berth = 0;
-                            }
-
-                            var totalCap = handler.data.units.big_transporter.count * (handler.data.units.big_transporter.capacity + berth) + handler.data.units.small_transporter.count * (handler.data.units.small_transporter.capacity + berth);
-                            units.sort(function (a, b) {
-                                return b.population - a.population;
-                            });
-
-                            for (i = 0; i < units.length; i++) {
-                                if (units[i].count == 0) {
-                                    units.splice(i, 1);
-                                    i = i - 1;
-                                };
-                            }
-
-                            var restCap = totalCap;
-                            var sendUnits = new Array();
-                            for (i = 0; i < units.length; i++) {
-                                item = { name: units[i].name, count: 0 };
-                                sendUnits[units[i].name] = item;
-                            };
-
-                            var hasSent;
-                            var k = 0;
-                            while (units.length > 0) {
-                                hasSent = false;
-                                k = k + 1;
-                                for (i = 0; i < units.length; i++) {
-                                    if (units[i].population <= restCap) {
-                                        hasSent = true;
-                                        units[i].count = units[i].count - 1;
-                                        sendUnits[units[i].name].count = sendUnits[units[i].name].count + 1;
-                                        restCap = restCap - units[i].population;
-                                    }
-                                }
-                                for (i = 0; i < units.length; i++) {
-                                    if (units[i].count == 0) {
-                                        units.splice(i, 1);
-                                        i = i - 1;
-                                    };
-                                }
-                                if (!hasSent) {
-                                    break;
-                                }
-                            }
-
-                            handler.getUnitInputs().each(function () {
-                                if (!sendUnits[this.name]) {
-                                    if (handler.data.units[this.name].count > 0) {
-                                        this.value = handler.data.units[this.name].count;
-                                    } else {
-                                        this.value = '';
-                                    }
-                                }
-                            });
-
-                            for (i = 0; i < dio_bl_groundUnits.length; i++) {
-                                if (sendUnits[dio_bl_groundUnits[i]]) {
-                                    if (sendUnits[dio_bl_groundUnits[i]].count > 0) {
-                                        $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_' + dio_bl_groundUnits[i]).val(sendUnits[dio_bl_groundUnits[i]].count);
-                                    } else {
-                                        $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_' + dio_bl_groundUnits[i]).val('');
-                                    }
-                                }
-                            }
-
-                            $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_sword').trigger('change');
-                        });
-
-                        $('DIV#gpwnd_' + wndid + ' A.dio_delete').click(function () {
-                            handler.getUnitInputs().each(function () {
-                                this.value = '';
-                            });
-                            $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_sword').trigger('change');
-                        });
-
+                    for (var i = 0; i < dio_bl_groundUnits.length; i++) {
+                        if (handler.data.units[dio_bl_groundUnits[i]]) {
+                            item = { name: dio_bl_groundUnits[i], count: handler.data.units[dio_bl_groundUnits[i]].count, population: handler.data.units[dio_bl_groundUnits[i]].population };
+                            units.push(item);
+                        }
                     }
-                }
+                    var berth = "";
+                    if (handler.data.researches && handler.data.researches.berth) {
+                        berth = handler.data.researches.berth;
+                    } else {
+                        berth = 0;
+                    }
+
+                    var totalCap = handler.data.units.big_transporter.count * (handler.data.units.big_transporter.capacity + berth) + handler.data.units.small_transporter.count * (handler.data.units.small_transporter.capacity + berth);
+                    units.sort(function (a, b) {
+                        return b.population - a.population;
+                    });
+
+                    for (i = 0; i < units.length; i++) {
+                        if (units[i].count == 0) {
+                            units.splice(i, 1);
+                            i = i - 1;
+                        };
+                    }
+
+                    var restCap = totalCap;
+                    var sendUnits = new Array();
+                    for (i = 0; i < units.length; i++) {
+                        item = { name: units[i].name, count: 0 };
+                        sendUnits[units[i].name] = item;
+                    };
+
+                    var hasSent;
+                    var k = 0;
+                    while (units.length > 0) {
+                        hasSent = false;
+                        k = k + 1;
+                        for (i = 0; i < units.length; i++) {
+                            if (units[i].population <= restCap) {
+                                hasSent = true;
+                                units[i].count = units[i].count - 1;
+                                sendUnits[units[i].name].count = sendUnits[units[i].name].count + 1;
+                                restCap = restCap - units[i].population;
+                            }
+                        }
+                        for (i = 0; i < units.length; i++) {
+                            if (units[i].count == 0) {
+                                units.splice(i, 1);
+                                i = i - 1;
+                            };
+                        }
+                        if (!hasSent) {
+                            break;
+                        }
+                    }
+
+                    handler.getUnitInputs().each(function () {
+                        if (!sendUnits[this.name]) {
+                            if (handler.data.units[this.name].count > 0) {
+                                this.value = handler.data.units[this.name].count;
+                            } else {
+                                this.value = '';
+                            }
+                        }
+                    });
+
+                    for (i = 0; i < dio_bl_groundUnits.length; i++) {
+                        if (sendUnits[dio_bl_groundUnits[i]]) {
+                            if (sendUnits[dio_bl_groundUnits[i]].count > 0) {
+                                $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_' + dio_bl_groundUnits[i]).val(sendUnits[dio_bl_groundUnits[i]].count);
+                            } else {
+                                $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_' + dio_bl_groundUnits[i]).val('');
+                            }
+                        }
+                    }
+
+                    $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_sword').trigger('change');
+                });
+
+                $('DIV#gpwnd_' + wndid + ' A.dio_delete').click(function () {
+                    handler.getUnitInputs().each(function () {
+                        this.value = '';
+                    });
+                    $('DIV#gpwnd_' + wndid + ' INPUT.unit_type_sword').trigger('change');
+                });
             } catch (error) { errorHandling(error, "selectunitshelper"); }
         },
         deactivate: () => { $('#dio-ship_count').remove(); },
