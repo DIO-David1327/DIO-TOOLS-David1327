@@ -6668,7 +6668,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                 $(wndID + '.caption, ' + wndID + '.dio_drop_rec_perc').on("change", function (e) { test(this) });
 
-                if (percent > 0.1) test($(wndID + ".dio_drop_rec_perc"))
+                test($(wndID + ".dio_drop_rec_perc"));
 
                 function test(This) {
 
