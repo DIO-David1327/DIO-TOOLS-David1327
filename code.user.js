@@ -1977,12 +1977,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_Onb) OceanNumbers.add();
                     break;
                 case "/notify/fetch":
-                    if (uw.WM.isOpened("notes")) {
-                        if (!$('.notes_container .bb_button_wrapper .dio_smiley_button').get(0) & $(".notes_container .bb_button_wrapper").length) {
-                            if (DATA.options.dio_sml) SmileyBox.add("/frontend_bridge/execute");
-                            if (DATA.options.dio_bbc) addForm("/frontend_bridge/execute");
-                        }
-                    }
                     break;
                 case "/player/index":
                     settings();
@@ -2189,33 +2183,45 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     break;
 
                 case "/frontend_bridge/execute":
-                    case "/frontend_bridge/fetch":
-                        let sentJson, method = opt.type;
-                        try{
-                            if(method === "GET") sentJson = JSON.parse(decodeURIComponent(url[1].split("&")[3]).split("=")[1]);
-                            if(method === "POST")sentJson = JSON.parse(decodeURIComponent(opt.data.split("=")[1]));
-                        } catch (e) {}
-                        //console.log("sentJson", sentJson);
+                case "/frontend_bridge/fetch":
+                    let sentJson, method = opt.type;
+                    try{
+                        if(method === "GET") sentJson = JSON.parse(decodeURIComponent(url[1].split("&")[3]).split("=")[1]);
+                        if(method === "POST")sentJson = JSON.parse(decodeURIComponent(opt.data.split("=")[1]));
+                    } catch (e) {}
+                    //console.log("sentJson", sentJson);
     
-                        if (action === "/frontend_bridge/fetch"){
-                            if (sentJson?.window_type === "hide"){
-                                if (DATA.options.dio_Hid) hidesIndexIron.add2();
-                            }
-                            if(sentJson?.window_type === "notes"){
-                                if (DATA.options.dio_sml) SmileyBox.add(action);
-                                if (DATA.options.dio_bbc) addForm(action);
-                            }
+                    if (action === "/frontend_bridge/fetch"){
+                        if (sentJson?.window_type === "hide"){
+                            if (DATA.options.dio_Hid) hidesIndexIron.add2();
                         }
+                        if(sentJson?.window_type === "notes"){
+                            addNoteObserver()
+                        }
+                    }
     
-                        if (action === "/frontend_bridge/execute"){
-                            if(sentJson?.action_name === "save"){
-                                if (DATA.options.dio_sml) SmileyBox.add(action);
-                                if (DATA.options.dio_bbc) addForm(action);
-                            }
+                    /*if (action === "/frontend_bridge/execute"){
+                        if(sentJson?.action_name === "save"){
+                            if (DATA.options.dio_sml) SmileyBox.add(action);
+                            if (DATA.options.dio_bbc) addForm(action);
                         }
-                        break;
+                    }*/
+                    break;
             }
         });
+    }
+
+    function addNoteObserver() {
+        const noteWnd = document.querySelector('.classic_window.notes');
+        if (noteWnd === null) return;
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if(mutation.target.id !== "txta_notes") return;
+                if (DATA.options.dio_sml) SmileyBox.add("/frontend_bridge/fetch");
+                if (DATA.options.dio_bbc) addForm("/frontend_bridge/fetch");
+            });
+        });
+        observer.observe(noteWnd, { childList: true, subtree: true });
     }
 
     function test() { console.debug("STADTGRUPPEN", uw.Game.constants.ui.town_group); }
