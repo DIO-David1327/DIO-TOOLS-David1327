@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.34.2
+// @version		4.35.3
 // @author		DIONY (changes and bug fixes by David1327)
 // @description Version 2024. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2024. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -2046,7 +2046,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     if (DATA.options.dio_bbc) addForm(action);
                     break;
                 // those routes send you back to the main page
-                case "/message/reply": 
+                case "/message/reply":
                 case "/message/create":
                 case "/message/default":
                 case "/message/index":
@@ -2185,21 +2185,21 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 case "/frontend_bridge/execute":
                 case "/frontend_bridge/fetch":
                     let sentJson, method = opt.type;
-                    try{
-                        if(method === "GET") sentJson = JSON.parse(decodeURIComponent(url[1].split("&")[3]).split("=")[1]);
-                        if(method === "POST")sentJson = JSON.parse(decodeURIComponent(opt.data.split("=")[1]));
-                    } catch (e) {}
+                    try {
+                        if (method === "GET") sentJson = JSON.parse(decodeURIComponent(url[1].split("&")[3]).split("=")[1]);
+                        if (method === "POST") sentJson = JSON.parse(decodeURIComponent(opt.data.split("=")[1]));
+                    } catch (e) { }
                     //console.log("sentJson", sentJson);
-    
-                    if (action === "/frontend_bridge/fetch"){
-                        if (sentJson?.window_type === "hide"){
+
+                    if (action === "/frontend_bridge/fetch") {
+                        if (sentJson?.window_type === "hide") {
                             if (DATA.options.dio_Hid) hidesIndexIron.add2();
                         }
-                        if(sentJson?.window_type === "notes"){
+                        if (sentJson?.window_type === "notes") {
                             addNoteObserver()
                         }
                     }
-    
+
                     /*if (action === "/frontend_bridge/execute"){
                         if(sentJson?.action_name === "save"){
                             if (DATA.options.dio_sml) SmileyBox.add(action);
@@ -2216,7 +2216,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         if (noteWnd === null) return;
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
-                if(mutation.target.id !== "txta_notes") return;
+                if (mutation.target.id !== "txta_notes") return;
                 if (DATA.options.dio_sml) SmileyBox.add("/frontend_bridge/fetch");
                 if (DATA.options.dio_bbc) addForm("/frontend_bridge/fetch");
             });
@@ -2400,10 +2400,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             let alliance = onclickAttributeValue.match(/\('(.*?)',/)[1].replace(/\\/g, ''); // Utilisez une expression régulière pour extraire le nom du joueur
             return alliance;
         },
-        getTooltip(a) {
+        getTooltip(a, level) {
             if (uw.GameData.researches[a]) return "<b>" + uw.GameData.researches[a].name + "</b><br/><br/>" + uw.GameData.researches[a].description;
             else if (uw.GameData.buildings[a]) return "<b>" + uw.GameData.buildings[a].name + "</b><br/><br/>" + uw.GameData.buildings[a].description;
-            else if (uw.GameData.powers[a]) return uw.us.template(uw.DM.getTemplate("COMMON", "casted_power_tooltip"), $.extend({}, uw.GameDataPowers.getTooltipPowerData(uw.GameData.powers[a], { percent: 30, lifetime: 1800, level: 1 }, ''), null));
+            else if (uw.GameData.powers[a]) return uw.us.template(uw.DM.getTemplate("COMMON", "casted_power_tooltip"), $.extend({}, uw.GameDataPowers.getTooltipPowerData(uw.GameData.powers[a], { percent: 30, lifetime: 1800, level: (level ? level : 1) }, (level ? level : "")), null));
             return "??? " + a
         },
         getName(a) {
@@ -3519,7 +3519,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
         grcrt: {
             grcrSettingsKey: `${uw.Game.player_name}_${uw.Game.world_id}`,
-            isInjected: () => { return (typeof(uw.RepConv) !== "undefined") },
+            isInjected: () => { return (typeof (uw.RepConv) !== "undefined") },
             isMessageColor: () => {
                 if (!compatibility.grcrt.isInjected()) return false;
                 return uw.RepConv.settings[`${compatibility.grcrt.grcrSettingsKey}_mcol`];
@@ -3881,7 +3881,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 "#minimap_canvas.expanded.night, #map.night .flagpole { filter: brightness(0.7); -webkit-filter: brightness(0.7); } " +
                 "#minimap_click_layer { display:none; }" +
                 "</style>").appendTo("head");
-            
+
             let interval = false;
             $(`#minimap_canvas, #map`).on("mousedown", () => {
                 if (interval) clearInterval(interval);
@@ -4033,7 +4033,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             var popup_left = 0, popup_top = 0, classSize = "";
             //console.debug("TOWN", $(that).offset(), that.id);
 
-            if (that.classList.contains('town_name')){
+            if (that.classList.contains('town_name')) {
                 townID = parseInt(that.parentNode.dataset.townid);
                 popup_left = ($(that).offset().left - 150);
                 popup_top = ($(that).offset().top + 20);
@@ -4060,7 +4060,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     popup_top = ($(that).offset().top + 15);
                 }
             }
-            
+
             // Own town?
             if (typeof (uw.ITowns.getTown(townID)) !== "undefined") {
 
@@ -4315,18 +4315,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         change: () => {
             if (!$('#town_groups_list .dio_icon_small').get(0)) {
 
-                if(DATA.options.dio_Tol) townslist.add();
+                if (DATA.options.dio_Tol) townslist.add();
 
-                let townHero = {};
-                if( !compatibility.grcrt.isTownList() && !window.MH?.initiated){
+                let townHero = {}, i = DM.getl10n("heroes", "common");
+                if (!compatibility.grcrt.isTownList() && !window.MH?.initiated) {
                     const heroes = MM.getCollections()['PlayerHero'][0];
                     if (heroes) {
-                        heroes.getHeroes().forEach( function(hero) {
-                            if (hero.getOriginTownId() !== null){
+                        heroes.getHeroes().forEach(function (hero) {
+                            let o = GameData.heroes[hero.getId()];
+                            if (hero.getOriginTownId() !== null) {
+                                console.log(hero)
                                 townHero[hero.getOriginTownId()] = {
                                     id: hero.getId(),
                                     name: hero.getName(),
-                                    level: hero.getLevel()
+                                    level: hero.getLevel(),
+                                    category: i.hero_of[o.category],
+                                    txt_lvl: i.level(hero.getLevel())
                                 }
                             }
                         })
@@ -4335,7 +4339,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     $("#town_groups_list").off('mouseover', '.item.town_group_town .town_name');
                     $('#town_groups_list').on('mouseover', '.item.town_group_town .town_name', function () {
                         hoverTimeout = setTimeout(() => {
-                            if(!$('#town_groups_list').get(0)) return;
+                            if (!$('#town_groups_list').get(0)) return;
                             TownPopup.add(this);
                         }, 500);
                     });
@@ -4361,8 +4365,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             townicon_div = '<div class="dio_icon_small townicon_' + (manuTownTypes[town_id] || autoTownTypes[town_id] || "no") + '"></div>';
                             // TODO: Notlösung...
                             if (percent != -1) { percent_div = '<div class="pop_percent ' + pop_space + '">' + percent + '%</div>'; }
-                            if (townHero[town_id]) hero_div = '<div class="hero_icon hero25x25 '+ townHero[town_id].id +'"><div class="value" style="color: white; float: right; text-shadow: 1px 1px 0 #000; padding-top: 5px;" >'+ townHero[town_id].level +'</div></div>'
+                            if (townHero[town_id]) hero_div = '<div class="dio_hero hero_icon hero25x25 ' + townHero[town_id].id + '"><div class="value" style="color: white; float: right; text-shadow: 1px 1px 0 #000; padding-top: 5px;" >' + townHero[town_id].level + '</div></div>'
                             town_item.prepend(townicon_div + hero_div + percent_div);
+                            if (townHero[town_id]) $(town_item).find($('.dio_hero.hero_icon.' + townHero[town_id].id)).tooltip('<div class="ui_hero_tooltip_small"><div class="icon_border"><div class="icon hero50x50 ' + townHero[town_id].id + '"></div></div><b>' + townHero[town_id].name + '</b><br />' + townHero[town_id].category + '<br /><br /><b>' + townHero[town_id].txt_lvl + '</b><br /></div><div class="dio_icon b" style="position: absolute;bottom: 9px;right: 4px;"></div>')
                         }
                     } catch (error) { errorHandling(error, "TownList.change"); }
                 });
@@ -6313,6 +6318,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         },
         add: (wndID, action) => {
             try {
+                // game windows sometimes remains in grepolis's window array even if it is closed
+                if ($(wndID).length !== 1) {
+                    document.querySelectorAll('.attack_support_window').forEach(function (el) {
+                        if (el.querySelector('.dio_duration')) return;
+                        const newWndId = el.parentElement.id;
+                        ShortDuration.add('#' + newWndId, action);
+                    })
+                    return;
+                }
+
                 $('<style id="dio_short_duration_stylee">' +
                     '.attack_support_window .additional_info_wrapper .nightbonus { position: absolute; left: 242px; top: 45px; } ' +
                     '.attack_support_window .fight_bonus.morale { position: absolute; left: 238px; top: 23px; } ' +
@@ -6336,10 +6351,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 $(wndID + " .arrival_time").appendTo(wndID + " .dio_arrival");
 
                 // Tooltip
-                $(wndID + ' .short_duration_row .short_icon').tooltip(dio.getTooltip("unit_movement_boost") + dio_icon)
-                $(wndID + ' .hades_duration_row .cap_of_invisibility').tooltip(dio.getTooltip("cap_of_invisibility") + dio_icon)
-                //$(wndID + '.short_duration_row').tooltip(dio_icon + (LANG.hasOwnProperty(LID) ? getTexts("labels", "improved_movement") : "") + " (+30% " + uw.DM.getl10n("barracks", "tooltips").speed.trim() + ")");
-                //$(wndID + '.hades_duration_row').tooltip(dio_icon + getTexts("labels", "cap_of_invisibility"));
+                $(wndID + ' .short_duration_row .short_icon').tooltip(dio.getTooltip("unit_movement_boost") + '<div class="dio_icon b" style="position: absolute;top: 9px;right: 4px;"></div>');
+                $(wndID + ' .hades_duration_row .cap_of_invisibility').tooltip(dio.getTooltip("cap_of_invisibility") + '<div class="dio_icon b" style="position: absolute;top: 9px;right: 4px;"></div>');
 
                 // Detection of changes
                 ShortDuration.change(wndID, action);
@@ -6362,7 +6375,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             }
         },
         calculate: (wndID, action) => {
-            if(!$(wndID).get(0)) return;
+            if (!$(wndID).get(0)) return;
             try {
                 var setup_time = 900 / uw.Game.game_speed,
                     duration_time = $(wndID + ' .duration_container .way_duration').get(0).innerHTML.replace("~", "").split(":"),
@@ -8495,8 +8508,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     }
                 });
             });
-            startup.observe( body , { subtree: true, childList: true, attributes: false, characterData: false });
-            setTimeout( function () { startup.disconnect() }, 5_000);
+            startup.observe(body, { subtree: true, childList: true, attributes: false, characterData: false });
+            setTimeout(function () { startup.disconnect() }, 5_000);
         },
         deactivate: () => { },
     };
@@ -8528,38 +8541,40 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             try {
 
                 $('<style id="dio_plusmenustyle" type="text/css">' +
-                '.displayImp {display: block !important; z-index: 5000 !important;}' +
-                '.dio_commands { height: 0px; overflow: visible!important; }' +
-                '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
-                '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(' + Home_url + '/img/dio/btn/draghandle.png)}' +
-                '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(' + Home_url + '/img/dio/btn/plusback.png)}' +
-                '#toolbar_activity_recruits_list {min-width: 113px;}' +
-                '.dropdown-list .item_no_results, .dropdown-list.ui-draggable>div {cursor:text!important;}' +
-                '#toolbar_activity_commands_list .unit_movements .details_wrapper, #toolbar_activity_commands_list .unit_movements .icon { visibility: visible }' +
-                '#toolbar_activity_commands_list .cancel { display: none !important; }' +
-                '</style>').appendTo('head');
+                    '.displayImp {display: block !important; z-index: 5000 !important;}' +
+                    '.dio_commands { height: 0px; overflow: visible!important; }' +
+                    '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
+                    '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(' + Home_url + '/img/dio/btn/draghandle.png)}' +
+                    '.dio_plusback {right:-18px;margin-top:-1px;width:16px;height:12px;position:absolute;background:url(' + Home_url + '/img/dio/btn/plusback.png)}' +
+                    '#toolbar_activity_commands_list .dio_plusmenu {/*opacity: 0;*/ visibility: hidden; display: none;}' +
+                    '#toolbar_activity_recruits_list {min-width: 113px;}' +
+                    '.dropdown-list .item_no_results, .dropdown-list.ui-draggable>div {cursor:text!important;}' +
+                    '#toolbar_activity_commands_list .unit_movements .details_wrapper, #toolbar_activity_commands_list .unit_movements .icon { visibility: visible }' +
+                    '#toolbar_activity_commands_list .cancel { display: none !important; }' +
+                    '#toolbar_activity_commands_list .js-dropdown-list:hover>.dio_plusmenu { display: block !important; visibility: visible; /*opacity: 0.5;*/ }' +
+                    '</style>').appendTo('head');
 
                 //if (0 == $("#dio_taclWrap").length) $("#toolbar_activity_commands_list").wrap($("<div/>", {"class":"dio_taclWrap", id:"dio_taclWrap"}))
-                
+
                 /**
                  * COMMAND TOOLBAR
                  */
 
                 const toolbarCommand = document.querySelector('#toolbar_activity_commands_list');
-                if(typeof observer_commands_list !== 'object'){
+                if (typeof observer_commands_list !== 'object') {
                     observer_commands_list = new MutationObserver(function (mutations) {
                         mutations.forEach(function (mutation) {
-                            if(toolbarCommand.style.display !== "none" || !toolbarCommand.classList.contains('dio_commands')) return;
+                            if (toolbarCommand.style.display !== "none" || !toolbarCommand.classList.contains('dio_commands')) return;
                             $('#toolbar_activity_commands').trigger('mouseenter');
                         });
                     });
                     observer_commands_list.observe(
-                        toolbarCommand, 
-                        {attributes: true, childList: true, subtree: true }
+                        toolbarCommand,
+                        { attributes: true, childList: true, subtree: true }
                     );
 
-                    $.Observer(GameEvents.command.send_unit).subscribe('DIO_COMMANDS_TOOLBAR', function() {
-                        if(!toolbarCommand.classList.contains('dio_commands')) return;
+                    $.Observer(GameEvents.command.send_unit).subscribe('DIO_COMMANDS_TOOLBAR', function () {
+                        if (!toolbarCommand.classList.contains('dio_commands')) return;
                         $('#toolbar_activity_commands').trigger('mouseenter');
                     });
                 }
@@ -8567,7 +8582,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 if ($("#dio_plusmenuCommands").length == 0) {
                     $("#toolbar_activity_commands_list .sandy-box").append('<div id="dio_plusmenuCommands" class="dio_plusmenu"><div id="dio_plusdraghandleCommands" class="dio_plusdraghandle"></div><a class="dio_plusback"></a></div>');
                     $('#dio_plusmenuCommands .dio_plusback').click(() => { dio_plus_destroy("dio_plusmenuCommands"); });
-                    $('#dio_plusmenuCommands .dio_plusback').tooltip(dio_icon); 
+                    $('#dio_plusmenuCommands .dio_plusback').tooltip(dio_icon);
                 }
 
                 $('#toolbar_activity_commands_list .sandy-box').draggable({
@@ -8636,7 +8651,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         $('<style id="dio_plusmenuRecruitsSTYLE" type="text/css">#toolbar_activity_recruits_list {left: ' + dio_position.left + 'px !important;top: ' + dio_position.top + 'px !important}</style>').appendTo('head');
                     }
                 });
-                
+
                 $('#toolbar_activity_trades_list').draggable({
                     cursor: "move",
                     handle: ".dio_plusdraghandle",
@@ -11991,11 +12006,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
             AttacksAlarms.audioElement[0].volume = DATA.volumeControl // Contrôle de volume
             AttacksAlarms.audio.volume = (DATA.volumeControl > 0.3 ? DATA.volumeControl : 0.3) // Contrôle de volume
-            
+
             // Grepolis by default gets notification every 5 min, we get it every 10 sec to avoid missing any attack
-            if(!compatibility.grcrt.isInjected()){
-                AttacksAlarms.notificationFetcher = setInterval(function(){
-                    gpAjax.ajaxGet("notify", "fetch", {no_sysmsg: !1}, !1, function() {})
+            if (!compatibility.grcrt.isInjected()) {
+                AttacksAlarms.notificationFetcher = setInterval(function () {
+                    gpAjax.ajaxGet("notify", "fetch", { no_sysmsg: !1 }, !1, function () { })
                 }, 10 * 1000);
             }
         },
@@ -12005,7 +12020,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             AttacksAlarms.audioElement.attr("src", AttacksAlarms.musicURL); // Met à jour l'URL de la musique
             AttacksAlarms.audioElement[0].play(); // Commence la lecture
             $('#dioSound').remove();
-            $("#ui_box").append('<img src="' + Home_url + '/img/dio/btn/mute.png" id="dioSound" style="">')
+            $("#ui_box").append('<img src="' + Home_url + '/img/dio/btn/mute.png" id="dioSound" style="">');
             $('#dioSound').click(() => {
                 AttacksAlarms.stopMusic();
                 AttacksAlarms.audio.play();
@@ -12040,7 +12055,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             $.Observer(uw.GameEvents.attack.incoming).unsubscribe('DIO_ATTACKS_ALARMS');
             AttacksAlarms.stopMusic();
             $('#AttacksAlarms_style').remove();
-            if(AttacksAlarms.notificationFetcher !== null){
+            if (AttacksAlarms.notificationFetcher !== null) {
                 clearInterval(AttacksAlarms.notificationFetcher);
                 AttacksAlarms.notificationFetcher = null;
             }
@@ -12080,9 +12095,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      * Colorize message List and view
      *******************************************************************************************************************************/
 
-    function colorizeMessage(view){
-        if( compatibility.grcrt.isMessageColor() ) return;
-        if( view !== "List" && view !== "View" ) return;
+    function colorizeMessage(view) {
+        if (compatibility.grcrt.isMessageColor()) return;
+        if (view !== "List" && view !== "View") return;
 
         const messageWnd = uw.GPWindowMgr.getByType(uw.GPWindowMgr.TYPE_MESSAGE)[0];
         if (!messageWnd) return;
@@ -12091,92 +12106,92 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
         MM.getOnlyCollectionByName("AlliancePact").models.forEach(pact => {
             if (pact.getInvitationPending()) return;
-            if(pact.getAlliance1Id() !== uw.Game.alliance_id){
+            if (pact.getAlliance1Id() !== uw.Game.alliance_id) {
                 alliances[pact.getAlliance1Id()] = pact.getRelation() === 'war' ? "ENEMY" : "PACT";
             } else {
                 alliances[pact.getAlliance1Id()] = pact.getRelation() === 'war' ? "ENEMY" : "PACT";
             }
         });
 
-        const viewSelectors = view === "List" ? ['a.gp_player_link','li.message_item'] : ['.message_poster a.gp_player_link',".message_poster"];
+        const viewSelectors = view === "List" ? ['a.gp_player_link', 'li.message_item'] : ['.message_poster a.gp_player_link', ".message_poster"];
         messageWnd.getJQElement().find($(viewSelectors[0])).each((i, element) => {
             const hash = $(element).attr('href');
-            if(!hash) return;
+            if (!hash) return;
 
             const color = getPlayerColor(hash, alliances);
-            if(!color) return;
+            if (!color) return;
 
             const style = [
-                'background: '+hexToRGB('#'+ color, 0.4),
-                'background: -webkit-linear-gradient(left,'+ hexToRGB('#'+color,0.1)+','+ hexToRGB('#'+color,0.5)+')',
-                'background: -o-linear-gradient(right,'+ hexToRGB('#'+color,0.1)+','+ hexToRGB('#'+color,0.5)+')',
-                'background: -moz-linear-gradient(right,'+ hexToRGB('#'+color,0.1)+','+ hexToRGB('#'+color,0.5)+')',
-                'background: linear-gradient(to right,'+ hexToRGB('#'+color,0.1)+','+ hexToRGB('#'+color,0.5)+')'
+                'background: ' + hexToRGB('#' + color, 0.4),
+                'background: -webkit-linear-gradient(left,' + hexToRGB('#' + color, 0.1) + ',' + hexToRGB('#' + color, 0.5) + ')',
+                'background: -o-linear-gradient(right,' + hexToRGB('#' + color, 0.1) + ',' + hexToRGB('#' + color, 0.5) + ')',
+                'background: -moz-linear-gradient(right,' + hexToRGB('#' + color, 0.1) + ',' + hexToRGB('#' + color, 0.5) + ')',
+                'background: linear-gradient(to right,' + hexToRGB('#' + color, 0.1) + ',' + hexToRGB('#' + color, 0.5) + ')'
             ].join(';');
-            $(element).closest(viewSelectors[1]).attr('style',style);
+            $(element).closest(viewSelectors[1]).attr('style', style);
         });
     }
 
-    function hexToRGB(hex, alpha = 1){
-        const r = parseInt(hex.substring(1,3), 16);
-        const g = parseInt(hex.substring(3,5), 16);
-        const b = parseInt(hex.substring(5,7), 16);
-        return 'rgba('+r+','+g+','+b+','+alpha+')';
+    function hexToRGB(hex, alpha = 1) {
+        const r = parseInt(hex.substring(1, 3), 16);
+        const g = parseInt(hex.substring(3, 5), 16);
+        const b = parseInt(hex.substring(5, 7), 16);
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
     }
 
-    function getPlayerColor(hash, alliance){
+    function getPlayerColor(hash, alliance) {
         const
             modelCustomColor = MM.getOnlyCollectionByName("CustomColor"),
             defaultColors = require("helpers/default_colors"),
             filters = require("enums/filters"),
             playerLinkJson = JSON.parse(uw.atob(hash.split(/#/)[1]));
-        let  color = undefined;
+        let color = undefined;
 
-            if (playerLinkJson.id == Game.player_id) {
-                color = defaultColors.getDefaultColorForPlayer(Game.player_id)
-            }
+        if (playerLinkJson.id == Game.player_id) {
+            color = defaultColors.getDefaultColorForPlayer(Game.player_id)
+        }
 
-            if(!color){
-                color = modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.PLAYER,playerLinkJson.id) && modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.PLAYER,playerLinkJson.id).getColor()
-            }
-            const playerData = MM.DIO.cachePlayers[playerLinkJson.name];
-            if(!color){
-                if(playerData && playerData.alliance_id){
-                    if(playerData.alliance_id == Game.alliance_id){
-                        color = (
-                                modelCustomColor.getCustomColorByIdAndType(filters.ALLIANCE_TYPES.OWN_ALLIANCE,playerData.alliance_id) &&
-                                modelCustomColor.getCustomColorByIdAndType(filters.ALLIANCE_TYPES.OWN_ALLIANCE,playerData.alliance_id).getColor()
+        if (!color) {
+            color = modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.PLAYER, playerLinkJson.id) && modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.PLAYER, playerLinkJson.id).getColor()
+        }
+        const playerData = MM.DIO.cachePlayers[playerLinkJson.name];
+        if (!color) {
+            if (playerData && playerData.alliance_id) {
+                if (playerData.alliance_id == Game.alliance_id) {
+                    color = (
+                        modelCustomColor.getCustomColorByIdAndType(filters.ALLIANCE_TYPES.OWN_ALLIANCE, playerData.alliance_id) &&
+                        modelCustomColor.getCustomColorByIdAndType(filters.ALLIANCE_TYPES.OWN_ALLIANCE, playerData.alliance_id).getColor()
+                        ||
+                        defaultColors.getDefaultColorForAlliance(playerData.alliance_id)
+                    )
+                } else {
+                    color = (
+                        (
+                            alliance[playerData.alliance_id] &&
+                            (
+                                modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES[alliance[playerData.alliance_id]], playerData.alliance_id) &&
+                                modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES[alliance[playerData.alliance_id]], playerData.alliance_id).getColor()
                                 ||
                                 defaultColors.getDefaultColorForAlliance(playerData.alliance_id)
                             )
-                    } else {
-                        color = (
+                        )
+                        ||
+                        (
+                            playerData.alliance_id &&
                             (
-                                alliance[playerData.alliance_id] &&
-                                (
-                                    modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES[alliance[playerData.alliance_id]],playerData.alliance_id)  &&
-                                    modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES[alliance[playerData.alliance_id]],playerData.alliance_id).getColor()
-                                    ||
-                                    defaultColors.getDefaultColorForAlliance(playerData.alliance_id)
-                                )
-                            )
-                            ||
-                            (
-                                playerData.alliance_id &&
-                                (
-                                    modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.ALLIANCE,playerData.alliance_id) &&
-                                    modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.ALLIANCE,playerData.alliance_id).getColor()
-                                    ||
-                                    defaultColors.getDefaultColorForAlliance(playerData.alliance_id)
-                                )
+                                modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.ALLIANCE, playerData.alliance_id) &&
+                                modelCustomColor.getCustomColorByIdAndType(filters.FILTER_TYPES.ALLIANCE, playerData.alliance_id).getColor()
+                                ||
+                                defaultColors.getDefaultColorForAlliance(playerData.alliance_id)
                             )
                         )
-                    }
-                } else {
-                    color = defaultColors.getDefaultColorForPlayer(playerLinkJson.id,Game.player_id)
+                    )
                 }
+            } else {
+                color = defaultColors.getDefaultColorForPlayer(playerLinkJson.id, Game.player_id)
             }
-            return color;
+        }
+        return color;
     }
 
     /*******************************************************************************************************************************
