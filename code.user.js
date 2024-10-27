@@ -10652,7 +10652,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     interfaceHTMLleft += `<span style="margin-bottom:-11px;margin-top:2px;border-bottom:1px solid #B48F45; width:100%;display:block"><span style="display:inline-block;height:17px;width:17px;vertical-align:middle;margin-right:5px;background-image:url(${b[0]})"></span><span style="display:inline-block;height:17px;vertical-align:middle">${a}:</span></span><br/>`;
                     $.each(b, function (c, d) {
                         if (c != 0) mousePopupHTMLleft += `<span class="logo_key"><span id="Popup_key_${d[2]}" class="touch_key">${d[0]}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span><br/>`;
-                        if (c != 0) interfaceHTMLleft += `<span><a id="delete_${d[2]}" class="cancel" onclick="hotkeysConfig.deleteKey('${d[2]}')"></a><div id="caseSensitive_${d[2]}" class="caseSensitive checkbox_new large ${DATA.hotkeys[d[2]].case ? 'checked' : ''}"><div class="cbx_icon"></div><div class="cbx_caption"></div></div><div id="modify_${d[2]}" class="edit_icon"></div><span class="logo_key"><span id="key_${d[2]}" class="touch_key">${DATA.hotkeys[d[2]].key}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span></span><br/>`
+                        if (c != 0) interfaceHTMLleft += `<span><a id="delete_${d[2]}" class="cancel" onclick="uw.DIO_hotkeysConfig.deleteKey('${d[2]}')"></a><div id="caseSensitive_${d[2]}" class="caseSensitive checkbox_new large ${DATA.hotkeys[d[2]].case ? 'checked' : ''}"><div class="cbx_icon"></div><div class="cbx_caption"></div></div><div id="modify_${d[2]}" class="edit_icon"></div><span class="logo_key"><span id="key_${d[2]}" class="touch_key">${DATA.hotkeys[d[2]].key}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span></span><br/>`
                     });
                 });
                 $.each(mousePopupArrayright, function (a, b) {
@@ -10660,7 +10660,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     interfaceHTMLright += `<span style="margin-bottom:-11px;margin-top:2px;border-bottom:1px solid #B48F45; width:100%;display:block"><span style="display:inline-block;height:17px;width:17px;vertical-align:middle;margin-right:5px;background-image:url(${b[0]})"></span><span style="display:inline-block;height:17px;vertical-align:middle">${a}:</span></span><br/>`;
                     $.each(b, function (c, d) {
                         if (c != 0) mousePopupHTMLright += `<span class="logo_key"><span id="Popup_key_${d[2]}" class="touch_key">${d[0]}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span><br/>`;
-                        if (c != 0) interfaceHTMLright += `<span><a id="delete_${d[2]}" class="cancel" onclick="hotkeysConfig.deleteKey('${d[2]}')"></a><div id="caseSensitive_${d[2]}" class="caseSensitive checkbox_new large ${DATA.hotkeys[d[2]].case ? 'checked' : ''}"><div class="cbx_icon"></div><div class="cbx_caption"></div></div><div id="modify_${d[2]}" class="edit_icon"></div><span class="logo_key"><span id="key_${d[2]}" class="touch_key">${DATA.hotkeys[d[2]].key}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span></span><br/>`
+                        if (c != 0) interfaceHTMLright += `<span><a id="delete_${d[2]}" class="cancel" onclick="uw.DIO_hotkeysConfig.deleteKey('${d[2]}')"></a><div id="caseSensitive_${d[2]}" class="caseSensitive checkbox_new large ${DATA.hotkeys[d[2]].case ? 'checked' : ''}"><div class="cbx_icon"></div><div class="cbx_caption"></div></div><div id="modify_${d[2]}" class="edit_icon"></div><span class="logo_key"><span id="key_${d[2]}" class="touch_key">${DATA.hotkeys[d[2]].key}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span></span><br/>`
                     });
                 });
                 $('#dio_BTN_HK').mousePopup(new uw.MousePopup(mousePopupHTMLleft + mousePopupHTMLright));
@@ -10702,7 +10702,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         $("#hotkeys_interface .edit_icon").click(function () {
                             uw.DIO_hotkeysConfig.changeKey($(this).attr('id').replace(/modify_/g, '')); // Mettre à jour la sensibilité à la casse pour l'action donnée
                         });
-                    } catch (error) { errorHandling(error, "hotkeysConfig (click Window"); }
+                    } catch (error) { errorHandling(error, "uw.DIO_hotkeysConfig (click Window"); }
                 });
                 function grg(action) {
                     $(`#key_${action}`).text(DATA.hotkeys[action].key);
@@ -10712,7 +10712,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     else $(`#caseSensitive_${action}`).removeClass("checked");
                     setTimeout(() => { $(`#action_${action}`).text(uw.DIO_hotkeysConfig.keysName[action].name); }, 100);
                 }
-            } catch (error) { errorHandling(error, "hotkeysConfig.activate"); }
+            } catch (error) { errorHandling(error, "uw.DIO_hotkeysConfig.activate"); }
         },
         keys: {
             aa: { key: '←', case: false },
