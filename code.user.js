@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.35.4
+// @version		4.35.5
 // @author		DIONY and David1327
 // @description Version 2024. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2024. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -10603,6 +10603,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '#hotkeys_interface .caseSensitive { margin-left: 3px;}' +
                     '#hotkeys_interface .checkbox_new.large .cbx_icon { height: 22px;}' +
                     '#hotkeys_interface #aide { position: absolute; bottom: -34px; }' +
+                    '#delete_aa, #caseSensitive_aa, #modify_aa, #delete_zz, #caseSensitive_zz, #modify_zz {display: none!important;}' +
                     '</style>').appendTo('head');
 
                 for (var action in uw.DIO_hotkeysConfig.keys) if (!DATA.hotkeys[action]) DATA.hotkeys[action] = JSON.parse(JSON.stringify(uw.DIO_hotkeysConfig.keys[action]));
@@ -10617,10 +10618,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     else { $('<style id="dio_MH_attsup_style">#MH_attsup {left:384px !important;}</style>').appendTo('head'); }
                 }
                 uw.DIO_hotkeysConfig.hotkeys()
-                let mousePopupHTMLleft = '<div id="diotest" style="width: 450px"><div style="width: 250px; margin: 0 3px -10px 3px; border-right: 1px solid #B48F45; float: left; display:inline-block"><span style="margin-bottom:3px; display:inline-block">' + dio_icon + '<b>' + getTexts("hotkeys", "hotkeys") + ':</b></span>';
-                let mousePopupHTMLright = '</div><div style="width: 170px; margin:3px; float: left; display:inline-block"><span style="margin:8px; display:inline-block"></span>';
-                let interfaceHTMLleft = '<div id="" style="width: 280px; margin: 0 3px -10px 3px; border-right: 1px solid #B48F45; float: left; display:inline-block"><span style="margin-bottom:3px; display:inline-block">' + dio_icon + '<b>' + getTexts("hotkeys", "hotkeys") + ':</b></span>';
-                let interfaceHTMLright = '</div><div style="width: 280px; margin:3px; float: left; display:inline-block"><span style="margin:8px; display:inline-block"></span>';
+                let mousePopupHTMLleft = '<div id="diotest" style="width: 490px!important"><div style="width: 230px; margin: 0 3px -10px 3px; border-right: 1px solid #B48F45; float: left; display:inline-block"><span style="margin-bottom:3px; display:inline-block">' + dio_icon + '<b>' + getTexts("hotkeys", "hotkeys") + ':</b></span>';
+                let mousePopupHTMLright = '</div><div style="width: 240px; margin:3px; float: left; display:inline-block"><span style="margin:8px; display:inline-block"></span>';
+                let interfaceHTMLleft = '<div id="" style="width: 300px; margin: 0 3px -10px 3px; border-right: 1px solid #B48F45; float: left; display:inline-block"><span style="margin-bottom:3px; display:inline-block">' + dio_icon + '<b>' + getTexts("hotkeys", "hotkeys") + ':</b></span>';
+                let interfaceHTMLright = '</div><div style="width: 310px; margin:3px; float: left; display:inline-block"><span style="margin:8px; display:inline-block"></span>';
 
                 let mousePopupArrayleft = {}, mousePopupArrayright = {};
                 let Text_layout = uw.DM.getl10n("layout").main_menu.items;
@@ -10667,7 +10668,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                 let footer = '<div id="aide"><div class="défaut_s"></div><div class="checkbox_new large" style="margin: 0 10px 0 20px;"><div class="cbx_icon"></div><div class="cbx_caption">a/A</div></div><div class="checkbox_new large checked"><div class="cbx_icon"></div><div class="cbx_caption">a</div></div>';
 
-                createWindowType("DIO_HOTKEY", "DIO_HOTKEY", 605, 495, true, [240, 70]);
+                createWindowType("DIO_HOTKEY", "Configure shortcuts", 660, 495, true, [240, 70]);
                 $("#dio_BTN_HK").click(() => {
                     try {
                         if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_HOTKEY)) return uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_HOTKEY).close();
@@ -10676,7 +10677,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             '<div class="game_border_right"></div><div class="game_border_corner corner1"></div>' +
                             '<div class="game_border_corner corner2"></div><div class="game_border_corner corner3">' +
                             '</div><div class="game_border_corner corner4"></div><div class="game_header bold" style="height:18px;padding:3px 11px">';
-                        let expTitel = "Configurer les raccourcis"
+                        let expTitel = "Configure shortcuts"
                         let expRahmen_b = '</div><div style="height: 380px; overflow: overlay;">' + interfaceHTMLleft + interfaceHTMLright + '</div>' + footer;
                         wnd.setContent(expRahmen_a + expTitel + expRahmen_b);
                         for (var action in DATA.hotkeys) grg(action) // Mettre à jour l'affichage
@@ -10718,6 +10719,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             aa: { key: '←', case: false },
             zz: { key: '→', case: false },
             mapJump: { key: '↵', case: false },
+            TownGroups_prev: { key: '<', case: false },
+            TownGroups_next: { key: '>', case: false },
             city_overview: { key: MID == 'fr' ? "V" : 'C', case: false },
             messages: { key: MID == 'de' ? "N" : "M", case: false },
             reports: { key: MID == 'de' ? "B" : "R", case: false },
@@ -10765,14 +10768,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             Reservation: { key: '', case: false },
             farm_btn_prev: { key: '↑', case: false },
             farm_btn_next: { key: '↓', case: false },
-            farmingvillage_up: { key: '↑', case: false },
-            farmingvillage_down: { key: '↓', case: false },
             // Ajoute les autres raccourcis ici
         },
         keysName: {
             aa: { menu: "city_select", name: getTexts("hotkeys", "last_city"), lien: () => "" },
             zz: { menu: "city_select", name: getTexts("hotkeys", "next_city"), lien: () => "" },
             mapJump: { menu: "city_select", name: getTexts("hotkeys", "jump_city"), lien: () => uw.WMap.mapJump({ 'id': + uw.Game.townId, 'ix': uw.WMap.islandPosition.x, 'iy': uw.WMap.islandPosition.y }) },
+            TownGroups_prev: { menu: "city_select", name: uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " (" + uw.DM.getl10n("COMMON").prev_lowercase + ")", lien: () => uw.DIO_hotkeysConfig.TownGroups("prev") },
+            TownGroups_next: { menu: "city_select", name: uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " (" + uw.DM.getl10n("COMMON").next_lowercase + ")", lien: () => uw.DIO_hotkeysConfig.TownGroups("next") },
             city_overview: { menu: "menu", name: uw.DM.getl10n("town_index").window_title, lien: () => !$("#ui_box .bull_eye_buttons .city_overview").hasClass('checked') ? $("#ui_box .bull_eye_buttons .city_overview").click() : $("#ui_box .bull_eye_buttons .island_view").click() },
             messages: { menu: "menu", name: Text_layout.messages, lien: () => uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_MESSAGE, uw.DM.getl10n("layout").main_menu.items.messages || "Messages") },
             reports: { menu: "menu", name: Text_layout.reports, lien: () => uw.Layout.wnd.Create(uw.GPWindowMgr.TYPE_REPORT, uw.DM.getl10n("layout").main_menu.items.reports || "Reports") },
@@ -10817,15 +10820,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             lumber: { menu: "other", name: dio.getName("lumber"), lien: () => uw.LumberWindowFactory.openLumberWindow() },
             stoner: { menu: "other", name: dio.getName("stoner"), lien: () => uw.StonerWindowFactory.openStonerWindow() },
             ironer: { menu: "other", name: dio.getName("ironer"), lien: () => uw.IronerWindowFactory.openIronerWindow() },
-            Reservation: { menu: "other", name: "Reservation????", lien: () => uw.hOpenWindow.openReservationList() }, //Reservation
-            farm_btn_prev: { menu: "other", name: "farm_btn_prev", lien: () => $('.btn_prev.square.next_prev.small.button.button_new').click() }, //farm_btn_prev
-            farm_btn_next: { menu: "other", name: "farm_btn_next", lien: () => $('.btn_next.square.next_prev.small.button.button_new').click() }, //farm_btn_next
-            farmingvillage_up: { menu: "other", name: "farmingvillage_up", lien: () => uw.farmingvillageshelper.switchTown("up") }, //farmingvillage_up
-            farmingvillage_down: { menu: "other", name: "farmingvillage_down", lien: () => uw.farmingvillageshelper.switchTown("down") }, //farmingvillage_down
+            Reservation: { menu: "other", name: uw.DM.getl10n("report").inbox.filter_types.reservations, lien: () => uw.hOpenWindow.openReservationList() }, //Reservation
+            farm_btn_prev: { menu: "other", name: getTexts("hotkeys", "farming_villages") + " (" + uw.DM.getl10n("COMMON").prev_lowercase + ")", lien: () => $('.btn_prev.square.next_prev.small.button.button_new').click() }, //farmingvillage_up
+            farm_btn_next: { menu: "other", name: getTexts("hotkeys", "farming_villages") + " (" + uw.DM.getl10n("COMMON").next_lowercase + ")", lien: () => $('.btn_next.square.next_prev.small.button.button_new').click() }, //farmingvillage_down
             // Ajoute les autres raccourcis ici
         },
         setKey: (action, newKey) => {
-            newKey = newKey.replace(/Enter/g, '↵').replace(/ArrowLeft/g, '←').replace(/ArrowRight/g, '→').replace(/ArrowUp/g, '↑').replace(/ArrowDown/g, '↓').replace(/Shift/g, '⇧').replace(/CapsLock/g, '⇪').replace(/Backspace/g, '⌫').replace(/Tab/g, '↹').replace(/'/g, '‘').replace(/"/g, '”');
+            newKey = newKey.replace(/Enter/g, '↵').replace(/ArrowLeft/g, '←').replace(/ArrowRight/g, '→').replace(/ArrowUp/g, '↑').replace(/ArrowDown/g, '↓').replace(/Backspace/g, '⌫').replace(/Tab/g, '↹').replace(/'/g, '‘').replace(/"/g, '”');
             DATA.hotkeys[action].key = newKey
             $(`#key_${action}`).text(newKey);
             $(`#Popup_key_${action}`).text(newKey);
@@ -10840,11 +10841,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             $(`#modify_${action}`).addClass("filter")
             $(document).off('keydown'); // Désactiver la capture de touches en cas de clic sur "Appuyez sur une touche..."
             $(document).on('keydown', function (e) {
-                e.preventDefault();
-                uw.DIO_hotkeysConfig.setKey(action, e.key);
-                uw.DIO_hotkeysConfig.hotkeys(); // Réactiver les hotkeys après modification
-                $(document).off('keydown'); // Arrêter l'écouteur après avoir capturé la nouvelle touche
-                $(`#hotkeys_interface .edit_icon`).removeClass("filter")
+                if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key !== "Shift" && e.key !== "CapsLock" && e.key !== "AltGraph") {
+                    e.preventDefault();
+                    uw.DIO_hotkeysConfig.setKey(action, e.key);
+                    uw.DIO_hotkeysConfig.hotkeys(); // Réactiver les hotkeys après modification
+                    $(document).off('keydown'); // Arrêter l'écouteur après avoir capturé la nouvelle touche
+                    $(`#hotkeys_interface .edit_icon`).removeClass("filter");
+                }
             });
         },
         deleteKey: (action) => {
@@ -10919,7 +10922,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     let actionKey = e.key;
                     for (let action in DATA.hotkeys) { // Parcours des raccourcis
                         let config = DATA.hotkeys[action];
-                        let config_key = config.key.replace(/↵/g, 'Enter').replace(/←/g, 'ArrowLeft').replace(/→/g, 'ArrowRight').replace(/↑/g, 'ArrowUp').replace(/↓/g, 'ArrowDown').replace(/⇧/g, 'Shift').replace(/⇪/g, 'CapsLock').replace(/⌫/g, 'Backspace').replace(/↹/g, 'Tab').replace(/‘/g, '\'').replace(/”/g, '\"');
+                        let config_key = config.key.replace(/↵/g, 'Enter').replace(/←/g, 'ArrowLeft').replace(/→/g, 'ArrowRight').replace(/↑/g, 'ArrowUp').replace(/↓/g, 'ArrowDown').replace(/⌫/g, 'Backspace').replace(/↹/g, 'Tab').replace(/‘/g, '\'').replace(/”/g, '\"');
                         // Gestion de la sensibilité à la casse
                         let keyToCheck = config.case ? actionKey : actionKey.toUpperCase();
                         let keyConfigured = config.case ? config_key : config_key.toUpperCase();
@@ -10932,6 +10935,33 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     };
                 };
             };
+        },
+        currentGroupId: -1, // Initialise la variable de groupe actuel
+        groups: {}, // Contiendra les groupes
+        TownGroups: (Position) => {
+            function loadTownGroups() { // Fonction pour charger les groupes
+                uw.DIO_hotkeysConfig.groups = uw.ITowns.townGroups.getGroupsDIO();
+                delete uw.DIO_hotkeysConfig.groups[-2]; // Supprime le groupe avec l'ID -2
+            }
+            function changeGroup(groupId) { // Fonction pour changer de groupe
+                if (uw.DIO_hotkeysConfig.groups[groupId]) {
+                    uw.DIO_hotkeysConfig.currentGroupId = groupId;
+                    if (uw.DIO_hotkeysConfig.currentGroupId === 0) return
+                    uw.ITowns.setActiveTownGroup(groupId)
+                    setTimeout(() => {
+                        uw.HumanMessage.success(uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " : " + uw.ITowns.town_groups._byId[uw.DIO_hotkeysConfig.currentGroupId].attributes.name);
+                        uw.HelperTown.switchToNextTown()
+                        uw.HelperTown.switchToPreviousTown()
+                    }, 300);
+                }
+            }
+            loadTownGroups(); // Chargement initial des groupes
+            // Raccourcis clavier
+            let groupIds = Object.keys(uw.DIO_hotkeysConfig.groups).map(Number).sort((a, b) => a - b);
+            let currentIndex = groupIds.indexOf(uw.DIO_hotkeysConfig.currentGroupId);
+            if (Position === 'prev') uw.DIO_hotkeysConfig.currentGroupId = currentIndex > 0 ? groupIds[currentIndex - 1] : groupIds[groupIds.length - 1]; // Passage au groupe précédent
+            else if (Position === 'next') uw.DIO_hotkeysConfig.currentGroupId = currentIndex < groupIds.length - 1 ? groupIds[currentIndex + 1] : groupIds[0]; // Passage au groupe suivant
+            changeGroup(uw.DIO_hotkeysConfig.currentGroupId)
         },
         deactivate: () => {
             $('#dio_BTN_HK').remove();
