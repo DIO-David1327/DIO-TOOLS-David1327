@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.35.5
+// @version		4.35.6
 // @author		DIONY and David1327
 // @description Version 2024. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2024. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -2114,7 +2114,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 case "/player/get_profile_html":
                     //if (DATA.options.dio_BBt) BBtowninfo.profile();
                     if (DATA.options.dio_BBt) BBtowninfo.add(action.split("/")[1]);
-                    //9999 if (david1327) Radar.info(action.split("/")[1]);
+                    if (uw.DIO_TOOLS.Radar != undefined) uw.DIO_TOOLS.Radar.info(action.split("/")[1]); //9999
                     //if (DATA.options.dio_BBt)
                     if (DATA.options.dio_BBl) BBcodeList.player_towns();
                     if (DATA.options.dio_Idl) idle.add(action.split("/")[1]);
@@ -2122,7 +2122,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 case "/alliance/profile":
                     //if (DATA.options.dio_BBt) BBtowninfo.profile_alliance();
                     if (DATA.options.dio_BBt) BBtowninfo.add(action.split("/")[1]);
-                    //9999if (david1327) Radar.info(action.split("/")[1]);
+                    if (uw.DIO_TOOLS.Radar != undefined) uw.DIO_TOOLS.Radar.info(action.split("/")[1]); //9999
                     //if (DATA.options.dio_BBt)
                     if (DATA.options.dio_BBl) BBcodeList.alliance_player();
                     if (DATA.options.dio_Amm) ally_mass_mail.add();
@@ -2237,20 +2237,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 '#link_bug_report { width: 95px; top: 58px; left: 460px; z-index: 1; } ' +
                 '</style>').appendTo('head');
 
-            // Xmas -> 28 days
-            dio.img_Xmas = dio.daystamp(334, 361); // 1. Dezember (334) / 28. Dezember (361)
-            // Easter-Smileys -> 23 days
-            dio.img_Easter = dio.daystamp(88, 110); // 30. march (88) / 21. april (110)
-            // Halloween -> 15 days
-            dio.img_Halloween = dio.daystamp(295, 321); // 23. Oktober / 8. November
-
-            if (dio.img_Xmas) { dio_img = Home_url + "/img/dio/icon-xmas.gif"; }
-            if (dio.img_Easter) { dio_img = Home_url + "/img/dio/icon-paques.png"; }
-            //if (dio.img_Halloween) { dio_img = Home_url + ""; }
+            dio.img_Xmas = dio.daystamp(334, 361); // 1. Dezember (334) / 28. Dezember (361) // Xmas -> 28 days
+            dio.img_Easter = dio.daystamp(88, 110); // 30. march (88) / 21. april (110) // Easter-Smileys -> 23 days
+            dio.img_Halloween = dio.daystamp(295, 321); // 23. Oktober / 8. November // Halloween -> 15 days
+            if (dio.img_Xmas) dio_img = Home_url + "/img/dio/icon-xmas.gif";
+            if (dio.img_Easter) dio_img = Home_url + "/img/dio/icon-paques.png";
+            if (dio.img_Halloween) dio_img = Home_url + "/img/dio/icon-halloween.png";
 
             $('<style id="dio_BBplayer_style"> ' +
                 '.dio_icon { background:url(' + dio_img + ') no-repeat 0px 0px; background-size: 100%;} ' +
-                '.dio_icon.b { width: 26px; height: 22px; float: left; margin: -2px 5px 0 0;} ' +
+                '.dio_icon.b { width: 26px; height: 22px; float: left; margin: -2px 5px 0 0; background-position: center;} ' +
                 '.dio_icon.Title { width: 26px; height: 22px; float: left; margin: -3px -1px 0 -8px;} ' +
                 '</style>').appendTo("head");
         },
@@ -4587,6 +4583,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 land: uw.Game.world_id.substring(0, 2),
             };
 
+            uw.DIO_TOOLS.Notification = Notification;
+            uw.DIO_TOOLS.openSettings = openSettings;
+            uw.DIO_TOOLS.dio = dio;
+
             var script = uw.DIO_TOOLS.info_dio.script;
             setTimeout(() => {
                 script.grcrt = (typeof (uw.GRCRT_Notifications) !== "undefined" ? true : false);
@@ -6138,7 +6138,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         case "info":
                             if (DATA.options.dio_BBt) BBtowninfo.towninfo(wnd);
                             if (DATA.options.dio_BBt) BBtowninfo.add(action);
-                            //9999 if (david1327) Radar.info(action);
+                            if (uw.DIO_TOOLS.Radar != undefined) uw.DIO_TOOLS.Radar.info(action); //9999
                             if (DATA.options.dio_Idl) idle.add(action);
                             break;
                         case "support":
@@ -10581,10 +10581,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             city_select: { code: 1, Images: "city_select", Texts: getTexts("hotkeys", "city_select") },
             menu: { code: 1, Images: "menu", Texts: getTexts("hotkeys", "menu") },
             administrator: { code: 1, Images: "administrator", Texts: uw.DM.getl10n("advisor").curator },
-            captain: { code: 1, Images: "captain", Texts: getTexts("hotkeys", "captain") },
+            captain: { code: 2, Images: "captain", Texts: getTexts("hotkeys", "captain") },
             buildings: { code: 2, Images: "city_select", Texts: uw.DM.getl10n("docks").buildings },
             Agora: { code: 2, Images: "city_select", Texts: "Agora" },
-            settings: { code: 2, Images: "menu", Texts: uw.DM.getl10n("layout").main_menu.items.settings },
+            settings: { code: 1, Images: "menu", Texts: uw.DM.getl10n("layout").main_menu.items.settings },
             other: { code: 2, Images: "menu", Texts: uw.DM.getl10n("report").inbox.filter_types.misc },
         },
         activate: () => {
@@ -10604,6 +10604,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     '#hotkeys_interface .checkbox_new.large .cbx_icon { height: 22px;}' +
                     '#hotkeys_interface #aide { position: absolute; bottom: -34px; }' +
                     '#delete_aa, #caseSensitive_aa, #modify_aa, #delete_zz, #caseSensitive_zz, #modify_zz {display: none!important;}' +
+                    '#logo_key_aa, #logo_key_zz { margin-left: 73px; }' +
                     '</style>').appendTo('head');
 
                 for (var action in uw.DIO_hotkeysConfig.keys) if (!DATA.hotkeys[action]) DATA.hotkeys[action] = JSON.parse(JSON.stringify(uw.DIO_hotkeysConfig.keys[action]));
@@ -10653,7 +10654,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     interfaceHTMLleft += `<span style="margin-bottom:-11px;margin-top:2px;border-bottom:1px solid #B48F45; width:100%;display:block"><span style="display:inline-block;height:17px;width:17px;vertical-align:middle;margin-right:5px;background-image:url(${b[0]})"></span><span style="display:inline-block;height:17px;vertical-align:middle">${a}:</span></span><br/>`;
                     $.each(b, function (c, d) {
                         if (c != 0) mousePopupHTMLleft += `<span class="logo_key"><span id="Popup_key_${d[2]}" class="touch_key">${d[0]}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span><br/>`;
-                        if (c != 0) interfaceHTMLleft += `<span><a id="delete_${d[2]}" class="cancel" onclick="uw.DIO_hotkeysConfig.deleteKey('${d[2]}')"></a><div id="caseSensitive_${d[2]}" class="caseSensitive checkbox_new large ${DATA.hotkeys[d[2]].case ? 'checked' : ''}"><div class="cbx_icon"></div><div class="cbx_caption"></div></div><div id="modify_${d[2]}" class="edit_icon"></div><span class="logo_key"><span id="key_${d[2]}" class="touch_key">${DATA.hotkeys[d[2]].key}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span></span><br/>`
+                        if (c != 0) interfaceHTMLleft += `<span><a id="delete_${d[2]}" class="cancel" onclick="uw.DIO_hotkeysConfig.deleteKey('${d[2]}')"></a><div id="caseSensitive_${d[2]}" class="caseSensitive checkbox_new large ${DATA.hotkeys[d[2]].case ? 'checked' : ''}"><div class="cbx_icon"></div><div class="cbx_caption"></div></div><div id="modify_${d[2]}" class="edit_icon"></div><span id="logo_key_${d[2]}" class="logo_key"><span id="key_${d[2]}" class="touch_key">${DATA.hotkeys[d[2]].key}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span></span><br/>`
                     });
                 });
                 $.each(mousePopupArrayright, function (a, b) {
@@ -10661,7 +10662,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     interfaceHTMLright += `<span style="margin-bottom:-11px;margin-top:2px;border-bottom:1px solid #B48F45; width:100%;display:block"><span style="display:inline-block;height:17px;width:17px;vertical-align:middle;margin-right:5px;background-image:url(${b[0]})"></span><span style="display:inline-block;height:17px;vertical-align:middle">${a}:</span></span><br/>`;
                     $.each(b, function (c, d) {
                         if (c != 0) mousePopupHTMLright += `<span class="logo_key"><span id="Popup_key_${d[2]}" class="touch_key">${d[0]}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span><br/>`;
-                        if (c != 0) interfaceHTMLright += `<span><a id="delete_${d[2]}" class="cancel" onclick="uw.DIO_hotkeysConfig.deleteKey('${d[2]}')"></a><div id="caseSensitive_${d[2]}" class="caseSensitive checkbox_new large ${DATA.hotkeys[d[2]].case ? 'checked' : ''}"><div class="cbx_icon"></div><div class="cbx_caption"></div></div><div id="modify_${d[2]}" class="edit_icon"></div><span class="logo_key"><span id="key_${d[2]}" class="touch_key">${DATA.hotkeys[d[2]].key}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span></span><br/>`
+                        if (c != 0) interfaceHTMLright += `<span><a id="delete_${d[2]}" class="cancel" onclick="uw.DIO_hotkeysConfig.deleteKey('${d[2]}')"></a><div id="caseSensitive_${d[2]}" class="caseSensitive checkbox_new large ${DATA.hotkeys[d[2]].case ? 'checked' : ''}"><div class="cbx_icon"></div><div class="cbx_caption"></div></div><div id="modify_${d[2]}" class="edit_icon"></div><span id="logo_key_${d[2]}" class="logo_key"><span id="key_${d[2]}" class="touch_key">${DATA.hotkeys[d[2]].key}</span></span><span id="action_${d[2]}" class="action_key">${d[1]}</span></span><br/>`
                     });
                 });
                 $('#dio_BTN_HK').mousePopup(new uw.MousePopup(mousePopupHTMLleft + mousePopupHTMLright));
@@ -10693,7 +10694,6 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                 for (var action in DATA.hotkeys) grg(action) // Mettre à jour l'affichage
                             });
                         });
-
                         $("#hotkeys_interface .caseSensitive.checkbox_new").click(function () { // Mettre à jour la sensibilité à la casse pour l'action donnée
                             $(this).toggleClass("checked");
                             action = $(this).attr('id').replace(/caseSensitive_/g, '')
@@ -10719,6 +10719,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             aa: { key: '←', case: false },
             zz: { key: '→', case: false },
             mapJump: { key: '↵', case: false },
+            TownGroups_ALL: { key: '', case: false },
             TownGroups_prev: { key: '<', case: false },
             TownGroups_next: { key: '>', case: false },
             city_overview: { key: MID == 'fr' ? "V" : 'C', case: false },
@@ -10740,12 +10741,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             GodsOverview: { key: '8', case: false },
             HidesOverview: { key: '9', case: false },
             TownGroupOverview: { key: '0', case: false },
-            FarmTownOverview: { key: "X", case: false },
-            AttackPlanner: { key: (MID == 'de' ? "R" : "B"), case: false },
-            AttackPlannerattacks: { key: '', case: false },
-            AttackPlanner_1: { key: "", case: false },
-            AttackPlanner_2: { key: "", case: false },
-            AttackPlanner_3: { key: "", case: false },
+            TownsOverview: { key: '-', case: false },
 
             Main: { key: 'S', case: false },
             Hide: { key: 'G', case: false },
@@ -10768,12 +10764,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             Reservation: { key: '', case: false },
             farm_btn_prev: { key: '↑', case: false },
             farm_btn_next: { key: '↓', case: false },
+
+            FarmTownOverview: { key: "X", case: false },
+            AttackPlanner: { key: (MID == 'de' ? "R" : "B"), case: false },
+            AttackPlannerattacks: { key: '', case: false },
+            AttackPlanner_1: { key: "", case: false },
+            AttackPlanner_2: { key: "", case: false },
+            AttackPlanner_3: { key: "", case: false },
             // Ajoute les autres raccourcis ici
         },
         keysName: {
             aa: { menu: "city_select", name: getTexts("hotkeys", "last_city"), lien: () => "" },
             zz: { menu: "city_select", name: getTexts("hotkeys", "next_city"), lien: () => "" },
             mapJump: { menu: "city_select", name: getTexts("hotkeys", "jump_city"), lien: () => uw.WMap.mapJump({ 'id': + uw.Game.townId, 'ix': uw.WMap.islandPosition.x, 'iy': uw.WMap.islandPosition.y }) },
+            TownGroups_ALL: { menu: "city_select", name: uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " \"" + uw.DM.getl10n("report").inbox.filter_types.all + "\"", lien: () => uw.DIO_hotkeysConfig.TownGroups("all") },
             TownGroups_prev: { menu: "city_select", name: uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " (" + uw.DM.getl10n("COMMON").prev_lowercase + ")", lien: () => uw.DIO_hotkeysConfig.TownGroups("prev") },
             TownGroups_next: { menu: "city_select", name: uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " (" + uw.DM.getl10n("COMMON").next_lowercase + ")", lien: () => uw.DIO_hotkeysConfig.TownGroups("next") },
             city_overview: { menu: "menu", name: uw.DM.getl10n("town_index").window_title, lien: () => !$("#ui_box .bull_eye_buttons .city_overview").hasClass('checked') ? $("#ui_box .bull_eye_buttons .city_overview").click() : $("#ui_box .bull_eye_buttons .island_view").click() },
@@ -10795,12 +10799,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             GodsOverview: { menu: "administrator", name: Text_premium.gods_overview, lien: () => uw.TownOverviewWindowFactory.openGodsOverview() },
             HidesOverview: { menu: "administrator", name: Text_premium.hides_overview, lien: () => uw.TownOverviewWindowFactory.openHidesOverview() },
             TownGroupOverview: { menu: "administrator", name: Text_premium.town_group_overview, lien: () => uw.TownOverviewWindowFactory.openTownGroupOverview() },
-            FarmTownOverview: { menu: "captain", name: Text_premium.farm_town_overview, lien: () => uw.TownOverviewWindowFactory.openTownsOverview() },
-            AttackPlanner: { menu: "captain", name: Text_premium.attack_planer, lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); $(`#attack_planer-index`).click() } },
-            AttackPlannerattacks: { menu: "captain", name: Text_premium.attack_planer + " 2", lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); $(`#attack_planer-attacks`).click() } },
-            AttackPlanner_1: { menu: "captain", name: getTexts("hotkeys", "hotkeys") + " 1 (" + DATA.planNames.hotkeys_plan_1 + ")", lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); uw.DIO_hotkeysConfig.add("Planner", 1) } },
-            AttackPlanner_2: { menu: "captain", name: getTexts("hotkeys", "hotkeys") + " 2 (" + DATA.planNames.hotkeys_plan_2 + ")", lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); uw.DIO_hotkeysConfig.add("Planner", 2) } },
-            AttackPlanner_3: { menu: "captain", name: getTexts("hotkeys", "hotkeys") + " 3 (" + DATA.planNames.hotkeys_plan_3 + ")", lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); uw.DIO_hotkeysConfig.add("Planner", 3) } },
+            TownsOverview: { menu: "administrator", name: Text_premium.towns_overview, lien: () => uw.TownOverviewWindowFactory.openTownsOverview() },
 
             Main: { menu: "buildings", name: dio.getName("main"), lien: () => uw.MainWindowFactory.openMainWindow() },
             Hide: { menu: "buildings", name: dio.getName("hide"), lien: () => uw.HideWindowFactory.openHideWindow() },
@@ -10820,9 +10819,16 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             lumber: { menu: "other", name: dio.getName("lumber"), lien: () => uw.LumberWindowFactory.openLumberWindow() },
             stoner: { menu: "other", name: dio.getName("stoner"), lien: () => uw.StonerWindowFactory.openStonerWindow() },
             ironer: { menu: "other", name: dio.getName("ironer"), lien: () => uw.IronerWindowFactory.openIronerWindow() },
-            Reservation: { menu: "other", name: uw.DM.getl10n("report").inbox.filter_types.reservations, lien: () => uw.hOpenWindow.openReservationList() }, //Reservation
-            farm_btn_prev: { menu: "other", name: getTexts("hotkeys", "farming_villages") + " (" + uw.DM.getl10n("COMMON").prev_lowercase + ")", lien: () => $('.btn_prev.square.next_prev.small.button.button_new').click() }, //farmingvillage_up
-            farm_btn_next: { menu: "other", name: getTexts("hotkeys", "farming_villages") + " (" + uw.DM.getl10n("COMMON").next_lowercase + ")", lien: () => $('.btn_next.square.next_prev.small.button.button_new').click() }, //farmingvillage_down
+            Reservation: { menu: "other", name: uw.DM.getl10n("report").inbox.filter_types.reservations, lien: () => uw.hOpenWindow.openReservationList() },
+            farm_btn_prev: { menu: "other", name: getTexts("hotkeys", "farming_villages") + " (" + uw.DM.getl10n("COMMON").prev_lowercase + ")", lien: () => $('.btn_prev.square.next_prev.small.button.button_new').click() },
+            farm_btn_next: { menu: "other", name: getTexts("hotkeys", "farming_villages") + " (" + uw.DM.getl10n("COMMON").next_lowercase + ")", lien: () => $('.btn_next.square.next_prev.small.button.button_new').click() },
+
+            FarmTownOverview: { menu: "captain", name: Text_premium.farm_town_overview, lien: () => uw.FarmTownOverviewWindowFactory.openFarmTownOverview() },
+            AttackPlanner: { menu: "captain", name: Text_premium.attack_planer, lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); $(`#attack_planer-index`).click() } },
+            AttackPlannerattacks: { menu: "captain", name: Text_premium.attack_planer + " 2", lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); $(`#attack_planer-attacks`).click() } },
+            AttackPlanner_1: { menu: "captain", name: getTexts("hotkeys", "hotkeys") + " 1 (" + DATA.planNames.hotkeys_plan_1 + ")", lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); uw.DIO_hotkeysConfig.add("Planner", 1) } },
+            AttackPlanner_2: { menu: "captain", name: getTexts("hotkeys", "hotkeys") + " 2 (" + DATA.planNames.hotkeys_plan_2 + ")", lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); uw.DIO_hotkeysConfig.add("Planner", 2) } },
+            AttackPlanner_3: { menu: "captain", name: getTexts("hotkeys", "hotkeys") + " 3 (" + DATA.planNames.hotkeys_plan_3 + ")", lien: () => { uw.AttackPlannerWindowFactory.openAttackPlannerWindow(); uw.DIO_hotkeysConfig.add("Planner", 3) } },
             // Ajoute les autres raccourcis ici
         },
         setKey: (action, newKey) => {
@@ -10941,17 +10947,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         TownGroups: (Position) => {
             function loadTownGroups() { // Fonction pour charger les groupes
                 uw.DIO_hotkeysConfig.groups = uw.ITowns.townGroups.getGroupsDIO();
-                delete uw.DIO_hotkeysConfig.groups[-2]; // Supprime le groupe avec l'ID -2
+                delete uw.DIO_hotkeysConfig.groups[-2]; // Supprime le groupe avec l'ID -2 "Aucun groupe"
             }
             function changeGroup(groupId) { // Fonction pour changer de groupe
                 if (uw.DIO_hotkeysConfig.groups[groupId]) {
-                    uw.DIO_hotkeysConfig.currentGroupId = groupId;
                     if (uw.DIO_hotkeysConfig.currentGroupId === 0) return
                     uw.ITowns.setActiveTownGroup(groupId)
                     setTimeout(() => {
                         uw.HumanMessage.success(uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " : " + uw.ITowns.town_groups._byId[uw.DIO_hotkeysConfig.currentGroupId].attributes.name);
-                        uw.HelperTown.switchToNextTown()
-                        uw.HelperTown.switchToPreviousTown()
+                        uw.HelperTown.switchToNextTown(); uw.HelperTown.switchToPreviousTown();
                     }, 300);
                 }
             }
@@ -10959,8 +10963,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             // Raccourcis clavier
             let groupIds = Object.keys(uw.DIO_hotkeysConfig.groups).map(Number).sort((a, b) => a - b);
             let currentIndex = groupIds.indexOf(uw.DIO_hotkeysConfig.currentGroupId);
-            if (Position === 'prev') uw.DIO_hotkeysConfig.currentGroupId = currentIndex > 0 ? groupIds[currentIndex - 1] : groupIds[groupIds.length - 1]; // Passage au groupe précédent
-            else if (Position === 'next') uw.DIO_hotkeysConfig.currentGroupId = currentIndex < groupIds.length - 1 ? groupIds[currentIndex + 1] : groupIds[0]; // Passage au groupe suivant
+            if (Position === 'all') uw.DIO_hotkeysConfig.currentGroupId = -1; //Passage au groupe "Tout"
+            else if (Position === 'prev') uw.DIO_hotkeysConfig.currentGroupId = currentIndex > 0 ? groupIds[currentIndex - 1] : groupIds[groupIds.length - 1]; //Passage au groupe précédent
+            else if (Position === 'next') uw.DIO_hotkeysConfig.currentGroupId = currentIndex < groupIds.length - 1 ? groupIds[currentIndex + 1] : groupIds[0]; //Passage au groupe suivant
             changeGroup(uw.DIO_hotkeysConfig.currentGroupId)
         },
         deactivate: () => {
