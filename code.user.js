@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.35.6
+// @version		4.35.7
 // @author		DIONY and David1327
 // @description Version 2024. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2024. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -145,7 +145,6 @@ else if ((uw.location.pathname.indexOf("game") >= 0)) {
         //$('<script src="http://localhost:4000/test.js"></script>').appendTo("head");
     } catch (error) { console.log(error, '<script>') }
     appendScript();
-    //setTimeout(() => { appendScript(); }, 100);
 } // GAME
 else { DIO_FORUM(); }
 
@@ -652,6 +651,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     /*******************************************************************************************************************************
      * Language versions: German, Italian, English, French, Russian, Polish, Spanish, Romanian
      *******************************************************************************************************************************/
+    let LANG = ["br", "cz", "de", "en", "es", "fr", "gr", "it", "nl", "pl", "ro", "ru"]
     uw.DIO_LANG = {
         //////////////////////////////////////////////
         //            Translation AUTO              //
@@ -664,7 +664,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         //////////////////////////////////////////////
         //      English Translation                 //
         //////////////////////////////////////////////
-        en: { Notification: {}, link: { update: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js", update_direct: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js", Donate: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url", Update: "https://dio-david1327.github.io/en/news/update/", contact: "https://dio-david1327.github.io/en/", forum: "https://en.forum.grepolis.com/index.php?threads/dio-tools-david1327.62408/", link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html", link_utile: "https://www.tuto-de-david1327.com/en/pages/info/utility-sites.html", available_units: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/units-overview.html", UnitComparison: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/unit-comparison.html", MessageExport: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/bb-code-messages.html", Translations: "https://dio-david1327.github.io/en/wiki/translations.html", }, Settings: { Settings: "Settings", dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.", act: "Activate/deactivate features of the toolset:", prv: "Preview of several features:", version_old: "Version is not up to date", version_new: "Version is up to date", version_dev: "Developer version", version_update: "Update", Donate: "Donate", forum: "Tuto de david1327", Update: "Update", Feature: "New Feature", Feature2: "New version", Learn_more: "Learn more", cat_units: "Units", cat_icons: "Town icons", cat_forum: "Forum", cat_trade: "Trade", cat_wonders: "World wonder", cat_layout: "Layout", cat_other: "Miscellaneous", cat_Premium: "Premium", cat_Quack: "Quack", install: "install", reminder: "Remind me later", Available: "New version Available", reqreload: "Refresh required", reload: "Refresh", Comp_GRCT: "The following functions are not compatible with GRCT", Non_compatible: "Not compatible, enable in the settings of ", }, Options: { Options: "Options", ava: ["Units overview", "Counts the units of all cities"], ava2: ["Ocean number", "Extension unit"], sml: ["Smilies", "Extends the bbcode bar by a smiley box"], str: ["Unit strength", "Adds unit strength tables in various areas"], tra: ["Transport capacity", "Shows the occupied and available transport capacity in the unit menu"], per: ["Percentual trade", "Extends the trade window by a percentual trade"], rec: ["Recruiting trade", "Extends the trade window by a recruiting trade"], cnt: ["Conquests", "Counts the attacks/supports in the conquest window"], way: ["Troop speed", "Displays improved troop speed in the attack/support window"], sim: ["Simulator", "Adaptation of the simulator layout & permanent display of the extended modifier box"], act: ["Activity boxes", "Improved display of trade and recruitment (position memory)"], pop: ["Favor popup", "Changes the favor popup"], tsk: ["Taskbar", "Increases the taskbar"], rew: ["Daily reward", "Minimizes the daily reward window on startup"], bbc: ["Defense form", "Extends the bbcode bar by an automatic defense form"], com: ["Unit Comparison", "Adds unit comparison tables"], tic: ["Town icons", "Each city receives an icon for the town type (automatic detection)", "Additional icons are available for manual selection"], tic2: ["Automatic detection", ""], til: ["Town list", "Adds the town icons to the town list"], tim: ["Map", "Sets the town icons on the strategic map"], tiw: ["Icons Popup", ""], wwc: ["Calculator", "Share calculation & resources counter + previous & next buttons on finished world wonders (currently not deactivatable!)"], wwr: ["Ranking", "Redesigned world wonder rankings"], wwi: ["Icons", 'Adds world wonder icons on the strategic map'], con: ["Context menu", 'Swaps "Select town" and "City overview" in the context menu'], sen: ["Sent units", 'Shows sent units in the attack/support window'], tov: ["Town overview", 'Replaces the new town overview with the old window style'], scr: ["Mouse wheel", 'You can change the views with the mouse wheel'], Scr: ["Scrollbar", 'Change the style of the scrollbar (Not available on firefox)'], tow: ["Town bbcode", "Adds the town bbcode to the town tab"], Fdm: ["Select and delete several messages", "You can delete more than one messages. Quack function"], Sel: ["Add (No overloading / Delete)", "Improvement of new tools on the attack and support window. Quack function"], Cul: ["Culture overview (Administrator)", "Add a counter for the party in the culture view. Quack function"], Hot: ["Keyboard shortcuts for Windows", "It changes your life"], Isl: ["Visualization of the island", "Increase the height of the list of cities and villages"], Ish: ["Overview of peasant villages (Captain)", "Automatically hide the city. Quack function"], Hio: ["Caves overview (Administrator)", "Allow sorting of cities. Quack function"], Hid: ["Cave", "Enter silver above 15000 automatically into the input field. Quack function"], Tol: ["List of cities in BB-Code", "Copy & Paste. Quack function"], Cib: ["City view button", 'Add a button for opening the city view to the sidemenu of Greplis. Quack function'], Ciw: ["City view", "Display the city view in a window. Quack function"], Tti: ["Trade resources for festivals", "Click on it and it is only exchanged towards a festival. Quack function"], Mse: ["BB-Code messages", "Convert messages to BB-Code. Quack function"], Rep: ["Reports", "Adding a color filter. Quack function"], BBt: ["BBcode button Player Info", "Addition of a BBcode button (player and alliance)"], Rtt: ["Removal of the unit tooltips", ""], Cup: ["Advancement of Culture (Administrator)", "Changed the presentation of the progress bar and added a progress bar for crops. Function of Akiway"], Cuo: ["Points of Culture (Administrator)", "Add a counter for the Points of Culture. Quack function"], Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"], FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""], Mole: ["Not compatible to activate in the parameters of Mole Hole", ""], Cic: ["City view", "City view construction mode is selected by default"], Cuc: ["Culture overview filtering (Administrator)", "Allow sorting of cities."], Buc: ["Building overview filtering (Administrator)", "Allow sorting of cities."], BBl: ["BBcode List", "Generates a BB-code list, ideal for displaying alliance members or a player's cities"], Amm: ["Group Message (alliance)", "Adds a button on the alliance profile to facilitate sending group messages"], Onb: ["Ocean Number", "Integrates ocean numbers into the island view, improving navigation."], Idl: ["Inactive Player", "Displays inactive players for more effective management. Powered by GREPODATA"], Saw: ["Wall Backup", "Allows for the backup of troops in the walls, ensuring enhanced protection"], Att: ["Attack Alarm", "Receive instant warnings when under attack, reinforcing your security"], Comp_GRCT: "The following functions are not compatible with GRCT", Non_compatible: "Not compatible, enable in the settings of ", err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."], }, movement: { movement: 'Movement', off: 'Incoming attack', offs: 'Incoming attacks', def: 'Incoming support', defs: 'Incoming support', }, Town_icons: { Town_icons: "Town icons", LandOff: "Land Offensive", LandDef: "Land Defensive", NavyOff: "Navy Offensive", NavyDef: "Navy Defensive", FlyOff: "Fly Offensive", FlyDef: "Fly Defensive", Out: "Outside", Emp: "Empty", }, Color: { Color: 'Color', Blue: 'Blue', Red: 'Red', Green: 'Green', Pink: 'Pink', White: "White", }, labels: { labels: "Labels", uni: "Units overview", total: "Total", available: "Available", outer: "Outside", con: "Select town", std: "Standard", gre: "Grepo", nat: "Nature", ppl: "People", Par: "Party", oth: "Other", hal: "Halloween", xma: "Xmas", eas: "Easter", lov: "Love", ttl: "Overview: Town defense", inf: "Town information:", dev: "Deviation", det: "Detailed land units", prm: "Premium bonuses", sil: "Silver volume", mov: "Troop movements:", leg: "WW Share", stg: "Stage", tot: "Total", str: "Unit strength", los: "Loss", mod: "without modificator influence", dsc: "Unit comparison", hck: "Blunt", prc: "Sharp", dst: "Distance", sea: "Sea", att: "Offensive", def: "Defensive", spd: "Speed", bty: "Booty (resources)", cap: "Transport capacity", res: "Costs (resources)", fav: "Favor", tim: "Recruiting time (s)", rat: "Resource ratio of an unit type", shr: "Share of the storage capacity of the target city", per: "Percentage trade", lab: "Sent units", rec: "Resources", improved_movement: "Improved troop movement", Tran: "Translations", donat: "Donations", Happy: "Happy new year!", Merry: "Ho Ho Ho, Merry Christmas!", tow: "BBCode city", loc: "Local", ingame_name: ["Do not hesitate to contact me if you prefer to be called by your ingame name", "Since this is a great deal of work that can be very time-consuming I am always very grateful for any type of support. Therefore I would like to thank everyone who has offered support for this project - whether through donations, knowledge, creativity, bug reports or just some encouraging words."], raf: "By confirming the page will refresh", con: "Unit strength: Total strength of siege troops", Volume: "Volume", }, tutoriel: { tuto: "Useful info", reme: ["I thank all those who contributed to the development of DIO tools", ""], Trou: ["Grepolis Troops Specialization Tutorial - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"], util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."], }, Quack: { delete_mul: "Delete multiple messages", delete_sure: "Do you really want to delete these posts?", no_selection: "No posts selected", mark_All: "Mark All", no_overload: 'No overloading', delete: 'Delete', cityfestivals: 'City festivals', olympicgames: 'Olympic Games', triumph: 'Victory processions', theater: 'Theater plays' }, hotkeys: { hotkeys: 'Hotkeys', Senate: 'Senate', city_select: 'City selection', last_city: 'Last city', next_city: 'Next city', jump_city: 'Jump to current city', administrator: 'Administrator', captain: 'Captain', trade_ov: 'Trade', command_ov: 'Commands', recruitment_ov: 'Recruiting', troop_ov: 'Troop overview', troops_outside: 'Troops outside', building_ov: 'Buildings', culture_ov: 'Culture', gods_ov: 'Gods', cave_ov: 'hidesOverview', city_groups_ov: 'City groups', city_list: 'City list', attack_planner: 'Attack planner', farming_villages: 'Farming villages', menu: 'Menu', city_view: 'City view', messages: 'Messages', reports: 'Reports', alliance: 'Alliance', alliance_forum: 'Alliance forum', settings: 'Settings', profile: 'Profile', ranking: 'Ranking', notes: 'Notes', chat: 'Chat', council: 'Council of Heroes' }, messages: { messages: "Messages", ghosttown: "Ghost town", no_cities: "No cities on this island", all: "all", export: "Convert message into BB-Code", Tol: "Copy & Paste (Quack function)", copy: "Copy", bbmessages: "BB-Code messages", copybb: "BBCode has been copied", écrit: "has written the following:", cli: "The message was not copied", }, caves: { caves: "Caves", stored_silver: 'Stored silver coins', silver_to_store: 'Storable silver coins', name: 'Name', wood: 'Wood', stone: 'Stone', silver: 'Silver coins', search_for: 'Search for' }, grepo_mainmenu: { grepo_mainmenu: "Grepo mainmenu", city_view: "City view", island_view: "Island view" }, transport_calc: { transport_calc: "Transport capacity", recruits: "Count units in recruitment queue", slowtrans: "Count slow transport ships", fasttrans: "Count fast transport ships", Lack: "Lack", Still: "Still", pop: "available population. For the", Optipop: "Optimal population for", army: "You don't have an army.", }, reports: { reports: "Reports", choose_folder: 'Choose folder', enacted: 'enacted', conquered: 'conquered', spying: 'spying', spy: 'Spy', support: 'support', support2: "can't support", supporting: 'stationed', attacking: 'attacking', farming_village: 'farming village', gold: 'You have received', Quests: 'Quests', Reservations: 'Reservations', }, translations: { translations: 'Translations', info: 'Info', trans: 'Translation for language', translations: 'Translations', trans_sure: 'Are you sure that your translation is ready to be generated?', trans_success: 'The translation has been sent successfully', trans_fail: 'The translation could not be sent', trans_infotext1: 'Translation available', trans_infotext2: 'To modify or create a new language, choose the language in the drop-down menu', trans_infotext3: 'When a text contains HTML tags (thus everything which is surrounded by <> brackets) I ask you to keep them where you found them', trans_infotext4: 'When you have finished translating press', trans_infotext5: 'In order to be able to add you to the credits, your nickname will be generated', trans_infotext6: 'Copy the generated message, and paste it in a comment', please_note: 'Please note', credits: 'Credits', no_translation: 'No translation found', choose_lang: 'Choose language', add_lang: 'Add a new language', language: 'Language', enter_lang_name: 'Please enter a language name', send: 'Generate message', name: 'Name', add_edit: 'Add / edit', }, wall: { wall: "Wall", wallnotsaved: "Wall is not saved", wallsaved: "Wall is saved", msghuman: "The information has been saved", erreur: "An error occurred while writing", wantdeletecurrent: "Do you want to delete the current record of the wall ?", deletecurrent: "Delete the current record", listsaved: "Saved on the wall the day", liststate: "Condition of the wall on the day", nosaved: "No backup", Auto: "Auto mode", }, Radar: { Radar: "Search cities", find: "Search", maxunittime: "Maximum time", townname: "Town", unittime: "time", townowner: "Owner", townreserved: "Reservation", townpoints: "Minimal town points", btnsavedefault: "Save values as default", all: "Any town", showcities: "Show cities" }, TSL: { TSL: 'Towns Sorted List', tooltip: 'show sorted town' }, AO: { AO: 'Academy Overview' }, ABH: { ABH: 'Army Builder Helper', unitframe: 'choose your unit', description1: 'In this city, you have [population] free population', description2: 'Which is enough to build [max_units]', description3: 'You [yesno] have a [research] researched.', description4: 'You can queue up maximum of [max_queue] units', target: 'choose your build target', package: 'resource package per shipment (units)', btnsave: 'save settings', tooltipok: 'click, to select default unit for which you\'ll be sending resources', tooltipnotok: 'unit has not been researched', hasresearch: 'DO', noresearch: 'DO NOT', settingsaved: 'Settings for [city] have been saved', btnreset: 'reset', resleft: 'resources left to send', imgtooltip: 'click, to fill in resources', }, Stats: { player: 'Player stats', ally: 'Alliance stats', town: 'Town stats', inactive: 'Inactive', chkinactive: 'Show inactive players', inactivedesc: 'At that time there was no point fighting and expansion', }, buttons: { sav: "Save", ins: "Insert", res: "Reset" } },
+        en: { Notification: {}, link: { update: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js", update_direct: "https://dio-david1327.github.io/DIO-TOOLS-David1327/code.user.js", Donate: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7X8R9RK3TWGNN&source=url", Update: "https://dio-david1327.github.io/en/news/update/", contact: "https://dio-david1327.github.io/en/", forum: "https://en.forum.grepolis.com/index.php?threads/dio-tools-david1327.62408/", link_troupes: "https://www.tuto-de-david1327.com/pages/troupes-grepolis.html", link_utile: "https://www.tuto-de-david1327.com/en/pages/info/utility-sites.html", available_units: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/units-overview.html", UnitComparison: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/unit-comparison.html", MessageExport: "https://www.tuto-de-david1327.com/en/pages/dio-tools-david1327/wiki/bb-code-messages.html", Translations: "https://dio-david1327.github.io/en/wiki/translations.html", }, Settings: { Settings: "Settings", dsc: "DIO-Tools offers, among other things, some displays, a smiley box,<br>trade options and some changes to the layout.", act: "Activate/deactivate features of the toolset:", prv: "Preview of several features:", version_old: "Version is not up to date", version_new: "Version is up to date", version_dev: "Developer version", version_update: "Update", Donate: "Donate", forum: "Tuto de david1327", Update: "Update", Feature: "New Feature", Feature2: "New version", Learn_more: "Learn more", cat_units: "Units", cat_icons: "Town icons", cat_forum: "Forum", cat_trade: "Trade", cat_wonders: "World wonder", cat_layout: "Layout", cat_other: "Miscellaneous", cat_Premium: "Premium", cat_Quack: "Quack", install: "install", reminder: "Remind me later", Available: "New version Available", reqreload: "Refresh required", reload: "Refresh", Comp_GRCT: "The following functions are not compatible with GRCT", Non_compatible: "Not compatible, enable in the settings of ", }, Options: { Options: "Options", ava: ["Units overview", "Counts the units of all cities"], ava2: ["Ocean number", "Extension unit"], sml: ["Smilies", "Extends the bbcode bar by a smiley box"], str: ["Unit strength", "Adds unit strength tables in various areas"], tra: ["Transport capacity", "Shows the occupied and available transport capacity in the unit menu"], per: ["Percentual trade", "Extends the trade window by a percentual trade"], rec: ["Recruiting trade", "Extends the trade window by a recruiting trade"], cnt: ["Conquests", "Counts the attacks/supports in the conquest window"], way: ["Troop speed", "Displays improved troop speed in the attack/support window"], sim: ["Simulator", "Adaptation of the simulator layout & permanent display of the extended modifier box"], act: ["Activity boxes", "Improved display of trade and recruitment (position memory)"], pop: ["Favor popup", "Changes the favor popup"], tsk: ["Taskbar", "Increases the taskbar"], rew: ["Daily reward", "Minimizes the daily reward window on startup"], bbc: ["Defense form", "Extends the bbcode bar by an automatic defense form"], com: ["Unit Comparison", "Adds unit comparison tables"], tic: ["Town icons", "Each city receives an icon for the town type (automatic detection)", "Additional icons are available for manual selection"], tic2: ["Automatic detection", ""], til: ["Town list", "Adds the town icons to the town list"], tim: ["Map", "Sets the town icons on the strategic map"], tiw: ["Icons Popup", ""], wwc: ["Calculator", "Share calculation & resources counter + previous & next buttons on finished world wonders (currently not deactivatable!)"], wwr: ["Ranking", "Redesigned world wonder rankings"], wwi: ["Icons", 'Adds world wonder icons on the strategic map'], con: ["Context menu", 'Swaps "Select town" and "City overview" in the context menu'], sen: ["Sent units", 'Shows sent units in the attack/support window'], tov: ["Town overview", 'Replaces the new town overview with the old window style'], scr: ["Mouse wheel", 'You can change the views with the mouse wheel'], Scr: ["Scrollbar", 'Change the style of the scrollbar (Not available on firefox)'], tow: ["Town bbcode", "Adds the town bbcode to the town tab"], Fdm: ["Select and delete several messages", "You can delete more than one messages. Quack function"], Sel: ["Add (No overloading / Delete)", "Improvement of new tools on the attack and support window. Quack function"], Cul: ["Culture overview (Administrator)", "Add a counter for the party in the culture view. Quack function"], Hot: ["Keyboard shortcuts for Windows", "It changes your life"], Isl: ["Visualization of the island", "Increase the height of the list of cities and villages"], Ish: ["Overview of peasant villages (Captain)", "Automatically hide the city. Quack function"], Hio: ["Caves overview (Administrator)", "Allow sorting of cities. Quack function"], Hid: ["Cave", "Enter silver above 15000 automatically into the input field. Quack function"], Tol: ["List of cities in BB-Code", "Copy & Paste. Quack function"], Cib: ["City view button", 'Add a button for opening the city view to the sidemenu of Greplis. Quack function'], Ciw: ["City view", "Display the city view in a window. Quack function"], Tti: ["Trade resources for festivals", "Click on it and it is only exchanged towards a festival. Quack function"], Mse: ["BB-Code messages", "Convert messages to BB-Code. Quack function"], Rep: ["Reports", "Adding a color filter. Quack function"], BBt: ["BBcode button Player Info", "Addition of a BBcode button (player and alliance)"], Rtt: ["Removal of the unit tooltips", ""], Cup: ["Advancement of Culture (Administrator)", "Changed the presentation of the progress bar and added a progress bar for crops. Function of Akiway"], Cuo: ["Points of Culture (Administrator)", "Add a counter for the Points of Culture. Quack function"], Rct: ["Trade -> Resource counter (Administrator)", "A count of all the resources in your city"], FLASK: ["Not compatible to activate in the parameters of FLASK-TOOLS", ""], Mole: ["Not compatible to activate in the parameters of Mole Hole", ""], Cic: ["City view", "City view construction mode is selected by default"], Cuc: ["Culture overview filtering (Administrator)", "Allow sorting of cities."], Buc: ["Building overview filtering (Administrator)", "Allow sorting of cities."], BBl: ["BBcode List", "Generates a BB-code list, ideal for displaying alliance members or a player's cities"], Amm: ["Group Message (alliance)", "Adds a button on the alliance profile to facilitate sending group messages"], Onb: ["Ocean Number", "Integrates ocean numbers into the island view, improving navigation."], Idl: ["Inactive Player", "Displays inactive players for more effective management. Powered by GREPODATA"], Saw: ["Wall Backup", "Allows for the backup of troops in the walls, ensuring enhanced protection"], Att: ["Attack Alarm", "Receive instant warnings when under attack, reinforcing your security"], Comp_GRCT: "The following functions are not compatible with GRCT", Non_compatible: "Not compatible, enable in the settings of ", err: ["Send bug reports automatically", "If you activate this option, you can help identify bugs."], }, movement: { movement: 'Movement', off: 'Incoming attack', offs: 'Incoming attacks', def: 'Incoming support', defs: 'Incoming support', }, Town_icons: { Town_icons: "Town icons", LandOff: "Land Offensive", LandDef: "Land Defensive", NavyOff: "Navy Offensive", NavyDef: "Navy Defensive", FlyOff: "Fly Offensive", FlyDef: "Fly Defensive", Out: "Outside", Emp: "Empty", }, Color: { Color: 'Color', Blue: 'Blue', Red: 'Red', Green: 'Green', Pink: 'Pink', White: "White", }, labels: { labels: "Labels", uni: "Units overview", total: "Total", available: "Available", outer: "Outside", con: "Select town", std: "Standard", gre: "Grepo", nat: "Nature", ppl: "People", Par: "Party", oth: "Other", hal: "Halloween", xma: "Xmas", eas: "Easter", lov: "Love", ttl: "Overview: Town defense", inf: "Town information:", dev: "Deviation", det: "Detailed land units", prm: "Premium bonuses", sil: "Silver volume", mov: "Troop movements:", leg: "WW Share", stg: "Stage", tot: "Total", str: "Unit strength", los: "Loss", mod: "without modificator influence", dsc: "Unit comparison", hck: "Blunt", prc: "Sharp", dst: "Distance", sea: "Sea", att: "Offensive", def: "Defensive", spd: "Speed", bty: "Booty (resources)", cap: "Transport capacity", res: "Costs (resources)", fav: "Favor", tim: "Recruiting time (s)", rat: "Resource ratio of an unit type", shr: "Share of the storage capacity of the target city", per: "Percentage trade", lab: "Sent units", rec: "Resources", improved_movement: "Improved troop movement", Tran: "Translations", donat: "Donations", Happy: "Happy new year!", Merry: "Ho Ho Ho, Merry Christmas!", tow: "BBCode city", loc: "Local", ingame_name: ["Do not hesitate to contact me if you prefer to be called by your ingame name", "Since this is a great deal of work that can be very time-consuming I am always very grateful for any type of support. Therefore I would like to thank everyone who has offered support for this project - whether through donations, knowledge, creativity, bug reports or just some encouraging words."], raf: "By confirming the page will refresh", con: "Unit strength: Total strength of siege troops", Volume: "Volume", }, tutoriel: { tuto: "Useful info", reme: ["I thank all those who contributed to the development of DIO tools", ""], Trou: ["Grepolis Troops Specialization Tutorial - tuto de david1327", "What you need to know about the troupe of grepolis Strengths / weaknesses of the units"], util: ["Utility sites for grepolis - Tuto de david1327", "A multitude of tools for Grepolis: Statistics, Maps, Tools, Script, Forum ... they are all listed here."], }, Quack: { delete_mul: "Delete multiple messages", delete_sure: "Do you really want to delete these posts?", no_selection: "No posts selected", mark_All: "Mark All", no_overload: 'No overloading', delete: 'Delete', cityfestivals: 'City festivals', olympicgames: 'Olympic Games', triumph: 'Victory processions', theater: 'Theater plays' }, hotkeys: { hotkeys: 'Hotkeys', Senate: 'Senate', city_select: 'City selection', last_city: 'Last city', next_city: 'Next city', jump_city: 'Jump to current city', administrator: 'Administrator', captain: 'Captain', trade_ov: 'Trade', command_ov: 'Commands', recruitment_ov: 'Recruiting', troop_ov: 'Troop overview', troops_outside: 'Troops outside', building_ov: 'Buildings', culture_ov: 'Culture', gods_ov: 'Gods', cave_ov: 'hidesOverview', city_groups_ov: 'City groups', city_list: 'City list', attack_planner: 'Attack planner', farming_villages: 'Farming villages', menu: 'Menu', city_view: 'City view', messages: 'Messages', reports: 'Reports', alliance: 'Alliance', alliance_forum: 'Alliance forum', settings: 'Settings', profile: 'Profile', ranking: 'Ranking', notes: 'Notes', chat: 'Chat', council: 'Council of Heroes', Configure: 'Configure shortcuts', }, messages: { messages: "Messages", ghosttown: "Ghost town", no_cities: "No cities on this island", all: "all", export: "Convert message into BB-Code", Tol: "Copy & Paste (Quack function)", copy: "Copy", bbmessages: "BB-Code messages", copybb: "BBCode has been copied", écrit: "has written the following:", cli: "The message was not copied", }, caves: { caves: "Caves", stored_silver: 'Stored silver coins', silver_to_store: 'Storable silver coins', name: 'Name', wood: 'Wood', stone: 'Stone', silver: 'Silver coins', search_for: 'Search for' }, grepo_mainmenu: { grepo_mainmenu: "Grepo mainmenu", city_view: "City view", island_view: "Island view" }, transport_calc: { transport_calc: "Transport capacity", recruits: "Count units in recruitment queue", slowtrans: "Count slow transport ships", fasttrans: "Count fast transport ships", Lack: "Lack", Still: "Still", pop: "available population. For the", Optipop: "Optimal population for", army: "You don't have an army.", }, reports: { reports: "Reports", choose_folder: 'Choose folder', enacted: 'enacted', conquered: 'conquered', spying: 'spying', spy: 'Spy', support: 'support', support2: "can't support", supporting: 'stationed', attacking: 'attacking', farming_village: 'farming village', gold: 'You have received', Quests: 'Quests', Reservations: 'Reservations', }, translations: { translations: 'Translations', info: 'Info', trans: 'Translation for language', translations: 'Translations', trans_sure: 'Are you sure that your translation is ready to be generated?', trans_success: 'The translation has been sent successfully', trans_fail: 'The translation could not be sent', trans_infotext1: 'Translation available', trans_infotext2: 'To modify or create a new language, choose the language in the drop-down menu', trans_infotext3: 'When a text contains HTML tags (thus everything which is surrounded by <> brackets) I ask you to keep them where you found them', trans_infotext4: 'When you have finished translating press', trans_infotext5: 'In order to be able to add you to the credits, your nickname will be generated', trans_infotext6: 'Copy the generated message, and paste it in a comment', please_note: 'Please note', credits: 'Credits', no_translation: 'No translation found', choose_lang: 'Choose language', add_lang: 'Add a new language', language: 'Language', enter_lang_name: 'Please enter a language name', send: 'Generate message', name: 'Name', add_edit: 'Add / edit', }, wall: { wall: "Wall", wallnotsaved: "Wall is not saved", wallsaved: "Wall is saved", msghuman: "The information has been saved", erreur: "An error occurred while writing", wantdeletecurrent: "Do you want to delete the current record of the wall ?", deletecurrent: "Delete the current record", listsaved: "Saved on the wall the day", liststate: "Condition of the wall on the day", nosaved: "No backup", Auto: "Auto mode", }, Radar: { Radar: "Search cities", find: "Search", maxunittime: "Maximum time", townname: "Town", unittime: "time", townowner: "Owner", townreserved: "Reservation", townpoints: "Minimal town points", btnsavedefault: "Save values as default", all: "Any town", showcities: "Show cities" }, TSL: { TSL: 'Towns Sorted List', tooltip: 'show sorted town' }, AO: { AO: 'Academy Overview' }, ABH: { ABH: 'Army Builder Helper', unitframe: 'choose your unit', description1: 'In this city, you have [population] free population', description2: 'Which is enough to build [max_units]', description3: 'You [yesno] have a [research] researched.', description4: 'You can queue up maximum of [max_queue] units', target: 'choose your build target', package: 'resource package per shipment (units)', btnsave: 'save settings', tooltipok: 'click, to select default unit for which you\'ll be sending resources', tooltipnotok: 'unit has not been researched', hasresearch: 'DO', noresearch: 'DO NOT', settingsaved: 'Settings for [city] have been saved', btnreset: 'reset', resleft: 'resources left to send', imgtooltip: 'click, to fill in resources', }, Stats: { player: 'Player stats', ally: 'Alliance stats', town: 'Town stats', inactive: 'Inactive', chkinactive: 'Show inactive players', inactivedesc: 'At that time there was no point fighting and expansion', }, buttons: { sav: "Save", ins: "Insert", res: "Reset" } },
         //////////////////////////////////////////////
         //      Italian Translation by amliam       //
         //////////////////////////////////////////////
@@ -710,29 +710,22 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     };
     uw.DIO_LANG.ar = uw.DIO_LANG.es;
     uw.DIO_LANG.pt = uw.DIO_LANG.br;
-    /*    var e = "fr"
 
-        if (uw.DIO_LANG[MID] === undefined & MID !== "zz") LANG_add (MID)
-        if (uw.DIO_LANG.en) LANG_add ("en")
-        if (DATA.test.lang) {
-            if (uw.DIO_LANG[DATA.test.lang] === undefined) LANG_add (DATA.test.lang)
-        }
+    $.each(LANG, function (a, b) { try { LANG_add(b) } catch (error) { console.log(error, 'LANG_add') } });
+    function LANG_add(e) {
+        $.ajax({
+            type: "GET",
+            url: Home_url + "/Langs/Dio." + e.toUpperCase() + ".full.user.js",
+            dataType: "script",
+            error: function (error) { errorHandling(error, "ajax GET (Dio." + e.toUpperCase() + ".full.user.js)") }
+        })
+    }
 
-        function LANG_add (e) {
-            console.log(e)
-            $.ajax({
-                type: "GET",
-                url: Home_url + "/TEST-1/Langs/Dio." + e.toUpperCase() + ".js",
-                dataType: "script",
-                //cache: true,
-                success: function() {LANG[e] = uw.LANGG[e]},
-                error: function(error) {errorHandling(error, "ajax GET (Dio." + e.toUpperCase() + ".js)")}
-            })
-        }
-
-        //$('<script src="' + Home_url + '/TEST-1/Langs/Dio.FR.js"></script>').appendTo("head");
-        */
-
+    /*if (uw.DIO_LANG[MID] === undefined & MID !== "zz") LANG_add (MID)
+    if (uw.DIO_LANG.en) LANG_add ("en")
+    if (DATA.test.lang) {
+        if (uw.DIO_LANG[DATA.test.lang] === undefined) LANG_add (DATA.test.lang)
+    }*/
 
     console.debug("SPRACHE", MID);
     // Translation GET
@@ -1870,49 +1863,49 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                         waitForGrepoLazyLoading();
 
-                    }, 0);
+                    }, 2000);
 
                     imageSelectionProtection();
 
-                    if (DATA.options.dio_pop) setTimeout(() => { FavorPopup.activate(); }, 0);
-                    if (DATA.options.dio_con) setTimeout(() => { ContextMenu.activate(); }, 0);
-                    if (DATA.options.dio_act) setTimeout(() => { ActivityBoxes.activate(); }, 0);
-                    if (DATA.options.dio_str) setTimeout(() => { UnitStrength.Menu.activate(); }, 0);
-                    if (DATA.options.dio_tra) setTimeout(() => { TransportCapacity.activate(); }, 0);
-                    if (DATA.options.dio_com) setTimeout(() => { UnitComparison.activate(); }, 0);
-                    if (DATA.options.dio_sml) setTimeout(() => { SmileyBox.activate(); }, 0);
-                    if (DATA.options.dio_scr) setTimeout(() => { MouseWheelZoom.activate(); }, 0);
-                    if (DATA.options.dio_sim) setTimeout(() => { Simulator.activate(); }, 0);
-                    if (DATA.options.dio_sen) setTimeout(() => { SentUnits.activate(); }, 0);
+                    if (DATA.options.dio_pop) requestAnimationFrame(() => FavorPopup.activate());
+                    if (DATA.options.dio_con) requestAnimationFrame(() => ContextMenu.activate());
+                    if (DATA.options.dio_act) requestAnimationFrame(() => ActivityBoxes.activate());
+                    if (DATA.options.dio_str) requestAnimationFrame(() => UnitStrength.Menu.activate());
+                    if (DATA.options.dio_tra) requestAnimationFrame(() => TransportCapacity.activate());
+                    if (DATA.options.dio_com) requestAnimationFrame(() => UnitComparison.activate());
+                    if (DATA.options.dio_sml) requestAnimationFrame(() => SmileyBox.activate());
+                    if (DATA.options.dio_scr) requestAnimationFrame(() => MouseWheelZoom.activate());
+                    if (DATA.options.dio_sim) requestAnimationFrame(() => Simulator.activate());
+                    if (DATA.options.dio_sen) requestAnimationFrame(() => SentUnits.activate());
                     if (uw.Game.features.end_game_type == "end_game_type_world_wonder") {
-                        if (DATA.options.dio_wwc) setTimeout(() => { WorldWonderCalculator.activate(); }, 0);
+                        if (DATA.options.dio_wwc) requestAnimationFrame(() => WorldWonderCalculator.activate());
                     }
-                    if (DATA.options.dio_rec) setTimeout(() => { RecruitingTrade.activate(); }, 0);
-                    if (DATA.options.dio_way) setTimeout(() => { ShortDuration.activate(); }, 0);
-                    if (DATA.options.dio_Scr) setTimeout(() => { Scrollbar.activate(); }, 0);
-                    if (DATA.options.dio_Tow) setTimeout(() => { Townbb.activate(); }, 100);
+                    if (DATA.options.dio_rec) requestAnimationFrame(() => RecruitingTrade.activate());
+                    if (DATA.options.dio_way) requestAnimationFrame(() => ShortDuration.activate());
+                    if (DATA.options.dio_Scr) requestAnimationFrame(() => Scrollbar.activate());
+                    if (DATA.options.dio_Tow) requestAnimationFrame(() => Townbb.activate());
                     //if (DATA.options.dio_Hot) setTimeout(() => { hotkeys.activate(); }, 3000);
-                    if (DATA.options.dio_Hot) setTimeout(() => { uw.DIO_hotkeysConfig.activate(); }, 3000);
-                    if (DATA.options.dio_Isl) setTimeout(() => { islandFarmingVillages.activate(); }, 500);
-                    if (DATA.options.dio_Rew) setTimeout(() => { Reward.activate(); }, 100);
-                    if (DATA.options.dio_Cib) setTimeout(() => { city_view_btn.activate(); }, 1000);
-                    if (DATA.options.dio_Ciw & (typeof (uw.MoleHoleOnBoard) == "undefined")) setTimeout(() => { city_view_window.activate(); }, 1000);
-                    if (DATA.options.dio_Cic) setTimeout(() => { city_btn_construction.activate(); }, 1000);
-                    if (DATA.options.dio_Tti) setTimeout(() => { townTradeImprovement.activate(); }, 0);
-                    if (DATA.options.dio_Hio) setTimeout(() => { hidesOverview.activate(); }, 1000);
-                    if (DATA.options.dio_Rtt) setTimeout(() => { removetooltipps.activate(); }, 100);
-                    if (DATA.options.dio_Rct) setTimeout(() => { resCounter.activate(); }, 0);
-                    if (DATA.options.dio_Tol) setTimeout(() => { townslist.activate(); }, 100);
-                    if (DATA.options.dio_BBt) setTimeout(() => { BBtowninfo.activate(); }, 100);
-                    if (DATA.options.dio_Cul) setTimeout(() => { cultureOverview.activate(); }, 100);
-                    if (DATA.options.dio_Cuc) setTimeout(() => { cultureControl.activate(); }, 100);
-                    if (DATA.options.dio_Buc) setTimeout(() => { buildingControl.activate(); }, 100);
-                    if (DATA.options.dio_Cup) setTimeout(() => { cultureProgress.activate(); }, 0);
-                    if (DATA.options.dio_BBl) setTimeout(() => { BBcodeList.activate(); }, 0);
-                    if (DATA.options.dio_Onb) setTimeout(() => { OceanNumbers.activate(); }, 300);
-                    if (DATA.options.dio_Amm) setTimeout(() => { ally_mass_mail.activate(); }, 300);
-                    if (DATA.options.dio_Idl) setTimeout(() => { idle.activate(); }, 300);
-                    if (DATA.options.dio_Saw) setTimeout(() => { Save_wall.activate(); }, 300);
+                    if (DATA.options.dio_Hot) requestAnimationFrame(() => uw.DIO_hotkeysConfig.activate());
+                    if (DATA.options.dio_Isl) requestAnimationFrame(() => islandFarmingVillages.activate());
+                    if (DATA.options.dio_Rew) requestAnimationFrame(() => Reward.activate());
+                    if (DATA.options.dio_Cib) requestAnimationFrame(() => city_view_btn.activate());
+                    if (DATA.options.dio_Ciw & (typeof (uw.MoleHoleOnBoard) == "undefined")) requestAnimationFrame(() => city_view_window.activate());
+                    if (DATA.options.dio_Cic) requestAnimationFrame(() => city_btn_construction.activate());
+                    if (DATA.options.dio_Tti) requestAnimationFrame(() => townTradeImprovement.activate());
+                    if (DATA.options.dio_Hio) requestAnimationFrame(() => hidesOverview.activate());
+                    if (DATA.options.dio_Rtt) requestAnimationFrame(() => removetooltipps.activate());
+                    if (DATA.options.dio_Rct) requestAnimationFrame(() => resCounter.activate());
+                    if (DATA.options.dio_Tol) requestAnimationFrame(() => townslist.activate());
+                    if (DATA.options.dio_BBt) requestAnimationFrame(() => BBtowninfo.activate());
+                    if (DATA.options.dio_Cul) requestAnimationFrame(() => cultureOverview.activate());
+                    if (DATA.options.dio_Cuc) requestAnimationFrame(() => cultureControl.activate());
+                    if (DATA.options.dio_Buc) requestAnimationFrame(() => buildingControl.activate());
+                    if (DATA.options.dio_Cup) requestAnimationFrame(() => cultureProgress.activate());
+                    if (DATA.options.dio_BBl) requestAnimationFrame(() => BBcodeList.activate());
+                    if (DATA.options.dio_Onb) requestAnimationFrame(() => OceanNumbers.activate());
+                    if (DATA.options.dio_Amm) requestAnimationFrame(() => ally_mass_mail.activate());
+                    if (DATA.options.dio_Idl) requestAnimationFrame(() => idle.activate());
+                    if (DATA.options.dio_Saw) requestAnimationFrame(() => Save_wall.activate());
                     if (DATA.options.dio_Att) setTimeout(() => { AttacksAlarms.activate(); }, 1000);
 
 
@@ -2895,8 +2888,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 else news = '<a id="link_forum" href="' + Home_url + '/en/news/update/' + dio_version + '.html" target="_blank" style="font-weight:bold; float:left; margin-left:20px;"><img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>' + getTexts("Settings", "Update") + " " + dio_version + '</span></a>';
             }
 
-            if (MID == "fr" || dio.lang() == "fr") span_DIO_TOOLS = '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;"><img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>';
-            else span_DIO_TOOLS = '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;"><img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>';
+            if (MID == "fr" || dio.lang() == "fr") span_DIO_TOOLS = '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;"><img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David1327</span></a>';
+            else span_DIO_TOOLS = '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;"><img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David1327</span></a>';
 
 
             var grepoGameBorder = '<div class="game_border"><div class="game_border_top"></div><div class="game_border_bottom"></div><div class="game_border_left"></div>' +
@@ -2973,7 +2966,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 HTML_tab2 += grepoGameBorder + getTexts("labels", "donat") + '</div>';
 
                 var don, donNb = 0, reste, donationsListe = [
-                    [1, 4, 101.26, 94.9, 'Ines L'], [2, 5, 60, 56.51, 'Christiane G'], [3, 1, 50, 47.2, 'Nepomuk P'], [3, 2, 50, 47.85, 'Artur Z'], [4, 18, 47.7, 39.96, 'adriano g'], [5, 14, 41, 34.43, 'Davryll'], [6, 1, 31.26, 29.6, 'Nigel T'], [7, 1, 30, 28.78, 'glaglatoulle'], [7, 3, 30, 27.48, 'elifoxo'], [8, 2, 22, 20.66, 'Ulla R'], [9, 2, 21.32, 20, 'Heinz E'], [10, 1, 20, 19.07, 'Sven K'], [10, 1, 20, 19.07, 'Uwe S'], [10, 1, 20, 19.07, 'Elwira G'], [10, 1, 20, 19.07, 'kanokwan s'], [11, 1, 15, 14.21, 'Walther M'], [11, 2, 15, 13.86, 'etienne1306'], [11, 1, 15, 14.21, 'Attila'], [12, 1, 10.66, 10, 'Arkadiusz W'], [13, 2, 10.51, 9.5, 'Kornelia M'], [14, 1, 10, 9.36, 'filippo v'], [14, 1, 10, 9.36, 'Doris H'], [14, 1, 10, 9.36, 'Andreas S'], [14, 1, 10, 9.36, 'Andreas A'], [14, 1, 10, 9.36, 'benoit A'], [14, 1, 10, 9.36, 'Herbert L'], [14, 1, 10, 9.36, 'Gabory A'], [14, 1, 10, 9.36, 'Christian P'], [14, 1, 10, 9.16, 'Eric A'], [14, 1, 10, 9.36, 'Ocaso'], [14, 1, 10, 9.36, 'Uwe J'], [14, 1, 10, 9.36, 'SABINE B'], [14, 1, 10, 9.36, 'Jean-Paul B'], [15, 1, 7, 6.45, 'thomas c'], [16, 1, 5.55, 5.04, 'Annette H'], [16, 1, 5.55, 5.04, 'Matthias H'], [16, 1, 5.55, 5.04, 'Susi K'], [17, 1, 5.51, 5, 'Laurent R'], [17, 1, 5.51, 5, 'Arphox'], [18, 1, 5, 4.5, 'Diana S'], [18, 1, 5, 4.5, 'Raul-Garcia C'], [18, 1, 5, 4.5, 'Denai'], [18, 1, 5, 4.5, 'Antonio-Acuña B'], [18, 1, 5, 4.5, 'Kallerberg'], [18, 1, 5, 4.5, 'florian p'], [18, 1, 5, 4.5, 'Mateusz O'], [18, 1, 5, 4.5, 'José-Miguel A'], [18, 1, 5, 4.4, 'Therese S'], [18, 1, 5, 4.5, 'Thomas C'], [18, 1, 5, 4.5, 'Ulrich S'], [18, 1, 5, 4.5, 'Petr M'], [18, 1, 5, 4.5, 'Swen A'], [18, 1, 5, 4.5, 'Detlef Z'], [18, 1, 5, 4.5, 'Sven O'], [18, 1, 5, 4.5, 'Dorthe D'], [18, 1, 5, 4.5, 'Yvonne H'], [18, 1, 5, 4.5, 'Societatea-d-S B'], [18, 1, 5, 5.5, 'Max P'], [18, 1, 5, 4.5, 'Dylan D'], [18, 1, 5, 4.5, 'Comte M'], [19, 3, 3.39, 2.24, 'Gyorgy C'], [20, 1, 2.5, 2.08, 'Martin G'], [21, 2, 2.39, 1.62, 'Eduard B'], [22, 1, 2, 1.59, 'Marie-Laure D'], [22, 1, 2, 1.59, 'Ute N'], [23, 1, 1.39, 1, 'laurent k'], [23, 1, 1.39, 1, 'Puiu D'], [24, 1, 1, 0.38, 'Francesco L'],
+                    [1, 4, 101.26, 94.9, 'Ines L'], [2, 27, 71.55, 59.94, 'adriano g'], [3, 24, 61, 50.13, 'Davryll'], [4, 5, 60, 56.51, 'Christiane G'], [5, 2, 50, 47.85, 'Artur Z'], [5, 1, 50, 47.2, 'Nepomuk P'], [6, 1, 31.26, 29.6, 'Nigel T'], [7, 3, 30, 27.48, 'elifoxo'], [7, 1, 30, 28.78, 'glaglatoulle'], [8, 1, 26.11, 25, 'Jean W'], [9, 4, 26.02, 23.86, 'etienne1306'], [10, 2, 22, 20.66, 'Ulla R'], [11, 2, 21.32, 20, 'Heinz E'], [12, 1, 20, 19.07, 'Uwe S'], [12, 1, 20, 19.07, 'Sven K'], [12, 1, 20, 19.07, 'kanokwan s'], [12, 1, 20, 19.07, 'Elwira G'], [12, 1, 20, 19.07, 'lydie c'], [13, 1, 15, 14.21, 'Attila'], [13, 1, 15, 14.21, 'Walther M'], [14, 1, 10.66, 10, 'Arkadiusz W'], [15, 2, 10.51, 9.5, 'Kornelia M'], [16, 1, 10, 9.36, 'Andreas A'], [16, 1, 10, 9.36, 'filippo v'], [16, 1, 10, 9.36, 'benoit A'], [16, 1, 10, 9.36, 'Doris H'], [16, 1, 10, 9.36, 'Herbert L'], [16, 1, 10, 9.36, 'Gabory A'], [16, 1, 10, 9.16, 'Eric A'], [16, 1, 10, 9.36, 'Ocaso'], [16, 1, 10, 9.36, 'Christian P'], [16, 1, 10, 9.36, 'Uwe J'], [16, 1, 10, 9.36, 'Andreas S'], [16, 1, 10, 9.36, 'Jean-Paul B'], [16, 1, 10, 9.36, 'SABINE B'], [17, 1, 7, 6.45, 'thomas c'], [18, 1, 5.55, 5.04, 'Matthias H'], [18, 1, 5.55, 5.04, 'Annette H'], [18, 1, 5.55, 5.04, 'Susi K'], [19, 1, 5.51, 5, 'Markus F'], [19, 1, 5.51, 5, 'thomas s'], [19, 1, 5.51, 5, 'Laurent R'], [19, 1, 5.51, 5, 'Arphox'], [20, 1, 5, 4.5, 'Swen A'], [20, 1, 5, 4.5, 'Thomas C'], [20, 1, 5, 4.4, 'Therese S'], [20, 1, 5, 4.5, 'Societatea-d-S B'], [20, 1, 5, 4.5, 'Denai'], [20, 1, 5, 4.5, 'Dylan D'], [20, 1, 5, 4.5, 'Detlef Z'], [20, 1, 5, 5.5, 'Max P'], [20, 1, 5, 4.5, 'José-Miguel A'], [20, 1, 5, 4.5, 'Antonio-Acuña B'], [20, 1, 5, 4.5, 'Kallerberg'], [20, 1, 5, 4.5, 'Raul-Garcia C'], [20, 1, 5, 4.5, 'Yvonne H'], [20, 1, 5, 4.5, 'Mateusz O'], [20, 1, 5, 4.5, 'Petr M'], [20, 1, 5, 4.5, 'florian p'], [20, 1, 5, 4.5, 'Dorthe D'], [20, 1, 5, 4.5, 'Ulrich S'], [20, 1, 5, 4.5, 'Diana S'], [20, 1, 5, 4.5, 'Comte M'], [20, 1, 5, 4.5, 'Sven O'], [21, 2, 4.84, 4, 'Andreas H'], [22, 3, 3.39, 2.24, 'Gyorgy C'], [23, 1, 2.5, 2.08, 'Martin G'], [24, 2, 2.39, 1.62, 'Eduard B'], [25, 1, 2, 1.59, 'Ute N'], [25, 1, 2, 1.59, 'Marie-Laure D'], [26, 1, 1.39, 1, 'Puiu D'], [26, 1, 1.39, 1, 'laurent k'], [27, 1, 1, 0.38, 'Francesco L'],
                 ];
                 $.each(donationsListe, function () { donNb++; });
                 don = Math.round(donNb / 4)
@@ -3125,10 +3118,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                 if (MID == "fr" || dio.lang() == "fr") {
                     HTML_tab4 += '<a id="link_forum" href="' + Home_url + '/fr/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>';
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David1327</span></a>';
                 } else {
                     HTML_tab4 += '<a id="link_forum" href="' + Home_url + '/en/" target="_blank" style="font-weight:bold; float:left; margin-left:20px;">' +
-                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David132</span></a>';
+                        '<img src="' + Home_url + '/img/dio/btn/lien.png" alt="" style="margin: 0px 5px -3px 5px;" /><span>DIO-TOOLS-David1327</span></a>';
                 }
 
                 HTML_tab4 += '</div>' +
@@ -3548,7 +3541,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 return uw.RepConv.settings[`${compat.grcrt.grcrSettingsKey}_wall`];
             }
         }
-    }; console.log(compat.grcrt)
+    };
 
     /*******************************************************************************************************************************
      * Mousewheel Zoom
@@ -10343,15 +10336,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             // Xmas-Smileys -> 18 days
             HolidaySpecial.isXmas = dio.daystamp(344, 361); // 10. Dezember (344) / 28. Dezember (361)
             // NewYear -> 7 days
-            HolidaySpecial.isNewYear = dio.daystamp(0, 7); // 1. Januar / 7. Januar
+            HolidaySpecial.isNewYear = dio.daystamp(0, 15); // 1. Januar / 15. Januar
 
             if (HolidaySpecial.isXmas) { HolidaySpecial.XMas.add(); }
             if (HolidaySpecial.isNewYear) { HolidaySpecial.NewYear.add(); }
         },
         XMas: {
             add: () => {
-                if (MID == 'fr') { $('<a href="' + Home_url + '/fr/" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box'); }
-                else $('<a href="' + Home_url + '/en/" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
+                if (MID == 'fr') { $('<a href="' + Home_url + '/fr/pages/special.html" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box'); }
+                else $('<a href="' + Home_url + '/en/pages/special.html" target="_blank"><div id="dio_xmas"></div></a>').appendTo('#ui_box');
 
                 var dioXMAS = $('#dio_xmas');
 
@@ -10633,13 +10626,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     const mousePopupArrayright = {};
                     for (const action in keys) {
                         if (keysName[action]) {
+                            let exclu = false
+                            if ((uw.DIO_hotkeysConfig.keysName[action].menu === "captain" & uw.Game.premium_features.captain < uw.Timestamp.now()) || ((action === "TownGroups_ALL" || action === "TownGroups_next" || action === "TownGroups_prev" || uw.DIO_hotkeysConfig.keysName[action].menu === "administrator") & uw.Game.premium_features.curator < uw.Timestamp.now())) exclu = true
                             const menu = keysName[action].menu, key = keys[action].key, name = keysName[action].name, Catégorie = uw.DIO_hotkeysConfig.Catégorie[menu];
                             // Si le menu n'existe pas encore dans mousePopupArray, on le crée
-                            if (!mousePopupArrayleft[Catégorie.Texts] & Catégorie.code === 1) mousePopupArrayleft[Catégorie.Texts] = [[uw.DIO_hotkeysConfig.ImagesHotkeys[Catégorie.Images]]];
-                            if (!mousePopupArrayright[Catégorie.Texts] & Catégorie.code === 2) mousePopupArrayright[Catégorie.Texts] = [[uw.DIO_hotkeysConfig.ImagesHotkeys[Catégorie.Images]]];
+                            if (!exclu & !mousePopupArrayleft[Catégorie.Texts] & Catégorie.code === 1) mousePopupArrayleft[Catégorie.Texts] = [[uw.DIO_hotkeysConfig.ImagesHotkeys[Catégorie.Images]]];
+                            if (!exclu & !mousePopupArrayright[Catégorie.Texts] & Catégorie.code === 2) mousePopupArrayright[Catégorie.Texts] = [[uw.DIO_hotkeysConfig.ImagesHotkeys[Catégorie.Images]]];
                             // Ajoute la clé et le nom au menu
-                            if (Catégorie.code === 1) mousePopupArrayleft[Catégorie.Texts].push([key, name, action]);
-                            if (Catégorie.code === 2) mousePopupArrayright[Catégorie.Texts].push([key, name, action]);
+                            if (!exclu & Catégorie.code === 1) mousePopupArrayleft[Catégorie.Texts].push([key, name, action]);
+                            if (!exclu & Catégorie.code === 2) mousePopupArrayright[Catégorie.Texts].push([key, name, action]);
                         }
                     }
                     if (nb === 1) return mousePopupArrayleft;
@@ -10669,7 +10664,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                 let footer = '<div id="aide"><div class="défaut_s"></div><div class="checkbox_new large" style="margin: 0 10px 0 20px;"><div class="cbx_icon"></div><div class="cbx_caption">a/A</div></div><div class="checkbox_new large checked"><div class="cbx_icon"></div><div class="cbx_caption">a</div></div>';
 
-                createWindowType("DIO_HOTKEY", "Configure shortcuts", 660, 495, true, [240, 70]);
+                createWindowType("DIO_HOTKEY", getTexts("hotkeys", "Configure"), 660, 495, true, [240, 70]);
                 $("#dio_BTN_HK").click(() => {
                     try {
                         if (uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_HOTKEY)) return uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_HOTKEY).close();
@@ -10678,7 +10673,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             '<div class="game_border_right"></div><div class="game_border_corner corner1"></div>' +
                             '<div class="game_border_corner corner2"></div><div class="game_border_corner corner3">' +
                             '</div><div class="game_border_corner corner4"></div><div class="game_header bold" style="height:18px;padding:3px 11px">';
-                        let expTitel = "Configure shortcuts"
+                        let expTitel = getTexts("hotkeys", "Configure")
                         let expRahmen_b = '</div><div style="height: 380px; overflow: overlay;">' + interfaceHTMLleft + interfaceHTMLright + '</div>' + footer;
                         wnd.setContent(expRahmen_a + expTitel + expRahmen_b);
                         for (var action in DATA.hotkeys) grg(action) // Mettre à jour l'affichage
@@ -10843,18 +10838,20 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             saveValue("hotkeys", JSON.stringify(DATA.hotkeys)); // Sauvegarder les changements dans le système de sauvegarde
         },
         changeKey: (action, buttonElement) => {
-            $(`#hotkeys_interface .edit_icon`).removeClass("filter")
-            $(`#modify_${action}`).addClass("filter")
-            $(document).off('keydown'); // Désactiver la capture de touches en cas de clic sur "Appuyez sur une touche..."
-            $(document).on('keydown', function (e) {
-                if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key !== "Shift" && e.key !== "CapsLock" && e.key !== "AltGraph") {
-                    e.preventDefault();
-                    uw.DIO_hotkeysConfig.setKey(action, e.key);
-                    uw.DIO_hotkeysConfig.hotkeys(); // Réactiver les hotkeys après modification
-                    $(document).off('keydown'); // Arrêter l'écouteur après avoir capturé la nouvelle touche
-                    $(`#hotkeys_interface .edit_icon`).removeClass("filter");
-                }
-            });
+            try {
+                $(`#hotkeys_interface .edit_icon`).removeClass("filter")
+                $(`#modify_${action}`).addClass("filter")
+                $(document).off('keydown'); // Désactiver la capture de touches en cas de clic sur "Appuyez sur une touche..."
+                $(document).on('keydown', function (e) {
+                    if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key !== "Shift" && e.key !== "CapsLock" && e.key !== "AltGraph") {
+                        e.preventDefault();
+                        uw.DIO_hotkeysConfig.setKey(action, e.key);
+                        uw.DIO_hotkeysConfig.hotkeys(); // Réactiver les hotkeys après modification
+                        $(document).off('keydown'); // Arrêter l'écouteur après avoir capturé la nouvelle touche
+                        $(`#hotkeys_interface .edit_icon`).removeClass("filter");
+                    }
+                });
+            } catch (error) { errorHandling(error, "uw.DIO_hotkeysConfig.changeKey"); }
         },
         deleteKey: (action) => {
             DATA.hotkeys[action].key = ""; // Réinitialiser le raccourci clavier à une chaîne vide
@@ -10871,47 +10868,51 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             return planNames
         },
         add: (action, nb) => {
-            if (action === "Planner") {
-                $(`#attack_planer-index`).click();
-                setTimeout(() => {
-                    action = DATA.planNames[`hotkeys_plan_${nb}`];
-                    let coloPlan = $(`.game_inner_box.attack_planner.index a.js-caption`).filter(function () { return $.trim($(this).text()) === action; }); // Recherche de l'élément avec le texte exact correspondant à `action`
-                    coloPlan.click(); // Cliquer sur l'élément
-                }, 100);
-            }
-            if (action === "index") { // Fonction pour créer les éléments de sélection et les insérer dans la div
-                function createShortcutSelector() {
-                    let selectorHtml = '<div>';
-                    let planNames = uw.DIO_hotkeysConfig.planNames();
-                    // Ajouter trois sélecteurs
-                    for (let i = 1; i <= 3; i++) selectorHtml += `<label for="hotkeys_plan_${i}">${getTexts("hotkeys", "hotkeys")} ${i}:</label><select id="hotkeys_plan_${i}" style="margin-right: 15px;" onchange="uw.DIO_hotkeysConfig.saveSelection(${i})">${planNames.map(name => `<option value="${name}">${name}</option>`).join('')}</select>`;
-                    selectorHtml += '</div>';
-                    $('.game_inner_box.attack_planner.index').before(`<div id="dio_shortcutContainer" style="position: absolute;bottom: inherit;">${selectorHtml}</div>`); // Insérer dans la div
-                    for (let i = 1; i <= 3; i++) { // Restaurer les sélections précédentes (si disponibles)
-                        if (DATA.planNames[`hotkeys_plan_${i}`]) $(`#hotkeys_plan_${i}`).val(DATA.planNames[`hotkeys_plan_${i}`]);
-                        else $(`#hotkeys_plan_${i}`).val("");
-                    }
+            try {
+                if (action === "Planner") {
+                    $(`#attack_planer-index`).click();
+                    setTimeout(() => {
+                        action = DATA.planNames[`hotkeys_plan_${nb}`];
+                        let coloPlan = $(`.game_inner_box.attack_planner.index a.js-caption`).filter(function () { return $.trim($(this).text()) === action; }); // Recherche de l'élément avec le texte exact correspondant à `action`
+                        coloPlan.click(); // Cliquer sur l'élément
+                    }, 100);
                 }
-                createShortcutSelector(); // Créer les sélecteurs
-            }
+                if (action === "index") { // Fonction pour créer les éléments de sélection et les insérer dans la div
+                    function createShortcutSelector() {
+                        let selectorHtml = '<div>';
+                        let planNames = uw.DIO_hotkeysConfig.planNames();
+                        // Ajouter trois sélecteurs
+                        for (let i = 1; i <= 3; i++) selectorHtml += `<label for="hotkeys_plan_${i}">${getTexts("hotkeys", "hotkeys")} ${i}:</label><select id="hotkeys_plan_${i}" style="margin-right: 15px;" onchange="uw.DIO_hotkeysConfig.saveSelection(${i})">${planNames.map(name => `<option value="${name}">${name}</option>`).join('')}</select>`;
+                        selectorHtml += '</div>';
+                        $('.game_inner_box.attack_planner.index').before(`<div id="dio_shortcutContainer" style="position: absolute;bottom: inherit;">${selectorHtml}</div>`); // Insérer dans la div
+                        for (let i = 1; i <= 3; i++) { // Restaurer les sélections précédentes (si disponibles)
+                            if (DATA.planNames[`hotkeys_plan_${i}`]) $(`#hotkeys_plan_${i}`).val(DATA.planNames[`hotkeys_plan_${i}`]);
+                            else $(`#hotkeys_plan_${i}`).val("");
+                        }
+                    }
+                    createShortcutSelector(); // Créer les sélecteurs
+                }
+            } catch (error) { errorHandling(error, "uw.DIO_hotkeysConfig.add"); }
         },
         updateShortcutOptions: () => {
-            let planNames = uw.DIO_hotkeysConfig.planNames();; // Actualiser la liste de planNames
-            for (let i = 1; i <= 3; i++) { // Pour chaque sélecteur, on met à jour les options sans modifier la sélection
-                let selector = $(`#hotkeys_plan_${i}`);
-                let currentSelection = DATA.planNames[`hotkeys_plan_${i}`]; // Récupérer la sélection sauvegardée
-                selector.empty(); // Vider les options actuelles
-                planNames.forEach(name => { // Recréer les options en maintenant la sélection courante
-                    let isSelected = (name === currentSelection) ? 'selected' : '';
-                    selector.append(`<option value="${name}" ${isSelected}>${name}</option>`);
-                });
-            }
-            for (let i = 1; i <= 3; i++) {
-                if (DATA.planNames[`hotkeys_plan_${i}`]) {
-                    $(`#hotkeys_plan_${i}`).val(DATA.planNames[`hotkeys_plan_${i}`]);
-                    uw.DIO_hotkeysConfig.saveSelection(i)
+            try {
+                let planNames = uw.DIO_hotkeysConfig.planNames();; // Actualiser la liste de planNames
+                for (let i = 1; i <= 3; i++) { // Pour chaque sélecteur, on met à jour les options sans modifier la sélection
+                    let selector = $(`#hotkeys_plan_${i}`);
+                    let currentSelection = DATA.planNames[`hotkeys_plan_${i}`]; // Récupérer la sélection sauvegardée
+                    selector.empty(); // Vider les options actuelles
+                    planNames.forEach(name => { // Recréer les options en maintenant la sélection courante
+                        let isSelected = (name === currentSelection) ? 'selected' : '';
+                        selector.append(`<option value="${name}" ${isSelected}>${name}</option>`);
+                    });
                 }
-            }
+                for (let i = 1; i <= 3; i++) {
+                    if (DATA.planNames[`hotkeys_plan_${i}`]) {
+                        $(`#hotkeys_plan_${i}`).val(DATA.planNames[`hotkeys_plan_${i}`]);
+                        uw.DIO_hotkeysConfig.saveSelection(i)
+                    }
+                }
+            } catch (error) { errorHandling(error, "uw.DIO_hotkeysConfig.updateShortcutOptions"); }
         },
         savedSelections: { hotkeys_plan_1: null, hotkeys_plan_2: null, hotkeys_plan_3: null },
         saveSelection: (index) => { //Sauvegarder la sélection de l'utilisateur
@@ -10922,51 +10923,56 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             uw.DIO_hotkeysConfig.keysName[`AttackPlanner_${index}`].name = `${getTexts("hotkeys", "hotkeys")} 1 (${DATA.planNames[`hotkeys_plan_${index}`]})`;
         },
         hotkeys: () => {
-            document.onkeydown = function (e) {
-                // Vérifie si la fenêtre de configuration est ouverte et si un champ texte est actif
-                if (e.repeat === false && !$(e.target).is('textarea') && (!$(e.target).is('input') || $(e.target).attr('class') === 'caseSensitive') && !e.ctrlKey && !e.metaKey && !e.altKey && DATA.options.dio_Hot) {
-                    let actionKey = e.key;
-                    for (let action in DATA.hotkeys) { // Parcours des raccourcis
-                        let config = DATA.hotkeys[action];
-                        let config_key = config.key.replace(/↵/g, 'Enter').replace(/←/g, 'ArrowLeft').replace(/→/g, 'ArrowRight').replace(/↑/g, 'ArrowUp').replace(/↓/g, 'ArrowDown').replace(/⌫/g, 'Backspace').replace(/↹/g, 'Tab').replace(/‘/g, '\'').replace(/”/g, '\"');
-                        // Gestion de la sensibilité à la casse
-                        let keyToCheck = config.case ? actionKey : actionKey.toUpperCase();
-                        let keyConfigured = config.case ? config_key : config_key.toUpperCase();
-                        // Si la touche pressée correspond à celle configurée
-                        if (keyToCheck === keyConfigured) {
-                            e.preventDefault(); // Empêche l'action par défaut du navigateur pour cette touche
-                            if (uw.DIO_hotkeysConfig.keysName[action] && typeof uw.DIO_hotkeysConfig.keysName[action].lien === 'function') uw.DIO_hotkeysConfig.keysName[action].lien(); // Exécute la fonction associée
-                            else console.error('Action non définie ou fonction invalide.');
+            try {
+                document.onkeydown = function (e) {
+                    // Vérifie si la fenêtre de configuration est ouverte et si un champ texte est actif
+                    if (e.repeat === false && !$(e.target).is('textarea') && (!$(e.target).is('input') || $(e.target).attr('class') === 'caseSensitive') && !e.ctrlKey && !e.metaKey && !e.altKey && DATA.options.dio_Hot) {
+                        let actionKey = e.key;
+                        for (let action in DATA.hotkeys) { // Parcours des raccourcis
+                            let config = DATA.hotkeys[action];
+                            let config_key = config.key.replace(/↵/g, 'Enter').replace(/←/g, 'ArrowLeft').replace(/→/g, 'ArrowRight').replace(/↑/g, 'ArrowUp').replace(/↓/g, 'ArrowDown').replace(/⌫/g, 'Backspace').replace(/↹/g, 'Tab').replace(/‘/g, '\'').replace(/”/g, '\"');
+                            // Gestion de la sensibilité à la casse
+                            let keyToCheck = config.case ? actionKey : actionKey.toUpperCase();
+                            let keyConfigured = config.case ? config_key : config_key.toUpperCase();
+                            // Si la touche pressée correspond à celle configurée
+                            if (keyToCheck === keyConfigured) {
+                                if ((uw.DIO_hotkeysConfig.keysName[action].menu === "captain" & uw.Game.premium_features.captain < uw.Timestamp.now()) || ((action === "TownGroups_ALL" || action === "TownGroups_next" || action === "TownGroups_prev" || uw.DIO_hotkeysConfig.keysName[action].menu === "administrator") & uw.Game.premium_features.curator < uw.Timestamp.now())) return
+                                e.preventDefault(); // Empêche l'action par défaut du navigateur pour cette touche
+                                if (uw.DIO_hotkeysConfig.keysName[action] && typeof uw.DIO_hotkeysConfig.keysName[action].lien === 'function') uw.DIO_hotkeysConfig.keysName[action].lien(); // Exécute la fonction associée
+                                else console.error('Action non définie ou fonction invalide.');
+                            };
                         };
                     };
                 };
-            };
+            } catch (error) { errorHandling(error, "uw.DIO_hotkeysConfig.hotkeys"); }
         },
         currentGroupId: -1, // Initialise la variable de groupe actuel
         groups: {}, // Contiendra les groupes
         TownGroups: (Position) => {
-            function loadTownGroups() { // Fonction pour charger les groupes
-                uw.DIO_hotkeysConfig.groups = uw.ITowns.townGroups.getGroupsDIO();
-                delete uw.DIO_hotkeysConfig.groups[-2]; // Supprime le groupe avec l'ID -2 "Aucun groupe"
-            }
-            function changeGroup(groupId) { // Fonction pour changer de groupe
-                if (uw.DIO_hotkeysConfig.groups[groupId]) {
-                    if (uw.DIO_hotkeysConfig.currentGroupId === 0) return
-                    uw.ITowns.setActiveTownGroup(groupId)
-                    setTimeout(() => {
-                        uw.HumanMessage.success(uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " : " + uw.ITowns.town_groups._byId[uw.DIO_hotkeysConfig.currentGroupId].attributes.name);
-                        uw.HelperTown.switchToNextTown(); uw.HelperTown.switchToPreviousTown();
-                    }, 300);
+            try {
+                function loadTownGroups() { // Fonction pour charger les groupes
+                    uw.DIO_hotkeysConfig.groups = uw.ITowns.townGroups.getGroupsDIO();
+                    delete uw.DIO_hotkeysConfig.groups[-2]; // Supprime le groupe avec l'ID -2 "Aucun groupe"
                 }
-            }
-            loadTownGroups(); // Chargement initial des groupes
-            // Raccourcis clavier
-            let groupIds = Object.keys(uw.DIO_hotkeysConfig.groups).map(Number).sort((a, b) => a - b);
-            let currentIndex = groupIds.indexOf(uw.DIO_hotkeysConfig.currentGroupId);
-            if (Position === 'all') uw.DIO_hotkeysConfig.currentGroupId = -1; //Passage au groupe "Tout"
-            else if (Position === 'prev') uw.DIO_hotkeysConfig.currentGroupId = currentIndex > 0 ? groupIds[currentIndex - 1] : groupIds[groupIds.length - 1]; //Passage au groupe précédent
-            else if (Position === 'next') uw.DIO_hotkeysConfig.currentGroupId = currentIndex < groupIds.length - 1 ? groupIds[currentIndex + 1] : groupIds[0]; //Passage au groupe suivant
-            changeGroup(uw.DIO_hotkeysConfig.currentGroupId)
+                function changeGroup(groupId) { // Fonction pour changer de groupe
+                    if (uw.DIO_hotkeysConfig.groups[groupId]) {
+                        if (uw.DIO_hotkeysConfig.currentGroupId === 0) return
+                        uw.ITowns.setActiveTownGroup(groupId)
+                        setTimeout(() => {
+                            uw.HumanMessage.success(uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " : " + uw.ITowns.town_groups._byId[uw.DIO_hotkeysConfig.currentGroupId].attributes.name);
+                            uw.HelperTown.switchToNextTown(); uw.HelperTown.switchToPreviousTown();
+                        }, 300);
+                    }
+                }
+                loadTownGroups(); // Chargement initial des groupes
+                // Raccourcis clavier
+                let groupIds = Object.keys(uw.DIO_hotkeysConfig.groups).map(Number).sort((a, b) => a - b);
+                let currentIndex = groupIds.indexOf(uw.DIO_hotkeysConfig.currentGroupId);
+                if (Position === 'all') uw.DIO_hotkeysConfig.currentGroupId = -1; //Passage au groupe "Tout"
+                else if (Position === 'prev') uw.DIO_hotkeysConfig.currentGroupId = currentIndex > 0 ? groupIds[currentIndex - 1] : groupIds[groupIds.length - 1]; //Passage au groupe précédent
+                else if (Position === 'next') uw.DIO_hotkeysConfig.currentGroupId = currentIndex < groupIds.length - 1 ? groupIds[currentIndex + 1] : groupIds[0]; //Passage au groupe suivant
+                changeGroup(uw.DIO_hotkeysConfig.currentGroupId)
+            } catch (error) { errorHandling(error, "uw.DIO_hotkeysConfig.TownGroups"); }
         },
         deactivate: () => {
             $('#dio_BTN_HK').remove();
