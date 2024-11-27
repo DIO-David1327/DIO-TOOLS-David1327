@@ -10946,32 +10946,55 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 };
             } catch (error) { errorHandling(error, "uw.DIO_hotkeysConfig.hotkeys"); }
         },
-        currentGroupId: -1, // Initialise la variable de groupe actuel
-        groups: {}, // Contiendra les groupes
         TownGroups: (Position) => {
             try {
-                function loadTownGroups() { // Fonction pour charger les groupes
-                    uw.DIO_hotkeysConfig.groups = uw.ITowns.townGroups.getGroupsDIO();
-                    delete uw.DIO_hotkeysConfig.groups[-2]; // Supprime le groupe avec l'ID -2 "Aucun groupe"
-                }
-                function changeGroup(groupId) { // Fonction pour changer de groupe
-                    if (uw.DIO_hotkeysConfig.groups[groupId]) {
-                        if (uw.DIO_hotkeysConfig.currentGroupId === 0) return
-                        uw.ITowns.setActiveTownGroup(groupId)
-                        setTimeout(() => {
-                            uw.HumanMessage.success(uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " : " + uw.ITowns.town_groups._byId[uw.DIO_hotkeysConfig.currentGroupId].attributes.name);
-                            uw.HelperTown.switchToNextTown(); uw.HelperTown.switchToPreviousTown();
-                        }, 300);
-                    }
-                }
-                loadTownGroups(); // Chargement initial des groupes
-                // Raccourcis clavier
-                let groupIds = Object.keys(uw.DIO_hotkeysConfig.groups).map(Number).sort((a, b) => a - b);
-                let currentIndex = groupIds.indexOf(uw.DIO_hotkeysConfig.currentGroupId);
-                if (Position === 'all') uw.DIO_hotkeysConfig.currentGroupId = -1; //Passage au groupe "Tout"
-                else if (Position === 'prev') uw.DIO_hotkeysConfig.currentGroupId = currentIndex > 0 ? groupIds[currentIndex - 1] : groupIds[groupIds.length - 1]; //Passage au groupe précédent
-                else if (Position === 'next') uw.DIO_hotkeysConfig.currentGroupId = currentIndex < groupIds.length - 1 ? groupIds[currentIndex + 1] : groupIds[0]; //Passage au groupe suivant
-                changeGroup(uw.DIO_hotkeysConfig.currentGroupId)
+                let currentGroupId = - 1;
+                const groups = uw.MM.getModels().TownGroup;
+                //We sort groups by name in the same way Grepolis does
+                const sortedGroups = Object.values(groups)
+                    .filter(group => group.attributes.id !== -2) // Remove "No Group"
+                    .sort((a, b) => {
+                        // Always put id -1 first "All"
+                        if (a.attributes.id === -1) return -1;
+                        if (b.attributes.id === -1) return 1;
+                        
+                        const aStr = a.attributes.name;
+                        const bStr = b.attributes.name;
+                        const minLength = Math.min(aStr.length, bStr.length);
+                        // Compare character by character
+                        for (let i = 0; i < minLength; i++) {
+                            if (aStr[i] !== bStr[i]) {
+                                // If both are digits, compare numerically
+                                if (/\d/.test(aStr[i]) && /\d/.test(bStr[i])) {
+                                    return aStr[i] - bStr[i];
+                                }
+                                // If only one is digit, digit comes first
+                                if (/\d/.test(aStr[i])) return -1;
+                                if (/\d/.test(bStr[i])) return 1;
+                                // Otherwise compare characters
+                                return aStr[i].localeCompare(bStr[i]);
+                            }
+                        }
+                        // If all characters matched, shorter string comes first
+                        return aStr.length - bStr.length;
+                    });
+                
+                sortedGroups.forEach((group) => {
+                    if (group.attributes.active) currentGroupId = group.attributes.id;
+                });
+
+                let currentIndex = sortedGroups.findIndex(group => group.attributes.id === currentGroupId);
+                if (Position === 'all') currentGroupId = -1; //Passage au groupe "Tout"
+                else if (Position === 'prev') currentGroupId = currentIndex > 0 ? sortedGroups[currentIndex - 1].attributes.id : sortedGroups[sortedGroups.length - 1].attributes.id; //Passage au groupe précédent
+                else if (Position === 'next') currentGroupId = currentIndex < sortedGroups.length - 1 ? sortedGroups[currentIndex + 1].attributes.id : sortedGroups[0].attributes.id; //Passage au groupe suivant
+
+                if (currentGroupId === 0) return;
+                $.Observer(uw.GameEvents.itowns.town_groups.set_active_group).subscribe('DIO_TEMP_GROUPS', (e, data) =>{
+                    $.Observer(uw.GameEvents.itowns.town_groups.set_active_group).unsubscribe('DIO_TEMP_GROUPS');
+                    HumanMessage.success(uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " : " + groups[currentGroupId].attributes.name);
+                    uw.HelperTown.switchToNextTown(); uw.HelperTown.switchToPreviousTown();
+                })
+                uw.ITowns.setActiveTownGroup(currentGroupId);
             } catch (error) { errorHandling(error, "uw.DIO_hotkeysConfig.TownGroups"); }
         },
         deactivate: () => {
