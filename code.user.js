@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.35.7
+// @version		4.35.8
 // @author		DIONY and David1327
 // @description Version 2024. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2024. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -1962,10 +1962,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             /* eslint-disable no-fallthrough */
             switch (action) {
                 case "/map_data/get_chunks":
-                    if (DATA.options.dio_tim) MapIcons.add();
+                    if (DATA.options.dio_tim & uw.Game.layout_mode === "island_view") MapIcons.add();
                     if (DATA.options.dio_Onb) OceanNumbers.add();
                     break;
                 case "/notify/fetch":
+                    if (DATA.options.dio_tim & uw.Game.layout_mode === "island_view") MapIcons.add();
                     break;
                 case "/player/index":
                     settings();
@@ -2162,6 +2163,9 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 case "/farm_town_info/attack":
                     if (DATA.options.dio_Rtt) dio.removeTooltipps();
                     break;
+                case "/farm_town_info/claim_load":
+                    if (DATA.options.dio_tim & uw.Game.layout_mode === "island_view") MapIcons.add();
+                    break;
                 case "/building_wall/index":
                     if (DATA.options.dio_Rtt) dio.removeTooltipps("wall");
                     if (DATA.options.dio_Saw) Save_wall.add();
@@ -2178,6 +2182,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     break;
                 case "/frontend_bridge/execute":
                 case "/frontend_bridge/fetch": {
+                    if (DATA.options.dio_tim & uw.Game.layout_mode === "island_view") MapIcons.add();
                     let sentJson, method = opt.type;
                     try {
                         if (method === "GET") sentJson = JSON.parse(decodeURIComponent(url[1].split("&")[3]).split("=")[1]);
@@ -2840,7 +2845,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             if (Notification.REMINDER == false) {
                 var expRahmen_a = '<div id="dio_notif" class="main_dialog_text_area">' +
                     '<p class="confirm_dialog_text">' + getTexts("Settings", "Available") + '</p><div class="dialog_buttons">' +
-                    '<a class="button confirmm" href="' + getTexts("link", "update_direct") + '"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "install") + '</span></span></span><span style="clear:both;"></span></a>' +
+                    '<a class="button confirmm" href="' + getTexts("link", "update_direct") + '" target="_blank"><span class="left"><span class="right"><span class="middle">' + getTexts("Settings", "install") + '</span></span></span><span style="clear:both;"></span></a>' +
                     '<a class="button cancell"><span class="left"><span class="right"><span class="middle" style="color: #fc6";>' + getTexts("Settings", "reminder") + '</span></span></span><span style="clear:both;"></span></a>' +
                     '</div></div>';
                 var BBwnd = uw.GPWindowMgr.Create(uw.GPWindowMgr.TYPE_DIO_Notification_v) || uw.GPWindowMgr.getOpenFirst(uw.GPWindowMgr.TYPE_DIO_Notification_v).close();
@@ -3882,26 +3887,47 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
     var MapIcons = {
         // TODO: activate aufspliten in activate und add
         activate: () => {
-            //style
-            $("<style id='dio_townicons_map' type='text/css'>" +
-                ".own_town .flagpole, #main_area .m_town.player_" + PID + " { z-index: 100; width:19px!important; height:19px!important; border-radius: 11px; border: 3px solid rgb(16, 133, 0); margin: -4px !important; font-size: 0em !important; box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5); } " +
-                "#dio_town_popup .count { position: absolute; bottom: 1px; right: 1px; font-size: 10px; } " +
-                "#minimap_islands_layer .m_town { text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7); } " +
-                "#minimap_canvas.expanded.night, #map.night .flagpole { filter: brightness(0.7); -webkit-filter: brightness(0.7); } " +
-                "#minimap_click_layer { display:none; }" +
-                "</style>").appendTo("head");
+            try {
+                //style
+                $("<style id='dio_townicons_map' type='text/css'>" +
+                    ".own_town .flagpole, #main_area .m_town.player_" + PID + " { z-index: 100; width:19px!important; height:19px!important; border-radius: 11px; border: 3px solid rgb(16, 133, 0); margin: -4px !important; font-size: 0em !important; box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5); } " +
+                    "#dio_town_popup .count { position: absolute; bottom: 1px; right: 1px; font-size: 10px; } " +
+                    "#minimap_islands_layer .m_town { text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7); } " +
+                    "#minimap_canvas.expanded.night, #map.night .flagpole { filter: brightness(0.7); -webkit-filter: brightness(0.7); } " +
+                    "#minimap_click_layer { display:none; }" +
+                    "</style>").appendTo("head");
 
-            $(`#minimap_canvas, #map`).on("mousedown", () => { if (DATA.options.dio_tim) MapIcons.add(); });
+                $(`#minimap_canvas, #map`).on("mousedown", () => { if (DATA.options.dio_tim) MapIcons.add(); });
 
-            $.Observer(uw.GameEvents.map.jump).subscribe('map_add_jump', (e, data) => { setTimeout(() => { MapIcons.add(); }, 200); });
-            $.Observer(uw.GameEvents.map.zoom_in).subscribe('map_add_zoomin', (e, data) => { MapIcons.add(); });
-            $.Observer(uw.GameEvents.map.zoom_out).subscribe('map_add_zoomout', (e, data) => { MapIcons.add(); });
-            MapIcons.add();
+                let resizeTimeout;
+                window.addEventListener('resize', function () { //mise à jour lors du redimensionner
+                    if (uw.Game.layout_mode === "island_view") {
+                        clearTimeout(resizeTimeout); // Nettoyer le timeout précédent
+                        resizeTimeout = setTimeout(() => { // Délai pour exécuter la fonction seulement après avoir fini de redimensionner
+                            MapIcons.add();
+                        }, 400); // Ajustez le délai (en ms) selon le besoins
+                    }
+                });
+                $(`#minimap_canvas, #map`).on("mousemove", function () { //mise à jour lors du défilement
+                    if (uw.Game.layout_mode === "island_view") {
+                        clearTimeout(resizeTimeout); // Nettoyer le timeout précédent
+                        resizeTimeout = setTimeout(() => { // Délai pour exécuter la fonction seulement après avoir fini le défilement
+                            MapIcons.add();
+                        }, 200); // Ajustez le délai (en ms) selon le besoins
+                    }
+                });
+
+                $.Observer(uw.GameEvents.map.jump).subscribe('map_add_jump', (e, data) => { setTimeout(() => { MapIcons.add(); }, 200); });
+                $.Observer(uw.GameEvents.map.zoom_in).subscribe('map_add_zoomin', (e, data) => { MapIcons.add(); });
+                $.Observer(uw.GameEvents.map.zoom_out).subscribe('map_add_zoomout', (e, data) => { MapIcons.add(); });
+                MapIcons.add();
+            } catch (error) { errorHandling(error, "MapIcons.activate"); }
         },
         add: () => {
             try {// Style for own towns (town icons)
                 for (var e in autoTownTypes) {
                     if (autoTownTypes.hasOwnProperty(e)) {
+                        if (!$("#mini_t" + e + ", #town_flag_" + e + " .flagpole").get(0)) $("#mini_t" + e + ", #town_flag_" + e + " #gt_" + e).before($('<div/>', { 'class': "flagpole town " }))
                         $("#mini_t" + e + ", #town_flag_" + e + " .flagpole").css({
                             "background": "rgb(255, 187, 0) url(" + dio_icon_small + ") repeat",
                             "background-position": (TownIcons.types[(manuTownTypes[e] || autoTownTypes[e])] * -25) + "px -27px",
@@ -4507,30 +4533,24 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                         }
                                     }
                                 }
+                                // Tableau des niveaux et de la population maximum
+                                const popByFarmLevel = [114, 121, 134, 152, 175, 206, 245, 291, 343, 399, 458, 520, 584, 651, 720, 790, 863, 938, 1015, 1094, 1174, 1257, 1341, 1426, 1514, 1602, 1693, 1785, 1878, 1973, 2070, 2168, 2267, 2368, 2470, 2573, 2678, 2784, 2891, 3000, 3109, 3220, 3332, 3446, 3560];
                                 // Icon: Empty Town (overwrite)
-                                var popBuilding = 0, buildVal = uw.GameData.buildings, levelArray = townArray[town].buildings().getLevels(),
-                                    popPlow = townArray[town].getResearches().attributes.plow ? 200 : 0,
+                                var popBuilding = 0, buildVal = uw.GameData.buildings, levelArray = townArray[town].buildings().getLevels(), popMax;
+                                if (buildVal.farm.farm_factor != undefined) popMax = Math.floor(buildVal.farm.farm_factor * Math.pow(townArray[town].buildings().getBuildingLevel("farm"), buildVal.farm.farm_pow)); // Population from farm level
+                                else popMax = popByFarmLevel[townArray[town].buildings().getBuildingLevel("farm") - 1]; // Population from farm level
+                                let popPlow = townArray[town].getResearches().attributes.plow ? 200 : 0,
                                     popFactor = townArray[town].getBuildings().getBuildingLevel("thermal") ? 1.1 : 1.0, // Thermal
                                     popExtra = townArray[town].getPopulationExtra();
+                                if (townArray[town].god() === 'aphrodite') popMax += townArray[town].buildings().getBuildingLevel("farm") * 5;
+                                for (var b in levelArray) { if (levelArray.hasOwnProperty(b)) popBuilding += Math.round(buildVal[b].pop * Math.pow(levelArray[b], buildVal[b].pop_factor)); }
 
-                                const popByFarmLevel = [114, 121, 134, 152, 175, 206, 245, 291, 343, 399, 458, 520, 584, 651, 720, 790, 863, 938, 1015, 1094, 1174, 1257, 1341, 1426, 1514, 1602, 1693, 1785, 1878, 1973, 2070, 2168, 2267, 2368, 2470, 2573, 2678, 2784, 2891, 3000, 3109, 3220, 3332, 3446, 3560];
-                                let popMax = popByFarmLevel[townArray[town].buildings().getBuildingLevel("farm") - 1];
-                                if(townArray[town].god() === 'aphrodite') popMax += townArray[town].buildings().getBuildingLevel("farm") * 5;
-                                
-                                for (var b in levelArray) {
-                                    if (levelArray.hasOwnProperty(b)) {
-                                        popBuilding += Math.round(buildVal[b].pop * Math.pow(levelArray[b], buildVal[b].pop_factor));
-                                    }
-                                }
                                 population[town] = {};
-
                                 population[town].max = popMax * popFactor + popPlow + popExtra;
                                 population[town].buildings = popBuilding;
                                 population[town].units = parseInt((population[town].max - (popBuilding + townArray[town].getAvailablePopulation())), 10);
 
-                                if (population[town].units < 300) {
-                                    autoTownTypes[townArray[town].id] = "po";
-                                }
+                                if (population[town].units < 300) autoTownTypes[townArray[town].id] = "po";
 
                                 population[town].percent = Math.round(100 / (population[town].max - popBuilding) * population[town].units);
 
@@ -10960,7 +10980,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         // Always put id -1 first "All"
                         if (a.attributes.id === -1) return -1;
                         if (b.attributes.id === -1) return 1;
-                        
+
                         const aStr = a.attributes.name;
                         const bStr = b.attributes.name;
                         const minLength = Math.min(aStr.length, bStr.length);
@@ -10981,7 +11001,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         // If all characters matched, shorter string comes first
                         return aStr.length - bStr.length;
                     });
-                
+
                 sortedGroups.forEach((group) => {
                     if (group.attributes.active) currentGroupId = group.attributes.id;
                 });
@@ -10992,7 +11012,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 else if (Position === 'next') currentGroupId = currentIndex < sortedGroups.length - 1 ? sortedGroups[currentIndex + 1].attributes.id : sortedGroups[0].attributes.id; //Passage au groupe suivant
 
                 if (currentGroupId === 0) return;
-                $.Observer(uw.GameEvents.itowns.town_groups.set_active_group).subscribe('DIO_TEMP_GROUPS', (e, data) =>{
+                $.Observer(uw.GameEvents.itowns.town_groups.set_active_group).subscribe('DIO_TEMP_GROUPS', (e, data) => {
                     $.Observer(uw.GameEvents.itowns.town_groups.set_active_group).unsubscribe('DIO_TEMP_GROUPS');
                     HumanMessage.success(uw.DM.getl10n("layout").premium_button.premium_menu.town_group_overview + " : " + groups[currentGroupId].attributes.name);
                     uw.HelperTown.switchToNextTown(); uw.HelperTown.switchToPreviousTown();
