@@ -4509,11 +4509,14 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                 }
                                 // Icon: Empty Town (overwrite)
                                 var popBuilding = 0, buildVal = uw.GameData.buildings, levelArray = townArray[town].buildings().getLevels(),
-                                    popMax = Math.floor(buildVal.farm.farm_factor * Math.pow(townArray[town].buildings().getBuildingLevel("farm"), buildVal.farm.farm_pow)), // Population from farm level
                                     popPlow = townArray[town].getResearches().attributes.plow ? 200 : 0,
                                     popFactor = townArray[town].getBuildings().getBuildingLevel("thermal") ? 1.1 : 1.0, // Thermal
                                     popExtra = townArray[town].getPopulationExtra();
 
+                                const popByFarmLevel = [114, 121, 134, 152, 175, 206, 245, 291, 343, 399, 458, 520, 584, 651, 720, 790, 863, 938, 1015, 1094, 1174, 1257, 1341, 1426, 1514, 1602, 1693, 1785, 1878, 1973, 2070, 2168, 2267, 2368, 2470, 2573, 2678, 2784, 2891, 3000, 3109, 3220, 3332, 3446, 3560];
+                                let popMax = popByFarmLevel[townArray[town].buildings().getBuildingLevel("farm") - 1];
+                                if(townArray[town].god() === 'aphrodite') popMax += townArray[town].buildings().getBuildingLevel("farm") * 5;
+                                
                                 for (var b in levelArray) {
                                     if (levelArray.hasOwnProperty(b)) {
                                         popBuilding += Math.round(buildVal[b].pop * Math.pow(levelArray[b], buildVal[b].pop_factor));
