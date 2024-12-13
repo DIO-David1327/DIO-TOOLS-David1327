@@ -308,7 +308,7 @@ LANGadd = {
             farming_village: "Booerendorp",
             gold: "Je hebt ontvangen",
             Quests: "Quests",
-            Reservations: "Reserveringen",
+            Reservations: "reserveringen",
         },
         translations: {
             info: 'Info',

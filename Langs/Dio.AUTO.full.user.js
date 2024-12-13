@@ -294,10 +294,10 @@ LANGadd = {
             //conquered: 'conquis',
             //spying: 'espionne',
             //spy: 'Espion',
-            support: uw.DM.getl10n("context_menu").titles.support, //'soutien'
+            //support: 'soutien',
             //support2: 'ne peut pas soutenir',
             //supporting: 'stationnées',
-            attacking: uw.DM.getl10n("context_menu", "titles").attack, //'attaque'
+            //attacking: 'attaque',
             //farming_village: 'village agricole',
             //gold: 'Vous avez reçu',
             //Quests: 'a expiré',
@@ -337,6 +337,15 @@ LANGadd = {
             //liststate: "État du mur le jour",
             //nosaved: "Aucune sauvegarde",
             //Auto: "Mode Auto",
+        },Radar: {
+        },
+        TSL: {
+        },
+        AO: {
+        },
+        ABH: {
+        },
+        Stats: {
         },
         buttons: {
             sav: uw.DM.getl10n("notes").btn_save/*"sauvegarder"*/, /*ins: "Insérer",*/ res: uw.DM.getl10n("academy").tabs[1]/*"Réinitialiser"*/,

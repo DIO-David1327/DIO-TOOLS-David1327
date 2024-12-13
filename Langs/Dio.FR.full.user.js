@@ -27,6 +27,7 @@ LANGadd = {
             Translations: "https://dio-david1327.github.io/fr/wiki/traductions.html",
         },
         Settings: {
+            Settings:"Paramètres",
             dsc: "DIO-Tools offres certains écrans, une boîte de smiley, les options <br>commerciales, des changements à la mise en page et d'autres choses.",
             act: "Activation/Désactivation des fonctions:",
             prv: "Aperçu des fonctions séparées:",
@@ -64,6 +65,7 @@ LANGadd = {
             Non_compatible: "Non compatible à activer dans les paramètres de ",
         },
         Options: {
+            Options: "Options",
             bir: ["Compteur de birèmes ", "Totalise l'ensemble des birèmes présentent en villes et les résume. (Remplace la mini carte dans le cadran)"],
             ava: ["L'aperçu des unites", "Indique les unités de toutes les villes."],
             ava2: ["Numéro de Mer", "Extension unité"], //uw.DM.getl10n("COMMON").ocean_number_tooltip
@@ -130,12 +132,14 @@ LANGadd = {
             err: ["Envoyer des rapports de bogues automatiquement", "Si vous activez cette option, vous pouvez aider à identifier les bugs."],
         },
         movement: {
+            movement: "Mouvement",
             off: 'Attaque entrante',
             offs: 'Attaques entrantes', //uw.DM.getl10n("layout").toolbar_activities.incomming_attacks
             def: 'Soutien entrant', //uw.DM.getl10n("context_menu").titles.support + ...
             defs: 'Soutiens entrants',
         },
         Town_icons: {
+            Town_icons: "Icônes de la ville",
             LandOff: "Off terrestre",
             LandDef: "Déf terrestre",
             NavyOff: "Off naval",
@@ -146,6 +150,7 @@ LANGadd = {
             Emp: "Vide",
         },
         Color: {
+            Color: "Couleur",
             Blue: 'Bleu',
             Red: 'Rouge',
             Green: 'Vert',
@@ -153,6 +158,7 @@ LANGadd = {
             White: "Blanc",
         },
         labels: {
+            labels: "Étiquettes",
             uni: "Présentation des unités",
             total: "Total",
             available: "Disponible", //uw.DM.getl10n("hercules2014", "available")
@@ -278,6 +284,7 @@ LANGadd = {
             council: 'Concile des héros'
         },
         messages: {
+            messages: "Messages",
             ghosttown: 'Ville fantôme',
             no_cities: 'Aucune ville sur cette île',
             all: 'Tous',
@@ -290,6 +297,7 @@ LANGadd = {
             cli: "Le message n'a pas été copié",
         },
         caves: {
+            caves: "Grotte",
             stored_silver: 'Capacité de stockage des pièces d\'argent',
             silver_to_store: "Pièces d'argent stockables",
             name: 'Nom',
@@ -299,10 +307,12 @@ LANGadd = {
             search_for: 'Rechercher',
         },
         grepo_mainmenu: {
+            grepo_mainmenu: "Menu principal grepo",
             city_view: 'Vue de la ville',
             island_view: "Vue île",
         },
         transport_calc: {
+            transport_calc: "Capacité de transport",
             recruits: 'Nombre d\'unités dans la queue de recrutement',
             slowtrans: 'Nombre de transporteurs lents',
             fasttrans: 'Nombre de transporteurs rapides',
@@ -313,6 +323,7 @@ LANGadd = {
             army: "Tu n'as pas d'armée.",
         },
         reports: {
+            reports: "Reports",
             choose_folder: 'Choisissez un dossier',
             enacted: 'lancé',
             conquered: 'conquis',
@@ -328,6 +339,7 @@ LANGadd = {
             Reservations: 'Votre réservation pour',
         },
         translations: {
+            translations: "Traductions",
             info: 'Info',
             trans: 'Traduction pour la langue',
             translations: 'Traductions',
@@ -352,6 +364,7 @@ LANGadd = {
             add_edit: 'Ajouter / modifier',
         },
         wall: {
+            wall: "Rempart",
             wallnotsaved: "Les remparts ne sont pas enregistr\u00e9s",
             wallsaved: "Les remparts sont enregistr\u00e9s",
             msghuman: "L'information a \u00e9t\u00e9 sauvegard\u00e9e",
@@ -362,6 +375,53 @@ LANGadd = {
             liststate: "État du mur le jour",
             nosaved: "Aucune sauvegarde",
             Auto: "Mode Auto",
+        },
+        Radar: {
+            Radar: "Rechercher villes",
+            find: "Recherche",
+            maxunittime: "Durée maximale",
+            townname: "Ville",
+            unittime: "Temps",
+            townowner: "Propriétaire",
+            townreserved: "Réservation",
+            townpoints: "Points minimum",
+            btnsavedefault: "Sauvegarder les valeurs par défaut",
+            all: "Toutes les villes",
+            showcities: "Afficher les villes"
+        },
+        TSL: {
+            TSL: 'Liste triées des villes',
+            tooltip: 'Voir les villes triées',
+        },
+        AO: {
+            AO: 'Aperçu académie'
+        },
+        ABH: {
+            ABH: 'Aide construction d\'armée',
+            unitframe: 'Choisissez le type d\'unité',
+            description1: 'Dans cette ville, vous avez [population] population libre',
+            description2: 'Qui est suffisant pour construire [max_units]',
+            description3: 'Vous [yesno] [research] recherché.',
+            description4: 'File d\'attente maximale de [max_queue] unités',
+            target: 'Choisissez le nombre d\'unités à produire',
+            package: 'Nombre de ressources par envoi (en unités)',
+            btnsave: 'Enregistrer les paramètres',
+            tooltipok: 'Cliquez pour sélectionner l\'unité par défaut pour lequel vous enverrez des ressources',
+            tooltipnotok: 'Le type d\'unité n\'a pas été recherché',
+            hasresearch: 'avez',
+            noresearch: 'n\'avez pas',
+            settingsaved: 'Les réglages pour [city] ont été enregistrés',
+            btnreset: 'Réinitialiser',
+            resleft: 'ressources restantes à envoyer',
+            imgtooltip: 'Les réglages pour [city] ont été enregistrés',
+        },
+        Stats: {
+            Stats: "Statistiques",
+            player: 'Statistiques joueur',
+            ally: 'Statistiques alliance',
+            town: 'Statistiques ville',
+            inactive: 'Inactif',
+            chkinactive: 'Montrer les joueurs inactifs',
         },
         buttons: {
             sav: "sauvegarder", ins: "Insérer", res: "Réinitialiser" //uw.DM.getl10n("notes").btn_save

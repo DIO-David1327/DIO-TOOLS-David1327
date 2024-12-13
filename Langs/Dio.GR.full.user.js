@@ -293,7 +293,7 @@ LANGadd = {
             farming_village: 'αγροτικό χωριό',
             gold: 'Έχεις λάβει',
             Quests: 'Αποστολές',
-            Reservations: 'Κρατήσεις',
+            Reservations: 'kρατήσεις',
         },
         translations: {
             info: 'Πληροφορίες',
