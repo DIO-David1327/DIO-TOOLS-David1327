@@ -1795,11 +1795,11 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             saveValue("dio_user", JSON.stringify(DIO_USER));
 
             if (Overviews.Culture == "") {
-                Overviews.Culture = uw.DM.getl10n("mass_recruit").sort_by.name;
+                Overviews.Culture = (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name");
                 Overviews.Culture_Dif = ">";
-                Overviews.Buildings = uw.DM.getl10n("mass_recruit").sort_by.name;
+                Overviews.Buildings = (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name");
                 Overviews.Buildings_Dif = ">";
-                Overviews.Gods = uw.DM.getl10n("mass_recruit").sort_by.name;
+                Overviews.Gods = (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name");
                 //Overviews.hour = 0;
                 //Overviews.minute = 0;
                 saveValue("Overviews", JSON.stringify(Overviews));
@@ -8683,7 +8683,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             try {
 
                 $('<style id="dio_plusmenustyle" type="text/css">' +
-                    '.displayImp {display: block !important; z-index: 5000 !important;}' +
+                    '.displayImp {display: block !important; z-index: 4999 !important;}' +
                     '.dio_commands { height: 0px; overflow: visible!important; }' +
                     '.dio_plusmenu {margin:6px 22px 2px 5px;height:11px;display:block;position:relative;}' +
                     '.dio_plusdraghandle {cursor:-webkit-grab; width:100%;height:11px;position:absolute;background:url(' + Home_url + '/img/dio/btn/draghandle.png)}' +
@@ -9120,8 +9120,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 }
                 var buil = Overviews.Buildings, diff = Overviews.Buildings_Dif, selection;
                 var sort_options = [
-                    ["option_s", uw.DM.getl10n("mass_recruit").sort_by.name, true],
-                    ["option_s ok", uw.DM.getl10n("mass_recruit").sort_by.points, true],
+                    ["option_s", (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name"), true],
+                    ["option_s ok", (uw.DM.getl10n("map")?.points?.name ?? "????????Points").replace(/^./, c => c.toUpperCase()), true],
                     ["option_s resource wood_img", "wood"],
                     ["option_s resource stone_img", "stone"],
                     ["option_s resource iron_img", "iron"],
@@ -9201,7 +9201,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                     $('#dio_select').removeClass();
                     $(".dio_drop_Select .border-left").css({ "right": "auto", "left": "0", "z-index": 0 });
                     $(".dio_drop_Select .caption").css({ "left": "auto", "width": "auto", });
-                    if (buil == uw.DM.getl10n("mass_recruit").sort_by.name || buil == uw.DM.getl10n("mass_recruit").sort_by.points) { }
+                    if (buil == (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name") || buil == (uw.DM.getl10n("map")?.points?.name ?? "????????Points").replace(/^./, c => c.toUpperCase())) { }
                     else if (buil == "wood" || buil == "stone" || buil == "iron" || buil == "pop") {
                         $('#dio_select').addClass("resource " + buil + "_img");
                         $(".dio_drop_Select .border-left").css({ "right": "19px", "left": "auto", "z-index": 1 });
@@ -9214,7 +9214,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                     $('#fixed_table_header .dio_sel').removeClass("dio_sel");
                     $('#fixed_table_header .' + buil).addClass("dio_sel")
-                    if (buil === uw.DM.getl10n("mass_recruit").sort_by.name) {
+                    if (buil === (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name")) {
                         $("#dio_sortfilterbox").css({ "display": "block" });
                         $("#dio_numberbox").css({ "display": "none" });
                     }
@@ -9251,10 +9251,10 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 function sort(selection, filter, Sort) {
                     if (!Sort) { Overviews.Buildings_order = !Overviews.Buildings_order; saveValue("Overviews", JSON.stringify(Overviews)); $("#dio_button_sort").toggleClass('active') }
                     switch (selection) {
-                        case uw.DM.getl10n("mass_recruit").sort_by.name:
+                        case (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name"):
                             selection = 'a.gp_town_link';
                             break;
-                        case uw.DM.getl10n("mass_recruit").sort_by.points:
+                        case (uw.DM.getl10n("map")?.points?.name ?? "????????Points").replace(/^./, c => c.toUpperCase()):
                             selection = '.towninfo_wrapper';
                             break;
                         case "wood":
@@ -9729,7 +9729,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 var buil = Overviews.Culture, diff = Overviews.Culture_Dif, hour_time = Overviews.hour, minute_time = Overviews.minute;
                 var selection;
                 var sort_options = [
-                    ["option", uw.DM.getl10n("mass_recruit").sort_by.name, true],
+                    ["option", (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name"), true],
                     ["option", uw.DM.getl10n("inventory").tooltip.hours, true],
                     ///["option", uw.DM.getl10n("construction_queue").research_time.split(":")[0], true],
                 ];
@@ -9832,7 +9832,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 }*/
                 Classtest(buil);
                 function Classtest(buil) {
-                    if (buil === uw.DM.getl10n("mass_recruit").sort_by.name) {
+                    if (buil === (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name")) {
                         $("#dio_sortfilterbox").css({ "display": "block" });
                         $("#dio_time-picker").css({ "display": "none" });
                     }
@@ -9922,7 +9922,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                             //selection = '.celebration_wrapper.small';
                             //$('a[class~="confirm"][class~="type_games"]')[4].parentNode.parentNode.parentNode.children[3].children[1].dataset.timestamp
                             break;
-                        case uw.DM.getl10n("mass_recruit").sort_by.name:
+                        case (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name"):
                             selection = 'a.gp_town_link';
                             break;
                     }
@@ -9958,7 +9958,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                 }
 
                 $('#dio_culture_sort_control .filterstop').click(function () {
-                    if ($(selec)[0].innerText === uw.DM.getl10n("mass_recruit").sort_by.name) { $('#dio_sortfilterbox')[0].value = ""; }
+                    if ($(selec)[0].innerText === (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name")) { $('#dio_sortfilterbox')[0].value = ""; }
                     else {
                         $(hr_element)[0].value = "";
                         if (buil === uw.DM.getl10n("construction_queue").research_time.split(":")[0]) {
@@ -10134,7 +10134,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
 
                 var sort_options = [
                     ["ironinstore", getTexts("caves", "stored_silver")],
-                    ["name", uw.DM.getl10n("mass_recruit").sort_by.name],
+                    ["name", (uw.DM.getl10n("heroes")?.transfer?.hero_name ?? "????????Name")],
                     ["wood", uw.DM.getl10n("mass_recruit").sort_by.wood],
                     ["stone", uw.DM.getl10n("mass_recruit").sort_by.stone],
                     ["iron", uw.DM.getl10n("mass_recruit").sort_by.iron]
@@ -11241,7 +11241,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             } catch (error) { errorHandling(error, "townslist"); }
         },
         content: (bb_count, town) => {
-            return "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+            return "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + (uw.DM.getl10n("map")?.points?.name ?? "????????Points").replace(/^./, c => c.toUpperCase()) + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
         },
         deactivate: () => {
             $('#dio_town_list_bb_style').remove();
@@ -11441,7 +11441,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                 const points = $(this).find('.small:first').text(); // Récupérer les chiffres dans la parenthèse => .match(/\d+/)[0]
                                 let joueur = "[player]" + $(this).find('.gp_player_link').text() + "[/player]";
                                 if (joueur == "[player][/player]") joueur = $(this).find('.small.player_name').text()
-                                let alliance = "[ally]" + $(this).find('.gp_alliance_link').text() + "[/ally]";
+                                let alliance = "[ally]" + $($(this).find('.gp_alliance_link')[0]).text() + "[/ally]";
                                 if (alliance == "[ally][/ally]") alliance = ""; // Si l'alliance n'est pas disponible, afficher ''
 
                                 // Ajouter les valeurs au tableau des données
@@ -11486,7 +11486,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
             } catch (error) { errorHandling(error, "BBcodeList"); }
         },
         content: (bb_count, town) => {
-            return "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + uw.DM.getl10n("mass_recruit").sort_by.points + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
+            return "[*]" + bb_count + ".[|][town]" + town.attributes.town_id + "[/town][|]" + town.town_model.attributes.points + " " + (uw.DM.getl10n("map")?.points?.name ?? "????????Points").replace(/^./, c => c.toUpperCase()) + "[|]" + uw.DM.getl10n("tooltips").ocean + " " + town.town_model.attributes.sea_id + "[/*]\n";
         },
         deactivate: () => {
             $('#dio_BBcodeList_style').remove();
