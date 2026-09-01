@@ -2,7 +2,7 @@
 // @name		DIO-TOOLS-David1327
 // @name:fr		DIO-TOOLS-David1327
 // @namespace	https://www.tuto-de-david1327.com/pages/info/dio-tools-david1327.html
-// @version		4.38.1
+// @version		4.39
 // @author		DIONY and David1327
 // @description Version 2026. DIO-Tools + Quack is a small extension for the browser game Grepolis. (counter, displays, smilies, trade options, changes to the layout)
 // @description:FR Version 2026. DIO-Tools + Quack est une petite extension du jeu par navigateur Grepolis. (compteur, affichages, smileys, options commerciales, modifications de la mise en page)
@@ -1324,7 +1324,7 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         '<div id="dio_Ciw" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Ciw")[0] + '</div></div>')) +
                     '<p>' + getTexts("Options", "Ciw")[1] + '</p></td>' +
                     '</tr><tr>' +
-                    ((MID == 'fr' || MID == 'de' || MID == 'en' || MID == 'cz' || MID == 'gr' || MID == 'nl' || MID == 'br' || MID == 'ZZ' || MID == 'us') ? (
+                    ((MID == 'fr' || MID == 'de' || MID == 'en' || MID == 'cz' || MID == 'gr' || MID == 'nl' || MID == 'br' || MID == 'zz' || MID == 'us') ? (
                         '<td><img src="" alt="" /></td>' +
                         '<td><div id="dio_Rep" class="checkbox_new"><div class="cbx_icon"></div><div class="cbx_caption">' + getTexts("Options", "Rep")[0] + '</div></div>' +
                         '<p>' + getTexts("Options", "Rep")[1] + '</p><br></td>') : "") +
@@ -3306,15 +3306,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                         $('#trans_content > DIV').each(function (i) {
                             if ($('.toSend', this).length != 0) {
                                 trans_BBcode_send += '\n' + $('SPAN', this).text() + ' : {\n';
-                                if ($('SPAN', this).text() != "Options") {
-                                    $('.toSend', this).each(function (index) {
-                                        trans_BBcode_send += $(this).data('name') + ' : "' + $("td:last textarea", this).val() + '",\n';
-                                    });
-                                } else {
-                                    $('.toSend', this).each(function (index) {
-                                        trans_BBcode_send += $(this).data('name') + ' : ["' + $("#diobb1 textarea", this).val() + '","' + $("#diobb2 textarea", this).val() + '"],\n';
-                                    });
-                                }
+                                // 1 seul texte
+                                $('.toSend', this).each(function (index) {
+                                    if ($('textarea', this).length === 1) {
+                                        trans_BBcode_send += $(this).data('name') + ' : "' + $('td[colspan="2"] textarea', this).val() + '",\n';
+                                    } else {
+                                        trans_BBcode_send += $(this).data('name') + ' : ["' + $('#diobb1 textarea', this).val() + '","' + $('#diobb2 textarea', this).val() + '"],\n';
+                                    }
+                                });
+
                                 trans_BBcode_send += '},\n';
                             }
                         });
@@ -3427,15 +3427,15 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
                                 if (!Array.isArray(uw.DIO_LANG.en[a][c])) {
                                     langHTML_tab3 += '<td style="width:35%"><div style="max-height:100px; overflow:auto">' + d + '</div></td>';
                                     langHTML_tab3 += (uw.DIO_LANG[lang_tab3] != undefined && uw.DIO_LANG[lang_tab3][a] != undefined && uw.DIO_LANG[lang_tab3][a][c] != undefined) ?
-                                        '<td style=""><textarea style="background-color: ' + text + ';">' + uw.DIO_LANG[lang_tab3][a][c] + '</textarea></td>' : '<td style="width:60%"><textarea style="background-color: ' + text + ';">' + uw.DIO_LANG.en[a][c] + '</textarea></td>';
+                                        '<td colspan="2" style="width:65%"><textarea style="background-color: ' + text + ';">' + uw.DIO_LANG[lang_tab3][a][c] + '</textarea></td>' : '<td colspan="2" style="width:65%"><textarea style="background-color: ' + text + ';">' + uw.DIO_LANG.en[a][c] + '</textarea></td>';
                                     langHTML_tab3 += '</tr>';
                                 }
                                 else {
                                     langHTML_tab3 += '<td style="width:35%"><div style="max-height:100px; overflow:auto">' + d[0] + '\n</div><div style="max-height:100px; overflow:auto">' + d[1] + '</div></td>';
                                     langHTML_tab3 += (uw.DIO_LANG[lang_tab3] != undefined && uw.DIO_LANG[lang_tab3][a] != undefined && uw.DIO_LANG[lang_tab3][a][c] != undefined) ?
-                                        '<td id="diobb1" style="width:25%"><textarea style="background-color: ' + text + ';">' + uw.DIO_LANG[lang_tab3][a][c][0] + '</textarea></td>' : '<td id="diobb1" style="width:30%"><textarea style="background-color: ' + text + ';">' + uw.DIO_LANG.en[a][c][0] + '</textarea></td>';
+                                        '<td id="diobb1" style="width:25%"><textarea style="height: 45px;background-color: ' + text + ';">' + uw.DIO_LANG[lang_tab3][a][c][0] + '</textarea></td>' : '<td id="diobb1" style="width:30%"><textarea style="height: 45px;background-color: ' + text + ';">' + uw.DIO_LANG.en[a][c][0] + '</textarea></td>';
                                     langHTML_tab3 += (uw.DIO_LANG[lang_tab3] != undefined && uw.DIO_LANG[lang_tab3][a] != undefined && uw.DIO_LANG[lang_tab3][a][c] != undefined) ?
-                                        '<td id="diobb2" style="width:40%"><textarea style="background-color: ' + text + ';">' + uw.DIO_LANG[lang_tab3][a][c][1] + '</textarea></td>' : '<td id="diobb2" style="width:30%"><textarea style="background-color: ' + text + ';">' + uw.DIO_LANG.en[a][c][1] + '</textarea></td>';
+                                        '<td id="diobb2" style="width:40%"><textarea style="height: 45px;background-color: ' + text + ';">' + uw.DIO_LANG[lang_tab3][a][c][1] + '</textarea></td>' : '<td id="diobb2" style="width:30%"><textarea style="height: 45px;background-color: ' + text + ';">' + uw.DIO_LANG.en[a][c][1] + '</textarea></td>';
                                     langHTML_tab3 += '</tr>';
                                 }
                             });
@@ -4474,13 +4474,13 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
      * Temporary replacement grcrt "City Command Overview"
      *******************************************************************************************************************************/
     $('<style id="Temporary-replacement-grcrt" type="text/css">' +
-        '#place_defense {display: block;} ' +
+        /*'#place_defense {display: block;} ' +
         '#dd_commands_select_town_group { width: 110px;} ' +
         '#txt_commands_search { width: 100px;} ' +
         '#dd_commands_sort_command { max-width: 280px; min-width: 269px; z-index: 1; } ' +
         '#dd_commands_sort_command .caption { padding: 4px 19px 0 2px; } ' +
 
-        '#grcrt_command_filter { position: absolute; top: 0px; right: 0px; } ' +
+        '#grcrt_command_filter { position: absolute; top: 0px; right: 45px; } ' +
         '#grcrt_towns width: { width: 170px; } ' +
         '#grcrt_towns_list: { width: 180px; } ' +
 
@@ -4491,7 +4491,8 @@ function DIO_GAME(dio_version, gm, DATA, time_a, url_dev) {
         '#place_defense #dd_filter_type .arrow:hover, .select_rec_unit .arrow, .dropdown.default .arrow:hover {background: url("' + Home_url + '/img/dio/btn/drop-over.png") no-repeat 0px -1px; } ' +
 
         '.group_towns .town_group_town .grcrt_hero.hero_icon.hero25x25.andromeda { display: none; } ' +
-
+*/
+        '#place_defense #dd_filter_type .arrow, .select_rec_unit .arrow, .dropdown.default .arrow {width: 18px; height: 17px ; background: url("' + Home_url + '/img/dio/btn/drop-out.png") no-repeat 0px -1px; top: 2px; right: 3px; } ' +
         '</style>').appendTo('head');
 
     /*******************************************************************************************************************************
